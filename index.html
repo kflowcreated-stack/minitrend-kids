@@ -9,9 +9,9 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="MiniTrend Kids" />
-  <link rel="manifest" href="./manifest.json" />
-  <link rel="icon" type="image/png" href="https://img.icons8.com/3d-fluency/96/shopping-bag.png" />
-  <link rel="apple-touch-icon" href="https://img.icons8.com/3d-fluency/96/shopping-bag.png" />
+  <link rel="manifest" href="./manifest.json?v=2026" />
+  <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/6618/6618812.png" />
+  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/6618/6618812.png" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Padauk:wght@400;700&display=swap" rel="stylesheet">
   <style>
@@ -107,7 +107,7 @@
     ];
 
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js').catch(() => {});
+      navigator.serviceWorker.register('./sw.js?v=2026').catch(() => {});
     }
   </script>
 
@@ -148,9 +148,8 @@
         <!-- 3D Animated App Icon & Brand Name -->
         <div class="flex items-center gap-2 min-w-0 scene-3d">
           <div class="relative w-10 h-10 shrink-0 flex items-center justify-center">
-            <div class="absolute inset-0 rounded-2xl bg-gradient-to-tr from-pink-500 via-rose-400 to-amber-300 opacity-25 blur-sm animate-pulse"></div>
-            <img src="https://img.icons8.com/3d-fluency/512/shopping-bag.png" 
-                 onerror="this.src='https://cdn-icons-png.flaticon.com/512/3081/3081986.png'" 
+            <div class="absolute inset-0 rounded-2xl bg-gradient-to-tr from-pink-500 via-rose-400 to-amber-300 opacity-30 blur-sm animate-pulse"></div>
+            <img src="https://cdn-icons-png.flaticon.com/512/6618/6618812.png" 
                  alt="MiniTrend 3D Icon" 
                  class="w-9 h-9 object-contain icon-3d-animate relative z-10" />
             <span class="absolute -top-1 -right-1 text-xs badge-3d-pop z-20">✨</span>
@@ -197,7 +196,7 @@
       </div>
     </div>
 
-    <!-- Search & Category Bar (Sleek & Compact so 4 items fit below) -->
+    <!-- Search & Category Bar -->
     <section class="max-w-6xl mx-auto px-2.5 pt-2">
       <div class="flex flex-col md:flex-row gap-1.5 justify-between items-center">
         <div class="w-full md:w-64 flex gap-1.5 items-center">
@@ -217,7 +216,7 @@
       </div>
     </section>
 
-    <!-- 2x2 Product Grid (2 columns on phone = 4 items per screen, 3 on tablet, 4 on desktop) -->
+    <!-- 2x2 Product Grid (4 items per mobile screen) -->
     <main class="max-w-6xl mx-auto px-2 py-2">
       <div id="loading-indicator" class="text-center py-8 text-pink-600 font-bold text-xs">⏳ ပစ္စည်းစာရင်းများ ရယူနေပါသည်...</div>
       <div id="product-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4"></div>
@@ -254,7 +253,7 @@
     <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl">
       <div class="flex justify-between items-center border-b pb-3 mb-4">
         <div class="flex items-center gap-2">
-          <img src="https://img.icons8.com/3d-fluency/512/shopping-bag.png" class="w-8 h-8 object-contain" />
+          <img src="https://cdn-icons-png.flaticon.com/512/6618/6618812.png" class="w-8 h-8 object-contain" />
           <h3 class="text-base font-bold text-gray-900">MiniTrend Kids App ထည့်သွင်းနည်း</h3>
         </div>
         <button onclick="closePWAGuide()" class="text-gray-500 hover:text-gray-800 font-bold text-xl">✕</button>
@@ -262,7 +261,7 @@
       <div class="space-y-3 text-xs sm:text-sm text-gray-700 leading-relaxed">
         <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl">
           <p class="font-extrabold text-emerald-900 mb-1">🤖 Android ဖုန်းများ (Chrome Browser):</p>
-          <p>၁။ ညာဘက်အပေါ်ထောင့်ရှိ <b>အစက် ၃ စက် (⋮)</b> ကို နှိပ်ပါ။<br>၂။ <b>"Install app"</b> (သို့) <b>"Add to Home screen"</b> ကို နှိပ်ပြီး <b>Install</b> နှိပ်လိုက်ပါ။</p>
+          <p>၁။ ညာဘက်အပေါ်ထောင့်ရှိ <b>အစက် ၃ စက် (⋮)</b> ကို နှိပ်ပါ။<br>၂။ <b>"Install app" (အက်ပ်ကို ထည့်သွင်းရန်)</b> ကိုသာ ရွေးနှိပ်ပါ။<br>*(သတိပြုရန်: "Add to Home screen" ကို နှိပ်ပါက Chrome လိုဂိုပါလာတတ်သဖြင့် စာမျက်နှာကို Refresh လုပ်ပြီး ၃ စက္ကန့်စောင့်ကာ <b>"Install app"</b> ပေါ်လာမှ နှိပ်ပေးပါ)*</p>
         </div>
         <div class="p-3 bg-pink-50 border border-pink-200 rounded-xl">
           <p class="font-extrabold text-pink-900 mb-1">🍎 iPhone / iPad (Safari Browser):</p>
@@ -460,7 +459,6 @@
       return val;
     }
 
-    // Short display label for compact 2-column buttons while keeping exact size key
     function shortSizeLabel(sizeStr) {
       return sizeStr
         .replace('၆ လ - ၁ နှစ်', '၆လ-၁နှစ်')
@@ -886,7 +884,6 @@
         return `
           <div class="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-pink-100/80 overflow-hidden flex flex-col justify-between ${isEntireProductSoldOut ? 'opacity-80' : ''}">
             <div>
-              <!-- Vertical Portrait Image Frame (h-40 on mobile in narrow 2-col card = vertical portrait ratio) -->
               <div onclick="openImageLightbox(${p.id})" class="relative h-40 sm:h-60 bg-gray-100 cursor-zoom-in group overflow-hidden">
                 <img src="${activeVariant.image}" alt="${p.name}" class="w-full h-full object-cover object-top transition-all duration-300 group-hover:scale-105 ${isEntireProductSoldOut ? 'grayscale' : ''}">
                 
@@ -907,7 +904,6 @@
                 </span>
               </div>
 
-              <!-- Ultra-Compact Card Details for 2x2 Grid -->
               <div class="p-1.5 sm:p-3">
                 <h3 class="font-bold text-gray-800 text-[11px] sm:text-sm truncate leading-tight">${p.name}</h3>
                 
@@ -919,7 +915,6 @@
                   }
                 </div>
 
-                <!-- Color Pills (Single Horizontal Scroll Line) -->
                 <div class="flex items-center gap-1 mb-1 overflow-x-auto no-scrollbar">
                   ${variants.map((v, idx) => `
                     <button type="button" onclick="selectColor(${p.id}, ${idx})" class="px-1.5 py-0.5 rounded-full border text-[9px] sm:text-[11px] font-bold whitespace-nowrap transition ${activeColorIdx === idx ? 'border-pink-600 bg-pink-600 text-white' : 'border-gray-200 bg-gray-50 text-gray-700'}">
@@ -928,7 +923,6 @@
                   `).join('')}
                 </div>
 
-                <!-- Compact 3x2 Size Grid -->
                 <div class="grid grid-cols-3 gap-0.5">
                   ${AGE_SIZES.map(s => {
                     const szStock = (p.stocks && p.stocks[s] !== undefined) ? p.stocks[s] : 0;
