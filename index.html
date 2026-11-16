@@ -3,19 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MiniTrend Kids - ကလေးအင်္ကျီနှင့် ဘောင်းဘီ ဖက်ရှင်ဆိုင်</title>
+  <title>MiniTrend Kids - ကလေးဖက်ရှင်နှင့် အသုံးအဆောင်ဆိုင်</title>
   <meta name="theme-color" content="#db2777" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="MiniTrend Kids" />
   <link rel="manifest" href="./manifest.json" />
-  <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/3531/3531818.png" />
-  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3531/3531818.png" />
+  <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/6618/6618812.png" />
+  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/6618/6618812.png" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Padauk:wght@400;700&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Padauk', sans-serif; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
 <body class="bg-pink-50/40 text-gray-800">
@@ -27,6 +29,7 @@
     const OWNER_VIBER_PHONE = "959942739543"; 
     const OWNER_DISPLAY_PHONE = "09942739543";
     const DELIVERY_FEE = 4500;
+    const APP_ICON_URL = "https://cdn-icons-png.flaticon.com/512/6618/6618812.png";
 
     const AGE_SIZES = [
       "၆ လ - ၁ နှစ်",
@@ -63,96 +66,99 @@
   <!-- ================= CUSTOMER STOREFRONT ================= -->
   <div id="customer-view">
     <!-- Top COD & Viber Announcement Banner -->
-    <div class="bg-gradient-to-r from-rose-600 via-pink-600 to-purple-700 text-white text-xs md:text-sm py-2.5 px-4">
-      <div class="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2 text-center sm:text-left">
-        <div class="font-bold flex items-center gap-1.5">
-          <span>🚚 ရန်ကုန်မြို့တွင်း အိမ်ရောက်ငွေချေ (COD) ဖြင့် မှာယူနိုင်ပါသည်</span>
+    <div class="bg-gradient-to-r from-rose-600 via-pink-600 to-purple-700 text-white text-[11px] md:text-sm py-1.5 px-3">
+      <div class="max-w-6xl mx-auto flex flex-wrap justify-between items-center gap-1.5">
+        <div class="font-bold flex items-center gap-1">
+          <span>🚚 ရန်ကုန်မြို့တွင်း အိမ်ရောက်ငွေချေ (COD)</span>
         </div>
-        <div class="flex items-center gap-2 bg-white/15 px-3 py-1 rounded-full">
-          <span>💬 အသေးစိတ်မေးမြန်းရန် Viber: <strong class="tracking-wide">09942739543</strong></span>
-          <button onclick="copyViberNumber()" class="bg-amber-300 hover:bg-amber-400 text-gray-900 font-extrabold px-2.5 py-0.5 rounded-full text-[11px] transition">📋 Copy</button>
+        <div class="flex items-center gap-1.5 bg-white/15 px-2.5 py-0.5 rounded-full">
+          <span>💬 Viber: <strong class="tracking-wide">09942739543</strong></span>
+          <button onclick="copyViberNumber()" class="bg-amber-300 hover:bg-amber-400 text-gray-900 font-extrabold px-2 py-0.5 rounded-full text-[10px] transition">📋 Copy</button>
         </div>
       </div>
     </div>
 
-    <!-- Sticky Header -->
+    <!-- Compact Sticky Header -->
     <header class="bg-white shadow-sm sticky top-0 z-30">
-      <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-2">
-        <div class="flex items-center gap-2">
-          <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-pink-500 to-amber-400 flex items-center justify-center text-white font-bold text-lg">✨</div>
-          <div>
-            <h1 class="text-lg font-bold text-pink-600 leading-tight">MiniTrend Kids</h1>
-            <p class="text-[11px] text-gray-500">ကလေးအင်္ကျီနှင့် ဘောင်းဘီ ဖက်ရှင်ဆိုင်</p>
+      <div class="max-w-6xl mx-auto px-3 py-2 flex justify-between items-center gap-1.5">
+        <div class="flex items-center gap-2 min-w-0">
+          <img src="https://cdn-icons-png.flaticon.com/512/6618/6618812.png" alt="MiniTrend Kids" class="w-9 h-9 rounded-full bg-pink-100 p-0.5 border border-pink-300 object-contain shrink-0" />
+          <div class="truncate">
+            <h1 class="text-sm sm:text-lg font-extrabold text-pink-600 leading-tight truncate">MiniTrend Kids</h1>
+            <p class="text-[10px] text-gray-500 truncate">ကလေးဖက်ရှင်နှင့် အသုံးအဆောင်ဆိုင်</p>
           </div>
         </div>
 
-        <div class="flex items-center gap-1.5 sm:gap-2">
-          <!-- Install Phone App Button -->
-          <button id="pwa-install-btn" onclick="triggerPWAInstall()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-full text-xs md:text-sm font-extrabold flex items-center gap-1 shadow-sm transition">
-            <span>📲 App ထည့်မည်</span>
+        <div class="flex items-center gap-1 sm:gap-2 shrink-0">
+          <button id="pwa-install-btn" onclick="triggerPWAInstall()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1.5 rounded-full text-[11px] sm:text-xs font-extrabold flex items-center gap-1 shadow-sm transition">
+            <span>📲 App</span>
           </button>
 
-          <button onclick="openSizeModal()" class="bg-amber-400 hover:bg-amber-500 text-gray-900 px-3 py-2 rounded-full text-xs md:text-sm font-extrabold flex items-center gap-1 shadow-sm transition">
+          <button onclick="openSizeModal()" class="bg-amber-400 hover:bg-amber-500 text-gray-900 px-2.5 py-1.5 rounded-full text-[11px] sm:text-xs font-extrabold flex items-center gap-1 shadow-sm transition">
             <span>📏 Size တွက်မည်</span>
           </button>
 
-          <button onclick="toggleCart()" class="relative bg-pink-600 hover:bg-pink-700 text-white px-3.5 py-2 rounded-full text-xs md:text-sm font-bold flex items-center gap-1.5 shadow">
+          <button onclick="toggleCart()" class="relative bg-pink-600 hover:bg-pink-700 text-white px-2.5 py-1.5 rounded-full text-[11px] sm:text-xs font-bold flex items-center gap-1 shadow">
             <span>🛍️ ခြင်းတောင်း</span>
-            <span id="cart-count" class="bg-amber-300 text-gray-900 text-xs px-2 py-0.5 rounded-full font-extrabold">0</span>
+            <span id="cart-count" class="bg-amber-300 text-gray-900 text-[11px] px-1.5 py-0.2 rounded-full font-extrabold">0</span>
           </button>
         </div>
       </div>
     </header>
 
     <!-- Active Size Recommendation Banner -->
-    <div id="recommended-size-banner" class="hidden max-w-6xl mx-auto px-4 pt-4">
-      <div class="bg-amber-50 border-2 border-amber-400 rounded-2xl p-4 flex flex-wrap justify-between items-center gap-3 shadow-sm">
-        <div class="flex items-center gap-3">
-          <span class="text-2xl">🎯</span>
+    <div id="recommended-size-banner" class="hidden max-w-6xl mx-auto px-3 pt-2.5">
+      <div class="bg-amber-50 border-2 border-amber-400 rounded-xl p-2.5 flex flex-wrap justify-between items-center gap-2 shadow-sm">
+        <div class="flex items-center gap-2">
+          <span class="text-xl">🎯</span>
           <div>
-            <p class="text-sm font-extrabold text-gray-900">သင့်ကလေးနှင့် အသင့်တော်ဆုံး အရွယ်အစားမှာ <span id="rec-size-badge" class="bg-pink-600 text-white px-2.5 py-0.5 rounded-lg text-sm">၄ - ၅ နှစ်</span> ဖြစ်ပါသည်</p>
-            <p id="rec-size-desc" class="text-xs text-gray-600 mt-0.5">ထိုအရွယ်အစား လက်ကျန်ရှိသော အထည်များကို အောက်တွင် အလိုအလျောက် ရွေးထုတ်ပြသပေးထားပါသည်။</p>
+            <p class="text-xs sm:text-sm font-extrabold text-gray-900">အသင့်တော်ဆုံး Size: <span id="rec-size-badge" class="bg-pink-600 text-white px-2 py-0.5 rounded-md text-xs">၄ - ၅ နှစ်</span></p>
+            <p id="rec-size-desc" class="text-[11px] text-gray-600 mt-0.5">ထိုအရွယ်အစား လက်ကျန်ရှိသော ပစ္စည်းများကို ပြသပေးထားပါသည်။</p>
           </div>
         </div>
-        <button onclick="clearSizeFilter()" class="bg-white border border-gray-300 hover:bg-gray-100 text-gray-800 text-xs font-bold px-3 py-1.5 rounded-xl">✕ အထည်အားလုံး ပြန်ကြည့်မည်</button>
+        <button onclick="clearSizeFilter()" class="bg-white border border-gray-300 hover:bg-gray-100 text-gray-800 text-[11px] font-bold px-2.5 py-1 rounded-lg">✕ အားလုံးပြန်ကြည့်မည်</button>
       </div>
     </div>
 
-    <!-- Hero Banner -->
-    <section class="max-w-6xl mx-auto px-4 pt-5">
-      <div class="bg-gradient-to-r from-pink-500 via-rose-500 to-amber-500 rounded-2xl p-6 md:p-10 text-white shadow-md">
-        <span class="inline-block bg-white/20 text-xs font-bold px-3 py-1 rounded-full mb-2">🔥 ၂၀၂၆ ခေတ်စားနေသော ကလေးဖက်ရှင်များ</span>
-        <h2 class="text-2xl md:text-4xl font-bold mb-2">သားသားမီးမီးတို့အတွက် ချစ်စရာ အကောင်းဆုံး Trend ဒီဇိုင်းသစ်များနှင့် ကစားစရာလေးများ</h2>
-        <p class="text-sm md:text-base text-pink-50 mb-4 max-w-xl">၆ လသားမှ ၉ နှစ်အရွယ်အထိ ကလေးကိုယ်အလေးချိန်နှင့် အရပ်ကို ထည့်သွင်းပြီး Size တွက်ချက်နိုင်သလို ရန်ကုန်မြို့တွင်း အိမ်ရောက်ငွေချေ (COD) ဖြင့် အလွယ်တကူ မှာယူနိုင်ပါပြီ။</p>
-        <div class="inline-flex flex-wrap items-center gap-2 bg-black/20 backdrop-blur-sm px-4 py-2 rounded-xl text-xs md:text-sm">
-          <span>📞 Viber ဆက်သွယ်မေးမြန်းရန်: <b>09942739543</b></span>
-          <button onclick="copyViberNumber()" class="bg-white text-pink-600 font-bold px-3 py-1 rounded-lg hover:bg-pink-50 transition">နံပါတ် Copy ကူးမည်</button>
+    <!-- Compact Hero Banner -->
+    <section class="max-w-6xl mx-auto px-3 pt-3">
+      <div class="bg-gradient-to-r from-pink-500 via-rose-500 to-amber-500 rounded-2xl p-3.5 md:p-7 text-white shadow-sm">
+        <div class="flex items-center justify-between gap-2">
+          <div>
+            <span class="inline-block bg-white/20 text-[10px] font-bold px-2.5 py-0.5 rounded-full mb-1">🔥 ၂၀၂၆ ကလေးဖက်ရှင်နှင့် အသုံးအဆောင် စုံလင်စွာ</span>
+            <h2 class="text-base md:text-2xl font-bold leading-snug">မွေးကင်းစမှ ၉ နှစ်အရွယ်အထိ အဝတ်အထည်၊ ဖိနပ်၊ ကစားစရာနှင့် သင်ကြားရေးပစ္စည်းများ</h2>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- Search & Filter -->
-    <section class="max-w-6xl mx-auto px-4 pt-6">
-      <div class="flex flex-col md:flex-row gap-3 justify-between items-center">
-        <input type="text" id="search-input" oninput="renderProducts()" placeholder="🔍 ကလေးအင်္ကျီ၊ ဘောင်းဘီ ရှာဖွေရန်..." class="w-full md:w-80 px-4 py-2.5 rounded-xl border border-gray-200 bg-white focus:outline-none focus:border-pink-500 text-sm">
-        <div class="flex gap-2 overflow-x-auto w-full md:w-auto pb-1">
-          <button onclick="setCategory('all')" class="cat-btn bg-pink-600 text-white px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap" data-cat="all">✨ အားလုံး (All)</button>
-          <button onclick="setCategory('tops')" class="cat-btn bg-white text-gray-700 border px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap" data-cat="tops">👕 အင်္ကျီ (Tops)</button>
-          <button onclick="setCategory('pants')" class="cat-btn bg-white text-gray-700 border px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap" data-cat="pants">👖 ဘောင်းဘီ (Pants)</button>
-          <button onclick="setCategory('sets')" class="cat-btn bg-white text-gray-700 border px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap" data-cat="sets">👗 ဝမ်းဆက် (Sets)</button>
+    <!-- Search & Extended Category Filter -->
+    <section class="max-w-6xl mx-auto px-3 pt-3">
+      <div class="flex flex-col md:flex-row gap-2 justify-between items-center">
+        <input type="text" id="search-input" oninput="renderProducts()" placeholder="🔍 ပစ္စည်းအမည် ရှာဖွေရန်..." class="w-full md:w-72 px-3 py-1.5 rounded-xl border border-gray-200 bg-white focus:outline-none focus:border-pink-500 text-xs sm:text-sm">
+        <div class="flex gap-1.5 overflow-x-auto w-full md:w-auto pb-1 no-scrollbar">
+          <button onclick="setCategory('all')" class="cat-btn bg-pink-600 text-white px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap shadow-sm" data-cat="all">✨ အားလုံး</button>
+          <button onclick="setCategory('newborn')" class="cat-btn bg-white text-gray-700 border px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap" data-cat="newborn">👶 မွေးကင်းစ</button>
+          <button onclick="setCategory('tops')" class="cat-btn bg-white text-gray-700 border px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap" data-cat="tops">👕 အင်္ကျီ</button>
+          <button onclick="setCategory('pants')" class="cat-btn bg-white text-gray-700 border px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap" data-cat="pants">👖 ဘောင်းဘီ</button>
+          <button onclick="setCategory('sets')" class="cat-btn bg-white text-gray-700 border px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap" data-cat="sets">👗 ဝမ်းဆက်</button>
+          <button onclick="setCategory('personal')" class="cat-btn bg-white text-gray-700 border px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap" data-cat="personal">🧴 တကိုယ်ရေသုံး</button>
+          <button onclick="setCategory('education')" class="cat-btn bg-white text-gray-700 border px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap" data-cat="education">📚 သင်ကြားရေး</button>
+          <button onclick="setCategory('toys')" class="cat-btn bg-white text-gray-700 border px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap" data-cat="toys">🧸 ကစားစရာ</button>
+          <button onclick="setCategory('shoes')" class="cat-btn bg-white text-gray-700 border px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap" data-cat="shoes">👟 ဖိနပ်</button>
         </div>
       </div>
     </section>
 
-    <!-- Product Grid -->
-    <main class="max-w-6xl mx-auto px-4 py-6">
-      <div id="loading-indicator" class="text-center py-10 text-pink-600 font-bold text-sm">⏳ အထည်စာရင်းများ ရယူနေပါသည်...</div>
-      <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    <!-- Product Grid (Compact on Mobile so 2 items fit vertically per screen) -->
+    <main class="max-w-6xl mx-auto px-3 py-3">
+      <div id="loading-indicator" class="text-center py-8 text-pink-600 font-bold text-xs sm:text-sm">⏳ ပစ္စည်းစာရင်းများ ရယူနေပါသည်...</div>
+      <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-5"></div>
     </main>
 
     <!-- Footer -->
-    <footer class="bg-white border-t mt-8 py-6 px-4 text-center text-xs text-gray-600 space-y-2">
-      <p class="font-bold text-gray-800 text-sm">MiniTrend Kids — ကလေးအင်္ကျီနှင့် ဘောင်းဘီ ဖက်ရှင်ဆိုင်</p>
+    <footer class="bg-white border-t mt-6 py-5 px-4 text-center text-xs text-gray-600 space-y-1.5">
+      <p class="font-bold text-gray-800 text-sm">MiniTrend Kids — ကလေးဖက်ရှင်နှင့် အသုံးအဆောင်ဆိုင်</p>
       <p>🚚 ရန်ကုန်မြို့တွင်း အိမ်ရောက်ငွေချေ (COD) ဝန်ဆောင်မှု ရှိပါသည် (ပို့ဆောင်ခ ၄,၅၀၀ ကျပ်)</p>
       <div class="flex justify-center items-center gap-2 pt-1">
         <span>💬 အသေးစိတ်မေးမြန်းလိုပါက Viber: <b class="text-purple-700 text-sm">09942739543</b></span>
@@ -171,7 +177,7 @@
     </div>
 
     <div class="bg-white p-6 rounded-2xl shadow-sm border">
-      <h3 class="font-bold text-lg mb-4">လက်ရှိ Google Sheet မှ အထည်နှင့် အရွယ်အစားအလိုက် Stock စာရင်း</h3>
+      <h3 class="font-bold text-lg mb-4">လက်ရှိ Google Sheet မှ ပစ္စည်းနှင့် အရွယ်အစားအလိုက် Stock စာရင်း</h3>
       <div id="admin-product-list" class="divide-y"></div>
     </div>
   </div>
@@ -180,7 +186,10 @@
   <div id="pwa-guide-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl">
       <div class="flex justify-between items-center border-b pb-3 mb-4">
-        <h3 class="text-lg font-bold text-gray-900">📲 MiniTrend Kids App ထည့်သွင်းနည်း</h3>
+        <div class="flex items-center gap-2">
+          <img src="https://cdn-icons-png.flaticon.com/512/6618/6618812.png" class="w-7 h-7 rounded-full" />
+          <h3 class="text-base font-bold text-gray-900">MiniTrend Kids App ထည့်သွင်းနည်း</h3>
+        </div>
         <button onclick="closePWAGuide()" class="text-gray-500 hover:text-gray-800 font-bold text-xl">✕</button>
       </div>
       <div class="space-y-3 text-xs sm:text-sm text-gray-700 leading-relaxed">
@@ -208,21 +217,32 @@
     </div>
   </div>
 
-  <!-- ================= KID SIZE CALCULATOR MODAL ================= -->
+  <!-- ================= KID SIZE CALCULATOR MODAL (AGE + WEIGHT + HEIGHT) ================= -->
   <div id="size-calc-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl">
-      <div class="flex justify-between items-center border-b pb-3 mb-4">
-        <h3 class="text-lg font-bold text-gray-900">📏 ကလေး Size တွက်ချက်ရန်</h3>
+    <div class="bg-white rounded-2xl max-w-md w-full p-5 shadow-xl">
+      <div class="flex justify-between items-center border-b pb-2.5 mb-3">
+        <h3 class="text-base sm:text-lg font-bold text-gray-900">📏 ကလေး Size တွက်ချက်ရန်</h3>
         <button onclick="closeSizeModal()" class="text-gray-500 hover:text-gray-800 font-bold text-xl">✕</button>
       </div>
-      <p class="text-xs text-gray-600 mb-4">ကလေး၏ ကိုယ်အလေးချိန်နှင့် အရပ်အမြင့်ကို ထည့်သွင်းလိုက်ပါက ကိုက်ညီမည့် အသက်အရွယ် (Size) နှင့် လက်ကျန်ရှိသော အထည်များကို အလိုအလျောက် ရှာဖွေပြသပေးပါမည်။</p>
+      <p class="text-xs text-gray-600 mb-3">ကလေး၏ <b>အသက်၊ ကိုယ်အလေးချိန်နှင့် အရပ်အမြင့်</b> တို့ကို ထည့်သွင်းလိုက်ပါက အသင့်တော်ဆုံး Size နှင့် လက်ကျန်ရှိသော ပစ္စည်းများကို ရှာဖွေပေးပါမည်။</p>
 
-      <form onsubmit="calculateKidSize(event)" class="space-y-4 text-sm">
+      <form onsubmit="calculateKidSize(event)" class="space-y-3 text-sm">
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1">🎂 ကလေးအသက် (Age) *</label>
+          <div class="flex gap-2">
+            <input type="number" step="0.5" min="0" id="kid-age" required placeholder="ဥပမာ- 2 (သို့) 8" class="flex-1 border rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-pink-500">
+            <select id="age-unit" class="border rounded-xl px-3 py-2 text-sm font-bold bg-gray-50">
+              <option value="years">နှစ် (Years)</option>
+              <option value="months">လ (Months)</option>
+            </select>
+          </div>
+        </div>
+
         <div>
           <label class="block text-xs font-bold text-gray-700 mb-1">⚖️ ကလေးကိုယ်အလေးချိန် (Weight) *</label>
           <div class="flex gap-2">
-            <input type="number" step="0.1" id="kid-weight" required placeholder="ဥပမာ- 10 (သို့) 22" class="flex-1 border rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-pink-500">
-            <select id="weight-unit" class="border rounded-xl px-3 py-2.5 text-sm font-bold bg-gray-50">
+            <input type="number" step="0.1" min="0" id="kid-weight" required placeholder="ဥပမာ- 11 (သို့) 24" class="flex-1 border rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-pink-500">
+            <select id="weight-unit" class="border rounded-xl px-3 py-2 text-sm font-bold bg-gray-50">
               <option value="kg">KG (ကီလို)</option>
               <option value="lb">LB (ပေါင်)</option>
             </select>
@@ -232,19 +252,19 @@
         <div>
           <label class="block text-xs font-bold text-gray-700 mb-1">📐 ကလေးအရပ်အမြင့် (Height) *</label>
           <div class="flex gap-2">
-            <select id="height-unit" onchange="toggleHeightInputMode()" class="border rounded-xl px-3 py-2.5 text-sm font-bold bg-gray-50">
+            <select id="height-unit" onchange="toggleHeightInputMode()" class="border rounded-xl px-3 py-2 text-sm font-bold bg-gray-50">
               <option value="cm">CM (စင်တီမီတာ)</option>
               <option value="ft">Feet (ပေ / လက်မ)</option>
             </select>
-            <input type="number" step="0.1" id="kid-height-cm" placeholder="ဥပမာ- 80" class="flex-1 border rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-pink-500">
+            <input type="number" step="0.1" id="kid-height-cm" placeholder="ဥပမာ- 85" class="flex-1 border rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-pink-500">
             <div id="kid-height-ft-box" class="hidden flex-1 flex gap-1.5">
-              <input type="number" id="kid-height-ft" placeholder="ပေ (ဥပမာ 2)" class="w-1/2 border rounded-xl px-2.5 py-2.5 text-sm">
-              <input type="number" id="kid-height-in" placeholder="လက်မ (ဥပမာ 6)" class="w-1/2 border rounded-xl px-2.5 py-2.5 text-sm">
+              <input type="number" id="kid-height-ft" placeholder="ပေ (2)" class="w-1/2 border rounded-xl px-2.5 py-2 text-sm">
+              <input type="number" id="kid-height-in" placeholder="လက်မ (6)" class="w-1/2 border rounded-xl px-2.5 py-2 text-sm">
             </div>
           </div>
         </div>
 
-        <button type="submit" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 rounded-xl shadow text-sm">🔍 ကိုက်ညီမည့် Size နှင့် အထည်များ ရှာမည်</button>
+        <button type="submit" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-2.5 rounded-xl shadow text-sm">🔍 ကိုက်ညီမည့် Size နှင့် ပစ္စည်းများ ရှာမည်</button>
       </form>
     </div>
   </div>
@@ -358,6 +378,21 @@
     let selectedSizes = {};
     let selectedColors = {};
     let latestOrderMessage = "";
+
+    // Normalize Google Sheet category names (supports both English and Myanmar labels)
+    function normalizeCategory(raw) {
+      const val = (raw || '').toString().trim().toLowerCase();
+      if (!val) return 'sets';
+      if (val === 'newborn' || val.includes('မွေးကင်းစ')) return 'newborn';
+      if (val === 'tops' || val === 'top' || val.includes('အင်္ကျီ')) return 'tops';
+      if (val === 'pants' || val === 'pant' || val.includes('ဘောင်းဘီ')) return 'pants';
+      if (val === 'sets' || val === 'set' || val.includes('ဝမ်းဆက်')) return 'sets';
+      if (val === 'personal' || val === 'care' || val.includes('တကိုယ်ရေ') || val.includes('တစ်ကိုယ်ရေ')) return 'personal';
+      if (val === 'education' || val === 'learning' || val.includes('သင်ကြား')) return 'education';
+      if (val === 'toys' || val === 'toy' || val.includes('ကစားစရာ') || val.includes('အရုပ်')) return 'toys';
+      if (val === 'shoes' || val === 'shoe' || val.includes('ဖိနပ်')) return 'shoes';
+      return val;
+    }
 
     // ================= PWA INSTALL HANDLER =================
     let deferredInstallPrompt = null;
@@ -557,7 +592,7 @@
             sheetProducts.push({
               id: i,
               name: c[0],
-              category: (c[1] || 'sets').toLowerCase(),
+              category: normalizeCategory(c[1]),
               trending: (c[2] || '').toUpperCase() === 'TRUE',
               originalPrice: origPriceVal,
               prices: {
@@ -622,12 +657,36 @@
 
     function calculateKidSize(e) {
       e.preventDefault();
+
+      // 1. Age calculation (converted to months)
+      const rawAge = parseFloat(document.getElementById('kid-age').value) || 0;
+      const ageUnit = document.getElementById('age-unit').value;
+      const ageMonths = ageUnit === 'years' ? rawAge * 12 : rawAge;
+
+      let ageIndex = 0;
+      if (ageMonths <= 12) ageIndex = 0;
+      else if (ageMonths <= 24) ageIndex = 1;
+      else if (ageMonths <= 36) ageIndex = 2;
+      else if (ageMonths <= 60) ageIndex = 3;
+      else if (ageMonths <= 84) ageIndex = 4;
+      else ageIndex = 5;
+
+      // 2. Weight calculation (in KG)
       let weight = parseFloat(document.getElementById('kid-weight').value) || 0;
       const wUnit = document.getElementById('weight-unit').value;
       if (wUnit === 'lb') {
         weight = weight * 0.453592;
       }
 
+      let weightIndex = 0;
+      if (weight <= 9.5) weightIndex = 0;
+      else if (weight <= 12) weightIndex = 1;
+      else if (weight <= 14.5) weightIndex = 2;
+      else if (weight <= 19) weightIndex = 3;
+      else if (weight <= 24.5) weightIndex = 4;
+      else weightIndex = 5;
+
+      // 3. Height calculation (in CM)
       let heightCm = 0;
       const hUnit = document.getElementById('height-unit').value;
       if (hUnit === 'ft') {
@@ -638,27 +697,26 @@
         heightCm = parseFloat(document.getElementById('kid-height-cm').value) || 0;
       }
 
-      let matchedSize = "၂ - ၃ နှစ်";
-      if (weight <= 9.5 && heightCm <= 78) {
-        matchedSize = "၆ လ - ၁ နှစ်";
-      } else if (weight <= 12 && heightCm <= 88) {
-        matchedSize = "၁ နှစ် - ၂ နှစ်";
-      } else if (weight <= 14.5 && heightCm <= 98) {
-        matchedSize = "၂ - ၃ နှစ်";
-      } else if (weight <= 19 && heightCm <= 112) {
-        matchedSize = "၄ - ၅ နှစ်";
-      } else if (weight <= 24.5 && heightCm <= 125) {
-        matchedSize = "၆ - ၇ နှစ်";
-      } else {
-        matchedSize = "၈ - ၉ နှစ်";
-      }
+      let heightIndex = 0;
+      if (heightCm <= 78) heightIndex = 0;
+      else if (heightCm <= 88) heightIndex = 1;
+      else if (heightCm <= 98) heightIndex = 2;
+      else if (heightCm <= 112) heightIndex = 3;
+      else if (heightCm <= 125) heightIndex = 4;
+      else heightIndex = 5;
+
+      // Pick the safest comfortable size across Age, Weight, and Height
+      const finalIndex = Math.max(ageIndex, weightIndex, heightIndex);
+      const matchedSize = AGE_SIZES[finalIndex] || "၂ - ၃ နှစ်";
 
       recommendedSizeFilter = matchedSize;
       products.forEach(p => {
         selectedSizes[p.id] = matchedSize;
       });
 
+      const ageText = ageUnit === 'years' ? `${rawAge} နှစ်` : `${rawAge} လ`;
       document.getElementById('rec-size-badge').innerText = matchedSize;
+      document.getElementById('rec-size-desc').innerText = `ကလေးအသက် (${ageText})၊ အလေးချိန်နှင့် အရပ်ပေါ်မူတည်၍ လက်ကျန်ရှိသော ပစ္စည်းများကို ပြသပေးထားပါသည်။`;
       document.getElementById('recommended-size-banner').classList.remove('hidden');
       closeSizeModal();
       renderProducts();
@@ -706,9 +764,9 @@
       currentCategory = cat;
       document.querySelectorAll('.cat-btn').forEach(btn => {
         if (btn.dataset.cat === cat) {
-          btn.className = "cat-btn bg-pink-600 text-white px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap";
+          btn.className = "cat-btn bg-pink-600 text-white px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap shadow-sm";
         } else {
-          btn.className = "cat-btn bg-white text-gray-700 border px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap";
+          btn.className = "cat-btn bg-white text-gray-700 border px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap";
         }
       });
       renderProducts();
@@ -735,7 +793,7 @@
       });
 
       if (filtered.length === 0) {
-        grid.innerHTML = `<div class="col-span-full text-center py-12 text-gray-500 text-sm">ရွေးချယ်ထားသော အချက်အလက်နှင့် ကိုက်ညီသည့် လက်ကျန်အထည် မရှိသေးပါ။</div>`;
+        grid.innerHTML = `<div class="col-span-full text-center py-10 text-gray-500 text-xs sm:text-sm">ရွေးချယ်ထားသော အမျိုးအစားတွင် လက်ကျန်ပစ္စည်း မရှိသေးပါ။</div>`;
         return;
       }
 
@@ -759,68 +817,74 @@
         return `
           <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col justify-between ${isEntireProductSoldOut ? 'opacity-80' : ''}">
             <div>
-              <div onclick="openImageLightbox(${p.id})" class="relative h-64 bg-gray-100 cursor-zoom-in group">
+              <!-- Compact Image Container (h-32 on mobile so 2 cards fit vertically, sm:h-52 on desktop) -->
+              <div onclick="openImageLightbox(${p.id})" class="relative h-32 sm:h-52 bg-gray-100 cursor-zoom-in group">
                 <img src="${activeVariant.image}" alt="${p.name}" class="w-full h-full object-cover transition-all duration-300 group-hover:scale-105 ${isEntireProductSoldOut ? 'grayscale' : ''}">
                 
                 ${isEntireProductSoldOut 
-                  ? '<div class="absolute inset-0 bg-black/55 flex items-center justify-center"><span class="bg-red-600 text-white font-extrabold px-4 py-1.5 rounded-full text-sm shadow-lg">❌ Sold Out (ပစ္စည်းကုန်ပါပြီ)</span></div>'
-                  : (p.trending ? '<span class="absolute top-3 left-3 bg-rose-500 text-white text-[11px] font-bold px-2.5 py-1 rounded-full">🔥 Trending</span>' : '')
+                  ? '<div class="absolute inset-0 bg-black/55 flex items-center justify-center"><span class="bg-red-600 text-white font-extrabold px-3 py-1 rounded-full text-xs shadow-lg">❌ Sold Out</span></div>'
+                  : (p.trending ? '<span class="absolute top-2 left-2 bg-rose-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">🔥 Trending</span>' : '')
                 }
 
                 ${(!isEntireProductSoldOut && displayOriginalPrice > currentPrice) 
-                  ? `<span class="absolute top-3 right-3 bg-amber-400 text-gray-900 text-[11px] font-extrabold px-2.5 py-1 rounded-full shadow">🏷️ Discount</span>` 
+                  ? `<span class="absolute top-2 right-2 bg-amber-400 text-gray-900 text-[10px] font-extrabold px-2 py-0.5 rounded-full shadow">🏷️ Discount</span>` 
                   : ''
                 }
 
-                <span class="absolute bottom-2.5 right-2.5 bg-black/65 text-white text-[11px] font-bold px-2.5 py-1 rounded-full">${activeVariant.colorName} 🔍</span>
+                <span class="absolute bottom-1.5 right-2 bg-black/65 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">${activeVariant.colorName} 🔍</span>
                 
-                <span class="absolute bottom-2.5 left-2.5 ${isSizeSoldOut ? 'bg-red-600 text-white' : 'bg-white/95 text-gray-800'} text-[11px] font-bold px-2.5 py-0.5 rounded-full shadow-sm">
-                  ${isSizeSoldOut ? `❌ ${activeSize} ကုန်ပါပြီ` : `လက်ကျန် (${activeSize}): ${currentStock} ထည်`}
+                <span class="absolute bottom-1.5 left-2 ${isSizeSoldOut ? 'bg-red-600 text-white' : 'bg-white/95 text-gray-800'} text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
+                  ${isSizeSoldOut ? `❌ ${activeSize} ကုန်ပါပြီ` : `လက်ကျန် (${activeSize}): ${currentStock} ခု`}
                 </span>
               </div>
 
-              <div class="p-4">
-                <h3 class="font-bold text-gray-800 text-base mb-1">${p.name}</h3>
-                
-                <div class="flex items-baseline gap-2 mb-3">
-                  ${displayOriginalPrice > currentPrice 
-                    ? `<span class="text-gray-400 line-through text-sm font-bold">${displayOriginalPrice.toLocaleString()} ကျပ်</span>` 
-                    : ''
-                  }
-                  <span class="text-pink-600 font-extrabold text-xl">${currentPrice.toLocaleString()} ကျပ်</span>
+              <!-- Compact Body Padding -->
+              <div class="p-2.5 sm:p-4">
+                <!-- Single Row for Product Name + Price -->
+                <div class="flex justify-between items-baseline gap-2 mb-1.5">
+                  <h3 class="font-bold text-gray-800 text-sm sm:text-base truncate">${p.name}</h3>
+                  <div class="flex items-baseline gap-1.5 shrink-0">
+                    ${displayOriginalPrice > currentPrice 
+                      ? `<span class="text-gray-400 line-through text-xs font-bold">${displayOriginalPrice.toLocaleString()}</span>` 
+                      : ''
+                    }
+                    <span class="text-pink-600 font-extrabold text-base sm:text-lg">${currentPrice.toLocaleString()} ကျပ်</span>
+                  </div>
                 </div>
 
-                <p class="text-xs text-gray-500 mb-1.5 font-bold">အရောင် ရွေးချယ်ပါ (<span class="text-gray-800">${activeVariant.colorName}</span>):</p>
-                <div class="flex flex-wrap gap-2 mb-3.5">
+                <!-- Inline Color Selector Row -->
+                <div class="flex items-center gap-1.5 mb-2 overflow-x-auto no-scrollbar">
+                  <span class="text-[11px] text-gray-500 font-bold shrink-0">အရောင်:</span>
                   ${variants.map((v, idx) => `
-                    <button type="button" onclick="selectColor(${p.id}, ${idx})" class="px-3.5 py-1 rounded-full border text-xs font-bold transition ${activeColorIdx === idx ? 'border-pink-600 bg-pink-600 text-white shadow-sm' : 'border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100'}">
+                    <button type="button" onclick="selectColor(${p.id}, ${idx})" class="px-2.5 py-0.5 rounded-full border text-[11px] font-bold whitespace-nowrap transition ${activeColorIdx === idx ? 'border-pink-600 bg-pink-600 text-white shadow-sm' : 'border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100'}">
                       ${v.colorName}
                     </button>
                   `).join('')}
                 </div>
 
-                <div class="flex justify-between items-center mb-1.5">
-                  <p class="text-xs text-gray-500 font-bold">📏 ကလေးအရွယ်အစား (Size) ရွေးပါ:</p>
-                  <span class="text-[11px] font-bold ${isSizeSoldOut ? 'text-red-600' : 'text-emerald-600'}">
-                    ${isSizeSoldOut ? 'လက်ကျန်မရှိပါ' : `လက်ကျန်: ${currentStock} ထည်`}
+                <!-- Compact Size Header & Grid -->
+                <div class="flex justify-between items-center mb-1">
+                  <p class="text-[11px] text-gray-500 font-bold">📏 Size ရွေးပါ:</p>
+                  <span class="text-[10px] font-bold ${isSizeSoldOut ? 'text-red-600' : 'text-emerald-600'}">
+                    ${isSizeSoldOut ? 'လက်ကျန်မရှိပါ' : `လက်ကျန်: ${currentStock} ခု`}
                   </span>
                 </div>
-                <div class="grid grid-cols-3 gap-1.5 mb-2">
+                <div class="grid grid-cols-3 gap-1">
                   ${AGE_SIZES.map(s => {
                     const szStock = (p.stocks && p.stocks[s] !== undefined) ? p.stocks[s] : 0;
                     const isOut = szStock <= 0;
                     return `
-                      <button type="button" onclick="selectSize(${p.id}, '${s}')" class="px-2 py-1.5 text-[11px] rounded-lg border font-bold transition text-center relative ${activeSize === s ? 'bg-pink-600 text-white border-pink-600' : (isOut ? 'bg-gray-100 text-gray-400 border-gray-200 line-through' : 'bg-gray-50 text-gray-700 hover:bg-gray-100')}">${s}</button>
+                      <button type="button" onclick="selectSize(${p.id}, '${s}')" class="px-1.5 py-1 text-[10px] sm:text-[11px] rounded-lg border font-bold transition text-center ${activeSize === s ? 'bg-pink-600 text-white border-pink-600' : (isOut ? 'bg-gray-100 text-gray-400 border-gray-200 line-through' : 'bg-gray-50 text-gray-700 hover:bg-gray-100')}">${s}</button>
                     `;
                   }).join('')}
                 </div>
               </div>
             </div>
 
-            <div class="px-4 pb-4">
+            <div class="px-2.5 pb-2.5 sm:px-4 sm:pb-4">
               ${isSizeSoldOut
-                ? `<button disabled class="w-full bg-gray-300 text-gray-600 font-bold py-2.5 rounded-xl text-sm cursor-not-allowed">❌ ${activeSize} ပစ္စည်းကုန်ပါပြီ</button>`
-                : `<button onclick="addToCart(${p.id})" class="w-full bg-gray-900 hover:bg-pink-600 text-white font-bold py-2.5 rounded-xl text-sm transition">+ ခြင်းတောင်းထဲထည့်မည်</button>`
+                ? `<button disabled class="w-full bg-gray-300 text-gray-600 font-bold py-1.5 sm:py-2.5 rounded-xl text-xs sm:text-sm cursor-not-allowed">❌ ${activeSize} ပစ္စည်းကုန်ပါပြီ</button>`
+                : `<button onclick="addToCart(${p.id})" class="w-full bg-gray-900 hover:bg-pink-600 text-white font-bold py-1.5 sm:py-2.5 rounded-xl text-xs sm:text-sm transition">+ ခြင်းတောင်းထဲထည့်မည်</button>`
               }
             </div>
           </div>
@@ -846,7 +910,7 @@
 
       const currentInCartSizeQty = cart.filter(item => item.id === productId && item.size === size).reduce((s, i) => s + i.qty, 0);
       if (currentInCartSizeQty + 1 > availableSizeStock) {
-        alert(`(${size}) အရွယ်အစားအတွက် လက်ကျန် (${availableSizeStock} ထည်) သာ ကျန်ရှိပါတော့သည်ခင်ဗျာ။`);
+        alert(`(${size}) အရွယ်အစားအတွက် လက်ကျန် (${availableSizeStock} ခု) သာ ကျန်ရှိပါတော့သည်ခင်ဗျာ။`);
         return;
       }
 
@@ -922,7 +986,7 @@
     async function prepareOrder(e) {
       e.preventDefault();
       if (cart.length === 0) {
-        alert('ကျေးဇူးပြု၍ အထည်အရင် ရွေးချယ်ပါခင်ဗျာ။');
+        alert('ကျေးဇူးပြု၍ ပစ္စည်းအရင် ရွေးချယ်ပါခင်ဗျာ။');
         return;
       }
 
@@ -938,7 +1002,7 @@
       const grandTotal = subtotal + DELIVERY_FEE;
 
       let itemLines = cart.map((item, idx) => 
-        `${idx + 1}. ${item.name} [အရောင်: ${item.colorName} | အရွယ်: ${item.size}] x ${item.qty} ထည် = ${(item.price * item.qty).toLocaleString()} Ks`
+        `${idx + 1}. ${item.name} [အရောင်: ${item.colorName} | အရွယ်: ${item.size}] x ${item.qty} ခု = ${(item.price * item.qty).toLocaleString()} Ks`
       ).join('\n');
 
       latestOrderMessage = 
@@ -1018,7 +1082,7 @@ ${itemLines}
               </div>
             </div>
             <span class="self-start sm:self-center text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap ${totalStock <= 0 ? 'bg-red-100 text-red-700' : 'bg-green-50 text-green-700'}">
-              ${totalStock <= 0 ? 'Sold Out' : `စုစုပေါင်း: ${totalStock} ထည်`}
+              ${totalStock <= 0 ? 'Sold Out' : `စုစုပေါင်း: ${totalStock} ခု`}
             </span>
           </div>
         `;
