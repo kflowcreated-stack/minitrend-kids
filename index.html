@@ -10,14 +10,81 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="MiniTrend Kids" />
   <link rel="manifest" href="./manifest.json" />
-  <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/6618/6618812.png" />
-  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/6618/6618812.png" />
+  <link rel="icon" type="image/png" href="https://img.icons8.com/3d-fluency/512/shopping-bag.png" />
+  <link rel="apple-touch-icon" href="https://img.icons8.com/3d-fluency/512/shopping-bag.png" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Padauk:wght@400;700&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Padauk', sans-serif; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* ================= 3D ANIMATIONS FOR ICON & HEADER ================= */
+    .scene-3d {
+      perspective: 600px;
+    }
+
+    @keyframes floatRotate3D {
+      0%, 100% {
+        transform: translateY(0px) rotateY(-14deg) rotateX(8deg) scale(1);
+        filter: drop-shadow(0 6px 8px rgba(219, 39, 119, 0.35));
+      }
+      50% {
+        transform: translateY(-4px) rotateY(14deg) rotateX(-6deg) scale(1.08);
+        filter: drop-shadow(0 12px 14px rgba(219, 39, 119, 0.55));
+      }
+    }
+
+    @keyframes bounce3DBadge {
+      0%, 100% { transform: translateZ(12px) translateY(0) scale(1); }
+      50% { transform: translateZ(20px) translateY(-3px) scale(1.12); }
+    }
+
+    @keyframes headerShine {
+      0% { transform: translateX(-120%) skewX(-20deg); }
+      100% { transform: translateX(220%) skewX(-20deg); }
+    }
+
+    .icon-3d-animate {
+      transform-style: preserve-3d;
+      animation: floatRotate3D 3.2s ease-in-out infinite;
+    }
+
+    .badge-3d-pop {
+      animation: bounce3DBadge 2.2s ease-in-out infinite;
+    }
+
+    .title-3d-text {
+      text-shadow: 0 2px 0 #fbcfe8, 0 3px 6px rgba(219, 39, 119, 0.28);
+    }
+
+    .header-3d-glass {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, #ffffff 0%, #fff1f2 60%, #fef3c7 100%);
+      box-shadow: 0 4px 15px -3px rgba(219, 39, 119, 0.15), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    .header-3d-glass::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 45%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.65), transparent);
+      animation: headerShine 4.5s infinite;
+      pointer-events: none;
+    }
+
+    .btn-3d {
+      box-shadow: 0 3px 0 rgba(0,0,0,0.18);
+      transition: all 0.15s ease;
+    }
+    .btn-3d:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 rgba(0,0,0,0.18);
+    }
   </style>
 </head>
 <body class="bg-pink-50/40 text-gray-800">
@@ -29,7 +96,6 @@
     const OWNER_VIBER_PHONE = "959942739543"; 
     const OWNER_DISPLAY_PHONE = "09942739543";
     const DELIVERY_FEE = 4500;
-    const APP_ICON_URL = "https://cdn-icons-png.flaticon.com/512/6618/6618812.png";
 
     const AGE_SIZES = [
       "၆ လ - ၁ နှစ်",
@@ -51,109 +117,110 @@
   </div>
 
   <!-- Top Role Switcher & Link Bar -->
-  <div id="top-role-bar" class="bg-gray-900 text-white text-xs py-2 px-4 flex flex-wrap justify-between items-center gap-2">
-    <div class="flex items-center gap-2">
+  <div id="top-role-bar" class="bg-gray-900 text-white text-xs py-1.5 px-3 flex flex-wrap justify-between items-center gap-2">
+    <div class="flex items-center gap-1.5">
       <span class="inline-block w-2 h-2 rounded-full bg-green-400"></span>
       <span class="font-bold">MiniTrend Kids</span>
     </div>
-    <div class="flex items-center gap-2">
-      <button onclick="switchRole('customer')" id="btn-role-customer" class="px-3 py-1 rounded bg-pink-600 text-white font-bold">🛍️ ဝယ်ယူသူ View</button>
-      <button onclick="switchRole('admin')" id="btn-role-admin" class="px-3 py-1 rounded bg-gray-700 text-gray-200 hover:bg-gray-600">🔐 ပိုင်ရှင် View</button>
-      <button onclick="openLinkModal()" class="px-3 py-1 rounded bg-amber-500 text-gray-900 font-bold hover:bg-amber-400">🔗 Link များရယူရန်</button>
+    <div class="flex items-center gap-1.5">
+      <button onclick="switchRole('customer')" id="btn-role-customer" class="px-2.5 py-0.5 rounded bg-pink-600 text-white font-bold">🛍️ ဝယ်ယူသူ</button>
+      <button onclick="switchRole('admin')" id="btn-role-admin" class="px-2.5 py-0.5 rounded bg-gray-700 text-gray-200 hover:bg-gray-600">🔐 ပိုင်ရှင်</button>
+      <button onclick="openLinkModal()" class="px-2.5 py-0.5 rounded bg-amber-500 text-gray-900 font-bold hover:bg-amber-400">🔗 Link</button>
     </div>
   </div>
 
   <!-- ================= CUSTOMER STOREFRONT ================= -->
   <div id="customer-view">
-    <!-- Top COD & Viber Announcement Banner -->
-    <div class="bg-gradient-to-r from-rose-600 via-pink-600 to-purple-700 text-white text-[11px] md:text-sm py-1.5 px-3">
-      <div class="max-w-6xl mx-auto flex flex-wrap justify-between items-center gap-1.5">
-        <div class="font-bold flex items-center gap-1">
-          <span>🚚 ရန်ကုန်မြို့တွင်း အိမ်ရောက်ငွေချေ (COD)</span>
-        </div>
-        <div class="flex items-center gap-1.5 bg-white/15 px-2.5 py-0.5 rounded-full">
-          <span>💬 Viber: <strong class="tracking-wide">09942739543</strong></span>
-          <button onclick="copyViberNumber()" class="bg-amber-300 hover:bg-amber-400 text-gray-900 font-extrabold px-2 py-0.5 rounded-full text-[10px] transition">📋 Copy</button>
+    <!-- Top COD & Viber Announcement Strip -->
+    <div class="bg-gradient-to-r from-rose-600 via-pink-600 to-purple-700 text-white text-[10px] sm:text-xs py-1 px-2.5">
+      <div class="max-w-6xl mx-auto flex justify-between items-center gap-1">
+        <span class="font-bold truncate">🚚 ရန်ကုန်မြို့တွင်း အိမ်ရောက်ငွေချေ (COD)</span>
+        <div class="flex items-center gap-1 bg-white/15 px-2 py-0.5 rounded-full shrink-0">
+          <span>💬 Viber: <b>09942739543</b></span>
+          <button onclick="copyViberNumber()" class="bg-amber-300 text-gray-900 font-extrabold px-1.5 py-0.2 rounded-full text-[9px]">Copy</button>
         </div>
       </div>
     </div>
 
-    <!-- Compact Sticky Header -->
-    <header class="bg-white shadow-sm sticky top-0 z-30">
-      <div class="max-w-6xl mx-auto px-3 py-2 flex justify-between items-center gap-1.5">
-        <div class="flex items-center gap-2 min-w-0">
-          <img src="https://cdn-icons-png.flaticon.com/512/6618/6618812.png" alt="MiniTrend Kids" class="w-9 h-9 rounded-full bg-pink-100 p-0.5 border border-pink-300 object-contain shrink-0" />
+    <!-- 3D Animated Sticky Header -->
+    <header class="header-3d-glass sticky top-0 z-30 border-b border-pink-100">
+      <div class="max-w-6xl mx-auto px-2.5 py-1.5 flex justify-between items-center gap-1.5">
+        <!-- 3D Animated App Icon & Brand Name -->
+        <div class="flex items-center gap-2 min-w-0 scene-3d">
+          <div class="relative w-10 h-10 shrink-0 flex items-center justify-center">
+            <div class="absolute inset-0 rounded-2xl bg-gradient-to-tr from-pink-500 via-rose-400 to-amber-300 opacity-25 blur-sm animate-pulse"></div>
+            <img src="https://img.icons8.com/3d-fluency/512/shopping-bag.png" 
+                 onerror="this.src='https://cdn-icons-png.flaticon.com/512/3081/3081986.png'" 
+                 alt="MiniTrend 3D Icon" 
+                 class="w-9 h-9 object-contain icon-3d-animate relative z-10" />
+            <span class="absolute -top-1 -right-1 text-xs badge-3d-pop z-20">✨</span>
+          </div>
           <div class="truncate">
-            <h1 class="text-sm sm:text-lg font-extrabold text-pink-600 leading-tight truncate">MiniTrend Kids</h1>
-            <p class="text-[10px] text-gray-500 truncate">ကလေးဖက်ရှင်နှင့် အသုံးအဆောင်ဆိုင်</p>
+            <div class="flex items-center gap-1">
+              <h1 class="text-sm sm:text-lg font-extrabold text-pink-600 leading-tight truncate title-3d-text">MiniTrend Kids</h1>
+              <span class="text-xs badge-3d-pop">🧸</span>
+            </div>
+            <p class="text-[10px] text-gray-600 font-bold truncate">ကလေးဖက်ရှင်နှင့် အသုံးအဆောင်ဆိုင်</p>
           </div>
         </div>
 
+        <!-- Compact 3D Action Buttons -->
         <div class="flex items-center gap-1 sm:gap-2 shrink-0">
-          <button id="pwa-install-btn" onclick="triggerPWAInstall()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1.5 rounded-full text-[11px] sm:text-xs font-extrabold flex items-center gap-1 shadow-sm transition">
+          <button id="pwa-install-btn" onclick="triggerPWAInstall()" class="btn-3d bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1 rounded-full text-[10px] sm:text-xs font-extrabold flex items-center gap-0.5">
             <span>📲 App</span>
           </button>
 
-          <button onclick="openSizeModal()" class="bg-amber-400 hover:bg-amber-500 text-gray-900 px-2.5 py-1.5 rounded-full text-[11px] sm:text-xs font-extrabold flex items-center gap-1 shadow-sm transition">
-            <span>📏 Size တွက်မည်</span>
+          <button onclick="openSizeModal()" class="btn-3d bg-amber-400 hover:bg-amber-500 text-gray-900 px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-extrabold flex items-center gap-0.5">
+            <span>📏 Size တွက်ရန်</span>
           </button>
 
-          <button onclick="toggleCart()" class="relative bg-pink-600 hover:bg-pink-700 text-white px-2.5 py-1.5 rounded-full text-[11px] sm:text-xs font-bold flex items-center gap-1 shadow">
-            <span>🛍️ ခြင်းတောင်း</span>
-            <span id="cart-count" class="bg-amber-300 text-gray-900 text-[11px] px-1.5 py-0.2 rounded-full font-extrabold">0</span>
+          <button onclick="toggleCart()" class="btn-3d relative bg-pink-600 hover:bg-pink-700 text-white px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-bold flex items-center gap-1">
+            <span>🛍️</span>
+            <span class="hidden sm:inline">ခြင်းတောင်း</span>
+            <span id="cart-count" class="bg-amber-300 text-gray-900 text-[10px] px-1.5 rounded-full font-extrabold">0</span>
           </button>
         </div>
       </div>
     </header>
 
     <!-- Active Size Recommendation Banner -->
-    <div id="recommended-size-banner" class="hidden max-w-6xl mx-auto px-3 pt-2.5">
-      <div class="bg-amber-50 border-2 border-amber-400 rounded-xl p-2.5 flex flex-wrap justify-between items-center gap-2 shadow-sm">
-        <div class="flex items-center gap-2">
-          <span class="text-xl">🎯</span>
-          <div>
-            <p class="text-xs sm:text-sm font-extrabold text-gray-900">အသင့်တော်ဆုံး Size: <span id="rec-size-badge" class="bg-pink-600 text-white px-2 py-0.5 rounded-md text-xs">၄ - ၅ နှစ်</span></p>
-            <p id="rec-size-desc" class="text-[11px] text-gray-600 mt-0.5">ထိုအရွယ်အစား လက်ကျန်ရှိသော ပစ္စည်းများကို ပြသပေးထားပါသည်။</p>
+    <div id="recommended-size-banner" class="hidden max-w-6xl mx-auto px-2.5 pt-2">
+      <div class="bg-amber-50 border border-amber-400 rounded-xl p-2 flex justify-between items-center gap-2 shadow-sm">
+        <div class="flex items-center gap-1.5 min-w-0">
+          <span class="text-base">🎯</span>
+          <div class="truncate">
+            <p class="text-[11px] sm:text-xs font-extrabold text-gray-900">အသင့်တော်ဆုံး Size: <span id="rec-size-badge" class="bg-pink-600 text-white px-1.5 py-0.5 rounded text-[11px]">၄ - ၅ နှစ်</span></p>
+            <p id="rec-size-desc" class="text-[10px] text-gray-600 truncate">လက်ကျန်ရှိသော ပစ္စည်းများကို ပြသပေးထားပါသည်။</p>
           </div>
         </div>
-        <button onclick="clearSizeFilter()" class="bg-white border border-gray-300 hover:bg-gray-100 text-gray-800 text-[11px] font-bold px-2.5 py-1 rounded-lg">✕ အားလုံးပြန်ကြည့်မည်</button>
+        <button onclick="clearSizeFilter()" class="bg-white border border-gray-300 text-gray-800 text-[10px] font-bold px-2 py-1 rounded-lg shrink-0">✕ အားလုံးပြန်ကြည့်</button>
       </div>
     </div>
 
-    <!-- Compact Hero Banner -->
-    <section class="max-w-6xl mx-auto px-3 pt-3">
-      <div class="bg-gradient-to-r from-pink-500 via-rose-500 to-amber-500 rounded-2xl p-3.5 md:p-7 text-white shadow-sm">
-        <div class="flex items-center justify-between gap-2">
-          <div>
-            <span class="inline-block bg-white/20 text-[10px] font-bold px-2.5 py-0.5 rounded-full mb-1">🔥 ၂၀၂၆ ကလေးဖက်ရှင်နှင့် အသုံးအဆောင် စုံလင်စွာ</span>
-            <h2 class="text-base md:text-2xl font-bold leading-snug">မွေးကင်းစမှ ၉ နှစ်အရွယ်အထိ အဝတ်အထည်၊ ဖိနပ်၊ ကစားစရာနှင့် သင်ကြားရေးပစ္စည်းများ</h2>
-          </div>
+    <!-- Search & Category Bar (Sleek & Compact so 4 items fit below) -->
+    <section class="max-w-6xl mx-auto px-2.5 pt-2">
+      <div class="flex flex-col md:flex-row gap-1.5 justify-between items-center">
+        <div class="w-full md:w-64 flex gap-1.5 items-center">
+          <input type="text" id="search-input" oninput="renderProducts()" placeholder="🔍 ပစ္စည်းအမည် ရှာဖွေရန်..." class="w-full px-3 py-1 rounded-xl border border-pink-200 bg-white focus:outline-none focus:border-pink-500 text-xs">
+        </div>
+        <div class="flex gap-1 overflow-x-auto w-full md:w-auto pb-1 no-scrollbar">
+          <button onclick="setCategory('all')" class="cat-btn bg-pink-600 text-white px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap shadow-sm" data-cat="all">✨ အားလုံး</button>
+          <button onclick="setCategory('newborn')" class="cat-btn bg-white text-gray-700 border px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap" data-cat="newborn">👶 မွေးကင်းစ</button>
+          <button onclick="setCategory('tops')" class="cat-btn bg-white text-gray-700 border px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap" data-cat="tops">👕 အင်္ကျီ</button>
+          <button onclick="setCategory('pants')" class="cat-btn bg-white text-gray-700 border px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap" data-cat="pants">👖 ဘောင်းဘီ</button>
+          <button onclick="setCategory('sets')" class="cat-btn bg-white text-gray-700 border px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap" data-cat="sets">👗 ဝမ်းဆက်</button>
+          <button onclick="setCategory('personal')" class="cat-btn bg-white text-gray-700 border px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap" data-cat="personal">🧴 တကိုယ်ရေသုံး</button>
+          <button onclick="setCategory('education')" class="cat-btn bg-white text-gray-700 border px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap" data-cat="education">📚 သင်ကြားရေး</button>
+          <button onclick="setCategory('toys')" class="cat-btn bg-white text-gray-700 border px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap" data-cat="toys">🧸 ကစားစရာ</button>
+          <button onclick="setCategory('shoes')" class="cat-btn bg-white text-gray-700 border px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap" data-cat="shoes">👟 ဖိနပ်</button>
         </div>
       </div>
     </section>
 
-    <!-- Search & Extended Category Filter -->
-    <section class="max-w-6xl mx-auto px-3 pt-3">
-      <div class="flex flex-col md:flex-row gap-2 justify-between items-center">
-        <input type="text" id="search-input" oninput="renderProducts()" placeholder="🔍 ပစ္စည်းအမည် ရှာဖွေရန်..." class="w-full md:w-72 px-3 py-1.5 rounded-xl border border-gray-200 bg-white focus:outline-none focus:border-pink-500 text-xs sm:text-sm">
-        <div class="flex gap-1.5 overflow-x-auto w-full md:w-auto pb-1 no-scrollbar">
-          <button onclick="setCategory('all')" class="cat-btn bg-pink-600 text-white px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap shadow-sm" data-cat="all">✨ အားလုံး</button>
-          <button onclick="setCategory('newborn')" class="cat-btn bg-white text-gray-700 border px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap" data-cat="newborn">👶 မွေးကင်းစ</button>
-          <button onclick="setCategory('tops')" class="cat-btn bg-white text-gray-700 border px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap" data-cat="tops">👕 အင်္ကျီ</button>
-          <button onclick="setCategory('pants')" class="cat-btn bg-white text-gray-700 border px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap" data-cat="pants">👖 ဘောင်းဘီ</button>
-          <button onclick="setCategory('sets')" class="cat-btn bg-white text-gray-700 border px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap" data-cat="sets">👗 ဝမ်းဆက်</button>
-          <button onclick="setCategory('personal')" class="cat-btn bg-white text-gray-700 border px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap" data-cat="personal">🧴 တကိုယ်ရေသုံး</button>
-          <button onclick="setCategory('education')" class="cat-btn bg-white text-gray-700 border px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap" data-cat="education">📚 သင်ကြားရေး</button>
-          <button onclick="setCategory('toys')" class="cat-btn bg-white text-gray-700 border px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap" data-cat="toys">🧸 ကစားစရာ</button>
-          <button onclick="setCategory('shoes')" class="cat-btn bg-white text-gray-700 border px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap" data-cat="shoes">👟 ဖိနပ်</button>
-        </div>
-      </div>
-    </section>
-
-    <!-- Product Grid (Compact on Mobile so 2 items fit vertically per screen) -->
-    <main class="max-w-6xl mx-auto px-3 py-3">
-      <div id="loading-indicator" class="text-center py-8 text-pink-600 font-bold text-xs sm:text-sm">⏳ ပစ္စည်းစာရင်းများ ရယူနေပါသည်...</div>
-      <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-5"></div>
+    <!-- 2x2 Product Grid (2 columns on phone = 4 items per screen, 3 on tablet, 4 on desktop) -->
+    <main class="max-w-6xl mx-auto px-2 py-2">
+      <div id="loading-indicator" class="text-center py-8 text-pink-600 font-bold text-xs">⏳ ပစ္စည်းစာရင်းများ ရယူနေပါသည်...</div>
+      <div id="product-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4"></div>
     </main>
 
     <!-- Footer -->
@@ -187,7 +254,7 @@
     <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl">
       <div class="flex justify-between items-center border-b pb-3 mb-4">
         <div class="flex items-center gap-2">
-          <img src="https://cdn-icons-png.flaticon.com/512/6618/6618812.png" class="w-7 h-7 rounded-full" />
+          <img src="https://img.icons8.com/3d-fluency/512/shopping-bag.png" class="w-8 h-8 object-contain" />
           <h3 class="text-base font-bold text-gray-900">MiniTrend Kids App ထည့်သွင်းနည်း</h3>
         </div>
         <button onclick="closePWAGuide()" class="text-gray-500 hover:text-gray-800 font-bold text-xl">✕</button>
@@ -379,7 +446,6 @@
     let selectedColors = {};
     let latestOrderMessage = "";
 
-    // Normalize Google Sheet category names (supports both English and Myanmar labels)
     function normalizeCategory(raw) {
       const val = (raw || '').toString().trim().toLowerCase();
       if (!val) return 'sets';
@@ -392,6 +458,13 @@
       if (val === 'toys' || val === 'toy' || val.includes('ကစားစရာ') || val.includes('အရုပ်')) return 'toys';
       if (val === 'shoes' || val === 'shoe' || val.includes('ဖိနပ်')) return 'shoes';
       return val;
+    }
+
+    // Short display label for compact 2-column buttons while keeping exact size key
+    function shortSizeLabel(sizeStr) {
+      return sizeStr
+        .replace('၆ လ - ၁ နှစ်', '၆လ-၁နှစ်')
+        .replace('၁ နှစ် - ၂ နှစ်', '၁-၂ နှစ်');
     }
 
     // ================= PWA INSTALL HANDLER =================
@@ -658,7 +731,6 @@
     function calculateKidSize(e) {
       e.preventDefault();
 
-      // 1. Age calculation (converted to months)
       const rawAge = parseFloat(document.getElementById('kid-age').value) || 0;
       const ageUnit = document.getElementById('age-unit').value;
       const ageMonths = ageUnit === 'years' ? rawAge * 12 : rawAge;
@@ -671,7 +743,6 @@
       else if (ageMonths <= 84) ageIndex = 4;
       else ageIndex = 5;
 
-      // 2. Weight calculation (in KG)
       let weight = parseFloat(document.getElementById('kid-weight').value) || 0;
       const wUnit = document.getElementById('weight-unit').value;
       if (wUnit === 'lb') {
@@ -686,7 +757,6 @@
       else if (weight <= 24.5) weightIndex = 4;
       else weightIndex = 5;
 
-      // 3. Height calculation (in CM)
       let heightCm = 0;
       const hUnit = document.getElementById('height-unit').value;
       if (hUnit === 'ft') {
@@ -705,7 +775,6 @@
       else if (heightCm <= 125) heightIndex = 4;
       else heightIndex = 5;
 
-      // Pick the safest comfortable size across Age, Weight, and Height
       const finalIndex = Math.max(ageIndex, weightIndex, heightIndex);
       const matchedSize = AGE_SIZES[finalIndex] || "၂ - ၃ နှစ်";
 
@@ -716,7 +785,7 @@
 
       const ageText = ageUnit === 'years' ? `${rawAge} နှစ်` : `${rawAge} လ`;
       document.getElementById('rec-size-badge').innerText = matchedSize;
-      document.getElementById('rec-size-desc').innerText = `ကလေးအသက် (${ageText})၊ အလေးချိန်နှင့် အရပ်ပေါ်မူတည်၍ လက်ကျန်ရှိသော ပစ္စည်းများကို ပြသပေးထားပါသည်။`;
+      document.getElementById('rec-size-desc').innerText = `ကလေးအသက် (${ageText})၊ အလေးချိန်နှင့် အရပ်အလိုက် ရွေးထုတ်ထားပါသည်။`;
       document.getElementById('recommended-size-banner').classList.remove('hidden');
       closeSizeModal();
       renderProducts();
@@ -764,9 +833,9 @@
       currentCategory = cat;
       document.querySelectorAll('.cat-btn').forEach(btn => {
         if (btn.dataset.cat === cat) {
-          btn.className = "cat-btn bg-pink-600 text-white px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap shadow-sm";
+          btn.className = "cat-btn bg-pink-600 text-white px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap shadow-sm";
         } else {
-          btn.className = "cat-btn bg-white text-gray-700 border px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap";
+          btn.className = "cat-btn bg-white text-gray-700 border px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap";
         }
       });
       renderProducts();
@@ -815,76 +884,67 @@
         const activeVariant = variants[activeColorIdx] || variants[0];
 
         return `
-          <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col justify-between ${isEntireProductSoldOut ? 'opacity-80' : ''}">
+          <div class="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-pink-100/80 overflow-hidden flex flex-col justify-between ${isEntireProductSoldOut ? 'opacity-80' : ''}">
             <div>
-              <!-- Compact Image Container (h-32 on mobile so 2 cards fit vertically, sm:h-52 on desktop) -->
-              <div onclick="openImageLightbox(${p.id})" class="relative h-32 sm:h-52 bg-gray-100 cursor-zoom-in group">
-                <img src="${activeVariant.image}" alt="${p.name}" class="w-full h-full object-cover transition-all duration-300 group-hover:scale-105 ${isEntireProductSoldOut ? 'grayscale' : ''}">
+              <!-- Vertical Portrait Image Frame (h-40 on mobile in narrow 2-col card = vertical portrait ratio) -->
+              <div onclick="openImageLightbox(${p.id})" class="relative h-40 sm:h-60 bg-gray-100 cursor-zoom-in group overflow-hidden">
+                <img src="${activeVariant.image}" alt="${p.name}" class="w-full h-full object-cover object-top transition-all duration-300 group-hover:scale-105 ${isEntireProductSoldOut ? 'grayscale' : ''}">
                 
                 ${isEntireProductSoldOut 
-                  ? '<div class="absolute inset-0 bg-black/55 flex items-center justify-center"><span class="bg-red-600 text-white font-extrabold px-3 py-1 rounded-full text-xs shadow-lg">❌ Sold Out</span></div>'
-                  : (p.trending ? '<span class="absolute top-2 left-2 bg-rose-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">🔥 Trending</span>' : '')
+                  ? '<div class="absolute inset-0 bg-black/55 flex items-center justify-center"><span class="bg-red-600 text-white font-extrabold px-2.5 py-1 rounded-full text-[10px] shadow-lg">❌ Sold Out</span></div>'
+                  : (p.trending ? '<span class="absolute top-1.5 left-1.5 bg-rose-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow">🔥 Trending</span>' : '')
                 }
 
                 ${(!isEntireProductSoldOut && displayOriginalPrice > currentPrice) 
-                  ? `<span class="absolute top-2 right-2 bg-amber-400 text-gray-900 text-[10px] font-extrabold px-2 py-0.5 rounded-full shadow">🏷️ Discount</span>` 
+                  ? `<span class="absolute top-1.5 right-1.5 bg-amber-400 text-gray-900 text-[9px] font-extrabold px-1.5 py-0.5 rounded-full shadow">🏷️ Sale</span>` 
                   : ''
                 }
 
-                <span class="absolute bottom-1.5 right-2 bg-black/65 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">${activeVariant.colorName} 🔍</span>
+                <span class="absolute bottom-1 right-1.5 bg-black/65 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full max-w-[48%] truncate">${activeVariant.colorName} 🔍</span>
                 
-                <span class="absolute bottom-1.5 left-2 ${isSizeSoldOut ? 'bg-red-600 text-white' : 'bg-white/95 text-gray-800'} text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
-                  ${isSizeSoldOut ? `❌ ${activeSize} ကုန်ပါပြီ` : `လက်ကျန် (${activeSize}): ${currentStock} ခု`}
+                <span class="absolute bottom-1 left-1.5 ${isSizeSoldOut ? 'bg-red-600 text-white' : 'bg-white/95 text-emerald-700'} text-[9px] font-extrabold px-1.5 py-0.5 rounded-full shadow-sm">
+                  ${isSizeSoldOut ? `❌ ကုန်` : `လက်ကျန်: ${currentStock}`}
                 </span>
               </div>
 
-              <!-- Compact Body Padding -->
-              <div class="p-2.5 sm:p-4">
-                <!-- Single Row for Product Name + Price -->
-                <div class="flex justify-between items-baseline gap-2 mb-1.5">
-                  <h3 class="font-bold text-gray-800 text-sm sm:text-base truncate">${p.name}</h3>
-                  <div class="flex items-baseline gap-1.5 shrink-0">
-                    ${displayOriginalPrice > currentPrice 
-                      ? `<span class="text-gray-400 line-through text-xs font-bold">${displayOriginalPrice.toLocaleString()}</span>` 
-                      : ''
-                    }
-                    <span class="text-pink-600 font-extrabold text-base sm:text-lg">${currentPrice.toLocaleString()} ကျပ်</span>
-                  </div>
+              <!-- Ultra-Compact Card Details for 2x2 Grid -->
+              <div class="p-1.5 sm:p-3">
+                <h3 class="font-bold text-gray-800 text-[11px] sm:text-sm truncate leading-tight">${p.name}</h3>
+                
+                <div class="flex items-baseline gap-1 mb-1">
+                  <span class="text-pink-600 font-extrabold text-xs sm:text-base">${currentPrice.toLocaleString()} Ks</span>
+                  ${displayOriginalPrice > currentPrice 
+                    ? `<span class="text-gray-400 line-through text-[9px] sm:text-xs font-bold">${displayOriginalPrice.toLocaleString()}</span>` 
+                    : ''
+                  }
                 </div>
 
-                <!-- Inline Color Selector Row -->
-                <div class="flex items-center gap-1.5 mb-2 overflow-x-auto no-scrollbar">
-                  <span class="text-[11px] text-gray-500 font-bold shrink-0">အရောင်:</span>
+                <!-- Color Pills (Single Horizontal Scroll Line) -->
+                <div class="flex items-center gap-1 mb-1 overflow-x-auto no-scrollbar">
                   ${variants.map((v, idx) => `
-                    <button type="button" onclick="selectColor(${p.id}, ${idx})" class="px-2.5 py-0.5 rounded-full border text-[11px] font-bold whitespace-nowrap transition ${activeColorIdx === idx ? 'border-pink-600 bg-pink-600 text-white shadow-sm' : 'border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100'}">
+                    <button type="button" onclick="selectColor(${p.id}, ${idx})" class="px-1.5 py-0.5 rounded-full border text-[9px] sm:text-[11px] font-bold whitespace-nowrap transition ${activeColorIdx === idx ? 'border-pink-600 bg-pink-600 text-white' : 'border-gray-200 bg-gray-50 text-gray-700'}">
                       ${v.colorName}
                     </button>
                   `).join('')}
                 </div>
 
-                <!-- Compact Size Header & Grid -->
-                <div class="flex justify-between items-center mb-1">
-                  <p class="text-[11px] text-gray-500 font-bold">📏 Size ရွေးပါ:</p>
-                  <span class="text-[10px] font-bold ${isSizeSoldOut ? 'text-red-600' : 'text-emerald-600'}">
-                    ${isSizeSoldOut ? 'လက်ကျန်မရှိပါ' : `လက်ကျန်: ${currentStock} ခု`}
-                  </span>
-                </div>
-                <div class="grid grid-cols-3 gap-1">
+                <!-- Compact 3x2 Size Grid -->
+                <div class="grid grid-cols-3 gap-0.5">
                   ${AGE_SIZES.map(s => {
                     const szStock = (p.stocks && p.stocks[s] !== undefined) ? p.stocks[s] : 0;
                     const isOut = szStock <= 0;
                     return `
-                      <button type="button" onclick="selectSize(${p.id}, '${s}')" class="px-1.5 py-1 text-[10px] sm:text-[11px] rounded-lg border font-bold transition text-center ${activeSize === s ? 'bg-pink-600 text-white border-pink-600' : (isOut ? 'bg-gray-100 text-gray-400 border-gray-200 line-through' : 'bg-gray-50 text-gray-700 hover:bg-gray-100')}">${s}</button>
+                      <button type="button" onclick="selectSize(${p.id}, '${s}')" class="px-0.5 py-0.5 text-[9px] sm:text-[10px] rounded border font-bold transition text-center truncate ${activeSize === s ? 'bg-pink-600 text-white border-pink-600' : (isOut ? 'bg-gray-100 text-gray-300 border-gray-100 line-through' : 'bg-gray-50 text-gray-700')}">${shortSizeLabel(s)}</button>
                     `;
                   }).join('')}
                 </div>
               </div>
             </div>
 
-            <div class="px-2.5 pb-2.5 sm:px-4 sm:pb-4">
+            <div class="px-1.5 pb-1.5 sm:px-3 sm:pb-3">
               ${isSizeSoldOut
-                ? `<button disabled class="w-full bg-gray-300 text-gray-600 font-bold py-1.5 sm:py-2.5 rounded-xl text-xs sm:text-sm cursor-not-allowed">❌ ${activeSize} ပစ္စည်းကုန်ပါပြီ</button>`
-                : `<button onclick="addToCart(${p.id})" class="w-full bg-gray-900 hover:bg-pink-600 text-white font-bold py-1.5 sm:py-2.5 rounded-xl text-xs sm:text-sm transition">+ ခြင်းတောင်းထဲထည့်မည်</button>`
+                ? `<button disabled class="w-full bg-gray-200 text-gray-500 font-bold py-1 sm:py-2 rounded-lg text-[10px] sm:text-xs cursor-not-allowed">❌ ပစ္စည်းကုန်ပါပြီ</button>`
+                : `<button onclick="addToCart(${p.id})" class="w-full bg-gray-900 hover:bg-pink-600 active:scale-95 text-white font-bold py-1 sm:py-2 rounded-lg text-[10px] sm:text-xs transition">+ ခြင်းတောင်းထဲထည့်</button>`
               }
             </div>
           </div>
