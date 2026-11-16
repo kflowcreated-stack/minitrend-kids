@@ -1,7 +1,7 @@
 {
   "name": "MiniTrend Kids",
   "short_name": "MiniTrend",
-  "description": "ကလေးဖက်ရှင်နှင့် အသုံးအဆောင်ဆိုင်",
+  "description": "ကလေးအထည်နှင့် အသုံးအဆောင်များ",
   "start_url": "./?role=customer",
   "scope": "./",
   "display": "standalone",
@@ -10,13 +10,13 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=192&h=192&fit=crop&fm=png",
+      "src": "https://cdn-icons-png.flaticon.com/512/6618/6618812.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=512&h=512&fit=crop&fm=png",
+      "src": "https://cdn-icons-png.flaticon.com/512/6618/6618812.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
