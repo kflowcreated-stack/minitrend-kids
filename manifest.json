@@ -1,9 +1,9 @@
-﻿{
+{
   "name": "MiniTrend Kids",
   "short_name": "MiniTrend",
   "description": "ကလေးအင်္ကျီနှင့် ဘောင်းဘီ ဖက်ရှင်ဆိုင်",
-  "start_url": "/?role=customer",
-  "scope": "/",
+  "start_url": "./?role=customer",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#fff1f2",
   "theme_color": "#db2777",
