@@ -1,0 +1,25 @@
+﻿{
+  "name": "MiniTrend Kids",
+  "short_name": "MiniTrend",
+  "description": "ကလေးအင်္ကျီနှင့် ဘောင်းဘီ ဖက်ရှင်ဆိုင်",
+  "start_url": "/?role=customer",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#fff1f2",
+  "theme_color": "#db2777",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3081/3081986.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3081/3081986.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

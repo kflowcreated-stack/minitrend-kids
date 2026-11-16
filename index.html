@@ -1,0 +1,1059 @@
+﻿<!DOCTYPE html>
+<html lang="my">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MiniTrend Kids - ကလေးအင်္ကျီနှင့် ဘောင်းဘီ ဖက်ရှင်ဆိုင်</title>
+  <meta name="theme-color" content="#db2777" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="MiniTrend Kids" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/3081/3081986.png" />
+  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3081/3081986.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Padauk:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Padauk', sans-serif; }
+  </style>
+</head>
+<body class="bg-pink-50/40 text-gray-800">
+
+  <script>
+    const GOOGLE_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSjes7pROE-fMhM39UGMP__RBMSsP4vlMyhg0FU60dFvEb6Ysdah3ws7xzfeCJ7CRQYcEtYtvAnb0DP/pub?gid=0&single=true&output=csv";
+    const APPS_SCRIPT_ORDER_URL = "https://script.google.com/macros/s/AKfycbzjiat7rNkOGkQYjf3RT6rC4g5AdXiVtraecqUTG8wXcu4l6Dm1mmtnXpVhaxjAzsrd/exec";
+
+    const OWNER_VIBER_PHONE = "959942739543"; 
+    const OWNER_DISPLAY_PHONE = "09942739543";
+    const DELIVERY_FEE = 4500;
+
+    const AGE_SIZES = [
+      "၆ လ - ၁ နှစ်",
+      "၁ နှစ် - ၂ နှစ်",
+      "၂ - ၃ နှစ်",
+      "၄ - ၅ နှစ်",
+      "၆ - ၇ နှစ်",
+      "၈ - ၉ နှစ်"
+    ];
+
+    if ('serviceWorker' in navigator) {
+      const swCode = `
+        self.addEventListener('install', (e) => self.skipWaiting());
+        self.addEventListener('activate', (e) => e.waitUntil(clients.claim()));
+        self.addEventListener('fetch', (e) => {});
+      `;
+      const swBlob = new Blob([swCode], { type: 'application/javascript' });
+      navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(() => {});
+    }
+  </script>
+
+  <!-- Double-Back Exit Toast Message -->
+  <div id="exit-toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 bg-gray-900/95 text-white text-xs sm:text-sm font-bold px-5 py-3 rounded-full shadow-xl border border-white/15 transition-opacity duration-300 opacity-0 pointer-events-none whitespace-nowrap">
+    ⚠️ ထွက်ရန် Back ခလုတ်ကို နောက်တစ်ကြိမ် ထပ်နှိပ်ပါ
+  </div>
+
+  <!-- Top Role Switcher & Link Bar -->
+  <div id="top-role-bar" class="bg-gray-900 text-white text-xs py-2 px-4 flex flex-wrap justify-between items-center gap-2">
+    <div class="flex items-center gap-2">
+      <span class="inline-block w-2 h-2 rounded-full bg-green-400"></span>
+      <span class="font-bold">MiniTrend Kids</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <button onclick="switchRole('customer')" id="btn-role-customer" class="px-3 py-1 rounded bg-pink-600 text-white font-bold">🛍️ ဝယ်ယူသူ View</button>
+      <button onclick="switchRole('admin')" id="btn-role-admin" class="px-3 py-1 rounded bg-gray-700 text-gray-200 hover:bg-gray-600">🔐 ပိုင်ရှင် View</button>
+      <button onclick="openLinkModal()" class="px-3 py-1 rounded bg-amber-500 text-gray-900 font-bold hover:bg-amber-400">🔗 Link များရယူရန်</button>
+    </div>
+  </div>
+
+  <!-- ================= CUSTOMER STOREFRONT ================= -->
+  <div id="customer-view">
+    <!-- Top COD & Viber Announcement Banner -->
+    <div class="bg-gradient-to-r from-rose-600 via-pink-600 to-purple-700 text-white text-xs md:text-sm py-2.5 px-4">
+      <div class="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2 text-center sm:text-left">
+        <div class="font-bold flex items-center gap-1.5">
+          <span>🚚 ရန်ကုန်မြို့တွင်း အိမ်ရောက်ငွေချေ (COD) ဖြင့် မှာယူနိုင်ပါသည်</span>
+        </div>
+        <div class="flex items-center gap-2 bg-white/15 px-3 py-1 rounded-full">
+          <span>💬 အသေးစိတ်မေးမြန်းရန် Viber: <strong class="tracking-wide">09942739543</strong></span>
+          <button onclick="copyViberNumber()" class="bg-amber-300 hover:bg-amber-400 text-gray-900 font-extrabold px-2.5 py-0.5 rounded-full text-[11px] transition">📋 Copy</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sticky Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-30">
+      <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-2">
+        <div class="flex items-center gap-2">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-pink-500 to-amber-400 flex items-center justify-center text-white font-bold text-lg">✨</div>
+          <div>
+            <h1 class="text-lg font-bold text-pink-600 leading-tight">MiniTrend Kids</h1>
+            <p class="text-[11px] text-gray-500">ကလေးအင်္ကျီနှင့် ဘောင်းဘီ ဖက်ရှင်ဆိုင်</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-1.5 sm:gap-2">
+          <!-- Install Phone App Button -->
+          <button id="pwa-install-btn" onclick="triggerPWAInstall()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-full text-xs md:text-sm font-extrabold flex items-center gap-1 shadow-sm transition">
+            <span>📲 App ထည့်မည်</span>
+          </button>
+
+          <button onclick="openSizeModal()" class="bg-amber-400 hover:bg-amber-500 text-gray-900 px-3 py-2 rounded-full text-xs md:text-sm font-extrabold flex items-center gap-1 shadow-sm transition">
+            <span>📏 Size တွက်မည်</span>
+          </button>
+
+          <button onclick="toggleCart()" class="relative bg-pink-600 hover:bg-pink-700 text-white px-3.5 py-2 rounded-full text-xs md:text-sm font-bold flex items-center gap-1.5 shadow">
+            <span>🛍️ ခြင်းတောင်း</span>
+            <span id="cart-count" class="bg-amber-300 text-gray-900 text-xs px-2 py-0.5 rounded-full font-extrabold">0</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Active Size Recommendation Banner -->
+    <div id="recommended-size-banner" class="hidden max-w-6xl mx-auto px-4 pt-4">
+      <div class="bg-amber-50 border-2 border-amber-400 rounded-2xl p-4 flex flex-wrap justify-between items-center gap-3 shadow-sm">
+        <div class="flex items-center gap-3">
+          <span class="text-2xl">🎯</span>
+          <div>
+            <p class="text-sm font-extrabold text-gray-900">သင့်ကလေးနှင့် အသင့်တော်ဆုံး အရွယ်အစားမှာ <span id="rec-size-badge" class="bg-pink-600 text-white px-2.5 py-0.5 rounded-lg text-sm">၄ - ၅ နှစ်</span> ဖြစ်ပါသည်</p>
+            <p id="rec-size-desc" class="text-xs text-gray-600 mt-0.5">ထိုအရွယ်အစား လက်ကျန်ရှိသော အထည်များကို အောက်တွင် အလိုအလျောက် ရွေးထုတ်ပြသပေးထားပါသည်။</p>
+          </div>
+        </div>
+        <button onclick="clearSizeFilter()" class="bg-white border border-gray-300 hover:bg-gray-100 text-gray-800 text-xs font-bold px-3 py-1.5 rounded-xl">✕ အထည်အားလုံး ပြန်ကြည့်မည်</button>
+      </div>
+    </div>
+
+    <!-- Hero Banner -->
+    <section class="max-w-6xl mx-auto px-4 pt-5">
+      <div class="bg-gradient-to-r from-pink-500 via-rose-500 to-amber-500 rounded-2xl p-6 md:p-10 text-white shadow-md">
+        <span class="inline-block bg-white/20 text-xs font-bold px-3 py-1 rounded-full mb-2">🔥 ၂၀၂၆ ခေတ်စားနေသော ကလေးဖက်ရှင်များ</span>
+        <h2 class="text-2xl md:text-4xl font-bold mb-2">သားသားမီးမီးတို့အတွက် ချစ်စရာ အကောင်းဆုံး Trend ဒီဇိုင်းသစ်များနှင့် ကစားစရာလေးများ</h2>
+        <p class="text-sm md:text-base text-pink-50 mb-4 max-w-xl">၆ လသားမှ ၉ နှစ်အရွယ်အထိ ကလေးကိုယ်အလေးချိန်နှင့် အရပ်ကို ထည့်သွင်းပြီး Size တွက်ချက်နိုင်သလို ရန်ကုန်မြို့တွင်း အိမ်ရောက်ငွေချေ (COD) ဖြင့် အလွယ်တကူ မှာယူနိုင်ပါပြီ။</p>
+        <div class="inline-flex flex-wrap items-center gap-2 bg-black/20 backdrop-blur-sm px-4 py-2 rounded-xl text-xs md:text-sm">
+          <span>📞 Viber ဆက်သွယ်မေးမြန်းရန်: <b>09942739543</b></span>
+          <button onclick="copyViberNumber()" class="bg-white text-pink-600 font-bold px-3 py-1 rounded-lg hover:bg-pink-50 transition">နံပါတ် Copy ကူးမည်</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Search & Filter -->
+    <section class="max-w-6xl mx-auto px-4 pt-6">
+      <div class="flex flex-col md:flex-row gap-3 justify-between items-center">
+        <input type="text" id="search-input" oninput="renderProducts()" placeholder="🔍 ကလေးအင်္ကျီ၊ ဘောင်းဘီ ရှာဖွေရန်..." class="w-full md:w-80 px-4 py-2.5 rounded-xl border border-gray-200 bg-white focus:outline-none focus:border-pink-500 text-sm">
+        <div class="flex gap-2 overflow-x-auto w-full md:w-auto pb-1">
+          <button onclick="setCategory('all')" class="cat-btn bg-pink-600 text-white px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap" data-cat="all">✨ အားလုံး (All)</button>
+          <button onclick="setCategory('tops')" class="cat-btn bg-white text-gray-700 border px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap" data-cat="tops">👕 အင်္ကျီ (Tops)</button>
+          <button onclick="setCategory('pants')" class="cat-btn bg-white text-gray-700 border px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap" data-cat="pants">👖 ဘောင်းဘီ (Pants)</button>
+          <button onclick="setCategory('sets')" class="cat-btn bg-white text-gray-700 border px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap" data-cat="sets">👗 ဝမ်းဆက် (Sets)</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Product Grid -->
+    <main class="max-w-6xl mx-auto px-4 py-6">
+      <div id="loading-indicator" class="text-center py-10 text-pink-600 font-bold text-sm">⏳ အထည်စာရင်းများ ရယူနေပါသည်...</div>
+      <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t mt-8 py-6 px-4 text-center text-xs text-gray-600 space-y-2">
+      <p class="font-bold text-gray-800 text-sm">MiniTrend Kids — ကလေးအင်္ကျီနှင့် ဘောင်းဘီ ဖက်ရှင်ဆိုင်</p>
+      <p>🚚 ရန်ကုန်မြို့တွင်း အိမ်ရောက်ငွေချေ (COD) ဝန်ဆောင်မှု ရှိပါသည် (ပို့ဆောင်ခ ၄,၅၀၀ ကျပ်)</p>
+      <div class="flex justify-center items-center gap-2 pt-1">
+        <span>💬 အသေးစိတ်မေးမြန်းလိုပါက Viber: <b class="text-purple-700 text-sm">09942739543</b></span>
+        <button onclick="copyViberNumber()" class="bg-purple-100 text-purple-800 font-bold px-2.5 py-1 rounded-lg hover:bg-purple-200">📋 Copy</button>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ================= ADMIN DASHBOARD ================= -->
+  <div id="admin-view" class="hidden max-w-6xl mx-auto px-4 py-6">
+    <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
+      <div>
+        <h2 class="text-2xl font-bold text-gray-900">🔐 ဆိုင်ပိုင်ရှင် စီမံခန့်ခွဲမှု (Admin Panel)</h2>
+        <p class="text-sm text-gray-500">Google Sheets မှ အသက်အရွယ်တစ်ခုချင်းစီအလိုက် လက်ကျန် Stock များကို စစ်ဆေးနိုင်ပါသည်</p>
+      </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-2xl shadow-sm border">
+      <h3 class="font-bold text-lg mb-4">လက်ရှိ Google Sheet မှ အထည်နှင့် အရွယ်အစားအလိုက် Stock စာရင်း</h3>
+      <div id="admin-product-list" class="divide-y"></div>
+    </div>
+  </div>
+
+  <!-- ================= PWA INSTALL GUIDE MODAL ================= -->
+  <div id="pwa-guide-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl">
+      <div class="flex justify-between items-center border-b pb-3 mb-4">
+        <h3 class="text-lg font-bold text-gray-900">📲 MiniTrend Kids App ထည့်သွင်းနည်း</h3>
+        <button onclick="closePWAGuide()" class="text-gray-500 hover:text-gray-800 font-bold text-xl">✕</button>
+      </div>
+      <div class="space-y-3 text-xs sm:text-sm text-gray-700 leading-relaxed">
+        <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl">
+          <p class="font-extrabold text-emerald-900 mb-1">🤖 Android ဖုန်းများ (Chrome Browser):</p>
+          <p>၁။ ညာဘက်အပေါ်ထောင့်ရှိ <b>အစက် ၃ စက် (⋮)</b> ကို နှိပ်ပါ။<br>၂။ <b>"Install app"</b> (သို့) <b>"Add to Home screen"</b> ကို နှိပ်ပြီး <b>Install</b> နှိပ်လိုက်ပါ။</p>
+        </div>
+        <div class="p-3 bg-pink-50 border border-pink-200 rounded-xl">
+          <p class="font-extrabold text-pink-900 mb-1">🍎 iPhone / iPad (Safari Browser):</p>
+          <p>၁။ အောက်ခြေအလယ်ရှိ <b>Share ခလုတ် (⬆️)</b> ကို နှိပ်ပါ။<br>၂။ အောက်သို့ဆွဲပြီး <b>"Add to Home Screen"</b> ကို နှိပ်ကာ <b>Add</b> နှိပ်လိုက်ပါ။</p>
+        </div>
+      </div>
+      <button onclick="closePWAGuide()" class="mt-4 w-full bg-gray-900 text-white font-bold py-2.5 rounded-xl text-sm">နားလည်ပါပြီ</button>
+    </div>
+  </div>
+
+  <!-- ================= FULL-SCREEN IMAGE LIGHTBOX MODAL ================= -->
+  <div id="image-lightbox-modal" onclick="closeImageLightbox()" class="fixed inset-0 bg-black/90 z-50 hidden flex flex-col items-center justify-center p-4 backdrop-blur-sm">
+    <button type="button" onclick="closeImageLightbox()" class="fixed top-4 right-4 bg-white/20 hover:bg-white/35 text-white w-10 h-10 rounded-full flex items-center justify-center text-xl font-bold shadow-lg transition">✕</button>
+    <div onclick="event.stopPropagation()" class="max-w-3xl w-full flex flex-col items-center">
+      <img id="lightbox-img" src="" alt="" class="max-h-[80vh] w-auto max-w-full object-contain rounded-2xl shadow-2xl border border-white/15">
+      <div class="mt-3 text-center bg-black/65 px-5 py-2 rounded-full border border-white/15">
+        <p id="lightbox-caption" class="text-white text-sm font-bold"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= KID SIZE CALCULATOR MODAL ================= -->
+  <div id="size-calc-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl">
+      <div class="flex justify-between items-center border-b pb-3 mb-4">
+        <h3 class="text-lg font-bold text-gray-900">📏 ကလေး Size တွက်ချက်ရန်</h3>
+        <button onclick="closeSizeModal()" class="text-gray-500 hover:text-gray-800 font-bold text-xl">✕</button>
+      </div>
+      <p class="text-xs text-gray-600 mb-4">ကလေး၏ ကိုယ်အလေးချိန်နှင့် အရပ်အမြင့်ကို ထည့်သွင်းလိုက်ပါက ကိုက်ညီမည့် အသက်အရွယ် (Size) နှင့် လက်ကျန်ရှိသော အထည်များကို အလိုအလျောက် ရှာဖွေပြသပေးပါမည်။</p>
+
+      <form onsubmit="calculateKidSize(event)" class="space-y-4 text-sm">
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1">⚖️ ကလေးကိုယ်အလေးချိန် (Weight) *</label>
+          <div class="flex gap-2">
+            <input type="number" step="0.1" id="kid-weight" required placeholder="ဥပမာ- 10 (သို့) 22" class="flex-1 border rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-pink-500">
+            <select id="weight-unit" class="border rounded-xl px-3 py-2.5 text-sm font-bold bg-gray-50">
+              <option value="kg">KG (ကီလို)</option>
+              <option value="lb">LB (ပေါင်)</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1">📐 ကလေးအရပ်အမြင့် (Height) *</label>
+          <div class="flex gap-2">
+            <select id="height-unit" onchange="toggleHeightInputMode()" class="border rounded-xl px-3 py-2.5 text-sm font-bold bg-gray-50">
+              <option value="cm">CM (စင်တီမီတာ)</option>
+              <option value="ft">Feet (ပေ / လက်မ)</option>
+            </select>
+            <input type="number" step="0.1" id="kid-height-cm" placeholder="ဥပမာ- 80" class="flex-1 border rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-pink-500">
+            <div id="kid-height-ft-box" class="hidden flex-1 flex gap-1.5">
+              <input type="number" id="kid-height-ft" placeholder="ပေ (ဥပမာ 2)" class="w-1/2 border rounded-xl px-2.5 py-2.5 text-sm">
+              <input type="number" id="kid-height-in" placeholder="လက်မ (ဥပမာ 6)" class="w-1/2 border rounded-xl px-2.5 py-2.5 text-sm">
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 rounded-xl shadow text-sm">🔍 ကိုက်ညီမည့် Size နှင့် အထည်များ ရှာမည်</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= CART & VIBER CHECKOUT DRAWER ================= -->
+  <div id="cart-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex justify-end">
+    <div class="bg-white w-full max-w-md h-full flex flex-col justify-between p-5 overflow-y-auto">
+      <div>
+        <div class="flex justify-between items-center border-b pb-3 mb-4">
+          <h3 class="text-lg font-bold text-gray-900">🛍️ ဝယ်ယူမည့် ခြင်းတောင်း</h3>
+          <button onclick="toggleCart()" class="text-gray-500 hover:text-gray-800 text-xl font-bold">✕</button>
+        </div>
+        <div id="cart-items" class="space-y-3 mb-6"></div>
+      </div>
+
+      <div class="border-t pt-4">
+        <div class="bg-pink-50/70 border border-pink-100 rounded-xl p-3 mb-4 space-y-1.5 text-sm">
+          <div class="flex justify-between text-gray-600">
+            <span>ပစ္စည်းတန်ဖိုး စုစုပေါင်း:</span>
+            <span id="cart-subtotal" class="font-bold">0 ကျပ်</span>
+          </div>
+          <div class="flex justify-between text-gray-600">
+            <span>🚚 Delivery ခ (ပို့ဆောင်ခ):</span>
+            <span id="cart-delivery" class="font-bold">0 ကျပ်</span>
+          </div>
+          <div class="flex justify-between font-extrabold text-base border-t border-pink-200 pt-1.5 text-gray-900">
+            <span>စုစုပေါင်းကျသင့်ငွေ (COD):</span>
+            <span id="cart-total" class="text-pink-600 text-lg">0 ကျပ်</span>
+          </div>
+        </div>
+
+        <form id="checkout-form" onsubmit="prepareOrder(event)" class="space-y-3">
+          <input type="text" id="cust-name" required placeholder="ဝယ်ယူသူ အမည် *" class="w-full border rounded-xl px-3 py-2 text-sm">
+          <input type="tel" id="cust-phone" required placeholder="ဆက်သွယ်ရန် ဖုန်းနံပါတ် *" class="w-full border rounded-xl px-3 py-2 text-sm">
+          <textarea id="cust-address" required rows="2" placeholder="ပို့ဆောင်ပေးရမည့် လိပ်စာအပြည့်အစုံ (ရန်ကုန်မြို့တွင်း) *" class="w-full border rounded-xl px-3 py-2 text-sm"></textarea>
+          <button type="submit" id="submit-order-btn" class="w-full bg-[#7360f2] hover:bg-[#5e4ad1] text-white font-bold py-3 rounded-xl shadow flex items-center justify-center gap-2 text-sm">
+            <span>💬 Viber မှတစ်ဆင့် အော်ဒါပို့မည်</span>
+          </button>
+          <p class="text-xs font-bold text-purple-700 bg-purple-50 border border-purple-200 rounded-lg p-2 text-center leading-relaxed">
+            ⚠️ ခလုတ်နှိပ်ပါက Viber Chat Box ပွင့်လာပါမည်။ <b>Paste ချပြီး Send</b> ကို ထပ်နှိပ်ပေးပါခင်ဗျာ။
+          </p>
+        </form>
+
+        <div id="viber-action-box" class="hidden mt-4 p-4 bg-green-50 border border-green-300 rounded-xl space-y-2.5">
+          <p class="text-xs font-bold text-green-900">✅ အော်ဒါစာရင်း Copy ကူးပြီးပါပြီ! Viber Chat Box ထဲတွင် <b>Paste ချပြီး Send</b> နှိပ်ပေးပါ-</p>
+          <a id="viber-direct-btn" href="#" class="block w-full text-center bg-[#7360f2] text-white font-bold py-2.5 rounded-lg text-xs">၁။ Viber Chat Box ပြန်ဖွင့်ရန် (09942739543)</a>
+          <a id="viber-forward-btn" href="#" class="block w-full text-center bg-purple-600 text-white font-bold py-2.5 rounded-lg text-xs">၂။ စာသားအပြည့်အစုံဖြင့် Forward ရွေးပို့ရန်</a>
+          <button type="button" onclick="copyOrderText()" class="w-full bg-white border border-green-400 text-green-800 font-bold py-2 rounded-lg text-xs">📋 အော်ဒါစာသား ထပ်မံ Copy ကူးမည်</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= LINK SHARE MODAL ================= -->
+  <div id="link-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-bold">🔗 သီးသန့် Link များ ရယူရန်</h3>
+        <button onclick="closeLinkModal()" class="text-gray-500 font-bold text-lg">✕</button>
+      </div>
+      <div class="space-y-4 text-sm">
+        <div class="p-3 bg-pink-50 rounded-xl border border-pink-200">
+          <p class="font-bold text-pink-700 mb-1">🛍️ ဝယ်ယူသူများထံ Viber မှ Share ရမည့် Link:</p>
+          <input type="text" id="customer-link-input" readonly class="w-full bg-white border rounded px-2 py-1.5 text-xs mb-2">
+          <button onclick="copyLink('customer-link-input')" class="bg-pink-600 text-white px-3 py-1 rounded text-xs font-bold">Copy ကူးမည်</button>
+        </div>
+        <div class="p-3 bg-gray-100 rounded-xl border">
+          <p class="font-bold text-gray-800 mb-1">🔐 ဆိုင်ပိုင်ရှင် စီမံရန် Link:</p>
+          <input type="text" id="admin-link-input" readonly class="w-full bg-white border rounded px-2 py-1.5 text-xs mb-2">
+          <button onclick="copyLink('admin-link-input')" class="bg-gray-800 text-white px-3 py-1 rounded text-xs font-bold">Copy ကူးမည်</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const defaultProducts = [
+      {
+        id: 1,
+        name: "နွေရာသီဝတ် စပန့် (အသားကောင်း)",
+        category: "sets",
+        trending: true,
+        originalPrice: 6500,
+        prices: {
+          "၆ လ - ၁ နှစ်": 4000,
+          "၁ နှစ် - ၂ နှစ်": 4500,
+          "၂ - ၃ နှစ်": 5000,
+          "၄ - ၅ နှစ်": 6000,
+          "၆ - ၇ နှစ်": 7000,
+          "၈ - ၉ နှစ်": 8000
+        },
+        stocks: {
+          "၆ လ - ၁ နှစ်": 5,
+          "၁ နှစ် - ၂ နှစ်": 8,
+          "၂ - ၃ နှစ်": 10,
+          "၄ - ၅ နှစ်": 6,
+          "၆ - ၇ နှစ်": 4,
+          "၈ - ၉ နှစ်": 2
+        },
+        variants: [
+          { colorName: "အသားရောင်", image: "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=500&q=80" },
+          { colorName: "ပန်းရောင်", image: "https://images.unsplash.com/photo-1522771930-78848d9293e8?w=500&q=80" }
+        ]
+      }
+    ];
+
+    let products = [];
+    let cart = [];
+    let currentCategory = 'all';
+    let recommendedSizeFilter = null;
+    let selectedSizes = {};
+    let selectedColors = {};
+    let latestOrderMessage = "";
+
+    // ================= PWA INSTALL HANDLER =================
+    let deferredInstallPrompt = null;
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+    });
+
+    window.addEventListener('appinstalled', () => {
+      deferredInstallPrompt = null;
+      const btn = document.getElementById('pwa-install-btn');
+      if (btn) btn.classList.add('hidden');
+    });
+
+    if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+      document.addEventListener('DOMContentLoaded', () => {
+        const btn = document.getElementById('pwa-install-btn');
+        if (btn) btn.classList.add('hidden');
+      });
+    }
+
+    async function triggerPWAInstall() {
+      if (deferredInstallPrompt) {
+        deferredInstallPrompt.prompt();
+        const { outcome } = await deferredInstallPrompt.userChoice;
+        if (outcome === 'accepted') {
+          deferredInstallPrompt = null;
+        }
+      } else {
+        document.getElementById('pwa-guide-modal').classList.remove('hidden');
+        pushModalHistory('pwaguide');
+      }
+    }
+
+    function closePWAGuide() {
+      document.getElementById('pwa-guide-modal').classList.add('hidden');
+      if (history.state && history.state.modal === 'pwaguide') {
+        history.back();
+      }
+    }
+
+    // ================= MOBILE BACK BUTTON & DOUBLE-BACK EXIT HANDLER =================
+    let lastBackPressTime = 0;
+    let toastTimer = null;
+
+    function showExitToast() {
+      const toast = document.getElementById('exit-toast');
+      toast.classList.remove('opacity-0');
+      toast.classList.add('opacity-100');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.remove('opacity-100');
+        toast.classList.add('opacity-0');
+      }, 2000);
+    }
+
+    function closeAllModalsUI() {
+      document.getElementById('cart-modal').classList.add('hidden');
+      document.getElementById('size-calc-modal').classList.add('hidden');
+      document.getElementById('link-modal').classList.add('hidden');
+      document.getElementById('image-lightbox-modal').classList.add('hidden');
+      document.getElementById('pwa-guide-modal').classList.add('hidden');
+    }
+
+    function setupExitGuard() {
+      history.replaceState({ page: 'home_base' }, "", "");
+      history.pushState({ page: 'home_guard' }, "", "");
+    }
+
+    function pushModalHistory(modalName) {
+      if (!history.state || history.state.modal !== modalName) {
+        history.pushState({ modal: modalName }, "", "");
+      }
+    }
+
+    window.addEventListener('popstate', function () {
+      const isCartOpen = !document.getElementById('cart-modal').classList.contains('hidden');
+      const isSizeOpen = !document.getElementById('size-calc-modal').classList.contains('hidden');
+      const isLinkOpen = !document.getElementById('link-modal').classList.contains('hidden');
+      const isLightboxOpen = !document.getElementById('image-lightbox-modal').classList.contains('hidden');
+      const isPwaOpen = !document.getElementById('pwa-guide-modal').classList.contains('hidden');
+
+      if (isCartOpen || isSizeOpen || isLinkOpen || isLightboxOpen || isPwaOpen) {
+        closeAllModalsUI();
+        return;
+      }
+
+      const now = Date.now();
+      if (now - lastBackPressTime < 2000) {
+        history.back();
+      } else {
+        lastBackPressTime = now;
+        showExitToast();
+        history.pushState({ page: 'home_guard' }, "", "");
+      }
+    });
+
+    // ================= FULL-SCREEN IMAGE LIGHTBOX =================
+    function openImageLightbox(productId) {
+      const product = products.find(p => p.id === productId);
+      if (!product) return;
+      const activeColorIdx = selectedColors[productId] !== undefined ? selectedColors[productId] : 0;
+      const activeVariant = product.variants[activeColorIdx] || product.variants[0];
+
+      document.getElementById('lightbox-img').src = activeVariant.image;
+      document.getElementById('lightbox-caption').innerText = `${product.name} — (${activeVariant.colorName})`;
+      document.getElementById('image-lightbox-modal').classList.remove('hidden');
+      pushModalHistory('lightbox');
+    }
+
+    function closeImageLightbox() {
+      document.getElementById('image-lightbox-modal').classList.add('hidden');
+      if (history.state && history.state.modal === 'lightbox') {
+        history.back();
+      }
+    }
+
+    function parseCSVLine(line) {
+      const result = [];
+      let current = '';
+      let inQuotes = false;
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        if (char === '"') {
+          inQuotes = !inQuotes;
+        } else if (char === ',' && !inQuotes) {
+          result.push(current.trim());
+          current = '';
+        } else {
+          current += char;
+        }
+      }
+      result.push(current.trim());
+      return result;
+    }
+
+    function parseNum(val, fallbackVal) {
+      if (val === undefined || val === null || val.toString().trim() === '') return fallbackVal;
+      const num = parseInt(val.toString().replace(/[^0-9]/g, ''));
+      return isNaN(num) ? fallbackVal : num;
+    }
+
+    async function loadProducts() {
+      const loader = document.getElementById('loading-indicator');
+      try {
+        const cacheBuster = (GOOGLE_SHEET_CSV_URL.includes('?') ? '&' : '?') + 't=' + Date.now();
+        const res = await fetch(GOOGLE_SHEET_CSV_URL + cacheBuster);
+        const csvText = await res.text();
+        const lines = csvText.split(/\r?\n/).filter(l => l.trim() !== '');
+
+        const sheetProducts = [];
+
+        for (let i = 1; i < lines.length; i++) {
+          const c = parseCSVLine(lines[i]);
+          if (c[0]) {
+            const p6m1y = parseNum(c[3], 0);
+            const p12y  = parseNum(c[4], p6m1y);
+            const p23y  = parseNum(c[5], p6m1y);
+            const p45y  = parseNum(c[6], p6m1y);
+            const p67y  = parseNum(c[7], p6m1y);
+            const p89y  = parseNum(c[8], p6m1y);
+
+            const variants = [];
+            if (c[9] && c[11])  variants.push({ colorName: c[9],  image: c[11] });
+            if (c[12] && c[13]) variants.push({ colorName: c[12], image: c[13] });
+            if (c[14] && c[15]) variants.push({ colorName: c[14], image: c[15] });
+            if (c[16] && c[17]) variants.push({ colorName: c[16], image: c[17] });
+
+            if (variants.length === 0) {
+              variants.push({ colorName: "မူရင်းအရောင်", image: "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=500&q=80" });
+            }
+
+            const origPriceVal = parseNum(c[18], 0);
+
+            const s6m1y = parseNum(c[19], 0);
+            const s12y  = parseNum(c[20], 0);
+            const s23y  = parseNum(c[21], 0);
+            const s45y  = parseNum(c[22], 0);
+            const s67y  = parseNum(c[23], 0);
+            const s89y  = parseNum(c[24], 0);
+
+            const stocksObj = {
+              "၆ လ - ၁ နှစ်": s6m1y,
+              "၁ နှစ် - ၂ နှစ်": s12y,
+              "၂ - ၃ နှစ်": s23y,
+              "၄ - ၅ နှစ်": s45y,
+              "၆ - ၇ နှစ်": s67y,
+              "၈ - ၉ နှစ်": s89y
+            };
+
+            const firstAvailableSize = AGE_SIZES.find(sz => stocksObj[sz] > 0) || AGE_SIZES[0];
+            if (!selectedSizes[i]) {
+              selectedSizes[i] = firstAvailableSize;
+            }
+
+            sheetProducts.push({
+              id: i,
+              name: c[0],
+              category: (c[1] || 'sets').toLowerCase(),
+              trending: (c[2] || '').toUpperCase() === 'TRUE',
+              originalPrice: origPriceVal,
+              prices: {
+                "၆ လ - ၁ နှစ်": p6m1y,
+                "၁ နှစ် - ၂ နှစ်": p12y,
+                "၂ - ၃ နှစ်": p23y,
+                "၄ - ၅ နှစ်": p45y,
+                "၆ - ၇ နှစ်": p67y,
+                "၈ - ၉ နှစ်": p89y
+              },
+              stocks: stocksObj,
+              variants
+            });
+          }
+        }
+        products = sheetProducts.length > 0 ? sheetProducts : defaultProducts;
+      } catch (err) {
+        products = defaultProducts;
+      }
+      loader.classList.add('hidden');
+      renderProducts();
+      renderAdminProducts();
+    }
+
+    function init() {
+      setupExitGuard();
+      const params = new URLSearchParams(window.location.search);
+      const role = params.get('role') || window.location.hash.replace('#', '');
+      if (role === 'customer') {
+        document.getElementById('top-role-bar').classList.add('hidden');
+        switchRole('customer');
+      } else if (role === 'admin') {
+        switchRole('admin');
+      } else {
+        switchRole('customer');
+      }
+      loadProducts();
+    }
+
+    function openSizeModal() {
+      document.getElementById('size-calc-modal').classList.remove('hidden');
+      pushModalHistory('size');
+    }
+
+    function closeSizeModal() {
+      document.getElementById('size-calc-modal').classList.add('hidden');
+      if (history.state && history.state.modal === 'size') {
+        history.back();
+      }
+    }
+
+    function toggleHeightInputMode() {
+      const unit = document.getElementById('height-unit').value;
+      if (unit === 'ft') {
+        document.getElementById('kid-height-cm').classList.add('hidden');
+        document.getElementById('kid-height-ft-box').classList.remove('hidden');
+      } else {
+        document.getElementById('kid-height-ft-box').classList.add('hidden');
+        document.getElementById('kid-height-cm').classList.remove('hidden');
+      }
+    }
+
+    function calculateKidSize(e) {
+      e.preventDefault();
+      let weight = parseFloat(document.getElementById('kid-weight').value) || 0;
+      const wUnit = document.getElementById('weight-unit').value;
+      if (wUnit === 'lb') {
+        weight = weight * 0.453592;
+      }
+
+      let heightCm = 0;
+      const hUnit = document.getElementById('height-unit').value;
+      if (hUnit === 'ft') {
+        const ft = parseFloat(document.getElementById('kid-height-ft').value) || 0;
+        const inch = parseFloat(document.getElementById('kid-height-in').value) || 0;
+        heightCm = (ft * 30.48) + (inch * 2.54);
+      } else {
+        heightCm = parseFloat(document.getElementById('kid-height-cm').value) || 0;
+      }
+
+      let matchedSize = "၂ - ၃ နှစ်";
+      if (weight <= 9.5 && heightCm <= 78) {
+        matchedSize = "၆ လ - ၁ နှစ်";
+      } else if (weight <= 12 && heightCm <= 88) {
+        matchedSize = "၁ နှစ် - ၂ နှစ်";
+      } else if (weight <= 14.5 && heightCm <= 98) {
+        matchedSize = "၂ - ၃ နှစ်";
+      } else if (weight <= 19 && heightCm <= 112) {
+        matchedSize = "၄ - ၅ နှစ်";
+      } else if (weight <= 24.5 && heightCm <= 125) {
+        matchedSize = "၆ - ၇ နှစ်";
+      } else {
+        matchedSize = "၈ - ၉ နှစ်";
+      }
+
+      recommendedSizeFilter = matchedSize;
+      products.forEach(p => {
+        selectedSizes[p.id] = matchedSize;
+      });
+
+      document.getElementById('rec-size-badge').innerText = matchedSize;
+      document.getElementById('recommended-size-banner').classList.remove('hidden');
+      closeSizeModal();
+      renderProducts();
+    }
+
+    function clearSizeFilter() {
+      recommendedSizeFilter = null;
+      document.getElementById('recommended-size-banner').classList.add('hidden');
+      renderProducts();
+    }
+
+    function silentCopy(text) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).catch(() => legacyCopy(text));
+      } else {
+        legacyCopy(text);
+      }
+    }
+
+    function legacyCopy(text) {
+      const temp = document.createElement('textarea');
+      temp.value = text;
+      document.body.appendChild(temp);
+      temp.select();
+      document.execCommand('copy');
+      document.body.removeChild(temp);
+    }
+
+    function copyViberNumber() {
+      silentCopy(OWNER_DISPLAY_PHONE);
+      alert('Viber နံပါတ် (09942739543) ကို Copy ကူးပြီးပါပြီ!');
+    }
+
+    function switchRole(role) {
+      if (role === 'admin') {
+        document.getElementById('customer-view').classList.add('hidden');
+        document.getElementById('admin-view').classList.remove('hidden');
+      } else {
+        document.getElementById('admin-view').classList.add('hidden');
+        document.getElementById('customer-view').classList.remove('hidden');
+      }
+    }
+
+    function setCategory(cat) {
+      currentCategory = cat;
+      document.querySelectorAll('.cat-btn').forEach(btn => {
+        if (btn.dataset.cat === cat) {
+          btn.className = "cat-btn bg-pink-600 text-white px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap";
+        } else {
+          btn.className = "cat-btn bg-white text-gray-700 border px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap";
+        }
+      });
+      renderProducts();
+    }
+
+    function selectSize(productId, size) {
+      selectedSizes[productId] = size;
+      renderProducts();
+    }
+
+    function selectColor(productId, colorIdx) {
+      selectedColors[productId] = colorIdx;
+      renderProducts();
+    }
+
+    function renderProducts() {
+      const search = document.getElementById('search-input').value.toLowerCase();
+      const grid = document.getElementById('product-grid');
+      const filtered = products.filter(p => {
+        const matchCat = currentCategory === 'all' || p.category === currentCategory;
+        const matchSearch = p.name.toLowerCase().includes(search);
+        const matchSize = !recommendedSizeFilter || (p.stocks && (p.stocks[recommendedSizeFilter] || 0) > 0);
+        return matchCat && matchSearch && matchSize;
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `<div class="col-span-full text-center py-12 text-gray-500 text-sm">ရွေးချယ်ထားသော အချက်အလက်နှင့် ကိုက်ညီသည့် လက်ကျန်အထည် မရှိသေးပါ။</div>`;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(p => {
+        const activeSize = selectedSizes[p.id] || "၆ လ - ၁ နှစ်";
+        const currentPrice = (p.prices && p.prices[activeSize]) ? p.prices[activeSize] : 0;
+        const currentStock = (p.stocks && p.stocks[activeSize] !== undefined) ? p.stocks[activeSize] : 0;
+        const totalAllSizesStock = AGE_SIZES.reduce((sum, sz) => sum + ((p.stocks && p.stocks[sz]) || 0), 0);
+
+        const basePrice = (p.prices && p.prices["၆ လ - ၁ နှစ်"]) ? p.prices["၆ လ - ၁ နှစ်"] : currentPrice;
+        const priceDiff = currentPrice - basePrice;
+        const displayOriginalPrice = (p.originalPrice && p.originalPrice > basePrice) ? (p.originalPrice + priceDiff) : 0;
+
+        const isSizeSoldOut = currentStock <= 0;
+        const isEntireProductSoldOut = totalAllSizesStock <= 0;
+
+        const variants = p.variants;
+        const activeColorIdx = selectedColors[p.id] !== undefined ? selectedColors[p.id] : 0;
+        const activeVariant = variants[activeColorIdx] || variants[0];
+
+        return `
+          <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col justify-between ${isEntireProductSoldOut ? 'opacity-80' : ''}">
+            <div>
+              <div onclick="openImageLightbox(${p.id})" class="relative h-64 bg-gray-100 cursor-zoom-in group">
+                <img src="${activeVariant.image}" alt="${p.name}" class="w-full h-full object-cover transition-all duration-300 group-hover:scale-105 ${isEntireProductSoldOut ? 'grayscale' : ''}">
+                
+                ${isEntireProductSoldOut 
+                  ? '<div class="absolute inset-0 bg-black/55 flex items-center justify-center"><span class="bg-red-600 text-white font-extrabold px-4 py-1.5 rounded-full text-sm shadow-lg">❌ Sold Out (ပစ္စည်းကုန်ပါပြီ)</span></div>'
+                  : (p.trending ? '<span class="absolute top-3 left-3 bg-rose-500 text-white text-[11px] font-bold px-2.5 py-1 rounded-full">🔥 Trending</span>' : '')
+                }
+
+                ${(!isEntireProductSoldOut && displayOriginalPrice > currentPrice) 
+                  ? `<span class="absolute top-3 right-3 bg-amber-400 text-gray-900 text-[11px] font-extrabold px-2.5 py-1 rounded-full shadow">🏷️ Discount</span>` 
+                  : ''
+                }
+
+                <span class="absolute bottom-2.5 right-2.5 bg-black/65 text-white text-[11px] font-bold px-2.5 py-1 rounded-full">${activeVariant.colorName} 🔍</span>
+                
+                <span class="absolute bottom-2.5 left-2.5 ${isSizeSoldOut ? 'bg-red-600 text-white' : 'bg-white/95 text-gray-800'} text-[11px] font-bold px-2.5 py-0.5 rounded-full shadow-sm">
+                  ${isSizeSoldOut ? `❌ ${activeSize} ကုန်ပါပြီ` : `လက်ကျန် (${activeSize}): ${currentStock} ထည်`}
+                </span>
+              </div>
+
+              <div class="p-4">
+                <h3 class="font-bold text-gray-800 text-base mb-1">${p.name}</h3>
+                
+                <div class="flex items-baseline gap-2 mb-3">
+                  ${displayOriginalPrice > currentPrice 
+                    ? `<span class="text-gray-400 line-through text-sm font-bold">${displayOriginalPrice.toLocaleString()} ကျပ်</span>` 
+                    : ''
+                  }
+                  <span class="text-pink-600 font-extrabold text-xl">${currentPrice.toLocaleString()} ကျပ်</span>
+                </div>
+
+                <p class="text-xs text-gray-500 mb-1.5 font-bold">အရောင် ရွေးချယ်ပါ (<span class="text-gray-800">${activeVariant.colorName}</span>):</p>
+                <div class="flex flex-wrap gap-2 mb-3.5">
+                  ${variants.map((v, idx) => `
+                    <button type="button" onclick="selectColor(${p.id}, ${idx})" class="px-3.5 py-1 rounded-full border text-xs font-bold transition ${activeColorIdx === idx ? 'border-pink-600 bg-pink-600 text-white shadow-sm' : 'border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100'}">
+                      ${v.colorName}
+                    </button>
+                  `).join('')}
+                </div>
+
+                <div class="flex justify-between items-center mb-1.5">
+                  <p class="text-xs text-gray-500 font-bold">📏 ကလေးအရွယ်အစား (Size) ရွေးပါ:</p>
+                  <span class="text-[11px] font-bold ${isSizeSoldOut ? 'text-red-600' : 'text-emerald-600'}">
+                    ${isSizeSoldOut ? 'လက်ကျန်မရှိပါ' : `လက်ကျန်: ${currentStock} ထည်`}
+                  </span>
+                </div>
+                <div class="grid grid-cols-3 gap-1.5 mb-2">
+                  ${AGE_SIZES.map(s => {
+                    const szStock = (p.stocks && p.stocks[s] !== undefined) ? p.stocks[s] : 0;
+                    const isOut = szStock <= 0;
+                    return `
+                      <button type="button" onclick="selectSize(${p.id}, '${s}')" class="px-2 py-1.5 text-[11px] rounded-lg border font-bold transition text-center relative ${activeSize === s ? 'bg-pink-600 text-white border-pink-600' : (isOut ? 'bg-gray-100 text-gray-400 border-gray-200 line-through' : 'bg-gray-50 text-gray-700 hover:bg-gray-100')}">${s}</button>
+                    `;
+                  }).join('')}
+                </div>
+              </div>
+            </div>
+
+            <div class="px-4 pb-4">
+              ${isSizeSoldOut
+                ? `<button disabled class="w-full bg-gray-300 text-gray-600 font-bold py-2.5 rounded-xl text-sm cursor-not-allowed">❌ ${activeSize} ပစ္စည်းကုန်ပါပြီ</button>`
+                : `<button onclick="addToCart(${p.id})" class="w-full bg-gray-900 hover:bg-pink-600 text-white font-bold py-2.5 rounded-xl text-sm transition">+ ခြင်းတောင်းထဲထည့်မည်</button>`
+              }
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function addToCart(productId) {
+      const product = products.find(p => p.id === productId);
+      if (!product) return;
+
+      const size = selectedSizes[productId] || "၆ လ - ၁ နှစ်";
+      const availableSizeStock = (product.stocks && product.stocks[size] !== undefined) ? product.stocks[size] : 0;
+      if (availableSizeStock <= 0) {
+        alert(`ရွေးချယ်ထားသော (${size}) အရွယ်အစား ပစ္စည်းကုန်သွားပါပြီခင်ဗျာ။`);
+        return;
+      }
+
+      const unitPrice = (product.prices && product.prices[size]) ? product.prices[size] : 0;
+      const variants = product.variants;
+      const colorIdx = selectedColors[productId] !== undefined ? selectedColors[productId] : 0;
+      const chosenVariant = variants[colorIdx] || variants[0];
+
+      const currentInCartSizeQty = cart.filter(item => item.id === productId && item.size === size).reduce((s, i) => s + i.qty, 0);
+      if (currentInCartSizeQty + 1 > availableSizeStock) {
+        alert(`(${size}) အရွယ်အစားအတွက် လက်ကျန် (${availableSizeStock} ထည်) သာ ကျန်ရှိပါတော့သည်ခင်ဗျာ။`);
+        return;
+      }
+
+      const existing = cart.find(item => item.id === productId && item.size === size && item.colorName === chosenVariant.colorName);
+      if (existing) {
+        existing.qty += 1;
+      } else {
+        cart.push({
+          id: product.id,
+          name: product.name,
+          size: size,
+          colorName: chosenVariant.colorName,
+          image: chosenVariant.image,
+          price: unitPrice,
+          qty: 1
+        });
+      }
+      updateCartUI();
+    }
+
+    function removeFromCart(index) {
+      cart.splice(index, 1);
+      updateCartUI();
+    }
+
+    function updateCartUI() {
+      const totalCount = cart.reduce((sum, item) => sum + item.qty, 0);
+      document.getElementById('cart-count').innerText = totalCount;
+
+      const cartItemsEl = document.getElementById('cart-items');
+      if (cart.length === 0) {
+        cartItemsEl.innerHTML = '<p class="text-center text-gray-400 text-sm py-8">ခြင်းတောင်းထဲတွင် ပစ္စည်းမရှိသေးပါ</p>';
+      } else {
+        cartItemsEl.innerHTML = cart.map((item, idx) => `
+          <div class="flex justify-between items-center bg-gray-50 p-3 rounded-xl border gap-2">
+            <div class="flex items-center gap-2.5">
+              <img src="${item.image}" class="w-12 h-12 rounded-lg object-cover border">
+              <div>
+                <p class="font-bold text-sm text-gray-800">${item.name}</p>
+                <p class="text-xs text-gray-500">အရောင်: <span class="font-bold text-purple-700">${item.colorName}</span> | အရွယ်: <span class="font-bold text-pink-600">${item.size}</span></p>
+                <p class="text-xs font-bold text-gray-800 mt-0.5">${item.price.toLocaleString()} Ks x ${item.qty} = ${(item.price * item.qty).toLocaleString()} ကျပ်</p>
+              </div>
+            </div>
+            <button onclick="removeFromCart(${idx})" class="text-red-500 text-xs font-bold px-2 py-1">ဖျက်မည်</button>
+          </div>
+        `).join('');
+      }
+
+      const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+      const currentDelivery = cart.length > 0 ? DELIVERY_FEE : 0;
+      const grandTotal = subtotal + currentDelivery;
+
+      document.getElementById('cart-subtotal').innerText = subtotal.toLocaleString() + ' ကျပ်';
+      document.getElementById('cart-delivery').innerText = currentDelivery.toLocaleString() + ' ကျပ်';
+      document.getElementById('cart-total').innerText = grandTotal.toLocaleString() + ' ကျပ်';
+    }
+
+    function toggleCart() {
+      const modal = document.getElementById('cart-modal');
+      const isOpening = modal.classList.contains('hidden');
+      if (isOpening) {
+        modal.classList.remove('hidden');
+        updateCartUI();
+        pushModalHistory('cart');
+      } else {
+        modal.classList.add('hidden');
+        if (history.state && history.state.modal === 'cart') {
+          history.back();
+        }
+      }
+    }
+
+    async function prepareOrder(e) {
+      e.preventDefault();
+      if (cart.length === 0) {
+        alert('ကျေးဇူးပြု၍ အထည်အရင် ရွေးချယ်ပါခင်ဗျာ။');
+        return;
+      }
+
+      const submitBtn = document.getElementById('submit-order-btn');
+      submitBtn.disabled = true;
+      submitBtn.innerText = "⏳ အော်ဒါပို့ရန် ပြင်ဆင်နေပါသည်...";
+
+      const orderId = "MT-" + Math.floor(100000 + Math.random() * 900000);
+      const name = document.getElementById('cust-name').value.trim();
+      const phone = document.getElementById('cust-phone').value.trim();
+      const address = document.getElementById('cust-address').value.trim();
+      const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+      const grandTotal = subtotal + DELIVERY_FEE;
+
+      let itemLines = cart.map((item, idx) => 
+        `${idx + 1}. ${item.name} [အရောင်: ${item.colorName} | အရွယ်: ${item.size}] x ${item.qty} ထည် = ${(item.price * item.qty).toLocaleString()} Ks`
+      ).join('\n');
+
+      latestOrderMessage = 
+`🛍️ MiniTrend Kids အော်ဒါအသစ် (${orderId})
+-------------------------
+👤 အမည်: ${name}
+📞 ဖုန်း: ${phone}
+📍 လိပ်စာ: ${address}
+-------------------------
+📦 မှာယူသည့် စာရင်း:
+${itemLines}
+-------------------------
+🧾 ပစ္စည်းတန်ဖိုး: ${subtotal.toLocaleString()} ကျပ်
+🚚 Delivery ခ: ${DELIVERY_FEE.toLocaleString()} ကျပ်
+💰 စုစုပေါင်းကျသင့်ငွေ (COD): ${grandTotal.toLocaleString()} ကျပ်`;
+
+      silentCopy(latestOrderMessage);
+
+      try {
+        await fetch(APPS_SCRIPT_ORDER_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            orderId,
+            name,
+            phone,
+            address,
+            itemsText: itemLines,
+            items: cart.map(i => ({ name: i.name, size: i.size, qty: i.qty })),
+            subtotal,
+            delivery: DELIVERY_FEE,
+            grandTotal
+          })
+        });
+      } catch (err) {
+        console.error("Order log error:", err);
+      }
+
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = `<span>💬 Viber မှတစ်ဆင့် အော်ဒါပို့မည်</span>`;
+
+      const encodedText = encodeURIComponent(latestOrderMessage);
+      const directUrl = `viber://chat?number=%2B${OWNER_VIBER_PHONE}&text=${encodedText}`;
+      const forwardUrl = `viber://forward?text=${encodedText}`;
+
+      document.getElementById('viber-direct-btn').href = directUrl;
+      document.getElementById('viber-forward-btn').href = forwardUrl;
+      document.getElementById('viber-action-box').classList.remove('hidden');
+
+      window.location.href = directUrl;
+    }
+
+    function copyOrderText() {
+      if (!latestOrderMessage) return;
+      silentCopy(latestOrderMessage);
+      alert('အော်ဒါစာရင်းကို Copy ကူးပြီးပါပြီ! Viber (09942739543) ထဲသို့ Paste ချပြီး Send နှိပ်ပေးပါခင်ဗျာ။');
+    }
+
+    function renderAdminProducts() {
+      const list = document.getElementById('admin-product-list');
+      list.innerHTML = products.map(p => {
+        const firstImg = (p.variants && p.variants[0]) ? p.variants[0].image : '';
+        const basePrice = p.prices ? p.prices["၆ လ - ၁ နှစ်"] : 0;
+        const maxPrice = p.prices ? p.prices["၈ - ၉ နှစ်"] : 0;
+        const stockBreakdown = AGE_SIZES.map(sz => `${sz}: <b>${(p.stocks && p.stocks[sz]) || 0}</b>`).join(' | ');
+        const totalStock = AGE_SIZES.reduce((sum, sz) => sum + ((p.stocks && p.stocks[sz]) || 0), 0);
+
+        return `
+          <div class="py-3.5 flex flex-col sm:flex-row justify-between sm:items-center gap-3">
+            <div class="flex items-start gap-3">
+              <img src="${firstImg}" class="w-14 h-14 rounded-lg object-cover border mt-0.5">
+              <div>
+                <p class="font-bold text-sm">${p.name}</p>
+                <p class="text-xs text-pink-600 font-bold">ဈေးနှုန်း: ${basePrice.toLocaleString()} ~ ${maxPrice.toLocaleString()} ကျပ်</p>
+                <p class="text-[11px] text-gray-600 mt-1 leading-relaxed">${stockBreakdown}</p>
+              </div>
+            </div>
+            <span class="self-start sm:self-center text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap ${totalStock <= 0 ? 'bg-red-100 text-red-700' : 'bg-green-50 text-green-700'}">
+              ${totalStock <= 0 ? 'Sold Out' : `စုစုပေါင်း: ${totalStock} ထည်`}
+            </span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openLinkModal() {
+      const baseUrl = window.location.origin + window.location.pathname;
+      document.getElementById('customer-link-input').value = `${baseUrl}?role=customer`;
+      document.getElementById('admin-link-input').value = `${baseUrl}?role=admin`;
+      document.getElementById('link-modal').classList.remove('hidden');
+      pushModalHistory('link');
+    }
+
+    function closeLinkModal() {
+      document.getElementById('link-modal').classList.add('hidden');
+      if (history.state && history.state.modal === 'link') {
+        history.back();
+      }
+    }
+
+    function copyLink(inputId) {
+      const input = document.getElementById(inputId);
+      input.select();
+      document.execCommand('copy');
+      alert('Link ကို Copy ကူးယူပြီးပါပြီ!');
+    }
+
+    init();
+  </script>
+</body>
+</html>
