@@ -429,9 +429,9 @@
         <p class="text-xs sm:text-sm text-gray-500">ဝယ်သူများထံ Notification ပေးပို့ခြင်း၊ အော်ဒါစစ်ဆေးခြင်းနှင့် Stock စီမံခြင်း</p>
       </div>
       <div class="flex flex-wrap gap-2">
-        <button onclick="setupNineSheets()" id="btn-setup-sheets" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-sm transition">📂 Sheet (၉) ခု အလိုအလျောက်ခွဲမည်</button>
-        <button onclick="loadVisitorStats()" class="bg-pink-600 hover:bg-pink-700 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-sm transition">🔄 စာရင်းပြန်စစ်မည်</button>
-        <button onclick="switchRole('customer')" class="bg-gray-800 hover:bg-gray-900 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-sm transition">🛍️ ဆိုင်မျက်နှာပြင်သို့</button>
+        <button type="button" onclick="setupNineSheets()" id="btn-setup-sheets" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-sm transition cursor-pointer">📂 Sheet (၉) ခု အလိုအလျောက်ခွဲမည်</button>
+        <button type="button" onclick="refreshAdminAll()" id="btn-refresh-admin" class="bg-pink-600 hover:bg-pink-700 active:scale-95 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-sm transition cursor-pointer">🔄 စာရင်းပြန်စစ်မည်</button>
+        <button type="button" onclick="switchRole('customer')" class="bg-gray-800 hover:bg-gray-900 active:scale-95 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-sm transition cursor-pointer">🛍️ ဆိုင်မျက်နှာပြင်သို့</button>
       </div>
     </div>
 
@@ -443,7 +443,7 @@
           ဝယ်သူအော်ဒါတင်လိုက်သည်နှင့် သင့်ဖုန်း Sleep ဖြစ်နေချိန်မှာပါ Noti တက်စေရန် ညာဘက်ခလုတ်ကို တစ်ကြိမ်နှိပ်ထားပါ။
         </p>
       </div>
-      <button onclick="registerOwnerDevicePush(true)" class="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs sm:text-sm shadow shrink-0">
+      <button type="button" onclick="registerOwnerDevicePush(true)" class="bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs sm:text-sm shadow shrink-0 cursor-pointer">
         🔔 ပိုင်ရှင်ဖုန်း Noti ချိတ်ဆက်မည်
       </button>
     </div>
@@ -982,8 +982,33 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ action: "markDelivered", orderId: orderId })
         });
-        setTimeout(() => loadVisitorStats(), 800);
+        setTimeout(() => refreshAdminAll(), 800);
       } catch (e) {}
+    }
+
+    async function refreshAdminAll() {
+      const btn = document.getElementById('btn-refresh-admin');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerText = "⏳ စစ်ဆေးနေသည်...";
+      }
+
+      try {
+        localStorage.removeItem('mt_cached_products');
+      } catch (e) {}
+
+      await Promise.all([
+        loadVisitorStats(),
+        loadProducts()
+      ]);
+
+      if (btn) {
+        btn.disabled = false;
+        btn.innerText = "✅ စာရင်းသစ်ရပါပြီ";
+        setTimeout(() => {
+          btn.innerText = "🔄 စာရင်းပြန်စစ်မည်";
+        }, 1800);
+      }
     }
 
     async function loadVisitorStats() {
@@ -997,7 +1022,7 @@
       if (!todayEl) return;
 
       try {
-        const res = await fetch(`${APPS_SCRIPT_ORDER_URL}?action=getVisitors&t=${Date.now()}`);
+        const res = await fetch(`${APPS_SCRIPT_ORDER_URL}?action=getVisitors&t=${Date.now()}`, { cache: "no-store" });
         const stats = await res.json();
         todayEl.innerText = (stats.today || 0).toLocaleString() + " ဦး";
         yesterdayEl.innerText = (stats.yesterday || 0).toLocaleString() + " ဦး";
@@ -1033,7 +1058,7 @@
                 <p class="text-pink-700 font-bold text-[11px] whitespace-pre-line">${o.itemsText}</p>
                 <p class="text-gray-900 font-extrabold text-xs">💰 စုစုပေါင်း: ${Number(o.grandTotal || 0).toLocaleString()} ကျပ်</p>
               </div>
-              <button onclick="markOrderDelivered('${o.orderId}')" class="self-start sm:self-center bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3.5 py-2 rounded-xl text-xs shadow-sm shrink-0">
+              <button type="button" onclick="markOrderDelivered('${o.orderId}')" class="self-start sm:self-center bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3.5 py-2 rounded-xl text-xs shadow-sm shrink-0">
                 ✅ ပို့ပေးပြီး (Delivered)
               </button>
             </div>
@@ -1087,7 +1112,7 @@
         .replace('၁ နှစ် - ၂ နှစ်', '၁-၂ နှစ်');
     }
 
-    // ================= DIRECT INSTALL HANDLER (ZERO GUIDE TEXT) =================
+    // ================= DIRECT INSTALL HANDLER =================
     function isAndroidInAppBrowser() {
       const ua = navigator.userAgent || '';
       return /Android/i.test(ua) && /MiuiBrowser|XiaoMi|FBAN|FBAV|Viber|Line|SamsungBrowser|UCBrowser|Opera|OPR|EdgA/i.test(ua);
@@ -1110,19 +1135,16 @@
     }
 
     async function triggerPWAInstall() {
-      // ၁။ Chrome Install Prompt အဆင်သင့်ဖြစ်နေပါက ချက်ချင်း Install အကွက်ဖွင့်မည်
       if (window.__deferredInstallPrompt) {
         await runNativeInstallPrompt();
         return;
       }
 
-      // ၂။ Viber / Mi Browser မှ ဖွင့်ထားပါက Chrome ဖြင့် တိုက်ရိုက်ပြောင်းဖွင့်ပေးမည်
       if (isAndroidInAppBrowser()) {
         window.location.href = "intent://kflowcreated-stack.github.io/minitrend-kids/?role=customer#Intent;scheme=https;package=com.android.chrome;end";
         return;
       }
 
-      // ၃။ အင်တာနက်လိုင်း နှေးနေချိန် Service Worker အသင့်ဖြစ်သည်အထိ စောင့်ပြီး အလိုအလျောက် Install အကွက်ဖွင့်ပေးမည်
       const btn = document.getElementById('pwa-install-btn');
       if (btn) btn.innerHTML = '<span>⏳ ပြင်ဆင်နေပါသည်...</span>';
       window.__pendingAutoInstall = true;
@@ -1326,7 +1348,7 @@
       let loadedItems = [];
 
       try {
-        const res = await fetch(`${APPS_SCRIPT_ORDER_URL}?action=getProducts&t=${Date.now()}`);
+        const res = await fetch(`${APPS_SCRIPT_ORDER_URL}?action=getProducts&t=${Date.now()}`, { cache: "no-store" });
         const data = await res.json();
         if (data && data.status === 'ok') {
           if (data.latestNoti) {
@@ -1341,7 +1363,7 @@
       if (loadedItems.length === 0) {
         try {
           const cacheBuster = (GOOGLE_SHEET_CSV_URL.includes('?') ? '&' : '?') + 't=' + Date.now();
-          const res = await fetch(GOOGLE_SHEET_CSV_URL + cacheBuster);
+          const res = await fetch(GOOGLE_SHEET_CSV_URL + cacheBuster, { cache: "no-store" });
           const csvText = await res.text();
           const lines = csvText.split(/\r?\n/).filter(l => l.trim() !== '');
           for (let i = 1; i < lines.length; i++) {
