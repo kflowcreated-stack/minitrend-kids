@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MiniTrend Kids - ကလေးဖက်ရှင်နှင့် အသုံးအဆောင်များ</title>
+  <title>MiniTrend Kids - ကလေးဖက်ရှင်နှင့် အသုံးအဆောင်ဆိုင်</title>
   <meta name="theme-color" content="#db2777" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -163,11 +163,17 @@
     ];
 
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js?v=3').catch(() => {});
+      navigator.serviceWorker.register('./sw.js?v=5').then(async (reg) => {
+        if ('periodicSync' in reg) {
+          try {
+            await reg.periodicSync.register('mt-bg-noti-sync', { minInterval: 60 * 1000 });
+          } catch (e) {}
+        }
+      }).catch(() => {});
     }
   </script>
 
-  <!-- ================= ZERO-PERMISSION TOP NOTIFICATION BANNER ================= -->
+  <!-- ================= TOP NOTIFICATION BANNER ================= -->
   <div id="push-noti-popup" class="fixed top-3 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-md hidden noti-slide-in">
     <div class="bg-gray-900/95 text-white rounded-2xl p-3.5 shadow-2xl border-2 border-pink-400 flex items-start gap-3 backdrop-blur-md">
       <img src="./icon.png?v=3" class="w-11 h-11 rounded-xl object-cover shrink-0 border border-white/20" />
@@ -345,7 +351,7 @@
     <!-- OWNER DAILY NOTIFICATION SENDER -->
     <div class="bg-gradient-to-r from-purple-50 via-pink-50 to-amber-50 p-4 sm:p-5 rounded-2xl shadow-sm border border-pink-200 mb-6">
       <h3 class="font-extrabold text-sm sm:text-base text-gray-900 mb-1">📢 ဝယ်သူများထံ နေ့စဉ် Notification ပေးပို့ရန် (Daily Broadcast)</h3>
-      <p class="text-xs text-gray-600 mb-3">အောက်ပါအကွက်တွင် နေ့စဉ် ပရိုမိုးရှင်း သို့မဟုတ် ပစ္စည်းအသစ်ရောက်ကြောင်း ရေးသားပြီး ပို့လိုက်ပါက ဝယ်သူများ၏ ဖုန်းထဲတွင် Permission တောင်းစရာမလိုဘဲ Notification တက်လာပါမည်။</p>
+      <p class="text-xs text-gray-600 mb-3">အောက်ပါအကွက်တွင် နေ့စဉ် ပရိုမိုးရှင်း သို့မဟုတ် ပစ္စည်းအသစ်ရောက်ကြောင်း ရေးသားပြီး ပို့လိုက်ပါက ဝယ်သူများ App အပြင်ဘက် ရောက်နေလျှင်ပင် MiniTrend Kids Icon ပုံလေးဖြင့် Notification တက်လာပါမည်။</p>
       <form onsubmit="sendOwnerBroadcast(event)" class="space-y-2.5 text-xs sm:text-sm">
         <input type="text" id="broadcast-title" value="MiniTrend Kids မှ သတင်းကောင်းလေး! 🎁" required placeholder="Notification ခေါင်းစဉ် *" class="w-full border border-pink-200 rounded-xl px-3 py-2 bg-white font-bold">
         <textarea id="broadcast-message" rows="2" required placeholder="ဝယ်သူများထံ ပို့ချင်သည့် စာသား ရေးပါ (ဥပမာ - မေမေတို့ရေ ဒီနေ့ နွေရာသီဝတ် အဆင်အသစ်လေးတွေ ရောက်ပါတယ်နော် 🧸✨) *" class="w-full border border-pink-200 rounded-xl px-3 py-2 bg-white"></textarea>
@@ -603,6 +609,21 @@
     let latestOrderMessage = "";
     let pushPopupTimer = null;
 
+    // ဝယ်သူ သို့မဟုတ် ပိုင်ရှင်က မျက်နှာပြင်ကို ပထမဆုံး တစ်ချက်ထိလိုက်သည်နှင့် System Notification ခွင့်ပြုချက် တစ်ကြိမ် တောင်းပေးခြင်း
+    function setupAutoSystemNotiPermission() {
+      const requestOnce = async () => {
+        if ('Notification' in window && Notification.permission === 'default') {
+          try {
+            await Notification.requestPermission();
+          } catch (e) {}
+        }
+        document.removeEventListener('click', requestOnce);
+        document.removeEventListener('touchstart', requestOnce);
+      };
+      document.addEventListener('click', requestOnce, { once: true });
+      document.addEventListener('touchstart', requestOnce, { once: true });
+    }
+
     // ================= FORMAT ORDER DATE & TIME FOR ADMIN ACTIVE ORDERS =================
     function formatOrderDateTime(val) {
       if (!val) return "📅 အချိန်မှတ်တမ်းမရှိပါ";
@@ -626,7 +647,7 @@
       return `📅 ${str}`;
     }
 
-    // ================= ZERO-PERMISSION NOTIFICATION ENGINE (CHIME + VIBRATION + TOP CARD) =================
+    // ================= SYSTEM NOTIFICATION + IN-APP NOTIFICATION ENGINE =================
     function playNotiChime() {
       try {
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -657,7 +678,8 @@
       } catch (e) {}
     }
 
-    function sendPhoneNotification(title, bodyText) {
+    async function sendPhoneNotification(title, bodyText, tagId, delayMs = 0) {
+      // ၁။ App ဖွင့်ထားချိန် မြင်ရမည့် အပေါ်ဆုံး Notification Card နှင့် အသံ
       const popup = document.getElementById('push-noti-popup');
       document.getElementById('push-noti-title').innerText = "🔔 " + (title || "MiniTrend Kids");
       document.getElementById('push-noti-body').innerText = bodyText || "";
@@ -666,25 +688,74 @@
       playNotiChime();
 
       if (navigator.vibrate) {
-        navigator.vibrate([200, 100, 200]);
+        navigator.vibrate([250, 120, 250]);
       }
 
       if (pushPopupTimer) clearTimeout(pushPopupTimer);
       pushPopupTimer = setTimeout(() => {
         popup.classList.add('hidden');
       }, 10000);
+
+      // ၂။ App အပြင်ဘက် ရောက်နေချိန် ဖုန်း System Status Bar တွင် Icon ပုံလေးဖြင့် ပေါ်စေခြင်း
+      if (!('Notification' in window)) return;
+
+      if (Notification.permission === 'default') {
+        try {
+          await Notification.requestPermission();
+        } catch (e) {}
+      }
+
+      if (Notification.permission === 'granted') {
+        try {
+          if ('serviceWorker' in navigator) {
+            const reg = await navigator.serviceWorker.ready;
+            if (reg && reg.active && delayMs > 0) {
+              reg.active.postMessage({
+                type: 'SHOW_SYSTEM_NOTI',
+                title: title || 'MiniTrend Kids 🧸',
+                body: bodyText || '',
+                tag: tagId || ('mt-' + Date.now()),
+                delayMs: delayMs
+              });
+              return;
+            }
+            if (reg && reg.showNotification) {
+              await reg.showNotification(title || 'MiniTrend Kids 🧸', {
+                body: bodyText || '',
+                icon: './icon.png?v=3',
+                badge: './icon.png?v=3',
+                tag: tagId || ('mt-' + Date.now()),
+                renotify: true,
+                vibrate: [250, 120, 250],
+                data: { url: window.location.href }
+              });
+              return;
+            }
+          }
+          new Notification(title || 'MiniTrend Kids 🧸', {
+            body: bodyText || '',
+            icon: './icon.png?v=3'
+          });
+        } catch (e) {}
+      }
     }
 
     function closePushPopup() {
       document.getElementById('push-noti-popup').classList.add('hidden');
     }
 
-    function checkAndTriggerBroadcastNoti(latestNoti) {
+    async function checkAndTriggerBroadcastNoti(latestNoti) {
       if (!latestNoti || !latestNoti.id || !latestNoti.message) return;
       const lastSeenId = localStorage.getItem('mt_last_seen_noti_id');
       if (lastSeenId !== latestNoti.id) {
         localStorage.setItem('mt_last_seen_noti_id', latestNoti.id);
-        sendPhoneNotification(latestNoti.title || "MiniTrend Kids 🎁", latestNoti.message);
+        try {
+          if ('caches' in window) {
+            const stCache = await caches.open('minitrend-noti-state-v1');
+            await stCache.put('last-noti-id', new Response(latestNoti.id));
+          }
+        } catch (e) {}
+        sendPhoneNotification(latestNoti.title || "MiniTrend Kids 🎁", latestNoti.message, latestNoti.id);
       }
     }
 
@@ -710,7 +781,7 @@
           })
         });
         document.getElementById('broadcast-message').value = "";
-        alert("✅ ဝယ်သူများထံသို့ Notification ပေးပို့ပြီးပါပြီ!");
+        sendPhoneNotification(title, message, 'owner-preview-' + Date.now());
         setTimeout(() => loadVisitorStats(), 800);
       } catch (err) {
         alert("ပေးပို့ရာတွင် အမှားရှိနေပါသည်။");
@@ -847,9 +918,6 @@
       const broadcastInfoEl = document.getElementById('last-broadcast-info');
 
       if (!todayEl) return;
-      todayEl.innerText = "...";
-      yesterdayEl.innerText = "...";
-      totalEl.innerText = "...";
 
       try {
         const res = await fetch(`${APPS_SCRIPT_ORDER_URL}?action=getVisitors&t=${Date.now()}`);
@@ -864,6 +932,18 @@
         }
 
         if (stats.pendingOrders && stats.pendingOrders.length > 0) {
+          // ဝယ်သူထံမှ အော်ဒါအသစ် ဝင်လာပါက ပိုင်ရှင်ဖုန်းသို့ System Notification ပို့ပေးခြင်း
+          const newestOrder = stats.pendingOrders[0];
+          const lastAdminOrderId = localStorage.getItem('mt_admin_last_order_id');
+          if (newestOrder && newestOrder.orderId && lastAdminOrderId !== newestOrder.orderId) {
+            localStorage.setItem('mt_admin_last_order_id', newestOrder.orderId);
+            sendPhoneNotification(
+              `🛍️ ဝယ်သူထံမှ အော်ဒါအသစ်! (${newestOrder.orderId})`,
+              `${newestOrder.name} (${newestOrder.phone}) — စုစုပေါင်း ${Number(newestOrder.grandTotal || 0).toLocaleString()} ကျပ်`,
+              newestOrder.orderId
+            );
+          }
+
           pendingOrdersEl.innerHTML = stats.pendingOrders.map(o => `
             <div class="py-3.5 flex flex-col sm:flex-row justify-between sm:items-center gap-2.5">
               <div class="space-y-1">
@@ -1184,6 +1264,8 @@
 
     function init() {
       setupExitGuard();
+      setupAutoSystemNotiPermission();
+
       const params = new URLSearchParams(window.location.search);
       const role = params.get('role') || window.location.hash.replace('#', '');
       if (role === 'customer') {
@@ -1199,11 +1281,17 @@
       syncCustomerOrderStatus();
       loadProducts();
 
+      // စက္ကန့် ၂၀ တစ်ကြိမ် နောက်ကွယ်မှ Notification နှင့် အော်ဒါအသစ်များကို အလိုအလျောက် စစ်ပေးသည်
       setInterval(() => {
         if (!document.getElementById('customer-view').classList.contains('hidden')) {
           syncCustomerOrderStatus();
+          if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+            navigator.serviceWorker.controller.postMessage({ type: 'CHECK_REMOTE_NOTI' });
+          }
+        } else {
+          loadVisitorStats();
         }
-      }, 45000);
+      }, 20000);
     }
 
     function openSizeModal() {
@@ -1602,7 +1690,7 @@ ${itemLines}
 
       const orderedItemsPayload = cart.map(i => ({ name: i.name, size: i.size, qty: i.qty }));
 
-      // ၁။ ဝယ်သူဖုန်းထဲတွင် ၃ ရက်အတွင်း ပို့ပေးမည့် စာတန်း သိမ်းဆည်းပြီး Permission မလိုဘဲ အသံ + Noti ချက်ချင်း ထုတ်ပေးသည်
+      // ၁။ ဝယ်သူဖုန်းထဲတွင် ၃ ရက်အတွင်း ပို့ပေးမည့် စာတန်း သိမ်းဆည်းပြီး Viber သို့ ရောက်သွားချိန် (App အပြင်ဘက်) တွင်ပါ System Notification ချက်ချင်း ထုတ်ပေးသည်
       const existingOrders = getSavedCustomerOrders();
       existingOrders.unshift({
         orderId: orderId,
@@ -1615,7 +1703,10 @@ ${itemLines}
       cart = [];
       updateCartUI();
       renderCustomerDeliveryBanner();
-      sendPhoneNotification("MiniTrend Kids 💝", ORDER_THANK_YOU_MSG);
+
+      // ချက်ချင်း ၁ ကြိမ် နှင့် Viber ထဲ ရောက်သွားချိန် (၂.၅ စက္ကန့်အကြာ) တွင် ဖုန်းအပေါ်ဆုံးမှ Icon ပုံဖြင့် Notification ထပ်မံကျလာမည်
+      sendPhoneNotification("MiniTrend Kids 💝", ORDER_THANK_YOU_MSG, "order-" + orderId, 0);
+      sendPhoneNotification("MiniTrend Kids 💝", ORDER_THANK_YOU_MSG, "order-viber-" + orderId, 2500);
 
       // ၂။ Google Sheet (Admin Active Orders) သို့ အော်ဒါပို့သည်
       try {
