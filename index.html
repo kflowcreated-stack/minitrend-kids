@@ -17,6 +17,7 @@
   <script>
     window.__deferredInstallPrompt = null;
     window.__pendingAutoInstall = false;
+    window.__currentFcmToken = "";
 
     function isStandaloneApp() {
       return (
@@ -220,8 +221,9 @@
       "၈ - ၉ နှစ်"
     ];
 
+    window.__swRegistrationPromise = null;
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js', { scope: './' }).catch(() => {});
+      window.__swRegistrationPromise = navigator.serviceWorker.register('./sw.js', { scope: './' }).catch(() => null);
     }
   </script>
 
@@ -377,6 +379,7 @@
         <p class="text-xs sm:text-sm text-gray-500">ဝယ်သူများထံ Notification ပေးပို့ခြင်း၊ အော်ဒါစစ်ဆေးခြင်းနှင့် Stock စီမံခြင်း</p>
       </div>
       <div class="flex flex-wrap gap-2">
+        <button type="button" onclick="manualConnectFirebase('admin')" id="btn-admin-fcm" class="bg-purple-600 hover:bg-purple-700 active:scale-95 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-sm transition cursor-pointer">🔔 ဤဖုန်းကို Noti ချိတ်မည်</button>
         <button type="button" onclick="setupNineSheets()" id="btn-setup-sheets" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-sm transition cursor-pointer">📂 Sheet (၉) ခု အလိုအလျောက်ခွဲမည်</button>
         <button type="button" onclick="refreshAdminAll()" id="btn-refresh-admin" class="bg-pink-600 hover:bg-pink-700 active:scale-95 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-sm transition cursor-pointer">🔄 စာရင်းပြန်စစ်မည်</button>
         <button type="button" onclick="switchRole('customer')" class="bg-gray-800 hover:bg-gray-900 active:scale-95 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-sm transition cursor-pointer">🛍️ ဆိုင်မျက်နှာပြင်သို့</button>
@@ -404,8 +407,11 @@
 
     <!-- OWNER DAILY NOTIFICATION SENDER (Firebase Cloud Messaging) -->
     <div class="bg-gradient-to-r from-purple-50 via-pink-50 to-amber-50 p-4 sm:p-5 rounded-2xl shadow-sm border border-pink-200 mb-6">
-      <h3 class="font-extrabold text-sm sm:text-base text-gray-900 mb-1">📢 ဝယ်သူများထံ နေ့စဉ် Notification ပေးပို့ရန် (Google Firebase Push)</h3>
-      <p class="text-xs text-gray-600 mb-3">အောက်ပါအကွက်တွင် နေ့စဉ် ပရိုမိုးရှင်း သို့မဟုတ် ပစ္စည်းအသစ်ရောက်ကြောင်း ရေးသားပြီး ပို့လိုက်ပါက VPN မလိုဘဲ ဝယ်သူဖုန်းများဆီသို့ MiniTrend Kids Icon ပုံလေးဖြင့် Notification တက်လာပါမည်။</p>
+      <div class="flex flex-wrap justify-between items-center gap-2 mb-1">
+        <h3 class="font-extrabold text-sm sm:text-base text-gray-900">📢 ဝယ်သူများထံ နေ့စဉ် Notification ပေးပို့ရန် (Google Firebase Push)</h3>
+        <span id="fcm-sub-badge" class="bg-purple-100 text-purple-800 border border-purple-300 text-[11px] font-extrabold px-2.5 py-0.5 rounded-full">📲 Noti ချိတ်ဆက်ထားသူ: ... ဦး</span>
+      </div>
+      <p class="text-xs text-gray-600 mb-3">အောက်ပါအကွက်တွင် နေ့စဉ် ပရိုမိုးရှင်း သို့မဟုတ် ပစ္စည်းအသစ်ရောက်ကြောင်း ရေးသားပြီး ပို့လိုက်ပါက ဖုန်း Sleep ဖြစ်နေလျှင်ပင် ဝယ်သူဖုန်းများဆီသို့ MiniTrend Kids Icon ပုံလေးဖြင့် Notification တက်လာပါမည်။</p>
       <form onsubmit="sendOwnerBroadcast(event)" class="space-y-2.5 text-xs sm:text-sm">
         <input type="text" id="broadcast-title" value="MiniTrend Kids မှ သတင်းကောင်းလေး! 🎁" required placeholder="Notification ခေါင်းစဉ် *" class="w-full border border-pink-200 rounded-xl px-3 py-2 bg-white font-bold">
         <textarea id="broadcast-message" rows="2" required placeholder="ဝယ်သူများထံ ပို့ချင်သည့် စာသား ရေးပါ (ဥပမာ - မေမေတို့ရေ ဒီနေ့ နွေရာသီဝတ် အဆင်အသစ်လေးတွေ ရောက်ပါတယ်နော် 🧸✨) *" class="w-full border border-pink-200 rounded-xl px-3 py-2 bg-white"></textarea>
@@ -636,40 +642,44 @@
     let latestOrderMessage = "";
     let pushPopupTimer = null;
 
-    // Google Firebase Cloud Messaging (FCM) ချိတ်ဆက်ခြင်း
-    async function initFirebasePush(roleTag) {
+    // Google Firebase Cloud Messaging (FCM) ချိတ်ဆက်ခြင်းနှင့် Token ကို Google Sheet သို့ သေချာပေါက် ပို့ပေးခြင်း
+    async function initFirebasePush(roleTag, allowPrompt = false) {
       try {
-        if (!('Notification' in window) || !('serviceWorker' in navigator) || typeof firebase === 'undefined') return;
+        if (!('Notification' in window) || !('serviceWorker' in navigator) || typeof firebase === 'undefined') return null;
 
         if (!firebase.apps.length) {
           firebase.initializeApp(FIREBASE_CONFIG);
         }
 
         const messaging = firebase.messaging();
-        messaging.onMessage((payload) => {
-          const title = (payload.notification && payload.notification.title) || (payload.data && payload.data.title) || "MiniTrend Kids 🎁";
-          const body = (payload.notification && payload.notification.body) || (payload.data && payload.data.body) || "";
-          sendPhoneNotification(title, body, "fcm-fg-" + Date.now());
-        });
+        if (!window.__fcmForegroundBound) {
+          window.__fcmForegroundBound = true;
+          messaging.onMessage((payload) => {
+            const title = (payload.notification && payload.notification.title) || (payload.data && payload.data.title) || "MiniTrend Kids 🎁";
+            const body = (payload.notification && payload.notification.body) || (payload.data && payload.data.body) || "";
+            sendPhoneNotification(title, body, "fcm-fg-" + Date.now());
+          });
+        }
 
-        if (Notification.permission === 'default') {
+        if (Notification.permission === 'default' && allowPrompt) {
           await Notification.requestPermission();
         }
-        if (Notification.permission !== 'granted') return;
+        if (Notification.permission !== 'granted') return null;
 
-        const reg = await navigator.serviceWorker.ready;
+        const reg = (await window.__swRegistrationPromise) || (await navigator.serviceWorker.ready);
         const currentToken = await messaging.getToken({
           vapidKey: FIREBASE_VAPID_KEY,
           serviceWorkerRegistration: reg
         });
 
         if (currentToken) {
-          const savedKey = "mt_fcm_" + roleTag + "_" + currentToken.substring(0, 16);
-          if (localStorage.getItem("mt_fcm_last_key") !== savedKey) {
+          window.__currentFcmToken = currentToken;
+          const sessionSyncKey = "mt_fcm_synced_" + roleTag;
+          if (!sessionStorage.getItem(sessionSyncKey)) {
             await fetch(APPS_SCRIPT_ORDER_URL, {
               method: "POST",
               mode: "no-cors",
-              headers: { "Content-Type": "application/json" },
+              headers: { "Content-Type": "text/plain;charset=utf-8" },
               body: JSON.stringify({
                 action: "saveFcmToken",
                 token: currentToken,
@@ -677,10 +687,32 @@
                 device: navigator.userAgent.substring(0, 80)
               })
             });
-            localStorage.setItem("mt_fcm_last_key", savedKey);
+            sessionStorage.setItem(sessionSyncKey, "1");
           }
+          const adminBtn = document.getElementById('btn-admin-fcm');
+          if (adminBtn && roleTag === 'admin') {
+            adminBtn.innerText = "✅ ဤဖုန်း Noti ချိတ်ပြီး";
+          }
+          return currentToken;
         }
-      } catch (e) {}
+      } catch (e) {
+        console.error("FCM Init Error:", e);
+      }
+      return null;
+    }
+
+    async function manualConnectFirebase(roleTag) {
+      const btn = document.getElementById('btn-admin-fcm');
+      if (btn) btn.innerText = "⏳ ချိတ်ဆက်နေသည်...";
+      sessionStorage.removeItem("mt_fcm_synced_" + roleTag);
+      const tk = await initFirebasePush(roleTag, true);
+      if (tk) {
+        alert("✅ ဤဖုန်းကို Firebase Background Notification စနစ်နှင့် အောင်မြင်စွာ ချိတ်ဆက်ပြီးပါပြီ!");
+        refreshAdminAll();
+      } else {
+        if (btn) btn.innerText = "🔔 ဤဖုန်းကို Noti ချိတ်မည်";
+        alert("⚠️ ಫုန်း Browser Settings တွင် Notification ကို Allow (ခွင့်ပြုသည်) ပေးထားကြောင်း စစ်ဆေးပေးပါ။");
+      }
     }
 
     function saveCustomerProfile(name, phone, address) {
@@ -732,19 +764,18 @@
       } catch (e) {}
     }
 
+    // Android နှင့် iPhone များတွင် click စစ်စစ်ဖြင့်သာ Permission တောင်းခံပြီး Token ထုတ်ယူခြင်း
     function setupAutoSystemNotiPermission() {
-      const requestOnce = async () => {
+      const requestOnClick = async () => {
         const isAdminOpen = document.getElementById('admin-view') && !document.getElementById('admin-view').classList.contains('hidden');
         const roleTag = isAdminOpen ? 'admin' : 'customer';
-        await initFirebasePush(roleTag);
-        if ('Notification' in window && Notification.permission === 'granted') {
+        const token = await initFirebasePush(roleTag, true);
+        if (token) {
           registerVPNFreeBackgroundSync();
+          document.removeEventListener('click', requestOnClick);
         }
-        document.removeEventListener('click', requestOnce);
-        document.removeEventListener('touchstart', requestOnce);
       };
-      document.addEventListener('click', requestOnce, { once: true });
-      document.addEventListener('touchstart', requestOnce, { once: true });
+      document.addEventListener('click', requestOnClick);
     }
 
     function formatOrderDateTime(val) {
@@ -880,13 +911,13 @@
 
       const btn = document.getElementById('btn-send-broadcast');
       btn.disabled = true;
-      btn.innerText = "⏳ Notification ပေးပို့နေပါသည်...";
+      btn.innerText = "⏳ Firebase သို့ ပေးပို့နေပါသည်...";
 
       try {
         await fetch(APPS_SCRIPT_ORDER_URL, {
           method: "POST",
           mode: "no-cors",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({
             action: "sendBroadcast",
             title: title,
@@ -894,17 +925,16 @@
           })
         });
         document.getElementById('broadcast-message').value = "";
-        sendPhoneNotification(title, message, 'owner-preview-' + Date.now());
-        setTimeout(() => refreshAdminAll(), 800);
+        setTimeout(() => refreshAdminAll(), 1000);
       } catch (err) {
         alert("ပေးပို့ရာတွင် အမှားရှိနေပါသည်။");
       }
 
       btn.disabled = false;
-      btn.innerText = "✅ ပေးပို့ပြီးပါပြီ";
+      btn.innerText = "✅ ပေးပို့ပြီးပါပြီ (ဖုန်းများသို့ ရောက်ရှိသွားပါပြီ)";
       setTimeout(() => {
         btn.innerText = "🔔 ဝယ်သူများထံ Notification ချက်ချင်းပို့မည်";
-      }, 2000);
+      }, 2500);
     }
 
     function getSavedCustomerOrders() {
@@ -955,7 +985,7 @@
       fetch(APPS_SCRIPT_ORDER_URL, {
         method: "POST",
         mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify({
           action: "visit",
           device: device,
@@ -972,7 +1002,7 @@
         await fetch(APPS_SCRIPT_ORDER_URL, {
           method: "POST",
           mode: "no-cors",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({ action: "setupCategorySheets" })
         });
         alert("✅ Google Sheet ထဲတွင် (ဝမ်းဆက်၊ နွေရာသီဝတ်၊ အင်္ကျီ၊ ဘောင်းဘီ၊ ဦးထုတ်၊ ဖိနပ်၊ မွေးကင်းစလေးများ၊ သင်ကြားရေး၊ ကစားစရာ) Sheet (၉) ခုလုံးကို တည်ဆောက်ပေးပြီးပါပြီ!");
@@ -988,7 +1018,7 @@
         await fetch(APPS_SCRIPT_ORDER_URL, {
           method: "POST",
           mode: "no-cors",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({ action: "markDelivered", orderId: orderId })
         });
         setTimeout(() => refreshAdminAll(), 800);
@@ -1027,6 +1057,7 @@
       const listEl = document.getElementById('recent-visitors-list');
       const pendingOrdersEl = document.getElementById('admin-pending-orders');
       const broadcastInfoEl = document.getElementById('last-broadcast-info');
+      const fcmSubBadge = document.getElementById('fcm-sub-badge');
 
       if (!todayEl) return;
 
@@ -1036,6 +1067,10 @@
         todayEl.innerText = (stats.today || 0).toLocaleString() + " ဦး";
         yesterdayEl.innerText = (stats.yesterday || 0).toLocaleString() + " ဦး";
         totalEl.innerText = (stats.total || 0).toLocaleString() + " ဦး";
+
+        if (fcmSubBadge && stats.fcmSubscribers !== undefined) {
+          fcmSubBadge.innerText = `📲 Noti ချိတ်ဆက်ထားသူ: ${stats.fcmSubscribers} ဦး`;
+        }
 
         if (stats.latestNoti && stats.latestNoti.message) {
           broadcastInfoEl.classList.remove('hidden');
@@ -1419,9 +1454,10 @@
         trackCustomerVisit();
       }
 
+      // Permission ပေးပြီးသားဖုန်းဖြစ်ပါက စာမျက်နှာပွင့်သည်နှင့် Token ကို Google Sheet သို့ တန်းပို့ပေးမည်
       if ('Notification' in window && Notification.permission === 'granted') {
         registerVPNFreeBackgroundSync();
-        initFirebasePush(activeRole);
+        initFirebasePush(activeRole, false);
       }
 
       syncCustomerOrderStatus();
@@ -1557,12 +1593,16 @@
       if (role === 'admin') {
         document.getElementById('customer-view').classList.add('hidden');
         document.getElementById('admin-view').classList.remove('hidden');
-        initFirebasePush('admin');
+        if ('Notification' in window && Notification.permission === 'granted') {
+          initFirebasePush('admin', false);
+        }
         loadVisitorStats();
       } else {
         document.getElementById('admin-view').classList.add('hidden');
         document.getElementById('customer-view').classList.remove('hidden');
-        initFirebasePush('customer');
+        if ('Notification' in window && Notification.permission === 'granted') {
+          initFirebasePush('customer', false);
+        }
         syncCustomerOrderStatus();
       }
     }
@@ -1874,7 +1914,7 @@ ${itemLines}
         await fetch(APPS_SCRIPT_ORDER_URL, {
           method: "POST",
           mode: "no-cors",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({
             orderId,
             name,
@@ -1884,7 +1924,8 @@ ${itemLines}
             items: orderedItemsPayload,
             subtotal,
             delivery: DELIVERY_FEE,
-            grandTotal
+            grandTotal,
+            fcmToken: window.__currentFcmToken || ""
           })
         });
       } catch (err) {
