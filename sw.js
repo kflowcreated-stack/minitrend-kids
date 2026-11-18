@@ -1,13 +1,13 @@
 importScripts('https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js');
 
-const CACHE_NAME = 'minitrend-kids-v7';
+const CACHE_NAME = 'minitrend-kids-v8';
 const STATE_CACHE = 'minitrend-noti-state-v1';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzjiat7rNkOGkQYjf3RT6rC4g5AdXiVtraecqUTG8wXcu4l6Dm1mmtnXpVhaxjAzsrd/exec';
 
 const APP_SHELL = [
   './',
   './index.html',
-  './manifest.json?v=4',
+  './manifest.json?v=5',
   './icon.png?v=3'
 ];
 
@@ -129,44 +129,23 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // စာမျက်နှာအသစ် (index.html) ကို အမြဲ Network မှ တိုက်ရိုက်အရင်ယူမည် (အင်တာနက်ပြတ်မှသာ Cache သုံးမည်)
   if (req.mode === 'navigate') {
     event.respondWith(
-      new Promise((resolve) => {
-        let settled = false;
-        const timeoutId = setTimeout(async () => {
-          if (settled) return;
+      fetch(req)
+        .then((networkRes) => {
+          if (networkRes && networkRes.status === 200) {
+            const clone = networkRes.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put('./index.html', clone));
+          }
+          return networkRes;
+        })
+        .catch(async () => {
           const cachedPage =
             (await caches.match('./index.html', { ignoreSearch: true })) ||
             (await caches.match('./', { ignoreSearch: true }));
-          if (cachedPage) {
-            settled = true;
-            resolve(cachedPage);
-          }
-        }, 1500);
-
-        fetch(req)
-          .then((networkRes) => {
-            clearTimeout(timeoutId);
-            if (networkRes && networkRes.status === 200) {
-              const clone = networkRes.clone();
-              caches.open(CACHE_NAME).then((cache) => cache.put('./index.html', clone));
-            }
-            if (!settled) {
-              settled = true;
-              resolve(networkRes);
-            }
-          })
-          .catch(async () => {
-            clearTimeout(timeoutId);
-            if (!settled) {
-              settled = true;
-              const cachedPage =
-                (await caches.match('./index.html', { ignoreSearch: true })) ||
-                (await caches.match('./', { ignoreSearch: true }));
-              resolve(cachedPage || Response.error());
-            }
-          });
-      })
+          return cachedPage || Response.error();
+        })
     );
     return;
   }
