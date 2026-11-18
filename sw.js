@@ -1,6 +1,6 @@
 importScripts('https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js');
 
-const CACHE_NAME = 'minitrend-kids-v9';
+const CACHE_NAME = 'minitrend-kids-v10';
 const STATE_CACHE = 'minitrend-noti-state-v1';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzjiat7rNkOGkQYjf3RT6rC4g5AdXiVtraecqUTG8wXcu4l6Dm1mmtnXpVhaxjAzsrd/exec';
 
@@ -130,21 +130,44 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // ဖုန်းထဲတွင် သိမ်းထားပြီးသားဖြစ်ပါက အင်တာနက်မစောင့်ဘဲ ချက်ချင်းပြသပြီး နောက်ကွယ်မှ Update ယူပေးမည်
+  // App ဖွင့်လိုက်သည်နှင့် ဗားရှင်းအသစ်ကို ၁.၅ စက္ကန့်အတွင်း အရင်ယူပေးပြီး လိုင်းနှေးမှသာ Cache မှ ဖွင့်ပေးမည်
   if (req.mode === 'navigate') {
     event.respondWith(
-      caches.match('./index.html', { ignoreSearch: true }).then((cachedPage) => {
-        const networkFetch = fetch(req)
+      new Promise((resolve) => {
+        let settled = false;
+        const timer = setTimeout(async () => {
+          if (settled) return;
+          const cached =
+            (await caches.match('./index.html', { ignoreSearch: true })) ||
+            (await caches.match('./', { ignoreSearch: true }));
+          if (cached) {
+            settled = true;
+            resolve(cached);
+          }
+        }, 1500);
+
+        fetch(req)
           .then((networkRes) => {
+            clearTimeout(timer);
             if (networkRes && networkRes.status === 200) {
               const clone = networkRes.clone();
               caches.open(CACHE_NAME).then((cache) => cache.put('./index.html', clone));
             }
-            return networkRes;
+            if (!settled) {
+              settled = true;
+              resolve(networkRes);
+            }
           })
-          .catch(() => cachedPage || Response.error());
-
-        return cachedPage || networkFetch;
+          .catch(async () => {
+            clearTimeout(timer);
+            if (!settled) {
+              settled = true;
+              const cached =
+                (await caches.match('./index.html', { ignoreSearch: true })) ||
+                (await caches.match('./', { ignoreSearch: true }));
+              resolve(cached || Response.error());
+            }
+          });
       })
     );
     return;
