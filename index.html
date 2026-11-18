@@ -9,13 +9,14 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="MiniTrend Kids" />
-  <link rel="manifest" href="./manifest.json?v=5" />
+  <link rel="manifest" href="./manifest.json?v=4" />
   <link rel="icon" type="image/png" href="./icon.png?v=3" />
   <link rel="apple-touch-icon" href="./icon.png?v=3" />
 
-  <!-- Chrome & iOS Standalone စစ်ဆေးခြင်း -->
+  <!-- Direct Install Prompt နှင့် Standalone Mode စစ်ဆေးခြင်း -->
   <script>
     window.__deferredInstallPrompt = null;
+    window.__pendingAutoInstall = false;
 
     function isStandaloneApp() {
       return (
@@ -26,46 +27,35 @@
       );
     }
 
-    function isIOSDevice() {
-      var ua = navigator.userAgent || '';
-      return /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-    }
-
-    function isInAppBrowser() {
-      var ua = navigator.userAgent || '';
-      return /FBAN|FBAV|Viber|Line|Instagram|MicroMessenger|MiuiBrowser|XiaoMi|UCBrowser/i.test(ua);
-    }
-
-    function isChromeBrowser() {
-      var ua = navigator.userAgent || '';
-      return /Chrome\/[.0-9]*/.test(ua) && !isInAppBrowser() && !/SamsungBrowser|Opera|OPR|EdgA/i.test(ua);
-    }
-
-    function updateInstallButtonVisibility() {
-      var wrap = document.getElementById('pwa-install-wrapper');
-      if (!wrap) return;
-      if (isStandaloneApp()) {
-        wrap.classList.add('hidden');
-        return;
-      }
-      wrap.classList.remove('hidden');
+    if (isStandaloneApp()) {
+      try { localStorage.setItem('mt_pwa_installed', '1'); } catch (e) {}
     }
 
     window.addEventListener('beforeinstallprompt', function(e) {
       e.preventDefault();
       window.__deferredInstallPrompt = e;
-      updateInstallButtonVisibility();
+      try { localStorage.removeItem('mt_pwa_installed'); } catch (err) {}
+      var wrap = document.getElementById('pwa-install-wrapper');
+      if (wrap && !isStandaloneApp()) {
+        wrap.classList.remove('hidden');
+      }
+      if (window.__pendingAutoInstall && typeof runNativeInstallPrompt === 'function') {
+        window.__pendingAutoInstall = false;
+        runNativeInstallPrompt();
+      }
     });
 
     window.addEventListener('appinstalled', function() {
       window.__deferredInstallPrompt = null;
+      window.__pendingAutoInstall = false;
+      try { localStorage.setItem('mt_pwa_installed', '1'); } catch (e) {}
       var wrap = document.getElementById('pwa-install-wrapper');
       if (wrap) wrap.classList.add('hidden');
     });
   </script>
 
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Padauk:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Padauk:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
   <style>
     body { font-family: 'Padauk', sans-serif; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -251,9 +241,7 @@
     ];
 
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js', { scope: './' }).then(function(reg) {
-        reg.update().catch(function() {});
-      }).catch(function() {});
+      navigator.serviceWorker.register('./sw.js', { scope: './' }).catch(() => {});
     }
   </script>
 
@@ -269,6 +257,14 @@
         <p id="push-noti-body" class="text-xs sm:text-sm text-white font-bold mt-1 leading-relaxed"></p>
       </div>
       <button onclick="closePushPopup()" class="text-gray-400 hover:text-white font-bold text-lg leading-none px-1">✕</button>
+    </div>
+  </div>
+
+  <!-- Quick 1-Line Bottom Bar (No Guide Modal) -->
+  <div id="install-quick-bar" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-md hidden">
+    <div class="bg-gray-900/95 text-white px-4 py-3 rounded-2xl shadow-2xl border border-pink-400 flex items-center justify-between gap-2 text-xs font-bold">
+      <span id="install-quick-text" class="leading-relaxed"></span>
+      <button onclick="document.getElementById('install-quick-bar').classList.add('hidden')" class="text-gray-300 hover:text-white text-base px-1 shrink-0">✕</button>
     </div>
   </div>
 
@@ -323,9 +319,9 @@
           </div>
         </div>
 
-        <!-- Compact 3D Action Buttons (မူလအတိုင်း hidden ထားပြီး Browser ဖြင့် ဝင်ကြည့်မှသာ ဖော်ပြမည်) -->
+        <!-- Compact 3D Action Buttons with Animated Arrow & Flashing "App ဒေါင်းမည်" -->
         <div class="flex items-center gap-1 sm:gap-2 shrink-0">
-          <div id="pwa-install-wrapper" class="hidden flex items-center gap-0.5">
+          <div id="pwa-install-wrapper" class="flex items-center gap-0.5">
             <span class="arrow-bounce-anim text-sm sm:text-base select-none">👉</span>
             <button id="pwa-install-btn" onclick="triggerPWAInstall()" class="app-download-glow text-white px-2 sm:px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-extrabold flex items-center gap-0.5 border border-yellow-200">
               <span>📲 App ဒေါင်းမည်</span>
@@ -344,8 +340,12 @@
       </div>
     </header>
 
+    <!-- App Install ပြီးသားဆိုပါက ခလုတ်ကို ချက်ချင်းဖျောက်ထားမည် -->
     <script>
-      updateInstallButtonVisibility();
+      if (isStandaloneApp() || localStorage.getItem('mt_pwa_installed') === '1') {
+        var wrapEl = document.getElementById('pwa-install-wrapper');
+        if (wrapEl) wrapEl.classList.add('hidden');
+      }
     </script>
 
     <!-- CUSTOMER DELIVERY STATUS BANNER (3-Day Warm Message) -->
@@ -475,56 +475,6 @@
     <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border">
       <h3 class="font-bold text-base sm:text-lg mb-4">📦 လက်ရှိ Google Sheet မှ ပစ္စည်းနှင့် အရွယ်အစားအလိုက် Stock စာရင်း</h3>
       <div id="admin-product-list" class="divide-y"></div>
-    </div>
-  </div>
-
-  <!-- ================= SMART CHROME & IPHONE INSTALL MODAL ================= -->
-  <div id="pwa-guide-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-md w-full p-5 shadow-xl">
-      <div class="flex justify-between items-center border-b pb-3 mb-3">
-        <div class="flex items-center gap-2">
-          <img src="./icon.png?v=3" class="w-8 h-8 rounded-lg object-cover" />
-          <h3 class="text-base font-bold text-gray-900">MiniTrend Kids App ဒေါင်းယူနည်း</h3>
-        </div>
-        <button onclick="closePWAGuide()" class="text-gray-500 hover:text-gray-800 font-bold text-xl">✕</button>
-      </div>
-
-      <!-- ၁။ Android In-App Browser (Viber/FB) မှ ဝင်လာမှသာ ပြမည့် Chrome ဖွင့်ရန် ခလုတ် -->
-      <div id="guide-open-chrome-box" class="hidden mb-3 p-3 bg-amber-50 border border-amber-300 rounded-xl text-center space-y-2">
-        <p class="text-xs font-bold text-gray-800">⚠️ App ဒေါင်းယူရန် <b>Google Chrome Browser</b> ဖြင့် အရင်ဖွင့်ပေးပါ-</p>
-        <a href="intent://kflowcreated-stack.github.io/minitrend-kids/?role=customer#Intent;scheme=https;package=com.android.chrome;end"
-           class="block w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-2.5 px-3 rounded-xl text-xs sm:text-sm shadow">
-          🚀 Chrome ဖြင့် တိုက်ရိုက်ဖွင့်၍ App သွင်းမည်
-        </a>
-      </div>
-
-      <!-- ၂။ Android Google Chrome အတွက် သီးသန့် လမ်းညွှန် -->
-      <div id="guide-android-chrome-box" class="hidden p-3.5 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-gray-700 leading-relaxed space-y-1.5">
-        <p class="font-extrabold text-emerald-900 text-sm">🌐 Google Chrome မှ App သွင်းနည်း:</p>
-        <p>၁။ Chrome ၏ ညာဘက်အပေါ်ထောင့်ရှိ <b>အစက် ၃ စက် (⋮)</b> ကို နှိပ်ပါ။</p>
-        <p>၂။ ပေါ်လာသော စာရင်းထဲမှ <b>"Add to Home screen"</b> သို့မဟုတ် <b>"Install app"</b> ကို နှိပ်ပါ။</p>
-        <p>၃။ <b>Install</b> ကို ထပ်နှိပ်လိုက်ပါက ဖုန်း Screen ပေါ်တွင် <b>MiniTrend Kids App</b> ရောက်ရှိပါမည်။</p>
-      </div>
-
-      <!-- ၃။ iPhone / iPad (iOS) အတွက် သီးသန့် လမ်းညွှန် -->
-      <div id="guide-ios-box" class="hidden space-y-2.5 text-xs text-gray-700 leading-relaxed">
-        <div id="guide-ios-inapp-warn" class="hidden p-3 bg-amber-50 border border-amber-300 rounded-xl space-y-2">
-          <p class="font-bold text-gray-900">⚠️ iPhone တွင် App သွင်းရန် <b>Safari Browser</b> ဖြင့် ဖွင့်ရပါမည်-</p>
-          <p>ညာဘက်အောက်ခြေရှိ <b>Safari Icon (🧭)</b> ကို နှိပ်ဖွင့်ပါ (သို့မဟုတ်) အောက်ပါခလုတ်ဖြင့် Link Copy ကူးပြီး Safari တွင် ဖွင့်ပါ-</p>
-          <button type="button" onclick="copySiteLinkForSafari()" class="w-full bg-pink-600 text-white font-extrabold py-2 rounded-lg text-xs shadow">
-            📋 Website Link Copy ကူးမည် (Safari တွင် ဖွင့်ရန်)
-          </button>
-        </div>
-
-        <div class="p-3.5 bg-pink-50 border border-pink-200 rounded-xl space-y-1.5">
-          <p class="font-extrabold text-pink-900 text-sm">🍎 iPhone / iPad (Safari Browser) မှ App သွင်းနည်း:</p>
-          <p>၁။ Safari ၏ အောက်ခြေအလယ်ရှိ <b>Share ခလုတ် (⬆️ လေးထောင့်နှင့်မြှားပုံ)</b> ကို နှိပ်ပါ။</p>
-          <p>၂။ အောက်သို့အနည်းငယ်ဆွဲပြီး <b>"Add to Home Screen"</b> ကို နှိပ်ပါ။</p>
-          <p>၃။ ညာဘက်အပေါ်ထောင့်ရှိ <b>"Add"</b> ကို နှိပ်လိုက်ပါက Home Screen ပေါ်သို့ App ရောက်ရှိပါမည်။</p>
-        </div>
-      </div>
-
-      <button onclick="closePWAGuide()" class="mt-4 w-full bg-gray-900 text-white font-bold py-2.5 rounded-xl text-sm">နားလည်ပါပြီ</button>
     </div>
   </div>
 
@@ -1106,58 +1056,76 @@
         .replace('၁ နှစ် - ၂ နှစ်', '၁-၂ နှစ်');
     }
 
-    // ================= SMART CHROME & IPHONE INSTALL HANDLER =================
-    function copySiteLinkForSafari() {
-      const siteUrl = window.location.origin + window.location.pathname + '?role=customer';
-      silentCopy(siteUrl);
-      alert('Website Link ကို Copy ကူးပြီးပါပြီ! Safari Browser ကို ဖွင့်ပြီး Paste ချဝင်ရောက်ကာ Home Screen ပေါ်သို့ Add လုပ်နိုင်ပါပြီ။');
+    // ================= DIRECT INSTALL HANDLER (NO GUIDE MODAL) =================
+    function isIOSDevice() {
+      const ua = navigator.userAgent || '';
+      return /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     }
 
-    async function triggerPWAInstall() {
-      // ၁။ Android Chrome မှ Direct Install Box ဖွင့်၍ရပါက တိုက်ရိုက် Install ခေါ်ပေးမည်
-      if (window.__deferredInstallPrompt) {
+    function isAndroidInAppBrowser() {
+      const ua = navigator.userAgent || '';
+      return /Android/i.test(ua) && /MiuiBrowser|XiaoMi|FBAN|FBAV|Viber|Line|SamsungBrowser|UCBrowser|Opera|OPR|EdgA/i.test(ua);
+    }
+
+    function showBottomBanner(msgText) {
+      const bar = document.getElementById('install-quick-bar');
+      const txt = document.getElementById('install-quick-text');
+      if (!bar || !txt) return;
+      txt.innerText = msgText;
+      bar.classList.remove('hidden');
+      clearTimeout(window.__installBarTimer);
+      window.__installBarTimer = setTimeout(() => {
+        bar.classList.add('hidden');
+      }, 7000);
+    }
+
+    async function runNativeInstallPrompt() {
+      const btn = document.getElementById('pwa-install-btn');
+      if (btn) btn.innerHTML = '<span>📲 App ဒေါင်းမည်</span>';
+      if (!window.__deferredInstallPrompt) return;
+      try {
         window.__deferredInstallPrompt.prompt();
-        const { outcome } = await window.__deferredInstallPrompt.userChoice;
-        if (outcome === 'accepted') {
+        const choice = await window.__deferredInstallPrompt.userChoice;
+        if (choice && choice.outcome === 'accepted') {
           window.__deferredInstallPrompt = null;
+          localStorage.setItem('mt_pwa_installed', '1');
           const wrap = document.getElementById('pwa-install-wrapper');
           if (wrap) wrap.classList.add('hidden');
         }
+      } catch (e) {}
+    }
+
+    async function triggerPWAInstall() {
+      // ၁။ Chrome တွင် တိုက်ရိုက် Install ခိုင်းမည်
+      if (window.__deferredInstallPrompt) {
+        await runNativeInstallPrompt();
         return;
       }
 
-      // ၂။ ဖုန်းအမျိုးအစားအလိုက် သက်ဆိုင်ရာ လမ်းညွှန်တစ်ခုတည်းကိုသာ ရွေးပြပေးမည်
-      const openChromeBox = document.getElementById('guide-open-chrome-box');
-      const androidChromeBox = document.getElementById('guide-android-chrome-box');
-      const iosBox = document.getElementById('guide-ios-box');
-      const iosInAppWarn = document.getElementById('guide-ios-inapp-warn');
-
-      openChromeBox.classList.add('hidden');
-      androidChromeBox.classList.add('hidden');
-      iosBox.classList.add('hidden');
-      iosInAppWarn.classList.add('hidden');
-
+      // ၂။ iPhone / iPad (Apple စနစ်အရ Safari Share ခလုတ်မှတစ်ဆင့်သာ သွင်းခွင့်ပြုသဖြင့် အောက်ခြေစာတန်းတိုလေးသာ ပြမည်)
       if (isIOSDevice()) {
-        iosBox.classList.remove('hidden');
-        if (isInAppBrowser()) {
-          iosInAppWarn.classList.remove('hidden');
+        showBottomBanner("🍎 iPhone: အောက်ခြေ Share (⬆️) ကိုနှိပ်ပြီး 'Add to Home Screen' ကို ရွေးပါ");
+        return;
+      }
+
+      // ၃။ Viber / Mi Browser စသည်တို့မှ ဖွင့်ထားပါက Chrome ဖြင့် တိုက်ရိုက်ဖွင့်ပေးမည်
+      if (isAndroidInAppBrowser()) {
+        window.location.href = "intent://kflowcreated-stack.github.io/minitrend-kids/?role=customer#Intent;scheme=https;package=com.android.chrome;end";
+        return;
+      }
+
+      // ၄။ Chrome စဖွင့်ခါစ ဖြစ်နေပါက စက္ကန့်အနည်းငယ် စောင့်ခိုင်းပြီး Install အကွက် တန်းဖွင့်ပေးမည်
+      const btn = document.getElementById('pwa-install-btn');
+      if (btn) btn.innerHTML = '<span>⏳ ခဏစောင့်ပါ...</span>';
+      window.__pendingAutoInstall = true;
+
+      setTimeout(() => {
+        if (window.__pendingAutoInstall) {
+          window.__pendingAutoInstall = false;
+          if (btn) btn.innerHTML = '<span>📲 App ဒေါင်းမည်</span>';
+          showBottomBanner("📲 Chrome ညာဘက်အပေါ် (⋮) > 'Install app' (သို့) 'Add to Home screen' ကို နှိပ်ပါ");
         }
-      } else if (isChromeBrowser()) {
-        androidChromeBox.classList.remove('hidden');
-      } else {
-        openChromeBox.classList.remove('hidden');
-        androidChromeBox.classList.remove('hidden');
-      }
-
-      document.getElementById('pwa-guide-modal').classList.remove('hidden');
-      pushModalHistory('pwaguide');
-    }
-
-    function closePWAGuide() {
-      document.getElementById('pwa-guide-modal').classList.add('hidden');
-      if (history.state && history.state.modal === 'pwaguide') {
-        history.back();
-      }
+      }, 2500);
     }
 
     // ================= MOBILE BACK BUTTON & DOUBLE-BACK EXIT HANDLER =================
@@ -1180,7 +1148,6 @@
       document.getElementById('size-calc-modal').classList.add('hidden');
       document.getElementById('link-modal').classList.add('hidden');
       document.getElementById('image-lightbox-modal').classList.add('hidden');
-      document.getElementById('pwa-guide-modal').classList.add('hidden');
     }
 
     function setupExitGuard() {
@@ -1199,9 +1166,8 @@
       const isSizeOpen = !document.getElementById('size-calc-modal').classList.contains('hidden');
       const isLinkOpen = !document.getElementById('link-modal').classList.contains('hidden');
       const isLightboxOpen = !document.getElementById('image-lightbox-modal').classList.contains('hidden');
-      const isPwaOpen = !document.getElementById('pwa-guide-modal').classList.contains('hidden');
 
-      if (isCartOpen || isSizeOpen || isLinkOpen || isLightboxOpen || isPwaOpen) {
+      if (isCartOpen || isSizeOpen || isLinkOpen || isLightboxOpen) {
         closeAllModalsUI();
         return;
       }
@@ -1396,7 +1362,11 @@
     function init() {
       setupExitGuard();
       setupAutoSystemNotiPermission();
-      updateInstallButtonVisibility();
+
+      if (isStandaloneApp() || localStorage.getItem('mt_pwa_installed') === '1') {
+        const wrap = document.getElementById('pwa-install-wrapper');
+        if (wrap) wrap.classList.add('hidden');
+      }
 
       const params = new URLSearchParams(window.location.search);
       const role = params.get('role') || window.location.hash.replace('#', '');
