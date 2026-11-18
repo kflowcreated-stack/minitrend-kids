@@ -306,9 +306,6 @@
       }
     </script>
 
-    <!-- CUSTOMER DELIVERY STATUS BANNER (3-Day Warm Message) -->
-    <div id="customer-delivery-banner" class="hidden max-w-6xl mx-auto px-2.5 pt-2"></div>
-
     <!-- Active Size Recommendation Banner -->
     <div id="recommended-size-banner" class="hidden max-w-6xl mx-auto px-2.5 pt-2">
       <div class="bg-amber-50 border border-amber-400 rounded-xl p-2 flex justify-between items-center gap-2 shadow-sm">
@@ -426,7 +423,7 @@
       <div class="flex justify-between items-center mb-3">
         <div>
           <h3 class="font-bold text-sm sm:text-base text-gray-900">🚚 ပို့ဆောင်ရန် ကျန်ရှိသော အော်ဒါများ (Active Orders)</h3>
-          <p class="text-[11px] text-gray-500">ဝယ်သူထံ ပစ္စည်းရောက်ရှိသွားပါက <b>"✅ ပို့ပေးပြီး"</b> ကို နှိပ်လိုက်လျှင် ဝယ်သူဖုန်းထဲမှ ၃ ရက်အတွင်း ပို့ပေးမည့် စာတန်း အလိုအလျောက် ပျောက်သွားပါမည်။</p>
+          <p class="text-[11px] text-gray-500">ဝယ်သူထံ ပစ္စည်းရောက်ရှိသွားပါက <b>"✅ ပို့ပေးပြီး"</b> ကို နှိပ်လိုက်လျှင် ဝယ်သူ၏ ခြင်းတောင်းထဲမှ ထိုအော်ဒါစာရင်း အလိုအလျောက် ပျောက်သွားပါမည်။</p>
         </div>
       </div>
       <div id="admin-pending-orders" class="divide-y text-xs">
@@ -884,37 +881,8 @@
       localStorage.setItem('mt_customer_orders', JSON.stringify(list));
     }
 
-    function renderCustomerDeliveryBanner() {
-      const bannerEl = document.getElementById('customer-delivery-banner');
-      if (!bannerEl) return;
-
-      const orders = getSavedCustomerOrders();
-      if (orders.length === 0) {
-        bannerEl.classList.add('hidden');
-        bannerEl.innerHTML = '';
-        return;
-      }
-
-      bannerEl.classList.remove('hidden');
-      bannerEl.innerHTML = orders.map(ord => `
-        <div class="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 text-white rounded-2xl p-3 sm:p-3.5 mb-2 shadow-md border border-emerald-400/40 flex flex-col sm:flex-row justify-between sm:items-center gap-1.5">
-          <div class="flex items-start sm:items-center gap-2.5">
-            <span class="text-xl sm:text-2xl shrink-0">💝</span>
-            <div>
-              <p class="text-xs sm:text-sm font-extrabold leading-relaxed">${ORDER_THANK_YOU_MSG}</p>
-              <p class="text-[11px] sm:text-xs text-emerald-100 font-bold mt-1">
-                📦 အရေအတွက်: <b class="text-amber-300">${ord.totalQty} ခု</b> &nbsp;|&nbsp; 💰 စုစုပေါင်းကျသင့်ငွေ (COD): <b class="text-amber-300">${Number(ord.grandTotal).toLocaleString()} ကျပ်</b>
-                <span class="opacity-80 ml-1">(#${ord.orderId})</span>
-              </p>
-            </div>
-          </div>
-        </div>
-      `).join('');
-    }
-
     async function syncCustomerOrderStatus() {
       const orders = getSavedCustomerOrders();
-      renderCustomerDeliveryBanner();
 
       try {
         const ids = orders.map(o => o.orderId).join(',');
@@ -927,7 +895,9 @@
           if (orders.length > 0 && Array.isArray(data.activeOrderIds)) {
             const stillActive = orders.filter(o => data.activeOrderIds.includes(o.orderId));
             saveCustomerOrders(stillActive);
-            renderCustomerDeliveryBanner();
+            if (!document.getElementById('cart-modal').classList.contains('hidden')) {
+              updateCartUI();
+            }
           }
         }
       } catch (err) {}
@@ -1737,13 +1707,25 @@
       if (cart.length === 0) {
         const activeOrders = getSavedCustomerOrders();
         if (activeOrders.length > 0) {
-          cartItemsEl.innerHTML = activeOrders.map(ord => `
-            <div class="bg-emerald-50 border border-emerald-300 rounded-xl p-3.5 text-center space-y-1.5">
-              <p class="text-xs sm:text-sm font-extrabold text-emerald-900 leading-relaxed">💝 ${ORDER_THANK_YOU_MSG}</p>
-              <p class="text-xs font-bold text-emerald-700">ပစ္စည်းအရေအတွက်: <b>${ord.totalQty} ခု</b> | စုစုပေါင်းကျသင့်ငွေ: <b>${Number(ord.grandTotal).toLocaleString()} ကျပ်</b></p>
-              <p class="text-[11px] text-gray-500">အော်ဒါအမှတ်: #${ord.orderId}</p>
-            </div>
-          `).join('');
+          cartItemsEl.innerHTML = activeOrders.map(ord => {
+            const detailLines = ord.itemsText
+              ? `<div class="mt-2 pt-2 border-t border-emerald-200 text-left text-xs text-pink-700 font-bold whitespace-pre-line leading-relaxed">${ord.itemsText}</div>`
+              : '';
+            return `
+              <div class="bg-emerald-50 border border-emerald-300 rounded-xl p-3.5 text-left space-y-1.5">
+                <div class="flex justify-between items-center gap-2">
+                  <span class="font-extrabold text-gray-900 text-xs sm:text-sm">🧾 အော်ဒါအမှတ်: #${ord.orderId}</span>
+                  <span class="bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">🚚 ပို့ဆောင်ဆဲ</span>
+                </div>
+                <p class="text-xs font-bold text-emerald-900 leading-relaxed">💝 ${ORDER_THANK_YOU_MSG}</p>
+                ${detailLines}
+                <div class="pt-1.5 border-t border-emerald-200 text-xs font-extrabold text-gray-900 space-y-0.5">
+                  <p>🚚 Delivery ခ: ${(Number(ord.delivery || DELIVERY_FEE)).toLocaleString()} ကျပ်</p>
+                  <p>💰 စုစုပေါင်းကျသင့်ငွေ (COD): <span class="text-pink-600">${Number(ord.grandTotal).toLocaleString()} ကျပ်</span></p>
+                </div>
+              </div>
+            `;
+          }).join('');
         } else {
           cartItemsEl.innerHTML = '<p class="text-center text-gray-400 text-sm py-8">ခြင်းတောင်းထဲတွင် ပစ္စည်းမရှိသေးပါ</p>';
         }
@@ -1836,6 +1818,8 @@ ${itemLines}
       existingOrders.unshift({
         orderId: orderId,
         totalQty: totalQty,
+        itemsText: itemLines,
+        delivery: DELIVERY_FEE,
         grandTotal: grandTotal,
         createdAt: Date.now()
       });
@@ -1843,7 +1827,6 @@ ${itemLines}
 
       cart = [];
       updateCartUI();
-      renderCustomerDeliveryBanner();
 
       sendPhoneNotification("MiniTrend Kids 💝", ORDER_THANK_YOU_MSG, "order-" + orderId, 0);
       sendPhoneNotification("MiniTrend Kids 💝", ORDER_THANK_YOU_MSG, "order-viber-" + orderId, 2500);
