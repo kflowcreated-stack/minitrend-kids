@@ -464,7 +464,7 @@
     </div>
   </div>
 
-  <!-- ================= CHROME PWA INSTALL GUIDE MODAL ================= -->
+  <!-- ================= CHROME & IOS PWA INSTALL GUIDE MODAL ================= -->
   <div id="pwa-guide-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-md w-full p-5 shadow-xl">
       <div class="flex justify-between items-center border-b pb-3 mb-3">
@@ -475,7 +475,7 @@
         <button onclick="closePWAGuide()" class="text-gray-500 hover:text-gray-800 font-bold text-xl">✕</button>
       </div>
 
-      <!-- Non-Chrome Browser မှ ဝင်လာပါက Chrome ဖြင့် ဖွင့်ရန် ခလုတ် -->
+      <!-- Non-Chrome Android Browser မှ ဝင်လာပါက Chrome ဖြင့် ဖွင့်ရန် ခလုတ် -->
       <div id="open-in-chrome-box" class="mb-3 p-3 bg-amber-50 border border-amber-300 rounded-xl text-center space-y-2">
         <p class="text-xs font-bold text-gray-800">⚠️ App ဒေါင်းယူရန် <b>Google Chrome Browser</b> ဖြင့် ဖွင့်ပေးပါ-</p>
         <a href="intent://kflowcreated-stack.github.io/minitrend-kids/?role=customer#Intent;scheme=https;package=com.android.chrome;end"
@@ -486,12 +486,12 @@
 
       <div class="space-y-2.5 text-xs text-gray-700 leading-relaxed">
         <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl">
-          <p class="font-extrabold text-emerald-900 mb-1">🌐 Google Chrome Browser မှ App ဒေါင်းယူနည်း:</p>
+          <p class="font-extrabold text-emerald-900 mb-1">🌐 Android (Google Chrome Browser):</p>
           <p>၁။ Chrome ၏ ညာဘက်အပေါ်ထောင့်ရှိ <b>အစက် ၃ စက် (⋮)</b> ကို နှိပ်ပါ။<br>၂။ ပေါ်လာသော စာရင်းထဲမှ <b>"Add to Home screen"</b> သို့မဟုတ် <b>"Install app"</b> ကို နှိပ်ပြီး <b>Install</b> နှိပ်လိုက်ပါ။</p>
         </div>
         <div class="p-3 bg-pink-50 border border-pink-200 rounded-xl">
           <p class="font-extrabold text-pink-900 mb-1">🍎 iPhone / iPad (Safari Browser):</p>
-          <p>၁။ အောက်ခြေအလယ်ရှိ <b>Share ခလုတ် (⬆️)</b> ကို နှိပ်ပါ။<br>၂။ အောက်သို့ဆွဲပြီး <b>"Add to Home Screen"</b> ကို နှိပ်ကာ <b>Add</b> နှိပ်လိုက်ပါ။</p>
+          <p>၁။ Safari Browser ၏ အောက်ခြေအလယ်ရှိ <b>Share ခလုတ် (⬆️)</b> ကို နှိပ်ပါ။<br>၂။ အောက်သို့ဆွဲပြီး <b>"Add to Home Screen"</b> ကို နှိပ်ကာ <b>Add</b> နှိပ်လိုက်ပါ။</p>
         </div>
       </div>
       <button onclick="closePWAGuide()" class="mt-4 w-full bg-gray-900 text-white font-bold py-2.5 rounded-xl text-sm">နားလည်ပါပြီ</button>
@@ -1076,7 +1076,12 @@
         .replace('၁ နှစ် - ၂ နှစ်', '၁-၂ နှစ်');
     }
 
-    // ================= CHROME PWA INSTALL HANDLER =================
+    // ================= CHROME & IOS PWA INSTALL HANDLER =================
+    function isIOSDevice() {
+      const ua = navigator.userAgent || '';
+      return /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    }
+
     function isChromeBrowser() {
       const ua = navigator.userAgent || '';
       const isOtherBrowser = /MiuiBrowser|XiaoMi|FBAN|FBAV|Viber|Line|SamsungBrowser|UCBrowser|Opera|OPR|EdgA/i.test(ua);
@@ -1098,7 +1103,7 @@
 
       const chromeBox = document.getElementById('open-in-chrome-box');
       if (chromeBox) {
-        if (isChromeBrowser()) {
+        if (isChromeBrowser() || isIOSDevice()) {
           chromeBox.classList.add('hidden');
         } else {
           chromeBox.classList.remove('hidden');
@@ -1290,7 +1295,7 @@
     async function loadProducts() {
       const loader = document.getElementById('loading-indicator');
 
-      // ဖုန်းထဲတွင် ယခင်သိမ်းထားသော ပစ္စည်းစာရင်းရှိပါက Chrome တွင် မစောင့်ရဘဲ ချက်ချင်းပြသပေးမည်
+      // ဖုန်းထဲတွင် ယခင်သိမ်းထားသော ပစ္စည်းစာရင်းရှိပါက မစောင့်ရဘဲ ချက်ချင်းပြသပေးမည်
       try {
         const cachedRaw = localStorage.getItem('mt_cached_products');
         if (cachedRaw) {
