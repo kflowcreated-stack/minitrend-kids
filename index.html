@@ -289,14 +289,6 @@
     </div>
   </div>
 
-  <!-- Quick 1-Line Bottom Bar (No Guide Modal) -->
-  <div id="install-quick-bar" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-md hidden">
-    <div class="bg-gray-900/95 text-white px-4 py-3 rounded-2xl shadow-2xl border border-pink-400 flex items-center justify-between gap-2 text-xs font-bold">
-      <span id="install-quick-text" class="leading-relaxed"></span>
-      <button onclick="document.getElementById('install-quick-bar').classList.add('hidden')" class="text-gray-300 hover:text-white text-base px-1 shrink-0">✕</button>
-    </div>
-  </div>
-
   <!-- Double-Back Exit Toast Message -->
   <div id="exit-toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 bg-gray-900/95 text-white text-xs sm:text-sm font-bold px-5 py-3 rounded-full shadow-xl border border-white/15 transition-opacity duration-300 opacity-0 pointer-events-none whitespace-nowrap">
     ⚠️ ထွက်ရန် Back ခလုတ်ကို နောက်တစ်ကြိမ် ထပ်နှိပ်ပါ
@@ -1095,27 +1087,10 @@
         .replace('၁ နှစ် - ၂ နှစ်', '၁-၂ နှစ်');
     }
 
-    // ================= DIRECT INSTALL HANDLER (NO GUIDE MODAL) =================
-    function isIOSDevice() {
-      const ua = navigator.userAgent || '';
-      return /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-    }
-
+    // ================= DIRECT INSTALL HANDLER (ZERO GUIDE TEXT) =================
     function isAndroidInAppBrowser() {
       const ua = navigator.userAgent || '';
       return /Android/i.test(ua) && /MiuiBrowser|XiaoMi|FBAN|FBAV|Viber|Line|SamsungBrowser|UCBrowser|Opera|OPR|EdgA/i.test(ua);
-    }
-
-    function showBottomBanner(msgText) {
-      const bar = document.getElementById('install-quick-bar');
-      const txt = document.getElementById('install-quick-text');
-      if (!bar || !txt) return;
-      txt.innerText = msgText;
-      bar.classList.remove('hidden');
-      clearTimeout(window.__installBarTimer);
-      window.__installBarTimer = setTimeout(() => {
-        bar.classList.add('hidden');
-      }, 7000);
     }
 
     async function runNativeInstallPrompt() {
@@ -1135,32 +1110,28 @@
     }
 
     async function triggerPWAInstall() {
+      // ၁။ Chrome Install Prompt အဆင်သင့်ဖြစ်နေပါက ချက်ချင်း Install အကွက်ဖွင့်မည်
       if (window.__deferredInstallPrompt) {
         await runNativeInstallPrompt();
         return;
       }
 
-      if (isIOSDevice()) {
-        showBottomBanner("🍎 iPhone: အောက်ခြေ Share (⬆️) ကိုနှိပ်ပြီး 'Add to Home Screen' ကို ရွေးပါ");
-        return;
-      }
-
+      // ၂။ Viber / Mi Browser မှ ဖွင့်ထားပါက Chrome ဖြင့် တိုက်ရိုက်ပြောင်းဖွင့်ပေးမည်
       if (isAndroidInAppBrowser()) {
         window.location.href = "intent://kflowcreated-stack.github.io/minitrend-kids/?role=customer#Intent;scheme=https;package=com.android.chrome;end";
         return;
       }
 
+      // ၃။ အင်တာနက်လိုင်း နှေးနေချိန် Service Worker အသင့်ဖြစ်သည်အထိ စောင့်ပြီး အလိုအလျောက် Install အကွက်ဖွင့်ပေးမည်
       const btn = document.getElementById('pwa-install-btn');
-      if (btn) btn.innerHTML = '<span>⏳ ခဏစောင့်ပါ...</span>';
+      if (btn) btn.innerHTML = '<span>⏳ ပြင်ဆင်နေပါသည်...</span>';
       window.__pendingAutoInstall = true;
 
       setTimeout(() => {
         if (window.__pendingAutoInstall) {
-          window.__pendingAutoInstall = false;
           if (btn) btn.innerHTML = '<span>📲 App ဒေါင်းမည်</span>';
-          showBottomBanner("📲 Chrome ညာဘက်အပေါ် (⋮) > 'Install app' (သို့) 'Add to Home screen' ကို နှိပ်ပါ");
         }
-      }, 2500);
+      }, 15000);
     }
 
     // ================= MOBILE BACK BUTTON & DOUBLE-BACK EXIT HANDLER =================
