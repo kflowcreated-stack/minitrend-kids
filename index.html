@@ -561,7 +561,12 @@
           </p>
         </form>
 
-        <div id="viber-action-box" class="hidden mt-4 p-4 bg-green-50 border border-green-300 rounded-xl space-y-2.5">
+        <!-- အော်ဒါတင်ပြီးနောက် ပေါ်လာမည့် အတည်ပြုစာတန်း -->
+        <div id="order-confirm-note" class="hidden mt-3 p-3 bg-amber-50 border border-amber-300 rounded-xl text-xs font-bold text-amber-900 leading-relaxed text-center">
+          viber မှာ ပစ္စည်းစာရင်းပို့ပြီးတာနဲ့ မေမေရဲ့ အော်ဒါကို အတည်ပြုပြီးသွားပါပြီး၊ ထပ်နှိပ်စရာမလိုတော့ပါ၊ ထပ်ပြီး order တင်မယ်ဆို၊ ပစ္စည်းတွေ ရွေးပြီးတော့ ထပ်တင်လို့ရပါတယ်
+        </div>
+
+        <div id="viber-action-box" class="hidden mt-3 p-4 bg-green-50 border border-green-300 rounded-xl space-y-2.5">
           <p class="text-xs font-bold text-green-900">✅ MiniTrend Kids ကိုရွေးချယ်တဲ့အတွက် ကျေးဇူးတင်ပါတယ်၊ မေမေတို့ ရဲ့အချစ်ဆုံးလေးအတွက် ပစ္စည်းကို ၃ ရက်အတွင်း အိမ်အရောက်ပို့ပေးပါမယ်! Viber Chat Box ထဲတွင် <b>Paste ချပြီး Send</b> နှိပ်ပေးပါ-</p>
           <a id="viber-direct-btn" href="#" class="block w-full text-center bg-[#7360f2] text-white font-bold py-2.5 rounded-lg text-xs">၁။ Viber Chat Box ပြန်ဖွင့်ရန် (09942739543)</a>
           <a id="viber-forward-btn" href="#" class="block w-full text-center bg-purple-600 text-white font-bold py-2.5 rounded-lg text-xs">၂။ စာသားအပြည့်အစုံဖြင့် Forward ရွေးပို့ရန်</a>
@@ -634,7 +639,6 @@
     let latestOrderMessage = "";
     let pushPopupTimer = null;
 
-    // OneSignal ကို စာမျက်နှာပွင့်ပြီး ၂.၅ စက္ကန့်အကြာမှ နောက်ကွယ်တွင် ခေါ်ယူမည် (စဖွင့်ချိန် လုံးဝမနှေးစေရန်)
     function loadOneSignalLazy() {
       if (window.__oneSignalLoaded) return;
       window.__oneSignalLoaded = true;
@@ -1416,7 +1420,6 @@
       syncCustomerOrderStatus();
       loadProducts();
 
-      // စာမျက်နှာ ပွင့်ပြီး ၂.၅ စက္ကန့်အကြာမှ OneSignal ကို နောက်ကွယ်မှ ချိတ်ဆက်ပေးမည်
       setTimeout(loadOneSignalLazy, 2500);
 
       setInterval(() => {
@@ -1713,6 +1716,7 @@
           qty: 1
         });
       }
+      document.getElementById('order-confirm-note').classList.add('hidden');
       document.getElementById('viber-action-box').classList.add('hidden');
       updateCartUI();
     }
@@ -1874,6 +1878,7 @@ ${itemLines}
 
       document.getElementById('viber-direct-btn').href = directUrl;
       document.getElementById('viber-forward-btn').href = forwardUrl;
+      document.getElementById('order-confirm-note').classList.remove('hidden');
       document.getElementById('viber-action-box').classList.remove('hidden');
 
       window.location.href = directUrl;
