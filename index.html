@@ -54,6 +54,9 @@
     });
   </script>
 
+  <!-- Google Firebase Cloud Messaging SDK (VPN-Free) -->
+  <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-messaging-compat.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body { font-family: 'Pyidaungsu', 'Myanmar Text', 'Noto Sans Myanmar', system-ui, -apple-system, sans-serif; }
@@ -66,7 +69,6 @@
       }
     }
 
-    /* ================= 3D ANIMATIONS FOR ICON & HEADER ================= */
     .scene-3d {
       perspective: 600px;
     }
@@ -92,7 +94,6 @@
       100% { transform: translateX(220%) skewX(-20deg); }
     }
 
-    /* ================= FLASHING & GLOWING "APP ဒေါင်းမည်" BUTTON + ARROW ================= */
     @keyframes flashGlowBtn {
       0%, 100% {
         background: linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%);
@@ -193,6 +194,16 @@
   <script>
     const GOOGLE_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSjes7pROE-fMhM39UGMP__RBMSsP4vlMyhg0FU60dFvEb6Ysdah3ws7xzfeCJ7CRQYcEtYtvAnb0DP/pub?gid=0&single=true&output=csv";
     const APPS_SCRIPT_ORDER_URL = "https://script.google.com/macros/s/AKfycbzjiat7rNkOGkQYjf3RT6rC4g5AdXiVtraecqUTG8wXcu4l6Dm1mmtnXpVhaxjAzsrd/exec";
+
+    const FIREBASE_CONFIG = {
+      apiKey: "AIzaSyDyb--Qc9tic7g8GOzVWYi8vpLMSfTaI5U",
+      authDomain: "minitrend-kids.firebaseapp.com",
+      projectId: "minitrend-kids",
+      storageBucket: "minitrend-kids.firebasestorage.app",
+      messagingSenderId: "523213115439",
+      appId: "1:523213115439:web:0e97b742e7d067943f36da"
+    };
+    const FIREBASE_VAPID_KEY = "BEDkISmwDq6ytVzt2e-eWRndSXKxPttzdfxnKXETfJGhdnn_Se4b778DZ9YEi6NQDdy6gHuNz4twCZuKtzItqSI";
 
     const OWNER_VIBER_PHONE = "959942739543"; 
     const OWNER_DISPLAY_PHONE = "09942739543";
@@ -391,10 +402,10 @@
       </div>
     </div>
 
-    <!-- OWNER DAILY NOTIFICATION SENDER -->
+    <!-- OWNER DAILY NOTIFICATION SENDER (Firebase Cloud Messaging) -->
     <div class="bg-gradient-to-r from-purple-50 via-pink-50 to-amber-50 p-4 sm:p-5 rounded-2xl shadow-sm border border-pink-200 mb-6">
-      <h3 class="font-extrabold text-sm sm:text-base text-gray-900 mb-1">📢 ဝယ်သူများထံ နေ့စဉ် Notification ပေးပို့ရန် (Daily Broadcast)</h3>
-      <p class="text-xs text-gray-600 mb-3">အောက်ပါအကွက်တွင် နေ့စဉ် ပရိုမိုးရှင်း သို့မဟုတ် ပစ္စည်းအသစ်ရောက်ကြောင်း ရေးသားပြီး ပို့လိုက်ပါက ဝယ်သူများထံ MiniTrend Kids Icon ပုံလေးဖြင့် Notification တက်လာပါမည်။</p>
+      <h3 class="font-extrabold text-sm sm:text-base text-gray-900 mb-1">📢 ဝယ်သူများထံ နေ့စဉ် Notification ပေးပို့ရန် (Google Firebase Push)</h3>
+      <p class="text-xs text-gray-600 mb-3">အောက်ပါအကွက်တွင် နေ့စဉ် ပရိုမိုးရှင်း သို့မဟုတ် ပစ္စည်းအသစ်ရောက်ကြောင်း ရေးသားပြီး ပို့လိုက်ပါက VPN မလိုဘဲ ဝယ်သူဖုန်းများဆီသို့ MiniTrend Kids Icon ပုံလေးဖြင့် Notification တက်လာပါမည်။</p>
       <form onsubmit="sendOwnerBroadcast(event)" class="space-y-2.5 text-xs sm:text-sm">
         <input type="text" id="broadcast-title" value="MiniTrend Kids မှ သတင်းကောင်းလေး! 🎁" required placeholder="Notification ခေါင်းစဉ် *" class="w-full border border-pink-200 rounded-xl px-3 py-2 bg-white font-bold">
         <textarea id="broadcast-message" rows="2" required placeholder="ဝယ်သူများထံ ပို့ချင်သည့် စာသား ရေးပါ (ဥပမာ - မေမေတို့ရေ ဒီနေ့ နွေရာသီဝတ် အဆင်အသစ်လေးတွေ ရောက်ပါတယ်နော် 🧸✨) *" class="w-full border border-pink-200 rounded-xl px-3 py-2 bg-white"></textarea>
@@ -625,6 +636,53 @@
     let latestOrderMessage = "";
     let pushPopupTimer = null;
 
+    // Google Firebase Cloud Messaging (FCM) ချိတ်ဆက်ခြင်း
+    async function initFirebasePush(roleTag) {
+      try {
+        if (!('Notification' in window) || !('serviceWorker' in navigator) || typeof firebase === 'undefined') return;
+
+        if (!firebase.apps.length) {
+          firebase.initializeApp(FIREBASE_CONFIG);
+        }
+
+        const messaging = firebase.messaging();
+        messaging.onMessage((payload) => {
+          const title = (payload.notification && payload.notification.title) || (payload.data && payload.data.title) || "MiniTrend Kids 🎁";
+          const body = (payload.notification && payload.notification.body) || (payload.data && payload.data.body) || "";
+          sendPhoneNotification(title, body, "fcm-fg-" + Date.now());
+        });
+
+        if (Notification.permission === 'default') {
+          await Notification.requestPermission();
+        }
+        if (Notification.permission !== 'granted') return;
+
+        const reg = await navigator.serviceWorker.ready;
+        const currentToken = await messaging.getToken({
+          vapidKey: FIREBASE_VAPID_KEY,
+          serviceWorkerRegistration: reg
+        });
+
+        if (currentToken) {
+          const savedKey = "mt_fcm_" + roleTag + "_" + currentToken.substring(0, 16);
+          if (localStorage.getItem("mt_fcm_last_key") !== savedKey) {
+            await fetch(APPS_SCRIPT_ORDER_URL, {
+              method: "POST",
+              mode: "no-cors",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                action: "saveFcmToken",
+                token: currentToken,
+                role: roleTag,
+                device: navigator.userAgent.substring(0, 80)
+              })
+            });
+            localStorage.setItem("mt_fcm_last_key", savedKey);
+          }
+        }
+      } catch (e) {}
+    }
+
     function saveCustomerProfile(name, phone, address) {
       try {
         localStorage.setItem('mt_saved_customer_info', JSON.stringify({
@@ -676,13 +734,11 @@
 
     function setupAutoSystemNotiPermission() {
       const requestOnce = async () => {
-        if ('Notification' in window && Notification.permission === 'default') {
-          try {
-            const perm = await Notification.requestPermission();
-            if (perm === 'granted') {
-              registerVPNFreeBackgroundSync();
-            }
-          } catch (e) {}
+        const isAdminOpen = document.getElementById('admin-view') && !document.getElementById('admin-view').classList.contains('hidden');
+        const roleTag = isAdminOpen ? 'admin' : 'customer';
+        await initFirebasePush(roleTag);
+        if ('Notification' in window && Notification.permission === 'granted') {
+          registerVPNFreeBackgroundSync();
         }
         document.removeEventListener('click', requestOnce);
         document.removeEventListener('touchstart', requestOnce);
@@ -1065,7 +1121,6 @@
         .replace('၁ နှစ် - ၂ နှစ်', '၁-၂ နှစ်');
     }
 
-    // ================= DIRECT INSTALL HANDLER =================
     function isAndroidInAppBrowser() {
       const ua = navigator.userAgent || '';
       return /Android/i.test(ua) && /MiuiBrowser|XiaoMi|FBAN|FBAV|Viber|Line|SamsungBrowser|UCBrowser|Opera|OPR|EdgA/i.test(ua);
@@ -1109,7 +1164,6 @@
       }, 15000);
     }
 
-    // ================= MOBILE BACK BUTTON & DOUBLE-BACK EXIT HANDLER =================
     let lastBackPressTime = 0;
     let toastTimer = null;
 
@@ -1352,6 +1406,8 @@
 
       const params = new URLSearchParams(window.location.search);
       const role = params.get('role') || window.location.hash.replace('#', '');
+      const activeRole = role === 'admin' ? 'admin' : 'customer';
+
       if (role === 'customer') {
         document.getElementById('top-role-bar').classList.add('hidden');
         switchRole('customer');
@@ -1365,6 +1421,7 @@
 
       if ('Notification' in window && Notification.permission === 'granted') {
         registerVPNFreeBackgroundSync();
+        initFirebasePush(activeRole);
       }
 
       syncCustomerOrderStatus();
@@ -1500,10 +1557,12 @@
       if (role === 'admin') {
         document.getElementById('customer-view').classList.add('hidden');
         document.getElementById('admin-view').classList.remove('hidden');
+        initFirebasePush('admin');
         loadVisitorStats();
       } else {
         document.getElementById('admin-view').classList.add('hidden');
         document.getElementById('customer-view').classList.remove('hidden');
+        initFirebasePush('customer');
         syncCustomerOrderStatus();
       }
     }
