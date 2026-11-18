@@ -306,10 +306,10 @@
       }
     </script>
 
-    <!-- Customer Background Notification Enable Banner -->
-    <div id="customer-noti-prompt-bar" class="hidden max-w-6xl mx-auto px-2.5 pt-2">
-      <div class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl px-3 py-2 flex justify-between items-center gap-2 shadow-sm">
-        <p class="text-[11px] sm:text-xs font-bold">🔔 ပစ္စည်းအသစ်နှင့် ပရိုမိုးရှင်း Noti များ ဖုန်းထဲတိုက်ရိုက်ရယူရန်</p>
+    <!-- Customer Background Notification Enable Banner (Always visible so users/testers can enable or re-sync anytime) -->
+    <div id="customer-noti-prompt-bar" class="max-w-6xl mx-auto px-2.5 pt-2">
+      <div id="customer-noti-box" class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl px-3 py-2 flex justify-between items-center gap-2 shadow-sm">
+        <p id="customer-noti-label" class="text-[11px] sm:text-xs font-bold">🔔 ပစ္စည်းအသစ်နှင့် ပရိုမိုးရှင်း Noti များ ဖုန်းထဲတိုက်ရိုက်ရယူရန်</p>
         <button type="button" id="btn-enable-cust-noti" onclick="enableCustomerPushNoti()" class="bg-amber-300 hover:bg-amber-400 active:scale-95 text-gray-900 font-extrabold text-[11px] px-3 py-1 rounded-full shrink-0 shadow cursor-pointer">
           ဖွင့်မည် (Allow)
         </button>
@@ -684,6 +684,26 @@
       } catch (e) {}
     }
 
+    function updateNotiBannerState() {
+      const boxEl = document.getElementById('customer-noti-box');
+      const labelEl = document.getElementById('customer-noti-label');
+      const btnEl = document.getElementById('btn-enable-cust-noti');
+      if (!boxEl || !labelEl || !btnEl) return;
+
+      const hasPerm = ('Notification' in window && Notification.permission === 'granted');
+      const isLinked = localStorage.getItem('mt_onesignal_registered') === '1';
+
+      if (hasPerm && isLinked) {
+        boxEl.className = "bg-emerald-600 text-white rounded-xl px-3 py-2 flex justify-between items-center gap-2 shadow-sm";
+        labelEl.innerText = "✅ Notification ဖွင့်ထားပြီးပါပြီ (ပရိုမိုးရှင်းများ ရရှိပါမည်)";
+        btnEl.innerText = "ပြန်စစ်မည်";
+      } else {
+        boxEl.className = "bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl px-3 py-2 flex justify-between items-center gap-2 shadow-sm";
+        labelEl.innerText = "🔔 ပစ္စည်းအသစ်နှင့် ပရိုမိုးရှင်း Noti များ ဖုန်းထဲတိုက်ရိုက်ရယူရန်";
+        btnEl.innerText = "ဖွင့်မည် (Allow)";
+      }
+    }
+
     function loadOneSignalLazy() {
       if (window.__oneSignalLoaded) return;
       window.__oneSignalLoaded = true;
@@ -708,8 +728,7 @@
           if (OneSignal.Notifications.permission) {
             await OneSignal.User.PushSubscription.optIn();
             try { localStorage.setItem('mt_onesignal_registered', '1'); } catch (e) {}
-            const promptBar = document.getElementById('customer-noti-prompt-bar');
-            if (promptBar) promptBar.classList.add('hidden');
+            updateNotiBannerState();
           }
         } catch (e) {}
       });
@@ -728,7 +747,7 @@
           if (!finished) {
             finished = true;
             if (showResultAlert) {
-              alert("⚠️ ဖုန်းတွင် Notification ခွင့်ပြုပြီးသော်လည်း အင်တာနက်လိုင်း (သို့) VPN ကြောင့် OneSignal Server နှင့် မချိတ်ဆက်နိုင်သေးပါ။\n\nကျေးဇူးပြု၍ VPN ခဏဖွင့်ပြီး စာမျက်နှာကို Refresh တစ်ကြိမ် ပြန်လုပ်ပေးပါခင်ဗျာ။");
+              alert("⚠️ ဖုန်းတွင် Notification ခွင့်ပြုပြီးသော်လည်း အင်တာနက်လိုင်း (သို့) VPN ကြောင့် OneSignal Server နှင့် မချိတ်ဆက်နိုင်သေးပါ။\n\nကျေးဇူးပြု၍ VPN ခဏဖွင့်ပြီး ဤခလုတ်ကို ထပ်မံနှိပ်ပေးပါခင်ဗျာ။");
             }
             resolve(false);
           }
@@ -743,8 +762,9 @@
             if (!finished) {
               finished = true;
               try { localStorage.setItem('mt_onesignal_registered', '1'); } catch (e) {}
+              updateNotiBannerState();
               if (showResultAlert) {
-                alert("✅ Notification ဖွင့်ပြီးပါပြီ! App ပိတ်ထားချိန်တွင်ပါ ပစ္စည်းအသစ်နှင့် ပရိုမိုးရှင်းသတင်းများ တိုက်ရိုက်ရရှိပါမည်။");
+                alert("✅ Notification ချိတ်ဆက်ပြီးပါပြီ! App ပိတ်ထားချိန်တွင်ပါ ပစ္စည်းအသစ်နှင့် ပရိုမိုးရှင်းသတင်းများ တိုက်ရိုက်ရရှိပါမည်။");
               }
               resolve(true);
             }
@@ -766,18 +786,18 @@
       const btn = document.getElementById('btn-enable-cust-noti');
       if (btn) {
         btn.disabled = true;
-        btn.innerText = "⏳ ဖွင့်နေပါသည်...";
+        btn.innerText = "⏳ စစ်ဆေးနေသည်...";
       }
 
       if (!('Notification' in window)) {
         alert("⚠️ iPhone ဖြစ်ပါက Safari Browser ဖြင့် ဖွင့်ပြီး အောက်ခြေ Share (⬆️) - Add to Home Screen ဖြင့် App အရင်သွင်းပြီးမှ ဖွင့်ပေးပါခင်ဗျာ။");
-        if (btn) { btn.disabled = false; btn.innerText = "ဖွင့်မည် (Allow)"; }
+        if (btn) { btn.disabled = false; updateNotiBannerState(); }
         return;
       }
 
       if (Notification.permission === 'denied') {
         alert("⚠️ ဤဖုန်းတွင် Notification ကို ပိတ် (Block) ထားမိပါသည်။\n\nပြန်ဖွင့်ရန် Chrome ၏ အပေါ်ဆုံး Address Bar ဘေးရှိ Setting ပုံလေး (သို့) အစက် ၃ စက် (⋮) - Site settings - Notifications ကို နှိပ်ပြီး Allow ရွေးပေးပါခင်ဗျာ။");
-        if (btn) { btn.disabled = false; btn.innerText = "ဖွင့်မည် (Allow)"; }
+        if (btn) { btn.disabled = false; updateNotiBannerState(); }
         return;
       }
 
@@ -789,9 +809,6 @@
       }
 
       if (perm === 'granted') {
-        const promptBar = document.getElementById('customer-noti-prompt-bar');
-        if (promptBar) promptBar.classList.add('hidden');
-
         try {
           if ('serviceWorker' in navigator) {
             const reg = await navigator.serviceWorker.ready;
@@ -811,7 +828,7 @@
 
       if (btn) {
         btn.disabled = false;
-        btn.innerText = "ဖွင့်မည် (Allow)";
+        updateNotiBannerState();
       }
     }
 
@@ -1509,6 +1526,7 @@
     function init() {
       setupExitGuard();
       loadSavedCustomerProfile();
+      updateNotiBannerState();
 
       if (isStandaloneApp() || localStorage.getItem('mt_pwa_installed') === '1') {
         const wrap = document.getElementById('pwa-install-wrapper');
@@ -1536,15 +1554,8 @@
         trackCustomerVisit();
       }
 
-      if (role !== 'admin') {
-        const hasPerm = ('Notification' in window && Notification.permission === 'granted');
-        const hasOneSignal = localStorage.getItem('mt_onesignal_registered') === '1';
-        if (!hasPerm) {
-          const promptBar = document.getElementById('customer-noti-prompt-bar');
-          if (promptBar) promptBar.classList.remove('hidden');
-        } else if (!hasOneSignal) {
-          syncOneSignalSubscription("customer", false);
-        }
+      if (role !== 'admin' && 'Notification' in window && Notification.permission === 'granted') {
+        syncOneSignalSubscription("customer", false);
       }
 
       syncCustomerOrderStatus();
