@@ -1,6 +1,35 @@
-importScripts('https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js');
+importScripts('https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.13.2/firebase-messaging-compat.js');
 
-const CACHE_NAME = 'minitrend-kids-v11';
+firebase.initializeApp({
+  apiKey: "AIzaSyDyb--Qc9tic7g8GOzVWYi8vpLMSfTaI5U",
+  authDomain: "minitrend-kids.firebaseapp.com",
+  projectId: "minitrend-kids",
+  storageBucket: "minitrend-kids.firebasestorage.app",
+  messagingSenderId: "523213115439",
+  appId: "1:523213115439:web:0e97b742e7d067943f36da"
+});
+
+try {
+  const messaging = firebase.messaging();
+  messaging.onBackgroundMessage((payload) => {
+    const title = (payload.notification && payload.notification.title) || (payload.data && payload.data.title) || 'MiniTrend Kids 🎁';
+    const body = (payload.notification && payload.notification.body) || (payload.data && payload.data.body) || '';
+    const linkUrl = (payload.data && payload.data.url) || './?role=customer';
+
+    return self.registration.showNotification(title, {
+      body: body,
+      icon: './icon.png?v=3',
+      badge: './icon.png?v=3',
+      tag: 'mt-fcm-' + Date.now(),
+      renotify: true,
+      vibrate: [250, 120, 250],
+      data: { url: linkUrl }
+    });
+  });
+} catch (e) {}
+
+const CACHE_NAME = 'minitrend-kids-v12';
 const STATE_CACHE = 'minitrend-noti-state-v1';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzjiat7rNkOGkQYjf3RT6rC4g5AdXiVtraecqUTG8wXcu4l6Dm1mmtnXpVhaxjAzsrd/exec';
 
@@ -71,7 +100,6 @@ self.addEventListener('notificationclick', (event) => {
   );
 });
 
-// VPN မလိုဘဲ နောက်ကွယ်မှ Google Apps Script ထံမှ Noti အသစ် လှမ်းစစ်ပေးသည့်စနစ်
 self.addEventListener('periodicsync', (event) => {
   if (event.tag === 'minitrend-noti-sync') {
     event.waitUntil(checkRemoteBroadcastInSW());
@@ -138,7 +166,8 @@ self.addEventListener('fetch', (event) => {
     url.hostname.includes('script.google.com') ||
     url.hostname.includes('googleusercontent.com') ||
     url.hostname.includes('docs.google.com') ||
-    url.hostname.includes('onesignal.com')
+    url.hostname.includes('googleapis.com') ||
+    url.hostname.includes('gstatic.com')
   ) {
     return;
   }
