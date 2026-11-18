@@ -1,6 +1,6 @@
 importScripts('https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js');
 
-const CACHE_NAME = 'minitrend-kids-v10';
+const CACHE_NAME = 'minitrend-kids-v11';
 const STATE_CACHE = 'minitrend-noti-state-v1';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzjiat7rNkOGkQYjf3RT6rC4g5AdXiVtraecqUTG8wXcu4l6Dm1mmtnXpVhaxjAzsrd/exec';
 
@@ -71,6 +71,19 @@ self.addEventListener('notificationclick', (event) => {
   );
 });
 
+// VPN မလိုဘဲ နောက်ကွယ်မှ Google Apps Script ထံမှ Noti အသစ် လှမ်းစစ်ပေးသည့်စနစ်
+self.addEventListener('periodicsync', (event) => {
+  if (event.tag === 'minitrend-noti-sync') {
+    event.waitUntil(checkRemoteBroadcastInSW());
+  }
+});
+
+self.addEventListener('sync', (event) => {
+  if (event.tag === 'minitrend-noti-sync') {
+    event.waitUntil(checkRemoteBroadcastInSW());
+  }
+});
+
 self.addEventListener('message', (event) => {
   if (!event.data) return;
 
@@ -130,7 +143,6 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // App ဖွင့်လိုက်သည်နှင့် ဗားရှင်းအသစ်ကို ၁.၅ စက္ကန့်အတွင်း အရင်ယူပေးပြီး လိုင်းနှေးမှသာ Cache မှ ဖွင့်ပေးမည်
   if (req.mode === 'navigate') {
     event.respondWith(
       new Promise((resolve) => {
