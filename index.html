@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MiniTrend Kids - ကလေးဖက်ရှင်နှင့် အသုံးအဆောင်ဆိုင်</title>
+  <title>MiniTrend Kids - ကလေးဖက်ရှင်နှင့် အသုံးအဆောင်များ</title>
   <meta name="theme-color" content="#db2777" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -182,6 +182,9 @@
       </div>
     </header>
 
+    <!-- CUSTOMER DELIVERY STATUS BANNER (Appears after ordering until delivered) -->
+    <div id="customer-delivery-banner" class="hidden max-w-6xl mx-auto px-2.5 pt-2"></div>
+
     <!-- Active Size Recommendation Banner -->
     <div id="recommended-size-banner" class="hidden max-w-6xl mx-auto px-2.5 pt-2">
       <div class="bg-amber-50 border border-amber-400 rounded-xl p-2 flex justify-between items-center gap-2 shadow-sm">
@@ -196,7 +199,7 @@
       </div>
     </div>
 
-    <!-- Search & Category Bar -->
+    <!-- Search & 9-Category Bar -->
     <section class="max-w-6xl mx-auto px-2.5 pt-2">
       <div class="flex flex-col md:flex-row gap-1.5 justify-between items-center">
         <div class="w-full md:w-64 flex gap-1.5 items-center">
@@ -204,14 +207,15 @@
         </div>
         <div class="flex gap-1 overflow-x-auto w-full md:w-auto pb-1 no-scrollbar">
           <button onclick="setCategory('all')" class="cat-btn bg-pink-600 text-white px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap shadow-sm" data-cat="all">✨ အားလုံး</button>
-          <button onclick="setCategory('newborn')" class="cat-btn bg-white text-gray-700 border px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap" data-cat="newborn">👶 မွေးကင်းစ</button>
+          <button onclick="setCategory('sets')" class="cat-btn bg-white text-gray-700 border px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap" data-cat="sets">👗 ဝမ်းဆက်</button>
+          <button onclick="setCategory('summer')" class="cat-btn bg-white text-gray-700 border px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap" data-cat="summer">☀️ နွေရာသီဝတ်</button>
           <button onclick="setCategory('tops')" class="cat-btn bg-white text-gray-700 border px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap" data-cat="tops">👕 အင်္ကျီ</button>
           <button onclick="setCategory('pants')" class="cat-btn bg-white text-gray-700 border px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap" data-cat="pants">👖 ဘောင်းဘီ</button>
-          <button onclick="setCategory('sets')" class="cat-btn bg-white text-gray-700 border px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap" data-cat="sets">👗 ဝမ်းဆက်</button>
-          <button onclick="setCategory('personal')" class="cat-btn bg-white text-gray-700 border px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap" data-cat="personal">🧴 တကိုယ်ရေသုံး</button>
+          <button onclick="setCategory('hats')" class="cat-btn bg-white text-gray-700 border px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap" data-cat="hats">🧢 ဦးထုတ်</button>
+          <button onclick="setCategory('shoes')" class="cat-btn bg-white text-gray-700 border px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap" data-cat="shoes">👟 ဖိနပ်</button>
+          <button onclick="setCategory('newborn')" class="cat-btn bg-white text-gray-700 border px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap" data-cat="newborn">👶 မွေးကင်းစလေးများ</button>
           <button onclick="setCategory('education')" class="cat-btn bg-white text-gray-700 border px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap" data-cat="education">📚 သင်ကြားရေး</button>
           <button onclick="setCategory('toys')" class="cat-btn bg-white text-gray-700 border px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap" data-cat="toys">🧸 ကစားစရာ</button>
-          <button onclick="setCategory('shoes')" class="cat-btn bg-white text-gray-700 border px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap" data-cat="shoes">👟 ဖိနပ်</button>
         </div>
       </div>
     </section>
@@ -238,9 +242,10 @@
     <div class="flex flex-wrap justify-between items-center gap-3 mb-5">
       <div>
         <h2 class="text-xl sm:text-2xl font-bold text-gray-900">🔐 ဆိုင်ပိုင်ရှင် စီမံခန့်ခွဲမှု (Admin Panel)</h2>
-        <p class="text-xs sm:text-sm text-gray-500">ဝင်ကြည့်သူ ဦးရေနှင့် လက်ကျန် Stock များကို တစ်နေရာတည်းတွင် စစ်ဆေးနိုင်ပါသည်</p>
+        <p class="text-xs sm:text-sm text-gray-500">ဝင်ကြည့်သူဦးရေ၊ ပို့ဆောင်ရန် အော်ဒါများနှင့် Sheet (၉) ခုမှ Stock များကို စီမံနိုင်ပါသည်</p>
       </div>
-      <div class="flex gap-2">
+      <div class="flex flex-wrap gap-2">
+        <button onclick="setupNineSheets()" id="btn-setup-sheets" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-sm transition">📂 Sheet (၉) ခု အလိုအလျောက်ခွဲမည်</button>
         <button onclick="loadVisitorStats()" class="bg-pink-600 hover:bg-pink-700 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-sm transition">🔄 စာရင်းပြန်စစ်မည်</button>
         <button onclick="switchRole('customer')" class="bg-gray-800 hover:bg-gray-900 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-sm transition">🛍️ ဆိုင်မျက်နှာပြင်သို့</button>
       </div>
@@ -262,6 +267,19 @@
         <p class="text-[11px] sm:text-xs font-bold text-amber-700">👥 စုစုပေါင်း ဝင်ကြည့်သူ</p>
         <p id="stat-total" class="text-2xl sm:text-3xl font-extrabold text-amber-600 mt-1">...</p>
         <p class="text-[10px] text-gray-400 mt-0.5">Total Visitors</p>
+      </div>
+    </div>
+
+    <!-- Pending Orders Management (Mark Delivered to clear customer notice) -->
+    <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-emerald-200 mb-6">
+      <div class="flex justify-between items-center mb-3">
+        <div>
+          <h3 class="font-bold text-sm sm:text-base text-gray-900">🚚 ပို့ဆောင်ရန် ကျန်ရှိသော အော်ဒါများ (Active Orders)</h3>
+          <p class="text-[11px] text-gray-500">ဝယ်သူထံ ပစ္စည်းရောက်ရှိသွားပါက <b>"✅ ပို့ပေးပြီး"</b> ကို နှိပ်လိုက်လျှင် ဝယ်သူဖုန်းထဲမှ (၄) ရက်အတွင်း ပို့ပေးမည့် စာတန်း အလိုအလျောက် ပျောက်သွားပါမည်။</p>
+        </div>
+      </div>
+      <div id="admin-pending-orders" class="divide-y text-xs">
+        <p class="py-3 text-gray-400">⏳ အော်ဒါစာရင်း ရယူနေပါသည်...</p>
       </div>
     </div>
 
@@ -293,7 +311,7 @@
       <div class="space-y-3 text-xs sm:text-sm text-gray-700 leading-relaxed">
         <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl">
           <p class="font-extrabold text-emerald-900 mb-1">🤖 Android ဖုန်းများ (Chrome Browser):</p>
-          <p>၁။ ညာဘက်အပေါ်ထောင့်ရှိ <b>အစက် ၃ စက် (⋮)</b> ကို နှိပ်ပါ။<br>၂။ <b>"Install app" (အက်ပ်ကို ထည့်သွင်းရန်)</b> ကိုသာ ရွေးနှိပ်ပါ။<br>*(သတိပြုရန်: "Add to Home screen" ကို နှိပ်ပါက Chrome လိုဂိုပါလာတတ်သဖြင့် စာမျက်နှာကို Refresh လုပ်ပြီး ၃ စက္ကန့်စောင့်ကာ <b>"Install app"</b> ပေါ်လာမှ နှိပ်ပေးပါ)*</p>
+          <p>၁။ ညာဘက်အပေါ်ထောင့်ရှိ <b>အစက် ၃ စက် (⋮)</b> ကို နှိပ်ပါ။<br>၂။ <b>"Install app" (အက်ပ်ကို ထည့်သွင်းရန်)</b> ကိုသာ ရွေးနှိပ်ပါ။</p>
         </div>
         <div class="p-3 bg-pink-50 border border-pink-200 rounded-xl">
           <p class="font-extrabold text-pink-900 mb-1">🍎 iPhone / iPad (Safari Browser):</p>
@@ -304,18 +322,28 @@
     </div>
   </div>
 
-  <!-- ================= FULL-SCREEN IMAGE LIGHTBOX MODAL ================= -->
-  <div id="image-lightbox-modal" onclick="closeImageLightbox()" class="fixed inset-0 bg-black/90 z-50 hidden flex flex-col items-center justify-center p-4 backdrop-blur-sm">
-    <button type="button" onclick="closeImageLightbox()" class="fixed top-4 right-4 bg-white/20 hover:bg-white/35 text-white w-10 h-10 rounded-full flex items-center justify-center text-xl font-bold shadow-lg transition">✕</button>
-    <div onclick="event.stopPropagation()" class="max-w-3xl w-full flex flex-col items-center">
-      <img id="lightbox-img" src="" alt="" class="max-h-[80vh] w-auto max-w-full object-contain rounded-2xl shadow-2xl border border-white/15">
-      <div class="mt-3 text-center bg-black/65 px-5 py-2 rounded-full border border-white/15">
-        <p id="lightbox-caption" class="text-white text-sm font-bold"></p>
+  <!-- ================= FULL-SCREEN IMAGE LIGHTBOX MODAL WITH DESCRIPTION ================= -->
+  <div id="image-lightbox-modal" onclick="closeImageLightbox()" class="fixed inset-0 bg-black/90 z-50 hidden flex flex-col items-center justify-center p-3 sm:p-4 backdrop-blur-sm overflow-y-auto">
+    <button type="button" onclick="closeImageLightbox()" class="fixed top-3 right-3 z-50 bg-white/20 hover:bg-white/35 text-white w-10 h-10 rounded-full flex items-center justify-center text-xl font-bold shadow-lg transition">✕</button>
+    <div onclick="event.stopPropagation()" class="max-w-lg w-full flex flex-col items-center my-auto">
+      <img id="lightbox-img" src="" alt="" class="max-h-[62vh] w-auto max-w-full object-contain rounded-2xl shadow-2xl border border-white/15 bg-black/40">
+      <div class="mt-3 w-full bg-white rounded-2xl p-4 shadow-2xl border border-pink-100 text-left">
+        <div class="flex justify-between items-start gap-2 border-b border-gray-100 pb-2 mb-2">
+          <div>
+            <p id="lightbox-caption" class="text-gray-900 text-sm sm:text-base font-extrabold"></p>
+            <p id="lightbox-color-badge" class="text-xs text-pink-600 font-bold mt-0.5"></p>
+          </div>
+          <span id="lightbox-price-badge" class="bg-pink-600 text-white text-xs sm:text-sm font-extrabold px-2.5 py-1 rounded-full shrink-0"></span>
+        </div>
+        <div class="text-xs sm:text-sm text-gray-700 leading-relaxed max-h-36 overflow-y-auto">
+          <p class="font-bold text-gray-900 mb-1">📝 ပစ္စည်းအကြောင်းအရာ (Description):</p>
+          <p id="lightbox-description" class="whitespace-pre-line text-gray-600"></p>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- ================= KID SIZE CALCULATOR MODAL (AGE + WEIGHT + HEIGHT) ================= -->
+  <!-- ================= KID SIZE CALCULATOR MODAL ================= -->
   <div id="size-calc-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-md w-full p-5 shadow-xl">
       <div class="flex justify-between items-center border-b pb-2.5 mb-3">
@@ -379,7 +407,7 @@
       </div>
 
       <div class="border-t pt-4">
-        <div class="bg-pink-50/70 border border-pink-100 rounded-xl p-3 mb-4 space-y-1.5 text-sm">
+        <div id="cart-price-summary" class="bg-pink-50/70 border border-pink-100 rounded-xl p-3 mb-4 space-y-1.5 text-sm">
           <div class="flex justify-between text-gray-600">
             <span>ပစ္စည်းတန်ဖိုး စုစုပေါင်း:</span>
             <span id="cart-subtotal" class="font-bold">0 ကျပ်</span>
@@ -407,7 +435,7 @@
         </form>
 
         <div id="viber-action-box" class="hidden mt-4 p-4 bg-green-50 border border-green-300 rounded-xl space-y-2.5">
-          <p class="text-xs font-bold text-green-900">✅ အော်ဒါစာရင်း Copy ကူးပြီးပါပြီ! Viber Chat Box ထဲတွင် <b>Paste ချပြီး Send</b> နှိပ်ပေးပါ-</p>
+          <p class="text-xs font-bold text-green-900">✅ သင်မှာယူထားတဲ့ ပစ္စည်းကို (၄) ရက်အတွင်း ပို့ပေးပါမည်! Viber Chat Box ထဲတွင် <b>Paste ချပြီး Send</b> နှိပ်ပေးပါ-</p>
           <a id="viber-direct-btn" href="#" class="block w-full text-center bg-[#7360f2] text-white font-bold py-2.5 rounded-lg text-xs">၁။ Viber Chat Box ပြန်ဖွင့်ရန် (09942739543)</a>
           <a id="viber-forward-btn" href="#" class="block w-full text-center bg-purple-600 text-white font-bold py-2.5 rounded-lg text-xs">၂။ စာသားအပြည့်အစုံဖြင့် Forward ရွေးပို့ရန်</a>
           <button type="button" onclick="copyOrderText()" class="w-full bg-white border border-green-400 text-green-800 font-bold py-2 rounded-lg text-xs">📋 အော်ဒါစာသား ထပ်မံ Copy ကူးမည်</button>
@@ -445,6 +473,7 @@
         name: "နွေရာသီဝတ် စပန့် (အသားကောင်း)",
         category: "sets",
         trending: true,
+        description: "ချည်သား ၁၀၀% အေးမြပြီး ကလေးအသားအရေနှင့် အထူးသင့်တော်သော နွေရာသီဝတ် စပန့်ဝမ်းဆက် ဖြစ်ပါသည်။",
         originalPrice: 6500,
         prices: {
           "၆ လ - ၁ နှစ်": 4000,
@@ -477,7 +506,71 @@
     let selectedColors = {};
     let latestOrderMessage = "";
 
-    // ================= VISITOR ANALYTICS (TRACKING & ADMIN STATS) =================
+    // ================= ACTIVE ORDER BANNER MANAGEMENT (CUSTOMER) =================
+    function getSavedCustomerOrders() {
+      try {
+        return JSON.parse(localStorage.getItem('mt_customer_orders') || '[]');
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveCustomerOrders(list) {
+      localStorage.setItem('mt_customer_orders', JSON.stringify(list));
+    }
+
+    function renderCustomerDeliveryBanner() {
+      const bannerEl = document.getElementById('customer-delivery-banner');
+      if (!bannerEl) return;
+
+      const orders = getSavedCustomerOrders();
+      if (orders.length === 0) {
+        bannerEl.classList.add('hidden');
+        bannerEl.innerHTML = '';
+        return;
+      }
+
+      bannerEl.classList.remove('hidden');
+      bannerEl.innerHTML = orders.map(ord => `
+        <div class="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 text-white rounded-2xl p-3 sm:p-3.5 mb-2 shadow-md border border-emerald-400/40 flex flex-col sm:flex-row justify-between sm:items-center gap-1.5">
+          <div class="flex items-start sm:items-center gap-2.5">
+            <span class="text-xl sm:text-2xl shrink-0">🚚</span>
+            <div>
+              <p class="text-xs sm:text-sm font-extrabold leading-snug">သင်မှာယူထားတဲ့ ပစ္စည်းကို (၄) ရက်အတွင်း ပို့ပေးပါမည်</p>
+              <p class="text-[11px] sm:text-xs text-emerald-100 font-bold mt-0.5">
+                📦 အရေအတွက်: <b class="text-amber-300">${ord.totalQty} ခု</b> &nbsp;|&nbsp; 💰 စုစုပေါင်းကျသင့်ငွေ (COD): <b class="text-amber-300">${Number(ord.grandTotal).toLocaleString()} ကျပ်</b>
+                <span class="opacity-80 ml-1">(#${ord.orderId})</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function syncCustomerOrderStatus() {
+      const orders = getSavedCustomerOrders();
+      if (orders.length === 0) {
+        renderCustomerDeliveryBanner();
+        return;
+      }
+
+      renderCustomerDeliveryBanner();
+
+      try {
+        const ids = orders.map(o => o.orderId).join(',');
+        const res = await fetch(`${APPS_SCRIPT_ORDER_URL}?action=checkOrders&ids=${encodeURIComponent(ids)}&t=${Date.now()}`);
+        const data = await res.json();
+        if (data && data.status === 'ok' && Array.isArray(data.activeOrderIds)) {
+          const stillActive = orders.filter(o => data.activeOrderIds.includes(o.orderId));
+          saveCustomerOrders(stillActive);
+          renderCustomerDeliveryBanner();
+        }
+      } catch (err) {
+        // Keep current banner if offline
+      }
+    }
+
+    // ================= VISITOR ANALYTICS & ADMIN ORDER CONTROL =================
     function trackCustomerVisit() {
       if (sessionStorage.getItem('mt_visit_logged')) return;
       sessionStorage.setItem('mt_visit_logged', '1');
@@ -502,11 +595,43 @@
       }).catch(() => {});
     }
 
+    async function setupNineSheets() {
+      const btn = document.getElementById('btn-setup-sheets');
+      btn.disabled = true;
+      btn.innerText = "⏳ Sheet (၉) ခု ဆောက်နေပါသည်...";
+      try {
+        await fetch(APPS_SCRIPT_ORDER_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "setupCategorySheets" })
+        });
+        alert("✅ Google Sheet ထဲတွင် (ဝမ်းဆက်၊ နွေရာသီဝတ်၊ အင်္ကျီ၊ ဘောင်းဘီ၊ ဦးထုတ်၊ ဖိနပ်၊ မွေးကင်းစလေးများ၊ သင်ကြားရေး၊ ကစားစရာ) Sheet (၉) ခုလုံးကို တည်ဆောက်ပေးပြီးပါပြီ!");
+      } catch (e) {
+        alert("Google Sheet နှင့် ချိတ်ဆက်ရာတွင် အမှားရှိနေပါသည်။");
+      }
+      btn.disabled = false;
+      btn.innerText = "📂 Sheet (၉) ခု အလိုအလျောက်ခွဲမည်";
+    }
+
+    async function markOrderDelivered(orderId) {
+      try {
+        await fetch(APPS_SCRIPT_ORDER_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "markDelivered", orderId: orderId })
+        });
+        setTimeout(() => loadVisitorStats(), 800);
+      } catch (e) {}
+    }
+
     async function loadVisitorStats() {
       const todayEl = document.getElementById('stat-today');
       const yesterdayEl = document.getElementById('stat-yesterday');
       const totalEl = document.getElementById('stat-total');
       const listEl = document.getElementById('recent-visitors-list');
+      const pendingOrdersEl = document.getElementById('admin-pending-orders');
 
       if (!todayEl) return;
       todayEl.innerText = "...";
@@ -519,6 +644,24 @@
         todayEl.innerText = (stats.today || 0).toLocaleString() + " ဦး";
         yesterdayEl.innerText = (stats.yesterday || 0).toLocaleString() + " ဦး";
         totalEl.innerText = (stats.total || 0).toLocaleString() + " ဦး";
+
+        if (stats.pendingOrders && stats.pendingOrders.length > 0) {
+          pendingOrdersEl.innerHTML = stats.pendingOrders.map(o => `
+            <div class="py-3 flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+              <div class="space-y-0.5">
+                <p class="font-extrabold text-gray-900 text-xs sm:text-sm">🧾 ${o.orderId} — ${o.name} (${o.phone})</p>
+                <p class="text-gray-600 text-[11px]">📍 ${o.address}</p>
+                <p class="text-pink-700 font-bold text-[11px] whitespace-pre-line">${o.itemsText}</p>
+                <p class="text-gray-900 font-extrabold text-xs">💰 စုစုပေါင်း: ${Number(o.grandTotal || 0).toLocaleString()} ကျပ်</p>
+              </div>
+              <button onclick="markOrderDelivered('${o.orderId}')" class="self-start sm:self-center bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3.5 py-2 rounded-xl text-xs shadow-sm shrink-0">
+                ✅ ပို့ပေးပြီး (Delivered)
+              </button>
+            </div>
+          `).join('');
+        } else {
+          pendingOrdersEl.innerHTML = `<p class="py-3 text-gray-400">လက်ရှိ ပို့ဆောင်ရန် ကျန်ရှိသော အော်ဒါ မရှိပါ။</p>`;
+        }
 
         if (stats.recent && stats.recent.length > 0) {
           listEl.innerHTML = stats.recent.map(r => `
@@ -547,14 +690,15 @@
     function normalizeCategory(raw) {
       const val = (raw || '').toString().trim().toLowerCase();
       if (!val) return 'sets';
-      if (val === 'newborn' || val.includes('မွေးကင်းစ')) return 'newborn';
+      if (val === 'sets' || val === 'set' || val.includes('ဝမ်းဆက်')) return 'sets';
+      if (val === 'summer' || val.includes('နွေရာသီ')) return 'summer';
       if (val === 'tops' || val === 'top' || val.includes('အင်္ကျီ')) return 'tops';
       if (val === 'pants' || val === 'pant' || val.includes('ဘောင်းဘီ')) return 'pants';
-      if (val === 'sets' || val === 'set' || val.includes('ဝမ်းဆက်')) return 'sets';
-      if (val === 'personal' || val === 'care' || val.includes('တကိုယ်ရေ') || val.includes('တစ်ကိုယ်ရေ')) return 'personal';
+      if (val === 'hats' || val === 'hat' || val.includes('ဦးထုတ်') || val.includes('ဦးထုပ်')) return 'hats';
+      if (val === 'shoes' || val === 'shoe' || val.includes('ဖိနပ်')) return 'shoes';
+      if (val === 'newborn' || val.includes('မွေးကင်းစ')) return 'newborn';
       if (val === 'education' || val === 'learning' || val.includes('သင်ကြား')) return 'education';
       if (val === 'toys' || val === 'toy' || val.includes('ကစားစရာ') || val.includes('အရုပ်')) return 'toys';
-      if (val === 'shoes' || val === 'shoe' || val.includes('ဖိနပ်')) return 'shoes';
       return val;
     }
 
@@ -661,15 +805,23 @@
       }
     });
 
-    // ================= FULL-SCREEN IMAGE LIGHTBOX =================
+    // ================= FULL-SCREEN IMAGE LIGHTBOX WITH DESCRIPTION =================
     function openImageLightbox(productId) {
       const product = products.find(p => p.id === productId);
       if (!product) return;
       const activeColorIdx = selectedColors[productId] !== undefined ? selectedColors[productId] : 0;
       const activeVariant = product.variants[activeColorIdx] || product.variants[0];
+      const activeSize = selectedSizes[productId] || "၆ လ - ၁ နှစ်";
+      const currentPrice = (product.prices && product.prices[activeSize]) ? product.prices[activeSize] : 0;
 
       document.getElementById('lightbox-img').src = activeVariant.image;
-      document.getElementById('lightbox-caption').innerText = `${product.name} — (${activeVariant.colorName})`;
+      document.getElementById('lightbox-caption').innerText = product.name;
+      document.getElementById('lightbox-color-badge').innerText = `ရွေးချယ်ထားသော အရောင်: ${activeVariant.colorName} | အရွယ်: ${activeSize}`;
+      document.getElementById('lightbox-price-badge').innerText = `${currentPrice.toLocaleString()} Ks`;
+
+      const defaultDesc = `အရည်အသွေးကောင်းမွန်ပြီး ကလေးငယ်များ သက်တောင့်သက်သာ ဝတ်ဆင်အသုံးပြုနိုင်ပါသည်။ ရရှိနိုင်သော အရောင် (${product.variants.map(v => v.colorName).join('၊ ')}) ရှိပါသည်။`;
+      document.getElementById('lightbox-description').innerText = product.description || defaultDesc;
+
       document.getElementById('image-lightbox-modal').classList.remove('hidden');
       pushModalHistory('lightbox');
     }
@@ -706,82 +858,100 @@
       return isNaN(num) ? fallbackVal : num;
     }
 
+    function buildProductFromRow(c, indexId) {
+      const p6m1y = parseNum(c[3], 0);
+      const p12y  = parseNum(c[4], p6m1y);
+      const p23y  = parseNum(c[5], p6m1y);
+      const p45y  = parseNum(c[6], p6m1y);
+      const p67y  = parseNum(c[7], p6m1y);
+      const p89y  = parseNum(c[8], p6m1y);
+
+      const variants = [];
+      if (c[9] && c[11])  variants.push({ colorName: c[9],  image: c[11] });
+      if (c[12] && c[13]) variants.push({ colorName: c[12], image: c[13] });
+      if (c[14] && c[15]) variants.push({ colorName: c[14], image: c[15] });
+      if (c[16] && c[17]) variants.push({ colorName: c[16], image: c[17] });
+
+      if (variants.length === 0) {
+        variants.push({ colorName: "မူရင်းအရောင်", image: "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=500&q=80" });
+      }
+
+      const origPriceVal = parseNum(c[18], 0);
+
+      const s6m1y = parseNum(c[19], 0);
+      const s12y  = parseNum(c[20], 0);
+      const s23y  = parseNum(c[21], 0);
+      const s45y  = parseNum(c[22], 0);
+      const s67y  = parseNum(c[23], 0);
+      const s89y  = parseNum(c[24], 0);
+
+      const stocksObj = {
+        "၆ လ - ၁ နှစ်": s6m1y,
+        "၁ နှစ် - ၂ နှစ်": s12y,
+        "၂ - ၃ နှစ်": s23y,
+        "၄ - ၅ နှစ်": s45y,
+        "၆ - ၇ နှစ်": s67y,
+        "၈ - ၉ နှစ်": s89y
+      };
+
+      const firstAvailableSize = AGE_SIZES.find(sz => stocksObj[sz] > 0) || AGE_SIZES[0];
+      if (!selectedSizes[indexId]) {
+        selectedSizes[indexId] = firstAvailableSize;
+      }
+
+      // Description ကို ကော်လံ K (c[10]) သို့မဟုတ် ကော်လံ Z (c[25]) မှ ဖတ်ယူပေးသည်
+      const descText = (c[25] && c[25].trim() !== '') ? c[25].trim() : ((c[10] && !c[10].startsWith('http')) ? c[10].trim() : '');
+
+      return {
+        id: indexId,
+        name: c[0],
+        category: normalizeCategory(c[1]),
+        trending: (c[2] || '').toString().toUpperCase() === 'TRUE',
+        description: descText,
+        originalPrice: origPriceVal,
+        prices: {
+          "၆ လ - ၁ နှစ်": p6m1y,
+          "၁ နှစ် - ၂ နှစ်": p12y,
+          "၂ - ၃ နှစ်": p23y,
+          "၄ - ၅ နှစ်": p45y,
+          "၆ - ၇ နှစ်": p67y,
+          "၈ - ၉ နှစ်": p89y
+        },
+        stocks: stocksObj,
+        variants
+      };
+    }
+
     async function loadProducts() {
       const loader = document.getElementById('loading-indicator');
+      let loadedItems = [];
+
+      // ၁။ Google Sheet အားလုံး (Category ၉ ခုစလုံး) မှ ပစ္စည်းများကို Apps Script မှတစ်ဆင့် ရယူသည်
       try {
-        const cacheBuster = (GOOGLE_SHEET_CSV_URL.includes('?') ? '&' : '?') + 't=' + Date.now();
-        const res = await fetch(GOOGLE_SHEET_CSV_URL + cacheBuster);
-        const csvText = await res.text();
-        const lines = csvText.split(/\r?\n/).filter(l => l.trim() !== '');
-
-        const sheetProducts = [];
-
-        for (let i = 1; i < lines.length; i++) {
-          const c = parseCSVLine(lines[i]);
-          if (c[0]) {
-            const p6m1y = parseNum(c[3], 0);
-            const p12y  = parseNum(c[4], p6m1y);
-            const p23y  = parseNum(c[5], p6m1y);
-            const p45y  = parseNum(c[6], p6m1y);
-            const p67y  = parseNum(c[7], p6m1y);
-            const p89y  = parseNum(c[8], p6m1y);
-
-            const variants = [];
-            if (c[9] && c[11])  variants.push({ colorName: c[9],  image: c[11] });
-            if (c[12] && c[13]) variants.push({ colorName: c[12], image: c[13] });
-            if (c[14] && c[15]) variants.push({ colorName: c[14], image: c[15] });
-            if (c[16] && c[17]) variants.push({ colorName: c[16], image: c[17] });
-
-            if (variants.length === 0) {
-              variants.push({ colorName: "မူရင်းအရောင်", image: "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=500&q=80" });
-            }
-
-            const origPriceVal = parseNum(c[18], 0);
-
-            const s6m1y = parseNum(c[19], 0);
-            const s12y  = parseNum(c[20], 0);
-            const s23y  = parseNum(c[21], 0);
-            const s45y  = parseNum(c[22], 0);
-            const s67y  = parseNum(c[23], 0);
-            const s89y  = parseNum(c[24], 0);
-
-            const stocksObj = {
-              "၆ လ - ၁ နှစ်": s6m1y,
-              "၁ နှစ် - ၂ နှစ်": s12y,
-              "၂ - ၃ နှစ်": s23y,
-              "၄ - ၅ နှစ်": s45y,
-              "၆ - ၇ နှစ်": s67y,
-              "၈ - ၉ နှစ်": s89y
-            };
-
-            const firstAvailableSize = AGE_SIZES.find(sz => stocksObj[sz] > 0) || AGE_SIZES[0];
-            if (!selectedSizes[i]) {
-              selectedSizes[i] = firstAvailableSize;
-            }
-
-            sheetProducts.push({
-              id: i,
-              name: c[0],
-              category: normalizeCategory(c[1]),
-              trending: (c[2] || '').toUpperCase() === 'TRUE',
-              originalPrice: origPriceVal,
-              prices: {
-                "၆ လ - ၁ နှစ်": p6m1y,
-                "၁ နှစ် - ၂ နှစ်": p12y,
-                "၂ - ၃ နှစ်": p23y,
-                "၄ - ၅ နှစ်": p45y,
-                "၆ - ၇ နှစ်": p67y,
-                "၈ - ၉ နှစ်": p89y
-              },
-              stocks: stocksObj,
-              variants
-            });
-          }
+        const res = await fetch(`${APPS_SCRIPT_ORDER_URL}?action=getProducts&t=${Date.now()}`);
+        const data = await res.json();
+        if (data && data.status === 'ok' && Array.isArray(data.rows) && data.rows.length > 0) {
+          loadedItems = data.rows.map((r, idx) => buildProductFromRow(r, idx + 1));
         }
-        products = sheetProducts.length > 0 ? sheetProducts : defaultProducts;
-      } catch (err) {
-        products = defaultProducts;
+      } catch (e) {}
+
+      // ၂။ အကယ်၍ Apps Script မချိတ်ရသေးပါက မူလ CSV မှ Fallback ရယူသည်
+      if (loadedItems.length === 0) {
+        try {
+          const cacheBuster = (GOOGLE_SHEET_CSV_URL.includes('?') ? '&' : '?') + 't=' + Date.now();
+          const res = await fetch(GOOGLE_SHEET_CSV_URL + cacheBuster);
+          const csvText = await res.text();
+          const lines = csvText.split(/\r?\n/).filter(l => l.trim() !== '');
+          for (let i = 1; i < lines.length; i++) {
+            const c = parseCSVLine(lines[i]);
+            if (c[0]) {
+              loadedItems.push(buildProductFromRow(c, i));
+            }
+          }
+        } catch (err) {}
       }
+
+      products = loadedItems.length > 0 ? loadedItems : defaultProducts;
       loader.classList.add('hidden');
       renderProducts();
       renderAdminProducts();
@@ -801,6 +971,7 @@
         switchRole('customer');
         trackCustomerVisit();
       }
+      syncCustomerOrderStatus();
       loadProducts();
     }
 
@@ -926,6 +1097,7 @@
       } else {
         document.getElementById('admin-view').classList.add('hidden');
         document.getElementById('customer-view').classList.remove('hidden');
+        syncCustomerOrderStatus();
       }
     }
 
@@ -1007,7 +1179,7 @@
               </div>
 
               <div class="p-1.5 sm:p-3">
-                <h3 class="font-bold text-gray-800 text-[11px] sm:text-sm truncate leading-tight">${p.name}</h3>
+                <h3 onclick="openImageLightbox(${p.id})" class="font-bold text-gray-800 text-[11px] sm:text-sm truncate leading-tight cursor-pointer hover:text-pink-600">${p.name}</h3>
                 
                 <div class="flex items-baseline gap-1 mb-1">
                   <span class="text-pink-600 font-extrabold text-xs sm:text-base">${currentPrice.toLocaleString()} Ks</span>
@@ -1084,6 +1256,7 @@
           qty: 1
         });
       }
+      document.getElementById('viber-action-box').classList.add('hidden');
       updateCartUI();
     }
 
@@ -1097,9 +1270,27 @@
       document.getElementById('cart-count').innerText = totalCount;
 
       const cartItemsEl = document.getElementById('cart-items');
+      const summaryEl = document.getElementById('cart-price-summary');
+      const formEl = document.getElementById('checkout-form');
+
       if (cart.length === 0) {
-        cartItemsEl.innerHTML = '<p class="text-center text-gray-400 text-sm py-8">ခြင်းတောင်းထဲတွင် ပစ္စည်းမရှိသေးပါ</p>';
+        const activeOrders = getSavedCustomerOrders();
+        if (activeOrders.length > 0) {
+          cartItemsEl.innerHTML = activeOrders.map(ord => `
+            <div class="bg-emerald-50 border border-emerald-300 rounded-xl p-3.5 text-center space-y-1">
+              <p class="text-sm font-extrabold text-emerald-900">🚚 သင်မှာယူထားတဲ့ ပစ္စည်းကို (၄) ရက်အတွင်း ပို့ပေးပါမည်</p>
+              <p class="text-xs font-bold text-emerald-700">ပစ္စည်းအရေအတွက်: <b>${ord.totalQty} ခု</b> | စုစုပေါင်းကျသင့်ငွေ: <b>${Number(ord.grandTotal).toLocaleString()} ကျပ်</b></p>
+              <p class="text-[11px] text-gray-500">အော်ဒါအမှတ်: #${ord.orderId}</p>
+            </div>
+          `).join('');
+        } else {
+          cartItemsEl.innerHTML = '<p class="text-center text-gray-400 text-sm py-8">ခြင်းတောင်းထဲတွင် ပစ္စည်းမရှိသေးပါ</p>';
+        }
+        if (summaryEl) summaryEl.classList.add('hidden');
+        if (formEl) formEl.classList.add('hidden');
       } else {
+        if (summaryEl) summaryEl.classList.remove('hidden');
+        if (formEl) formEl.classList.remove('hidden');
         cartItemsEl.innerHTML = cart.map((item, idx) => `
           <div class="flex justify-between items-center bg-gray-50 p-3 rounded-xl border gap-2">
             <div class="flex items-center gap-2.5">
@@ -1154,6 +1345,7 @@
       const name = document.getElementById('cust-name').value.trim();
       const phone = document.getElementById('cust-phone').value.trim();
       const address = document.getElementById('cust-address').value.trim();
+      const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
       const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
       const grandTotal = subtotal + DELIVERY_FEE;
 
@@ -1177,6 +1369,23 @@ ${itemLines}
 
       silentCopy(latestOrderMessage);
 
+      const orderedItemsPayload = cart.map(i => ({ name: i.name, size: i.size, qty: i.qty }));
+
+      // ၁။ ဝယ်သူဖုန်းထဲတွင် (၄) ရက်အတွင်း ပို့ပေးမည့် စာတန်းအတွက် သိမ်းဆည်းပြီး ခြင်းတောင်းကို ချက်ချင်း ရှင်းလင်းသည်
+      const existingOrders = getSavedCustomerOrders();
+      existingOrders.unshift({
+        orderId: orderId,
+        totalQty: totalQty,
+        grandTotal: grandTotal,
+        createdAt: Date.now()
+      });
+      saveCustomerOrders(existingOrders);
+
+      cart = [];
+      updateCartUI();
+      renderCustomerDeliveryBanner();
+
+      // ၂။ Google Sheet သို့ အော်ဒါပို့သည်
       try {
         await fetch(APPS_SCRIPT_ORDER_URL, {
           method: "POST",
@@ -1188,7 +1397,7 @@ ${itemLines}
             phone,
             address,
             itemsText: itemLines,
-            items: cart.map(i => ({ name: i.name, size: i.size, qty: i.qty })),
+            items: orderedItemsPayload,
             subtotal,
             delivery: DELIVERY_FEE,
             grandTotal
