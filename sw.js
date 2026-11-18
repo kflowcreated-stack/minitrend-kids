@@ -1,15 +1,14 @@
 importScripts('https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js');
 
-const CACHE_NAME = 'minitrend-kids-v6';
+const CACHE_NAME = 'minitrend-kids-v7';
 const STATE_CACHE = 'minitrend-noti-state-v1';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzjiat7rNkOGkQYjf3RT6rC4g5AdXiVtraecqUTG8wXcu4l6Dm1mmtnXpVhaxjAzsrd/exec';
 
 const APP_SHELL = [
   './',
   './index.html',
-  './manifest.json?v=3',
-  './icon.png?v=3',
-  'https://cdn.tailwindcss.com'
+  './manifest.json?v=4',
+  './icon.png?v=3'
 ];
 
 self.addEventListener('install', (event) => {
@@ -143,7 +142,7 @@ self.addEventListener('fetch', (event) => {
             settled = true;
             resolve(cachedPage);
           }
-        }, 2500);
+        }, 1500);
 
         fetch(req)
           .then((networkRes) => {
