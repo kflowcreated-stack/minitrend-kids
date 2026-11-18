@@ -306,7 +306,7 @@
       }
     </script>
 
-    <!-- Customer Background Notification Enable Banner (Always visible so users/testers can enable or re-sync anytime) -->
+    <!-- Customer Notification Enable Banner -->
     <div id="customer-noti-prompt-bar" class="max-w-6xl mx-auto px-2.5 pt-2">
       <div id="customer-noti-box" class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl px-3 py-2 flex justify-between items-center gap-2 shadow-sm">
         <p id="customer-noti-label" class="text-[11px] sm:text-xs font-bold">🔔 ပစ္စည်းအသစ်နှင့် ပရိုမိုးရှင်း Noti များ ဖုန်းထဲတိုက်ရိုက်ရယူရန်</p>
@@ -382,17 +382,25 @@
       </div>
     </div>
 
-    <!-- OWNER ORDER NOTIFICATION REGISTRATION CARD -->
-    <div class="bg-white border-2 border-indigo-200 rounded-2xl p-4 mb-5 shadow-sm flex flex-col sm:flex-row justify-between sm:items-center gap-3">
-      <div>
-        <h3 class="font-extrabold text-sm sm:text-base text-gray-900">📲 ဆိုင်ပိုင်ရှင်ဖုန်းသို့ အော်ဒါ Noti တိုက်ရိုက်လက်ခံရန်</h3>
-        <p id="owner-push-status" class="text-xs text-gray-600 mt-1">
-          ဝယ်သူအော်ဒါတင်လိုက်သည်နှင့် သင့်ဖုန်း Sleep ဖြစ်နေချိန်မှာပါ Noti တက်စေရန် ညာဘက်ခလုတ်ကို တစ်ကြိမ်နှိပ်ထားပါ။
-        </p>
+    <!-- ONESIGNAL SERVER DIAGNOSTIC & OWNER PUSH CARD -->
+    <div class="bg-white border-2 border-indigo-200 rounded-2xl p-4 mb-5 shadow-sm space-y-3">
+      <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3">
+        <div>
+          <h3 class="font-extrabold text-sm sm:text-base text-gray-900">📲 ဆိုင်ပိုင်ရှင်ဖုန်းသို့ အော်ဒါ Noti တိုက်ရိုက်လက်ခံရန်</h3>
+          <p id="owner-push-status" class="text-xs text-gray-600 mt-1">
+            ဝယ်သူအော်ဒါတင်လိုက်သည်နှင့် သင့်ဖုန်း Sleep ဖြစ်နေချိန်မှာပါ Noti တက်စေရန် ညာဘက်ခလုတ်ကို တစ်ကြိမ်နှိပ်ထားပါ။
+          </p>
+        </div>
+        <div class="flex flex-wrap gap-2 shrink-0">
+          <button type="button" id="btn-check-onesignal" onclick="checkOneSignalServerStatus()" class="bg-gray-800 hover:bg-gray-900 active:scale-95 text-white font-bold px-3.5 py-2.5 rounded-xl text-xs shadow cursor-pointer">
+            🔍 OneSignal ချိတ်ဆက်မှု စစ်ဆေးမည်
+          </button>
+          <button type="button" id="btn-owner-push" onclick="registerOwnerDevicePush(true)" class="bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs shadow cursor-pointer">
+            🔔 ပိုင်ရှင်ဖုန်း Noti ချိတ်ဆက်မည်
+          </button>
+        </div>
       </div>
-      <button type="button" id="btn-owner-push" onclick="registerOwnerDevicePush(true)" class="bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs sm:text-sm shadow shrink-0 cursor-pointer">
-        🔔 ပိုင်ရှင်ဖုန်း Noti ချိတ်ဆက်မည်
-      </button>
+      <div id="onesignal-diagnostic-box" class="hidden text-xs p-3 rounded-xl border"></div>
     </div>
 
     <!-- Visitor Analytics Cards -->
@@ -684,6 +692,21 @@
       } catch (e) {}
     }
 
+    // VPN မလိုဘဲ နောက်ကွယ်မှ Noti စစ်ဆေးပေးမည့် Periodic Sync စာရင်းသွင်းခြင်း
+    async function registerVPNFreeBackgroundSync() {
+      try {
+        if ('serviceWorker' in navigator) {
+          const reg = await navigator.serviceWorker.ready;
+          if ('periodicSync' in reg) {
+            await reg.periodicSync.register('minitrend-noti-sync', { minInterval: 15 * 60 * 1000 });
+          }
+          if ('sync' in reg) {
+            await reg.sync.register('minitrend-noti-sync');
+          }
+        }
+      } catch (e) {}
+    }
+
     function updateNotiBannerState() {
       const boxEl = document.getElementById('customer-noti-box');
       const labelEl = document.getElementById('customer-noti-label');
@@ -691,12 +714,16 @@
       if (!boxEl || !labelEl || !btnEl) return;
 
       const hasPerm = ('Notification' in window && Notification.permission === 'granted');
-      const isLinked = localStorage.getItem('mt_onesignal_registered') === '1';
+      const isOneSignalLinked = localStorage.getItem('mt_onesignal_registered') === '1';
 
-      if (hasPerm && isLinked) {
+      if (hasPerm && isOneSignalLinked) {
         boxEl.className = "bg-emerald-600 text-white rounded-xl px-3 py-2 flex justify-between items-center gap-2 shadow-sm";
-        labelEl.innerText = "✅ Notification ဖွင့်ထားပြီးပါပြီ (ပရိုမိုးရှင်းများ ရရှိပါမည်)";
+        labelEl.innerText = "✅ Notification ချိတ်ဆက်ပြီးပါပြီ (OneSignal + Background Sync)";
         btnEl.innerText = "ပြန်စစ်မည်";
+      } else if (hasPerm) {
+        boxEl.className = "bg-teal-600 text-white rounded-xl px-3 py-2 flex justify-between items-center gap-2 shadow-sm";
+        labelEl.innerText = "✅ ဖုန်း Noti ဖွင့်ပြီးပါပြီ (OneSignal ထပ်မံချိတ်ဆက်ရန် နှိပ်ပါ)";
+        btnEl.innerText = "ချိတ်ဆက်မည်";
       } else {
         boxEl.className = "bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl px-3 py-2 flex justify-between items-center gap-2 shadow-sm";
         labelEl.innerText = "🔔 ပစ္စည်းအသစ်နှင့် ပရိုမိုးရှင်း Noti များ ဖုန်းထဲတိုက်ရိုက်ရယူရန်";
@@ -704,9 +731,19 @@
       }
     }
 
+    function getSubdirectorySWConfig() {
+      const basePath = window.location.pathname.endsWith('/')
+        ? window.location.pathname
+        : window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
+      const swPath = (basePath + 'sw.js').replace(/^\/+/, '');
+      return { scope: basePath, swPath: swPath };
+    }
+
     function loadOneSignalLazy() {
       if (window.__oneSignalLoaded) return;
       window.__oneSignalLoaded = true;
+
+      const swConf = getSubdirectorySWConfig();
 
       window.OneSignalDeferred = window.OneSignalDeferred || [];
       window.OneSignalDeferred.push(async function(OneSignal) {
@@ -714,10 +751,12 @@
           await OneSignal.init({
             appId: "750cf355-8b35-4b42-8d08-6b20a0b64697",
             safari_web_id: "web.onesignal.auto.579431ec-451c-467f-a977-87d9f3b6152b",
-            serviceWorkerParam: { scope: "/minitrend-kids/" },
-            serviceWorkerPath: "sw.js",
+            serviceWorkerParam: { scope: swConf.scope },
+            serviceWorkerPath: swConf.swPath,
             notifyButton: { enable: false }
           });
+
+          window.__oneSignalReady = true;
 
           const params = new URLSearchParams(window.location.search);
           const initialRole = (params.get('role') || window.location.hash.replace('#', '') || 'customer').toLowerCase();
@@ -727,15 +766,22 @@
           OneSignal.User.addTag("role", targetTag);
           if (OneSignal.Notifications.permission) {
             await OneSignal.User.PushSubscription.optIn();
-            try { localStorage.setItem('mt_onesignal_registered', '1'); } catch (e) {}
-            updateNotiBannerState();
+            if (OneSignal.User.PushSubscription.id) {
+              try { localStorage.setItem('mt_onesignal_registered', '1'); } catch (e) {}
+              updateNotiBannerState();
+            }
           }
-        } catch (e) {}
+        } catch (e) {
+          window.__oneSignalInitError = e ? e.toString() : "Init Error";
+        }
       });
 
       const s = document.createElement('script');
       s.src = "https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js";
       s.async = true;
+      s.onerror = function() {
+        window.__oneSignalScriptBlocked = true;
+      };
       document.head.appendChild(s);
     }
 
@@ -747,33 +793,44 @@
           if (!finished) {
             finished = true;
             if (showResultAlert) {
-              alert("⚠️ ဖုန်းတွင် Notification ခွင့်ပြုပြီးသော်လည်း အင်တာနက်လိုင်း (သို့) VPN ကြောင့် OneSignal Server နှင့် မချိတ်ဆက်နိုင်သေးပါ။\n\nကျေးဇူးပြု၍ VPN ခဏဖွင့်ပြီး ဤခလုတ်ကို ထပ်မံနှိပ်ပေးပါခင်ဗျာ။");
+              const reason = window.__oneSignalScriptBlocked
+                ? "သင့်အင်တာနက်လိုင်းမှ OneSignal Server ကို ပိတ်ထားပါသည်။ (သို့သော် VPN မလိုသော Background Sync စနစ်ကို ဖွင့်ပေးထားပြီး ဖြစ်ပါသည်။)"
+                : (window.__oneSignalInitError || "OneSignal Server နှင့် ချိတ်ဆက်မှု အချိန်ကြာမြင့်နေပါသည်။");
+              alert("✅ ဖုန်း Notification ကို ဖွင့်ပြီးပါပြီ!\n\nℹ️ OneSignal အခြေအနေ: " + reason);
             }
             resolve(false);
           }
-        }, 6000);
+        }, 7000);
 
         window.OneSignalDeferred = window.OneSignalDeferred || [];
         window.OneSignalDeferred.push(async function(OneSignal) {
           try {
             await OneSignal.User.PushSubscription.optIn();
             OneSignal.User.addTag("role", roleTag);
+            const subId = OneSignal.User.PushSubscription.id;
             clearTimeout(timer);
             if (!finished) {
               finished = true;
-              try { localStorage.setItem('mt_onesignal_registered', '1'); } catch (e) {}
-              updateNotiBannerState();
-              if (showResultAlert) {
-                alert("✅ Notification ချိတ်ဆက်ပြီးပါပြီ! App ပိတ်ထားချိန်တွင်ပါ ပစ္စည်းအသစ်နှင့် ပရိုမိုးရှင်းသတင်းများ တိုက်ရိုက်ရရှိပါမည်။");
+              if (subId) {
+                try { localStorage.setItem('mt_onesignal_registered', '1'); } catch (e) {}
+                updateNotiBannerState();
+                if (showResultAlert) {
+                  alert("✅ OneSignal နှင့် အောင်မြင်စွာ ချိတ်ဆက်ပြီးပါပြီ!\n\nDevice ID: " + subId.substring(0, 12) + "...\nယခု App ပိတ်ထားချိန်နှင့် Screen Lock ချထားချိန်တွင်ပါ Noti တိုက်ရိုက်တက်ပါမည်။");
+                }
+                resolve(true);
+              } else {
+                if (showResultAlert) {
+                  alert("⚠️ ဖုန်း Noti ဖွင့်ပြီးသော်လည်း OneSignal ID မထွက်သေးပါ။ စက္ကန့်အနည်းငယ်အကြာတွင် ခလုတ်ကို နောက်တစ်ကြိမ် ထပ်နှိပ်ကြည့်ပါ။");
+                }
+                resolve(false);
               }
-              resolve(true);
             }
           } catch (err) {
             clearTimeout(timer);
             if (!finished) {
               finished = true;
               if (showResultAlert) {
-                alert("⚠️ Notification ချိတ်ဆက်ရာတွင် အခက်အခဲရှိနေပါသည်။ VPN ခဏဖွင့်ပြီး ထပ်မံစမ်းသပ်ပေးပါ။");
+                alert("⚠️ OneSignal Error: " + (err ? err.message || err.toString() : "Unknown"));
               }
               resolve(false);
             }
@@ -809,6 +866,9 @@
       }
 
       if (perm === 'granted') {
+        updateNotiBannerState();
+        await registerVPNFreeBackgroundSync();
+
         try {
           if ('serviceWorker' in navigator) {
             const reg = await navigator.serviceWorker.ready;
@@ -846,15 +906,20 @@
       }
 
       if ('Notification' in window && Notification.permission === 'granted') {
+        await registerVPNFreeBackgroundSync();
         localStorage.setItem("mt_owner_push_linked", "1");
         const statusEl = document.getElementById("owner-push-status");
         if (statusEl) {
           statusEl.innerText = "✅ ဤဖုန်းအား ဆိုင်ပိုင်ရှင်ဖုန်းအဖြစ် ချိတ်ဆက်ပြီးပါပြီ (ဝယ်သူအော်ဒါတင်တိုင်း Noti တက်ပါမည်)";
           statusEl.className = "text-xs font-bold text-emerald-700 mt-1.5";
         }
-        await syncOneSignalSubscription("admin", false);
+        const ok = await syncOneSignalSubscription("admin", false);
         if (showAlertMsg) {
-          alert("✅ ဆိုင်ပိုင်ရှင်ဖုန်းအဖြစ် Notification ချိတ်ဆက်ပြီးပါပြီ!\n\nယခု App ကို ပိတ်ထားလျှင် (သို့) ဖုန်း Screen ပိတ်ထားလျှင်ပင် ဝယ်သူအော်ဒါတင်လိုက်သည်နှင့် ဖုန်းထဲသို့ Noti ချက်ချင်း တက်လာပါမည်။");
+          if (ok) {
+            alert("✅ ဆိုင်ပိုင်ရှင်ဖုန်းအဖြစ် OneSignal နှင့် အောင်မြင်စွာ ချိတ်ဆက်ပြီးပါပြီ!\n\nယခု App ကို ပိတ်ထားလျှင် (သို့) ဖုန်း Screen ပိတ်ထားလျှင်ပင် ဝယ်သူအော်ဒါတင်လိုက်သည်နှင့် ဖုန်းထဲသို့ Noti ချက်ချင်း တက်လာပါမည်။");
+          } else {
+            alert("⚠️ ဖုန်း Noti ပွင့်သော်လည်း OneSignal Server နှင့် မချိတ်ဆက်နိုင်သေးပါ။ '🔍 OneSignal ချိတ်ဆက်မှု စစ်ဆေးမည်' ခလုတ်ကို နှိပ်စစ်ဆေးကြည့်ပါ။");
+          }
         }
       } else if (showAlertMsg) {
         alert("⚠️ Browser တွင် Notification ခွင့်ပြုချက် (Allow) ကို အရင်ဖွင့်ပေးပါခင်ဗျာ။");
@@ -863,6 +928,49 @@
       if (btn) {
         btn.disabled = false;
         btn.innerText = "🔔 ပိုင်ရှင်ဖုန်း Noti ချိတ်ဆက်မည်";
+      }
+    }
+
+    // Admin Panel မှ OneSignal Server ဘက်တွင် ချိတ်ဆက်မှု ရှိ/မရှိ တိုက်ရိုက်စစ်ဆေးခြင်း
+    async function checkOneSignalServerStatus() {
+      const btn = document.getElementById('btn-check-onesignal');
+      const box = document.getElementById('onesignal-diagnostic-box');
+      if (!box) return;
+
+      if (btn) {
+        btn.disabled = true;
+        btn.innerText = "⏳ စစ်ဆေးနေသည်...";
+      }
+
+      box.classList.remove('hidden');
+      box.className = "text-xs p-3 rounded-xl border bg-gray-50 border-gray-200 text-gray-700";
+      box.innerText = "⏳ Google Apps Script မှတစ်ဆင့် OneSignal Server ကို လှမ်းစစ်ဆေးနေပါသည်...";
+
+      try {
+        const res = await fetch(`${APPS_SCRIPT_ORDER_URL}?action=checkOneSignal&t=${Date.now()}`, { cache: "no-store" });
+        const data = await res.json();
+        if (data && data.oneSignal && data.oneSignal.connected) {
+          const os = data.oneSignal;
+          box.className = "text-xs p-3 rounded-xl border bg-emerald-50 border-emerald-300 text-emerald-900 space-y-1";
+          box.innerHTML = `
+            <p class="font-extrabold">✅ OneSignal Server နှင့် အောင်မြင်စွာ ချိတ်ဆက်ထားပါသည်!</p>
+            <p>• App အမည်: <b>${os.appName}</b></p>
+            <p>• လက်ရှိ OneSignal ထဲတွင် စာရင်းဝင်ထားသော ဖုန်းစုစုပေါင်း: <b>${os.messageablePlayers} လုံး</b> (Total: ${os.players})</p>
+            <p>• OneSignal တွင် သတ်မှတ်ထားသော Site URL: <b>${os.siteUrl || "မသတ်မှတ်ရသေးပါ"}</b></p>
+          `;
+        } else {
+          const errText = (data && data.oneSignal && data.oneSignal.error) ? data.oneSignal.error : "Apps Script ကို New Version Deploy မလုပ်ရသေးပါ";
+          box.className = "text-xs p-3 rounded-xl border bg-red-50 border-red-300 text-red-900";
+          box.innerHTML = `<b>❌ OneSignal ချိတ်ဆက်မှု အဆင်မပြေသေးပါ:</b> ${errText}`;
+        }
+      } catch (e) {
+        box.className = "text-xs p-3 rounded-xl border bg-red-50 border-red-300 text-red-900";
+        box.innerText = "❌ Apps Script နှင့် ချိတ်ဆက်မရပါ။ Code.gs ကို New Version Deploy ပြန်လုပ်ပေးပါ။";
+      }
+
+      if (btn) {
+        btn.disabled = false;
+        btn.innerText = "🔍 OneSignal ချိတ်ဆက်မှု စစ်ဆေးမည်";
       }
     }
 
@@ -1017,12 +1125,13 @@
 
         if (resultEl && data && data.pushResult) {
           resultEl.classList.remove('hidden');
+          const totalMsgable = (data.oneSignalInfo && data.oneSignalInfo.messageablePlayers) || 0;
           if (data.pushResult.recipients && data.pushResult.recipients > 0) {
             resultEl.className = "mt-2.5 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 p-2.5 rounded-xl";
             resultEl.innerText = `✅ ဝယ်သူဖုန်း (${data.pushResult.recipients}) လုံးဆီသို့ Background Push Notification ပေးပို့ပြီးပါပြီ!`;
           } else {
             resultEl.className = "mt-2.5 text-xs font-bold text-amber-800 bg-amber-50 border border-amber-200 p-2.5 rounded-xl";
-            resultEl.innerText = "⚠️ စာသားသိမ်းပြီးပါပြီ (လက်ရှိ OneSignal တွင် Noti Allow နှိပ်ထားသော ဝယ်သူဖုန်း 0 လုံး ဖြစ်နေပါသည် — ဝယ်သူဖုန်းမှ Noti Allow တစ်ကြိမ်နှိပ်ထားရန် လိုအပ်ပါသည်)";
+            resultEl.innerText = `⚠️ စာသားသိမ်းပြီးပါပြီ (OneSignal ထဲတွင် စာရင်းဝင်ထားသော ဖုန်းစုစုပေါင်း: ${totalMsgable} လုံး — ဝယ်သူဖုန်းမှ 'ဖွင့်မည် (Allow)' နှိပ်ပြီး OneSignal ချိတ်ဆက်ပြီးပါက တိုက်ရိုက်ရောက်ပါမည်)`;
           }
         }
         setTimeout(() => refreshAdminAll(), 800);
@@ -1555,6 +1664,7 @@
       }
 
       if (role !== 'admin' && 'Notification' in window && Notification.permission === 'granted') {
+        registerVPNFreeBackgroundSync();
         syncOneSignalSubscription("customer", false);
       }
 
@@ -1694,6 +1804,7 @@
         document.getElementById('admin-view').classList.remove('hidden');
         registerOwnerDevicePush(false);
         loadVisitorStats();
+        checkOneSignalServerStatus();
       } else {
         document.getElementById('admin-view').classList.add('hidden');
         document.getElementById('customer-view').classList.remove('hidden');
