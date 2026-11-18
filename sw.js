@@ -1,4 +1,6 @@
-const CACHE_NAME = 'minitrend-kids-v5';
+importScripts('https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js');
+
+const CACHE_NAME = 'minitrend-kids-v6';
 const STATE_CACHE = 'minitrend-noti-state-v1';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzjiat7rNkOGkQYjf3RT6rC4g5AdXiVtraecqUTG8wXcu4l6Dm1mmtnXpVhaxjAzsrd/exec';
 
@@ -35,7 +37,6 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// ဖုန်း System Notification Bar တွင် Icon ပုံလေးဖြင့် ပြသပေးသည့် Function
 async function displaySystemNotification(title, body, tag) {
   try {
     await self.registration.showNotification(title || 'MiniTrend Kids 🧸', {
@@ -51,7 +52,6 @@ async function displaySystemNotification(title, body, tag) {
   } catch (e) {}
 }
 
-// Notification ကို နှိပ်လိုက်ပါက App ထဲသို့ တိုက်ရိုက်ပြန်ဖွင့်ပေးခြင်း
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
   const targetUrl = (event.notification.data && event.notification.data.url) ? event.notification.data.url : './?role=customer';
@@ -71,7 +71,6 @@ self.addEventListener('notificationclick', (event) => {
   );
 });
 
-// App အပြင်ဘက် ရောက်နေချိန်တွင် Notification ပို့ပေးရန် Message လက်ခံခြင်း
 self.addEventListener('message', (event) => {
   if (!event.data) return;
 
@@ -96,7 +95,6 @@ self.addEventListener('message', (event) => {
   }
 });
 
-// နောက်ကွယ် (Background) မှ ပိုင်ရှင်ပို့ထားသော Notification အသစ် ရှိ/မရှိ စစ်ဆေးခြင်း
 async function checkRemoteBroadcastInSW() {
   try {
     const res = await fetch(APPS_SCRIPT_URL + '?action=checkOrders&ids=&t=' + Date.now());
@@ -118,18 +116,6 @@ async function checkRemoteBroadcastInSW() {
   } catch (e) {}
 }
 
-self.addEventListener('periodicsync', (event) => {
-  if (event.tag === 'mt-bg-noti-sync') {
-    event.waitUntil(checkRemoteBroadcastInSW());
-  }
-});
-
-self.addEventListener('sync', (event) => {
-  if (event.tag === 'mt-bg-noti-sync') {
-    event.waitUntil(checkRemoteBroadcastInSW());
-  }
-});
-
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   const url = new URL(req.url);
@@ -138,7 +124,8 @@ self.addEventListener('fetch', (event) => {
     req.method !== 'GET' ||
     url.hostname.includes('script.google.com') ||
     url.hostname.includes('googleusercontent.com') ||
-    url.hostname.includes('docs.google.com')
+    url.hostname.includes('docs.google.com') ||
+    url.hostname.includes('onesignal.com')
   ) {
     return;
   }
