@@ -45,6 +45,60 @@
       100% { transform: translateX(220%) skewX(-20deg); }
     }
 
+    /* ================= FLASHING & GLOWING "APP ဒေါင်းမည်" BUTTON + ARROW ================= */
+    @keyframes flashGlowBtn {
+      0%, 100% {
+        background: linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%);
+        box-shadow: 0 0 4px #10b981, 0 3px 0 #065f46;
+        transform: scale(1);
+        filter: brightness(1);
+      }
+      50% {
+        background: linear-gradient(135deg, #10b981 0%, #34d399 50%, #fde047 100%);
+        box-shadow: 0 0 18px #34d399, 0 0 28px rgba(250, 204, 21, 0.85), 0 3px 0 #065f46;
+        transform: scale(1.06);
+        filter: brightness(1.18);
+      }
+    }
+
+    @keyframes arrowPointBounce {
+      0%, 100% { transform: translateX(0px) scale(1); opacity: 1; }
+      50% { transform: translateX(4px) scale(1.22); opacity: 0.85; }
+    }
+
+    @keyframes slideDownNoti {
+      0% { transform: translate(-50%, -120%); opacity: 0; }
+      100% { transform: translate(-50%, 0); opacity: 1; }
+    }
+
+    .noti-slide-in {
+      animation: slideDownNoti 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .app-download-glow {
+      position: relative;
+      overflow: hidden;
+      animation: flashGlowBtn 1.3s ease-in-out infinite;
+    }
+
+    .app-download-glow::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.85), transparent);
+      animation: headerShine 1.8s infinite;
+      pointer-events: none;
+    }
+
+    .arrow-bounce-anim {
+      display: inline-block;
+      animation: arrowPointBounce 0.8s ease-in-out infinite;
+      filter: drop-shadow(0 2px 4px rgba(219, 39, 119, 0.4));
+    }
+
     .icon-3d-animate {
       transform-style: preserve-3d;
       animation: floatRotate3D 3.2s ease-in-out infinite;
@@ -97,6 +151,8 @@
     const OWNER_DISPLAY_PHONE = "09942739543";
     const DELIVERY_FEE = 4500;
 
+    const ORDER_THANK_YOU_MSG = "MiniTrend Kids ကိုရွေးချယ်တဲ့အတွက် ကျေးဇူးတင်ပါတယ်၊ မေမေတို့ ရဲ့အချစ်ဆုံးလေးအတွက် ပစ္စည်းကို ၃ ရက်အတွင်း အိမ်အရောက်ပို့ပေးပါမယ်";
+
     const AGE_SIZES = [
       "၆ လ - ၁ နှစ်",
       "၁ နှစ် - ၂ နှစ်",
@@ -110,6 +166,21 @@
       navigator.serviceWorker.register('./sw.js?v=3').catch(() => {});
     }
   </script>
+
+  <!-- ================= ZERO-PERMISSION TOP NOTIFICATION BANNER ================= -->
+  <div id="push-noti-popup" class="fixed top-3 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-md hidden noti-slide-in">
+    <div class="bg-gray-900/95 text-white rounded-2xl p-3.5 shadow-2xl border-2 border-pink-400 flex items-start gap-3 backdrop-blur-md">
+      <img src="./icon.png?v=3" class="w-11 h-11 rounded-xl object-cover shrink-0 border border-white/20" />
+      <div class="flex-1 min-w-0">
+        <div class="flex justify-between items-center gap-1">
+          <p id="push-noti-title" class="text-xs sm:text-sm font-extrabold text-amber-300 truncate">🔔 MiniTrend Kids</p>
+          <span class="text-[10px] text-gray-300 shrink-0">ယခုလေးတင်</span>
+        </div>
+        <p id="push-noti-body" class="text-xs sm:text-sm text-white font-bold mt-1 leading-relaxed"></p>
+      </div>
+      <button onclick="closePushPopup()" class="text-gray-400 hover:text-white font-bold text-lg leading-none px-1">✕</button>
+    </div>
+  </div>
 
   <!-- Double-Back Exit Toast Message -->
   <div id="exit-toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 bg-gray-900/95 text-white text-xs sm:text-sm font-bold px-5 py-3 rounded-full shadow-xl border border-white/15 transition-opacity duration-300 opacity-0 pointer-events-none whitespace-nowrap">
@@ -144,45 +215,46 @@
 
     <!-- 3D Animated Sticky Header -->
     <header class="header-3d-glass sticky top-0 z-30 border-b border-pink-100">
-      <div class="max-w-6xl mx-auto px-2.5 py-1.5 flex justify-between items-center gap-1.5">
+      <div class="max-w-6xl mx-auto px-2 py-1.5 flex justify-between items-center gap-1">
         <!-- 3D Animated App Icon & Brand Name -->
-        <div class="flex items-center gap-2 min-w-0 scene-3d">
-          <div class="relative w-10 h-10 shrink-0 flex items-center justify-center">
+        <div class="flex items-center gap-1.5 min-w-0 scene-3d">
+          <div class="relative w-9 h-9 sm:w-10 sm:h-10 shrink-0 flex items-center justify-center">
             <div class="absolute inset-0 rounded-2xl bg-gradient-to-tr from-pink-500 via-rose-400 to-amber-300 opacity-30 blur-sm animate-pulse"></div>
             <img src="./icon.png?v=3" 
                  alt="MiniTrend 3D Icon" 
-                 class="w-9 h-9 rounded-xl object-cover icon-3d-animate relative z-10" />
+                 class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl object-cover icon-3d-animate relative z-10" />
             <span class="absolute -top-1 -right-1 text-xs badge-3d-pop z-20">✨</span>
           </div>
           <div class="truncate">
             <div class="flex items-center gap-1">
-              <h1 class="text-sm sm:text-lg font-extrabold text-pink-600 leading-tight truncate title-3d-text">MiniTrend Kids</h1>
-              <span class="text-xs badge-3d-pop">🧸</span>
+              <h1 class="text-xs sm:text-lg font-extrabold text-pink-600 leading-tight truncate title-3d-text">MiniTrend Kids</h1>
             </div>
-            <p class="text-[10px] text-gray-600 font-bold truncate">ကလေးဖက်ရှင်နှင့် အသုံးအဆောင်ဆိုင်</p>
+            <p class="text-[9px] sm:text-[10px] text-gray-600 font-bold truncate">ကလေးဖက်ရှင်နှင့် အသုံးအဆောင်</p>
           </div>
         </div>
 
-        <!-- Compact 3D Action Buttons -->
+        <!-- Compact 3D Action Buttons with Animated Arrow & Flashing "App ဒေါင်းမည်" -->
         <div class="flex items-center gap-1 sm:gap-2 shrink-0">
-          <button id="pwa-install-btn" onclick="triggerPWAInstall()" class="btn-3d bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1 rounded-full text-[10px] sm:text-xs font-extrabold flex items-center gap-0.5">
-            <span>📲 App</span>
-          </button>
+          <div id="pwa-install-wrapper" class="flex items-center gap-0.5">
+            <span class="arrow-bounce-anim text-sm sm:text-base select-none">👉</span>
+            <button id="pwa-install-btn" onclick="triggerPWAInstall()" class="app-download-glow text-white px-2 sm:px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-extrabold flex items-center gap-0.5 border border-yellow-200">
+              <span>📲 App ဒေါင်းမည်</span>
+            </button>
+          </div>
 
-          <button onclick="openSizeModal()" class="btn-3d bg-amber-400 hover:bg-amber-500 text-gray-900 px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-extrabold flex items-center gap-0.5">
+          <button onclick="openSizeModal()" class="btn-3d bg-amber-400 hover:bg-amber-500 text-gray-900 px-2 sm:px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-extrabold flex items-center gap-0.5">
             <span>📏 Size တွက်ရန်</span>
           </button>
 
-          <button onclick="toggleCart()" class="btn-3d relative bg-pink-600 hover:bg-pink-700 text-white px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-bold flex items-center gap-1">
+          <button onclick="toggleCart()" class="btn-3d relative bg-pink-600 hover:bg-pink-700 text-white px-2 sm:px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-bold flex items-center gap-1">
             <span>🛍️</span>
-            <span class="hidden sm:inline">ခြင်းတောင်း</span>
             <span id="cart-count" class="bg-amber-300 text-gray-900 text-[10px] px-1.5 rounded-full font-extrabold">0</span>
           </button>
         </div>
       </div>
     </header>
 
-    <!-- CUSTOMER DELIVERY STATUS BANNER (Appears after ordering until delivered) -->
+    <!-- CUSTOMER DELIVERY STATUS BANNER (3-Day Warm Message) -->
     <div id="customer-delivery-banner" class="hidden max-w-6xl mx-auto px-2.5 pt-2"></div>
 
     <!-- Active Size Recommendation Banner -->
@@ -242,7 +314,7 @@
     <div class="flex flex-wrap justify-between items-center gap-3 mb-5">
       <div>
         <h2 class="text-xl sm:text-2xl font-bold text-gray-900">🔐 ဆိုင်ပိုင်ရှင် စီမံခန့်ခွဲမှု (Admin Panel)</h2>
-        <p class="text-xs sm:text-sm text-gray-500">ဝင်ကြည့်သူဦးရေ၊ ပို့ဆောင်ရန် အော်ဒါများနှင့် Sheet (၉) ခုမှ Stock များကို စီမံနိုင်ပါသည်</p>
+        <p class="text-xs sm:text-sm text-gray-500">ဝယ်သူများထံ Notification ပေးပို့ခြင်း၊ အော်ဒါစစ်ဆေးခြင်းနှင့် Stock စီမံခြင်း</p>
       </div>
       <div class="flex flex-wrap gap-2">
         <button onclick="setupNineSheets()" id="btn-setup-sheets" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-sm transition">📂 Sheet (၉) ခု အလိုအလျောက်ခွဲမည်</button>
@@ -270,12 +342,26 @@
       </div>
     </div>
 
-    <!-- Pending Orders Management (Mark Delivered to clear customer notice) -->
+    <!-- OWNER DAILY NOTIFICATION SENDER -->
+    <div class="bg-gradient-to-r from-purple-50 via-pink-50 to-amber-50 p-4 sm:p-5 rounded-2xl shadow-sm border border-pink-200 mb-6">
+      <h3 class="font-extrabold text-sm sm:text-base text-gray-900 mb-1">📢 ဝယ်သူများထံ နေ့စဉ် Notification ပေးပို့ရန် (Daily Broadcast)</h3>
+      <p class="text-xs text-gray-600 mb-3">အောက်ပါအကွက်တွင် နေ့စဉ် ပရိုမိုးရှင်း သို့မဟုတ် ပစ္စည်းအသစ်ရောက်ကြောင်း ရေးသားပြီး ပို့လိုက်ပါက ဝယ်သူများ၏ ဖုန်းထဲတွင် Permission တောင်းစရာမလိုဘဲ Notification တက်လာပါမည်။</p>
+      <form onsubmit="sendOwnerBroadcast(event)" class="space-y-2.5 text-xs sm:text-sm">
+        <input type="text" id="broadcast-title" value="MiniTrend Kids မှ သတင်းကောင်းလေး! 🎁" required placeholder="Notification ခေါင်းစဉ် *" class="w-full border border-pink-200 rounded-xl px-3 py-2 bg-white font-bold">
+        <textarea id="broadcast-message" rows="2" required placeholder="ဝယ်သူများထံ ပို့ချင်သည့် စာသား ရေးပါ (ဥပမာ - မေမေတို့ရေ ဒီနေ့ နွေရာသီဝတ် အဆင်အသစ်လေးတွေ ရောက်ပါတယ်နော် 🧸✨) *" class="w-full border border-pink-200 rounded-xl px-3 py-2 bg-white"></textarea>
+        <button type="submit" id="btn-send-broadcast" class="bg-pink-600 hover:bg-pink-700 text-white font-extrabold px-5 py-2.5 rounded-xl shadow text-xs sm:text-sm">
+          🔔 ဝယ်သူများထံ Notification ချက်ချင်းပို့မည်
+        </button>
+      </form>
+      <div id="last-broadcast-info" class="mt-3 text-xs text-gray-600 hidden bg-white/80 p-2.5 rounded-xl border border-pink-100"></div>
+    </div>
+
+    <!-- Pending Orders Management -->
     <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-emerald-200 mb-6">
       <div class="flex justify-between items-center mb-3">
         <div>
           <h3 class="font-bold text-sm sm:text-base text-gray-900">🚚 ပို့ဆောင်ရန် ကျန်ရှိသော အော်ဒါများ (Active Orders)</h3>
-          <p class="text-[11px] text-gray-500">ဝယ်သူထံ ပစ္စည်းရောက်ရှိသွားပါက <b>"✅ ပို့ပေးပြီး"</b> ကို နှိပ်လိုက်လျှင် ဝယ်သူဖုန်းထဲမှ (၄) ရက်အတွင်း ပို့ပေးမည့် စာတန်း အလိုအလျောက် ပျောက်သွားပါမည်။</p>
+          <p class="text-[11px] text-gray-500">ဝယ်သူထံ ပစ္စည်းရောက်ရှိသွားပါက <b>"✅ ပို့ပေးပြီး"</b> ကို နှိပ်လိုက်လျှင် ဝယ်သူဖုန်းထဲမှ ၃ ရက်အတွင်း ပို့ပေးမည့် စာတန်း အလိုအလျောက် ပျောက်သွားပါမည်။</p>
         </div>
       </div>
       <div id="admin-pending-orders" class="divide-y text-xs">
@@ -304,7 +390,7 @@
       <div class="flex justify-between items-center border-b pb-3 mb-3">
         <div class="flex items-center gap-2">
           <img src="./icon.png?v=3" class="w-8 h-8 rounded-lg object-cover" />
-          <h3 class="text-base font-bold text-gray-900">MiniTrend Kids App ထည့်သွင်းနည်း</h3>
+          <h3 class="text-base font-bold text-gray-900">MiniTrend Kids App ဒေါင်းယူနည်း</h3>
         </div>
         <button onclick="closePWAGuide()" class="text-gray-500 hover:text-gray-800 font-bold text-xl">✕</button>
       </div>
@@ -445,7 +531,7 @@
         </form>
 
         <div id="viber-action-box" class="hidden mt-4 p-4 bg-green-50 border border-green-300 rounded-xl space-y-2.5">
-          <p class="text-xs font-bold text-green-900">✅ သင်မှာယူထားတဲ့ ပစ္စည်းကို (၄) ရက်အတွင်း ပို့ပေးပါမည်! Viber Chat Box ထဲတွင် <b>Paste ချပြီး Send</b> နှိပ်ပေးပါ-</p>
+          <p class="text-xs font-bold text-green-900">✅ MiniTrend Kids ကိုရွေးချယ်တဲ့အတွက် ကျေးဇူးတင်ပါတယ်၊ မေမေတို့ ရဲ့အချစ်ဆုံးလေးအတွက် ပစ္စည်းကို ၃ ရက်အတွင်း အိမ်အရောက်ပို့ပေးပါမယ်! Viber Chat Box ထဲတွင် <b>Paste ချပြီး Send</b> နှိပ်ပေးပါ-</p>
           <a id="viber-direct-btn" href="#" class="block w-full text-center bg-[#7360f2] text-white font-bold py-2.5 rounded-lg text-xs">၁။ Viber Chat Box ပြန်ဖွင့်ရန် (09942739543)</a>
           <a id="viber-forward-btn" href="#" class="block w-full text-center bg-purple-600 text-white font-bold py-2.5 rounded-lg text-xs">၂။ စာသားအပြည့်အစုံဖြင့် Forward ရွေးပို့ရန်</a>
           <button type="button" onclick="copyOrderText()" class="w-full bg-white border border-green-400 text-green-800 font-bold py-2 rounded-lg text-xs">📋 အော်ဒါစာသား ထပ်မံ Copy ကူးမည်</button>
@@ -515,6 +601,124 @@
     let selectedSizes = {};
     let selectedColors = {};
     let latestOrderMessage = "";
+    let pushPopupTimer = null;
+
+    // ================= FORMAT ORDER DATE & TIME FOR ADMIN ACTIVE ORDERS =================
+    function formatOrderDateTime(val) {
+      if (!val) return "📅 အချိန်မှတ်တမ်းမရှိပါ";
+      const str = val.toString().trim();
+      const parsed = new Date(str);
+      if (str.includes('T') && !isNaN(parsed.getTime())) {
+        const datePart = parsed.toLocaleDateString('en-CA', { timeZone: 'Asia/Yangon' });
+        const timePart = parsed.toLocaleTimeString('en-US', {
+          timeZone: 'Asia/Yangon',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: true
+        });
+        return `📅 ${datePart} | ⏰ ${timePart}`;
+      }
+      const parts = str.split(' ');
+      if (parts.length >= 2) {
+        return `📅 ${parts[0]} | ⏰ ${parts.slice(1).join(' ')}`;
+      }
+      return `📅 ${str}`;
+    }
+
+    // ================= ZERO-PERMISSION NOTIFICATION ENGINE (CHIME + VIBRATION + TOP CARD) =================
+    function playNotiChime() {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        const osc1 = ctx.createOscillator();
+        const osc2 = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc1.type = 'sine';
+        osc2.type = 'triangle';
+        osc1.frequency.setValueAtTime(880, ctx.currentTime);
+        osc1.frequency.setValueAtTime(1174.66, ctx.currentTime + 0.12);
+        osc2.frequency.setValueAtTime(440, ctx.currentTime);
+        osc2.frequency.setValueAtTime(587.33, ctx.currentTime + 0.12);
+
+        gain.gain.setValueAtTime(0.25, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.55);
+
+        osc1.connect(gain);
+        osc2.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc1.start();
+        osc2.start();
+        osc1.stop(ctx.currentTime + 0.55);
+        osc2.stop(ctx.currentTime + 0.55);
+      } catch (e) {}
+    }
+
+    function sendPhoneNotification(title, bodyText) {
+      const popup = document.getElementById('push-noti-popup');
+      document.getElementById('push-noti-title').innerText = "🔔 " + (title || "MiniTrend Kids");
+      document.getElementById('push-noti-body').innerText = bodyText || "";
+      popup.classList.remove('hidden');
+
+      playNotiChime();
+
+      if (navigator.vibrate) {
+        navigator.vibrate([200, 100, 200]);
+      }
+
+      if (pushPopupTimer) clearTimeout(pushPopupTimer);
+      pushPopupTimer = setTimeout(() => {
+        popup.classList.add('hidden');
+      }, 10000);
+    }
+
+    function closePushPopup() {
+      document.getElementById('push-noti-popup').classList.add('hidden');
+    }
+
+    function checkAndTriggerBroadcastNoti(latestNoti) {
+      if (!latestNoti || !latestNoti.id || !latestNoti.message) return;
+      const lastSeenId = localStorage.getItem('mt_last_seen_noti_id');
+      if (lastSeenId !== latestNoti.id) {
+        localStorage.setItem('mt_last_seen_noti_id', latestNoti.id);
+        sendPhoneNotification(latestNoti.title || "MiniTrend Kids 🎁", latestNoti.message);
+      }
+    }
+
+    async function sendOwnerBroadcast(e) {
+      e.preventDefault();
+      const title = document.getElementById('broadcast-title').value.trim();
+      const message = document.getElementById('broadcast-message').value.trim();
+      if (!message) return;
+
+      const btn = document.getElementById('btn-send-broadcast');
+      btn.disabled = true;
+      btn.innerText = "⏳ Notification ပေးပို့နေပါသည်...";
+
+      try {
+        await fetch(APPS_SCRIPT_ORDER_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "sendBroadcast",
+            title: title,
+            message: message
+          })
+        });
+        document.getElementById('broadcast-message').value = "";
+        alert("✅ ဝယ်သူများထံသို့ Notification ပေးပို့ပြီးပါပြီ!");
+        setTimeout(() => loadVisitorStats(), 800);
+      } catch (err) {
+        alert("ပေးပို့ရာတွင် အမှားရှိနေပါသည်။");
+      }
+
+      btn.disabled = false;
+      btn.innerText = "🔔 ဝယ်သူများထံ Notification ချက်ချင်းပို့မည်";
+    }
 
     // ================= ACTIVE ORDER BANNER MANAGEMENT (CUSTOMER) =================
     function getSavedCustomerOrders() {
@@ -544,10 +748,10 @@
       bannerEl.innerHTML = orders.map(ord => `
         <div class="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 text-white rounded-2xl p-3 sm:p-3.5 mb-2 shadow-md border border-emerald-400/40 flex flex-col sm:flex-row justify-between sm:items-center gap-1.5">
           <div class="flex items-start sm:items-center gap-2.5">
-            <span class="text-xl sm:text-2xl shrink-0">🚚</span>
+            <span class="text-xl sm:text-2xl shrink-0">💝</span>
             <div>
-              <p class="text-xs sm:text-sm font-extrabold leading-snug">သင်မှာယူထားတဲ့ ပစ္စည်းကို (၄) ရက်အတွင်း ပို့ပေးပါမည်</p>
-              <p class="text-[11px] sm:text-xs text-emerald-100 font-bold mt-0.5">
+              <p class="text-xs sm:text-sm font-extrabold leading-relaxed">${ORDER_THANK_YOU_MSG}</p>
+              <p class="text-[11px] sm:text-xs text-emerald-100 font-bold mt-1">
                 📦 အရေအတွက်: <b class="text-amber-300">${ord.totalQty} ခု</b> &nbsp;|&nbsp; 💰 စုစုပေါင်းကျသင့်ငွေ (COD): <b class="text-amber-300">${Number(ord.grandTotal).toLocaleString()} ကျပ်</b>
                 <span class="opacity-80 ml-1">(#${ord.orderId})</span>
               </p>
@@ -559,25 +763,23 @@
 
     async function syncCustomerOrderStatus() {
       const orders = getSavedCustomerOrders();
-      if (orders.length === 0) {
-        renderCustomerDeliveryBanner();
-        return;
-      }
-
       renderCustomerDeliveryBanner();
 
       try {
         const ids = orders.map(o => o.orderId).join(',');
         const res = await fetch(`${APPS_SCRIPT_ORDER_URL}?action=checkOrders&ids=${encodeURIComponent(ids)}&t=${Date.now()}`);
         const data = await res.json();
-        if (data && data.status === 'ok' && Array.isArray(data.activeOrderIds)) {
-          const stillActive = orders.filter(o => data.activeOrderIds.includes(o.orderId));
-          saveCustomerOrders(stillActive);
-          renderCustomerDeliveryBanner();
+        if (data && data.status === 'ok') {
+          if (data.latestNoti) {
+            checkAndTriggerBroadcastNoti(data.latestNoti);
+          }
+          if (orders.length > 0 && Array.isArray(data.activeOrderIds)) {
+            const stillActive = orders.filter(o => data.activeOrderIds.includes(o.orderId));
+            saveCustomerOrders(stillActive);
+            renderCustomerDeliveryBanner();
+          }
         }
-      } catch (err) {
-        // Keep current banner if offline
-      }
+      } catch (err) {}
     }
 
     // ================= VISITOR ANALYTICS & ADMIN ORDER CONTROL =================
@@ -642,6 +844,7 @@
       const totalEl = document.getElementById('stat-total');
       const listEl = document.getElementById('recent-visitors-list');
       const pendingOrdersEl = document.getElementById('admin-pending-orders');
+      const broadcastInfoEl = document.getElementById('last-broadcast-info');
 
       if (!todayEl) return;
       todayEl.innerText = "...";
@@ -655,11 +858,21 @@
         yesterdayEl.innerText = (stats.yesterday || 0).toLocaleString() + " ဦး";
         totalEl.innerText = (stats.total || 0).toLocaleString() + " ဦး";
 
+        if (stats.latestNoti && stats.latestNoti.message) {
+          broadcastInfoEl.classList.remove('hidden');
+          broadcastInfoEl.innerHTML = `<b>📌 နောက်ဆုံးပို့ထားသော Notification (${stats.latestNoti.time}):</b><br><span class="text-pink-700 font-bold">${stats.latestNoti.title}</span> — ${stats.latestNoti.message}`;
+        }
+
         if (stats.pendingOrders && stats.pendingOrders.length > 0) {
           pendingOrdersEl.innerHTML = stats.pendingOrders.map(o => `
-            <div class="py-3 flex flex-col sm:flex-row justify-between sm:items-center gap-2">
-              <div class="space-y-0.5">
-                <p class="font-extrabold text-gray-900 text-xs sm:text-sm">🧾 ${o.orderId} — ${o.name} (${o.phone})</p>
+            <div class="py-3.5 flex flex-col sm:flex-row justify-between sm:items-center gap-2.5">
+              <div class="space-y-1">
+                <div class="flex flex-wrap items-center gap-2">
+                  <p class="font-extrabold text-gray-900 text-xs sm:text-sm">🧾 ${o.orderId} — ${o.name} (${o.phone})</p>
+                  <span class="bg-amber-100 text-amber-900 border border-amber-300 px-2.5 py-0.5 rounded-full text-[11px] font-extrabold shadow-sm">
+                    ${formatOrderDateTime(o.dateTime)}
+                  </span>
+                </div>
                 <p class="text-gray-600 text-[11px]">📍 ${o.address}</p>
                 <p class="text-pink-700 font-bold text-[11px] whitespace-pre-line">${o.itemsText}</p>
                 <p class="text-gray-900 font-extrabold text-xs">💰 စုစုပေါင်း: ${Number(o.grandTotal || 0).toLocaleString()} ကျပ်</p>
@@ -728,14 +941,14 @@
 
     window.addEventListener('appinstalled', () => {
       deferredInstallPrompt = null;
-      const btn = document.getElementById('pwa-install-btn');
-      if (btn) btn.classList.add('hidden');
+      const wrap = document.getElementById('pwa-install-wrapper');
+      if (wrap) wrap.classList.add('hidden');
     });
 
     if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
       document.addEventListener('DOMContentLoaded', () => {
-        const btn = document.getElementById('pwa-install-btn');
-        if (btn) btn.classList.add('hidden');
+        const wrap = document.getElementById('pwa-install-wrapper');
+        if (wrap) wrap.classList.add('hidden');
       });
     }
 
@@ -909,7 +1122,6 @@
         selectedSizes[indexId] = firstAvailableSize;
       }
 
-      // Description ကို ကော်လံ K (c[10]) သို့မဟုတ် ကော်လံ Z (c[25]) မှ ဖတ်ယူပေးသည်
       const descText = (c[25] && c[25].trim() !== '') ? c[25].trim() : ((c[10] && !c[10].startsWith('http')) ? c[10].trim() : '');
 
       return {
@@ -936,16 +1148,19 @@
       const loader = document.getElementById('loading-indicator');
       let loadedItems = [];
 
-      // ၁။ Google Sheet အားလုံး (Category ၉ ခုစလုံး) မှ ပစ္စည်းများကို Apps Script မှတစ်ဆင့် ရယူသည်
       try {
         const res = await fetch(`${APPS_SCRIPT_ORDER_URL}?action=getProducts&t=${Date.now()}`);
         const data = await res.json();
-        if (data && data.status === 'ok' && Array.isArray(data.rows) && data.rows.length > 0) {
-          loadedItems = data.rows.map((r, idx) => buildProductFromRow(r, idx + 1));
+        if (data && data.status === 'ok') {
+          if (data.latestNoti) {
+            checkAndTriggerBroadcastNoti(data.latestNoti);
+          }
+          if (Array.isArray(data.rows) && data.rows.length > 0) {
+            loadedItems = data.rows.map((r, idx) => buildProductFromRow(r, idx + 1));
+          }
         }
       } catch (e) {}
 
-      // ၂။ အကယ်၍ Apps Script မချိတ်ရသေးပါက မူလ CSV မှ Fallback ရယူသည်
       if (loadedItems.length === 0) {
         try {
           const cacheBuster = (GOOGLE_SHEET_CSV_URL.includes('?') ? '&' : '?') + 't=' + Date.now();
@@ -983,6 +1198,12 @@
       }
       syncCustomerOrderStatus();
       loadProducts();
+
+      setInterval(() => {
+        if (!document.getElementById('customer-view').classList.contains('hidden')) {
+          syncCustomerOrderStatus();
+        }
+      }, 45000);
     }
 
     function openSizeModal() {
@@ -1287,8 +1508,8 @@
         const activeOrders = getSavedCustomerOrders();
         if (activeOrders.length > 0) {
           cartItemsEl.innerHTML = activeOrders.map(ord => `
-            <div class="bg-emerald-50 border border-emerald-300 rounded-xl p-3.5 text-center space-y-1">
-              <p class="text-sm font-extrabold text-emerald-900">🚚 သင်မှာယူထားတဲ့ ပစ္စည်းကို (၄) ရက်အတွင်း ပို့ပေးပါမည်</p>
+            <div class="bg-emerald-50 border border-emerald-300 rounded-xl p-3.5 text-center space-y-1.5">
+              <p class="text-xs sm:text-sm font-extrabold text-emerald-900 leading-relaxed">💝 ${ORDER_THANK_YOU_MSG}</p>
               <p class="text-xs font-bold text-emerald-700">ပစ္စည်းအရေအတွက်: <b>${ord.totalQty} ခု</b> | စုစုပေါင်းကျသင့်ငွေ: <b>${Number(ord.grandTotal).toLocaleString()} ကျပ်</b></p>
               <p class="text-[11px] text-gray-500">အော်ဒါအမှတ်: #${ord.orderId}</p>
             </div>
@@ -1381,7 +1602,7 @@ ${itemLines}
 
       const orderedItemsPayload = cart.map(i => ({ name: i.name, size: i.size, qty: i.qty }));
 
-      // ၁။ ဝယ်သူဖုန်းထဲတွင် (၄) ရက်အတွင်း ပို့ပေးမည့် စာတန်းအတွက် သိမ်းဆည်းပြီး ခြင်းတောင်းကို ချက်ချင်း ရှင်းလင်းသည်
+      // ၁။ ဝယ်သူဖုန်းထဲတွင် ၃ ရက်အတွင်း ပို့ပေးမည့် စာတန်း သိမ်းဆည်းပြီး Permission မလိုဘဲ အသံ + Noti ချက်ချင်း ထုတ်ပေးသည်
       const existingOrders = getSavedCustomerOrders();
       existingOrders.unshift({
         orderId: orderId,
@@ -1394,8 +1615,9 @@ ${itemLines}
       cart = [];
       updateCartUI();
       renderCustomerDeliveryBanner();
+      sendPhoneNotification("MiniTrend Kids 💝", ORDER_THANK_YOU_MSG);
 
-      // ၂။ Google Sheet သို့ အော်ဒါပို့သည်
+      // ၂။ Google Sheet (Admin Active Orders) သို့ အော်ဒါပို့သည်
       try {
         await fetch(APPS_SCRIPT_ORDER_URL, {
           method: "POST",
