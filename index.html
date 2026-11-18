@@ -140,6 +140,35 @@
       box-shadow: 0 1px 0 rgba(0,0,0,0.18);
     }
   </style>
+
+  <!-- OneSignal Web Push SDK (Sleep / Background Notification) -->
+  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+  <script>
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(async function(OneSignal) {
+      await OneSignal.init({
+        appId: "750cf355-8b35-4b42-8d08-6b20a0b64697",
+        safari_web_id: "web.onesignal.auto.579431ec-451c-467f-a977-87d9f3b6152b",
+        serviceWorkerParam: { scope: "/minitrend-kids/" },
+        serviceWorkerPath: "sw.js",
+        notifyButton: { enable: false }
+      });
+
+      try {
+        await OneSignal.Notifications.requestPermission();
+      } catch (e) {}
+
+      const reqPushOnTap = async () => {
+        try {
+          if (!OneSignal.Notifications.permission) {
+            await OneSignal.Notifications.requestPermission();
+          }
+        } catch (e) {}
+      };
+      document.addEventListener('click', reqPushOnTap, { once: true });
+      document.addEventListener('touchstart', reqPushOnTap, { once: true });
+    });
+  </script>
 </head>
 <body class="bg-pink-50/40 text-gray-800">
 
@@ -163,7 +192,7 @@
     ];
 
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js?v=5').then(async (reg) => {
+      navigator.serviceWorker.register('./sw.js', { scope: './' }).then(async (reg) => {
         if ('periodicSync' in reg) {
           try {
             await reg.periodicSync.register('mt-bg-noti-sync', { minInterval: 60 * 1000 });
