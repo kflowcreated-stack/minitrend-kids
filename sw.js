@@ -1,3 +1,36 @@
+// ၁။ ဖုန်း Sleep (Lock Screen) သို့မဟုတ် App အပြင်ရောက်နေချိန် Firebase Push ဝင်လာသည်နှင့် တိုက်ရိုက်နှိုးပေးသည့် Native Push Listener
+self.addEventListener('push', (event) => {
+  if (!event.data) return;
+  event.stopImmediatePropagation();
+
+  let payload = {};
+  try {
+    payload = event.data.json();
+  } catch (e) {
+    payload = { notification: { title: 'MiniTrend Kids 🎁', body: event.data.text() } };
+  }
+
+  const noti = payload.notification || {};
+  const data = payload.data || {};
+  const title = noti.title || data.title || 'MiniTrend Kids 🎁';
+  const body = noti.body || data.body || '';
+  const icon = noti.icon || data.icon || './icon.png?v=3';
+  const linkUrl = data.url || (payload.fcmOptions && payload.fcmOptions.link) || './?role=customer';
+
+  event.waitUntil(
+    self.registration.showNotification(title, {
+      body: body,
+      icon: icon,
+      badge: './icon.png?v=3',
+      tag: 'mt-fcm-' + Date.now(),
+      renotify: true,
+      requireInteraction: false,
+      vibrate: [300, 120, 300],
+      data: { url: linkUrl }
+    })
+  );
+});
+
 importScripts('https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.13.2/firebase-messaging-compat.js');
 
@@ -12,24 +45,10 @@ firebase.initializeApp({
 
 try {
   const messaging = firebase.messaging();
-  messaging.onBackgroundMessage((payload) => {
-    const title = (payload.notification && payload.notification.title) || (payload.data && payload.data.title) || 'MiniTrend Kids 🎁';
-    const body = (payload.notification && payload.notification.body) || (payload.data && payload.data.body) || '';
-    const linkUrl = (payload.data && payload.data.url) || './?role=customer';
-
-    return self.registration.showNotification(title, {
-      body: body,
-      icon: './icon.png?v=3',
-      badge: './icon.png?v=3',
-      tag: 'mt-fcm-' + Date.now(),
-      renotify: true,
-      vibrate: [250, 120, 250],
-      data: { url: linkUrl }
-    });
-  });
+  messaging.onBackgroundMessage(() => {});
 } catch (e) {}
 
-const CACHE_NAME = 'minitrend-kids-v12';
+const CACHE_NAME = 'minitrend-kids-v14';
 const STATE_CACHE = 'minitrend-noti-state-v1';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzjiat7rNkOGkQYjf3RT6rC4g5AdXiVtraecqUTG8wXcu4l6Dm1mmtnXpVhaxjAzsrd/exec';
 
