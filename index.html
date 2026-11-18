@@ -61,7 +61,6 @@
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-    /* App အဖြစ် Install လုပ်ပြီးသားဖြစ်ပါက Refresh လုပ်လျှင်ပင် "App ဒေါင်းမည်" ခလုတ် လုံးဝပြန်မပေါ်စေရန် */
     @media all and (display-mode: standalone), (display-mode: minimal-ui), (display-mode: fullscreen) {
       #pwa-install-wrapper {
         display: none !important;
@@ -190,7 +189,7 @@
     }
   </style>
 
-  <!-- OneSignal Web Push SDK (Sleep / Background Notification) -->
+  <!-- OneSignal Web Push SDK (Customer & Owner Role Tagging) -->
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
   <script>
     window.OneSignalDeferred = window.OneSignalDeferred || [];
@@ -203,8 +202,13 @@
         notifyButton: { enable: false }
       });
 
+      const params = new URLSearchParams(window.location.search);
+      const initialRole = (params.get('role') || window.location.hash.replace('#', '') || 'customer').toLowerCase();
+      const targetTag = initialRole === 'admin' ? 'admin' : 'customer';
+
       try {
         await OneSignal.Notifications.requestPermission();
+        OneSignal.User.addTag("role", targetTag);
       } catch (e) {}
 
       const reqPushOnTap = async () => {
@@ -212,11 +216,36 @@
           if (!OneSignal.Notifications.permission) {
             await OneSignal.Notifications.requestPermission();
           }
+          const isAdminOpen = document.getElementById('admin-view') && !document.getElementById('admin-view').classList.contains('hidden');
+          OneSignal.User.addTag("role", isAdminOpen ? "admin" : "customer");
         } catch (e) {}
       };
       document.addEventListener('click', reqPushOnTap, { once: true });
       document.addEventListener('touchstart', reqPushOnTap, { once: true });
     });
+
+    function registerOwnerDevicePush(showAlertMsg) {
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(async function(OneSignal) {
+        try {
+          await OneSignal.Notifications.requestPermission();
+          OneSignal.User.addTag("role", "admin");
+          localStorage.setItem("mt_owner_push_linked", "1");
+          const statusEl = document.getElementById("owner-push-status");
+          if (statusEl) {
+            statusEl.innerText = "✅ ဤဖုန်းအား ဆိုင်ပိုင်ရှင်ဖုန်းအဖြစ် ချိတ်ဆက်ပြီးပါပြီ (ဝယ်သူအော်ဒါတင်တိုင်း Noti တက်ပါမည်)";
+            statusEl.className = "text-xs font-bold text-emerald-700 mt-1.5";
+          }
+          if (showAlertMsg) {
+            alert("✅ ဆိုင်ပိုင်ရှင်ဖုန်းအဖြစ် Notification ချိတ်ဆက်ပြီးပါပြီ!\n\nယခု App ကို ပိတ်ထားလျှင် (သို့) ဖုန်း Screen ပိတ်ထားလျှင်ပင် ဝယ်သူအော်ဒါတင်လိုက်သည်နှင့် ဖုန်းထဲသို့ Noti ချက်ချင်း တက်လာပါမည်။");
+          }
+        } catch (e) {
+          if (showAlertMsg) {
+            alert("⚠️ Browser တွင် Notification ခွင့်ပြုချက် (Allow) ကို အရင်ဖွင့်ပေးပါခင်ဗျာ။");
+          }
+        }
+      });
+    }
   </script>
 </head>
 <body class="bg-pink-50/40 text-gray-800">
@@ -302,7 +331,6 @@
     <!-- 3D Animated Sticky Header -->
     <header class="header-3d-glass sticky top-0 z-30 border-b border-pink-100">
       <div class="max-w-6xl mx-auto px-2 py-1.5 flex justify-between items-center gap-1">
-        <!-- 3D Animated App Icon & Brand Name -->
         <div class="flex items-center gap-1.5 min-w-0 scene-3d">
           <div class="relative w-9 h-9 sm:w-10 sm:h-10 shrink-0 flex items-center justify-center">
             <div class="absolute inset-0 rounded-2xl bg-gradient-to-tr from-pink-500 via-rose-400 to-amber-300 opacity-30 blur-sm animate-pulse"></div>
@@ -319,7 +347,6 @@
           </div>
         </div>
 
-        <!-- Compact 3D Action Buttons with Animated Arrow & Flashing "App ဒေါင်းမည်" -->
         <div class="flex items-center gap-1 sm:gap-2 shrink-0">
           <div id="pwa-install-wrapper" class="flex items-center gap-0.5">
             <span class="arrow-bounce-anim text-sm sm:text-base select-none">👉</span>
@@ -340,7 +367,6 @@
       </div>
     </header>
 
-    <!-- App Install ပြီးသားဆိုပါက ခလုတ်ကို ချက်ချင်းဖျောက်ထားမည် -->
     <script>
       if (isStandaloneApp() || localStorage.getItem('mt_pwa_installed') === '1') {
         var wrapEl = document.getElementById('pwa-install-wrapper');
@@ -386,7 +412,7 @@
       </div>
     </section>
 
-    <!-- 2x2 Product Grid (4 items per mobile screen) -->
+    <!-- 2x2 Product Grid -->
     <main class="max-w-6xl mx-auto px-2 py-2">
       <div id="loading-indicator" class="text-center py-8 text-pink-600 font-bold text-xs">⏳ ပစ္စည်းစာရင်းများ ရယူနေပါသည်...</div>
       <div id="product-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4"></div>
@@ -415,6 +441,19 @@
         <button onclick="loadVisitorStats()" class="bg-pink-600 hover:bg-pink-700 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-sm transition">🔄 စာရင်းပြန်စစ်မည်</button>
         <button onclick="switchRole('customer')" class="bg-gray-800 hover:bg-gray-900 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-sm transition">🛍️ ဆိုင်မျက်နှာပြင်သို့</button>
       </div>
+    </div>
+
+    <!-- OWNER ORDER NOTIFICATION REGISTRATION CARD -->
+    <div class="bg-white border-2 border-indigo-200 rounded-2xl p-4 mb-5 shadow-sm flex flex-col sm:flex-row justify-between sm:items-center gap-3">
+      <div>
+        <h3 class="font-extrabold text-sm sm:text-base text-gray-900">📲 ဆိုင်ပိုင်ရှင်ဖုန်းသို့ အော်ဒါ Noti တိုက်ရိုက်လက်ခံရန်</h3>
+        <p id="owner-push-status" class="text-xs text-gray-600 mt-1">
+          ဝယ်သူအော်ဒါတင်လိုက်သည်နှင့် သင့်ဖုန်း Sleep ဖြစ်နေချိန်မှာပါ Noti တက်စေရန် ညာဘက်ခလုတ်ကို တစ်ကြိမ်နှိပ်ထားပါ။
+        </p>
+      </div>
+      <button onclick="registerOwnerDevicePush(true)" class="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs sm:text-sm shadow shrink-0">
+        🔔 ပိုင်ရှင်ဖုန်း Noti ချိတ်ဆက်မည်
+      </button>
     </div>
 
     <!-- Visitor Analytics Cards -->
@@ -1096,25 +1135,21 @@
     }
 
     async function triggerPWAInstall() {
-      // ၁။ Chrome တွင် တိုက်ရိုက် Install ခိုင်းမည်
       if (window.__deferredInstallPrompt) {
         await runNativeInstallPrompt();
         return;
       }
 
-      // ၂။ iPhone / iPad (Apple စနစ်အရ Safari Share ခလုတ်မှတစ်ဆင့်သာ သွင်းခွင့်ပြုသဖြင့် အောက်ခြေစာတန်းတိုလေးသာ ပြမည်)
       if (isIOSDevice()) {
         showBottomBanner("🍎 iPhone: အောက်ခြေ Share (⬆️) ကိုနှိပ်ပြီး 'Add to Home Screen' ကို ရွေးပါ");
         return;
       }
 
-      // ၃။ Viber / Mi Browser စသည်တို့မှ ဖွင့်ထားပါက Chrome ဖြင့် တိုက်ရိုက်ဖွင့်ပေးမည်
       if (isAndroidInAppBrowser()) {
         window.location.href = "intent://kflowcreated-stack.github.io/minitrend-kids/?role=customer#Intent;scheme=https;package=com.android.chrome;end";
         return;
       }
 
-      // ၄။ Chrome စဖွင့်ခါစ ဖြစ်နေပါက စက္ကန့်အနည်းငယ် စောင့်ခိုင်းပြီး Install အကွက် တန်းဖွင့်ပေးမည်
       const btn = document.getElementById('pwa-install-btn');
       if (btn) btn.innerHTML = '<span>⏳ ခဏစောင့်ပါ...</span>';
       window.__pendingAutoInstall = true;
@@ -1368,6 +1403,14 @@
         if (wrap) wrap.classList.add('hidden');
       }
 
+      if (localStorage.getItem("mt_owner_push_linked") === "1") {
+        const statusEl = document.getElementById("owner-push-status");
+        if (statusEl) {
+          statusEl.innerText = "✅ ဤဖုန်းအား ဆိုင်ပိုင်ရှင်ဖုန်းအဖြစ် ချိတ်ဆက်ပြီးပါပြီ (ဝယ်သူအော်ဒါတင်တိုင်း Noti တက်ပါမည်)";
+          statusEl.className = "text-xs font-bold text-emerald-700 mt-1.5";
+        }
+      }
+
       const params = new URLSearchParams(window.location.search);
       const role = params.get('role') || window.location.hash.replace('#', '');
       if (role === 'customer') {
@@ -1513,6 +1556,7 @@
       if (role === 'admin') {
         document.getElementById('customer-view').classList.add('hidden');
         document.getElementById('admin-view').classList.remove('hidden');
+        registerOwnerDevicePush(false);
         loadVisitorStats();
       } else {
         document.getElementById('admin-view').classList.add('hidden');
