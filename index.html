@@ -55,9 +55,8 @@
   </script>
 
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Padauk:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
   <style>
-    body { font-family: 'Padauk', sans-serif; }
+    body { font-family: 'Pyidaungsu', 'Myanmar Text', 'Noto Sans Myanmar', system-ui, -apple-system, sans-serif; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
@@ -188,65 +187,6 @@
       box-shadow: 0 1px 0 rgba(0,0,0,0.18);
     }
   </style>
-
-  <!-- OneSignal Web Push SDK (Customer & Owner Role Tagging) -->
-  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-  <script>
-    window.OneSignalDeferred = window.OneSignalDeferred || [];
-    OneSignalDeferred.push(async function(OneSignal) {
-      await OneSignal.init({
-        appId: "750cf355-8b35-4b42-8d08-6b20a0b64697",
-        safari_web_id: "web.onesignal.auto.579431ec-451c-467f-a977-87d9f3b6152b",
-        serviceWorkerParam: { scope: "/minitrend-kids/" },
-        serviceWorkerPath: "sw.js",
-        notifyButton: { enable: false }
-      });
-
-      const params = new URLSearchParams(window.location.search);
-      const initialRole = (params.get('role') || window.location.hash.replace('#', '') || 'customer').toLowerCase();
-      const targetTag = initialRole === 'admin' ? 'admin' : 'customer';
-
-      try {
-        await OneSignal.Notifications.requestPermission();
-        OneSignal.User.addTag("role", targetTag);
-      } catch (e) {}
-
-      const reqPushOnTap = async () => {
-        try {
-          if (!OneSignal.Notifications.permission) {
-            await OneSignal.Notifications.requestPermission();
-          }
-          const isAdminOpen = document.getElementById('admin-view') && !document.getElementById('admin-view').classList.contains('hidden');
-          OneSignal.User.addTag("role", isAdminOpen ? "admin" : "customer");
-        } catch (e) {}
-      };
-      document.addEventListener('click', reqPushOnTap, { once: true });
-      document.addEventListener('touchstart', reqPushOnTap, { once: true });
-    });
-
-    function registerOwnerDevicePush(showAlertMsg) {
-      window.OneSignalDeferred = window.OneSignalDeferred || [];
-      OneSignalDeferred.push(async function(OneSignal) {
-        try {
-          await OneSignal.Notifications.requestPermission();
-          OneSignal.User.addTag("role", "admin");
-          localStorage.setItem("mt_owner_push_linked", "1");
-          const statusEl = document.getElementById("owner-push-status");
-          if (statusEl) {
-            statusEl.innerText = "✅ ဤဖုန်းအား ဆိုင်ပိုင်ရှင်ဖုန်းအဖြစ် ချိတ်ဆက်ပြီးပါပြီ (ဝယ်သူအော်ဒါတင်တိုင်း Noti တက်ပါမည်)";
-            statusEl.className = "text-xs font-bold text-emerald-700 mt-1.5";
-          }
-          if (showAlertMsg) {
-            alert("✅ ဆိုင်ပိုင်ရှင်ဖုန်းအဖြစ် Notification ချိတ်ဆက်ပြီးပါပြီ!\n\nယခု App ကို ပိတ်ထားလျှင် (သို့) ဖုန်း Screen ပိတ်ထားလျှင်ပင် ဝယ်သူအော်ဒါတင်လိုက်သည်နှင့် ဖုန်းထဲသို့ Noti ချက်ချင်း တက်လာပါမည်။");
-          }
-        } catch (e) {
-          if (showAlertMsg) {
-            alert("⚠️ Browser တွင် Notification ခွင့်ပြုချက် (Allow) ကို အရင်ဖွင့်ပေးပါခင်ဗျာ။");
-          }
-        }
-      });
-    }
-  </script>
 </head>
 <body class="bg-pink-50/40 text-gray-800">
 
@@ -694,8 +634,65 @@
     let latestOrderMessage = "";
     let pushPopupTimer = null;
 
+    // OneSignal ကို စာမျက်နှာပွင့်ပြီး ၂.၅ စက္ကန့်အကြာမှ နောက်ကွယ်တွင် ခေါ်ယူမည် (စဖွင့်ချိန် လုံးဝမနှေးစေရန်)
+    function loadOneSignalLazy() {
+      if (window.__oneSignalLoaded) return;
+      window.__oneSignalLoaded = true;
+
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      window.OneSignalDeferred.push(async function(OneSignal) {
+        try {
+          await OneSignal.init({
+            appId: "750cf355-8b35-4b42-8d08-6b20a0b64697",
+            safari_web_id: "web.onesignal.auto.579431ec-451c-467f-a977-87d9f3b6152b",
+            serviceWorkerParam: { scope: "/minitrend-kids/" },
+            serviceWorkerPath: "sw.js",
+            notifyButton: { enable: false }
+          });
+
+          const params = new URLSearchParams(window.location.search);
+          const initialRole = (params.get('role') || window.location.hash.replace('#', '') || 'customer').toLowerCase();
+          const isAdminOpen = document.getElementById('admin-view') && !document.getElementById('admin-view').classList.contains('hidden');
+          const targetTag = (initialRole === 'admin' || isAdminOpen) ? 'admin' : 'customer';
+
+          await OneSignal.Notifications.requestPermission();
+          OneSignal.User.addTag("role", targetTag);
+        } catch (e) {}
+      });
+
+      const s = document.createElement('script');
+      s.src = "https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js";
+      s.async = true;
+      document.head.appendChild(s);
+    }
+
+    function registerOwnerDevicePush(showAlertMsg) {
+      loadOneSignalLazy();
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      window.OneSignalDeferred.push(async function(OneSignal) {
+        try {
+          await OneSignal.Notifications.requestPermission();
+          OneSignal.User.addTag("role", "admin");
+          localStorage.setItem("mt_owner_push_linked", "1");
+          const statusEl = document.getElementById("owner-push-status");
+          if (statusEl) {
+            statusEl.innerText = "✅ ဤဖုန်းအား ဆိုင်ပိုင်ရှင်ဖုန်းအဖြစ် ချိတ်ဆက်ပြီးပါပြီ (ဝယ်သူအော်ဒါတင်တိုင်း Noti တက်ပါမည်)";
+            statusEl.className = "text-xs font-bold text-emerald-700 mt-1.5";
+          }
+          if (showAlertMsg) {
+            alert("✅ ဆိုင်ပိုင်ရှင်ဖုန်းအဖြစ် Notification ချိတ်ဆက်ပြီးပါပြီ!\n\nယခု App ကို ပိတ်ထားလျှင် (သို့) ဖုန်း Screen ပိတ်ထားလျှင်ပင် ဝယ်သူအော်ဒါတင်လိုက်သည်နှင့် ဖုန်းထဲသို့ Noti ချက်ချင်း တက်လာပါမည်။");
+          }
+        } catch (e) {
+          if (showAlertMsg) {
+            alert("⚠️ Browser တွင် Notification ခွင့်ပြုချက် (Allow) ကို အရင်ဖွင့်ပေးပါခင်ဗျာ။");
+          }
+        }
+      });
+    }
+
     function setupAutoSystemNotiPermission() {
       const requestOnce = async () => {
+        loadOneSignalLazy();
         if ('Notification' in window && Notification.permission === 'default') {
           try {
             await Notification.requestPermission();
@@ -862,7 +859,7 @@
         });
         document.getElementById('broadcast-message').value = "";
         sendPhoneNotification(title, message, 'owner-preview-' + Date.now());
-        setTimeout(() => loadVisitorStats(), 800);
+        setTimeout(() => refreshAdminAll(), 800);
       } catch (err) {
         alert("ပေးပို့ရာတွင် အမှားရှိနေပါသည်။");
       }
@@ -917,7 +914,7 @@
 
       try {
         const ids = orders.map(o => o.orderId).join(',');
-        const res = await fetch(`${APPS_SCRIPT_ORDER_URL}?action=checkOrders&ids=${encodeURIComponent(ids)}&t=${Date.now()}`);
+        const res = await fetch(`${APPS_SCRIPT_ORDER_URL}?action=checkOrders&ids=${encodeURIComponent(ids)}&t=${Date.now()}`, { cache: "no-store" });
         const data = await res.json();
         if (data && data.status === 'ok') {
           if (data.latestNoti) {
@@ -1418,6 +1415,9 @@
       }
       syncCustomerOrderStatus();
       loadProducts();
+
+      // စာမျက်နှာ ပွင့်ပြီး ၂.၅ စက္ကန့်အကြာမှ OneSignal ကို နောက်ကွယ်မှ ချိတ်ဆက်ပေးမည်
+      setTimeout(loadOneSignalLazy, 2500);
 
       setInterval(() => {
         if (!document.getElementById('customer-view').classList.contains('hidden')) {
