@@ -7,7 +7,7 @@ const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzjiat7rNkOGkQY
 const APP_SHELL = [
   './',
   './index.html',
-  './manifest.json?v=5',
+  './manifest.json?v=4',
   './icon.png?v=3'
 ];
 
@@ -129,7 +129,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // စာမျက်နှာအသစ် (index.html) ကို အမြဲ Network မှ တိုက်ရိုက်အရင်ယူမည် (အင်တာနက်ပြတ်မှသာ Cache သုံးမည်)
+  // index.html ကို အမြဲတမ်း ဗားရှင်းအသစ် ရယူပေးမည် (Cache အဟောင်း မကပ်စေရန်)
   if (req.mode === 'navigate') {
     event.respondWith(
       fetch(req)
