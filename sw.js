@@ -1,6 +1,6 @@
 importScripts('https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js');
 
-const CACHE_NAME = 'minitrend-kids-v8';
+const CACHE_NAME = 'minitrend-kids-v9';
 const STATE_CACHE = 'minitrend-noti-state-v1';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzjiat7rNkOGkQYjf3RT6rC4g5AdXiVtraecqUTG8wXcu4l6Dm1mmtnXpVhaxjAzsrd/exec';
 
@@ -8,7 +8,8 @@ const APP_SHELL = [
   './',
   './index.html',
   './manifest.json?v=4',
-  './icon.png?v=3'
+  './icon.png?v=3',
+  'https://cdn.tailwindcss.com'
 ];
 
 self.addEventListener('install', (event) => {
@@ -129,23 +130,22 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // index.html ကို အမြဲတမ်း ဗားရှင်းအသစ် ရယူပေးမည် (Cache အဟောင်း မကပ်စေရန်)
+  // ဖုန်းထဲတွင် သိမ်းထားပြီးသားဖြစ်ပါက အင်တာနက်မစောင့်ဘဲ ချက်ချင်းပြသပြီး နောက်ကွယ်မှ Update ယူပေးမည်
   if (req.mode === 'navigate') {
     event.respondWith(
-      fetch(req)
-        .then((networkRes) => {
-          if (networkRes && networkRes.status === 200) {
-            const clone = networkRes.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put('./index.html', clone));
-          }
-          return networkRes;
-        })
-        .catch(async () => {
-          const cachedPage =
-            (await caches.match('./index.html', { ignoreSearch: true })) ||
-            (await caches.match('./', { ignoreSearch: true }));
-          return cachedPage || Response.error();
-        })
+      caches.match('./index.html', { ignoreSearch: true }).then((cachedPage) => {
+        const networkFetch = fetch(req)
+          .then((networkRes) => {
+            if (networkRes && networkRes.status === 200) {
+              const clone = networkRes.clone();
+              caches.open(CACHE_NAME).then((cache) => cache.put('./index.html', clone));
+            }
+            return networkRes;
+          })
+          .catch(() => cachedPage || Response.error());
+
+        return cachedPage || networkFetch;
+      })
     );
     return;
   }
