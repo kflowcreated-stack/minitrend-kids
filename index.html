@@ -9,15 +9,58 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="MiniTrend Kids" />
-  <link rel="manifest" href="./manifest.json?v=3" />
+  <link rel="manifest" href="./manifest.json?v=4" />
   <link rel="icon" type="image/png" href="./icon.png?v=3" />
   <link rel="apple-touch-icon" href="./icon.png?v=3" />
+
+  <!-- Chrome Install Prompt နှင့် Standalone Mode စစ်ဆေးခြင်း (စာမျက်နှာဖွင့်သည်နှင့် ချက်ချင်းအလုပ်လုပ်စေရန်) -->
+  <script>
+    window.__deferredInstallPrompt = null;
+
+    function isStandaloneApp() {
+      return (
+        window.matchMedia('(display-mode: standalone)').matches ||
+        window.matchMedia('(display-mode: minimal-ui)').matches ||
+        window.matchMedia('(display-mode: fullscreen)').matches ||
+        window.navigator.standalone === true
+      );
+    }
+
+    if (isStandaloneApp()) {
+      try { localStorage.setItem('mt_pwa_installed', '1'); } catch (e) {}
+    }
+
+    window.addEventListener('beforeinstallprompt', function(e) {
+      e.preventDefault();
+      window.__deferredInstallPrompt = e;
+      try { localStorage.removeItem('mt_pwa_installed'); } catch (err) {}
+      var wrap = document.getElementById('pwa-install-wrapper');
+      if (wrap && !isStandaloneApp()) {
+        wrap.classList.remove('hidden');
+      }
+    });
+
+    window.addEventListener('appinstalled', function() {
+      window.__deferredInstallPrompt = null;
+      try { localStorage.setItem('mt_pwa_installed', '1'); } catch (e) {}
+      var wrap = document.getElementById('pwa-install-wrapper');
+      if (wrap) wrap.classList.add('hidden');
+    });
+  </script>
+
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Padauk:wght@400;700&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Padauk', sans-serif; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* App အဖြစ် Install လုပ်ပြီးသားဖြစ်ပါက Refresh လုပ်လျှင်ပင် "App ဒေါင်းမည်" ခလုတ် လုံးဝပြန်မပေါ်စေရန် */
+    @media all and (display-mode: standalone), (display-mode: minimal-ui), (display-mode: fullscreen) {
+      #pwa-install-wrapper {
+        display: none !important;
+      }
+    }
 
     /* ================= 3D ANIMATIONS FOR ICON & HEADER ================= */
     .scene-3d {
@@ -192,13 +235,7 @@
     ];
 
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js', { scope: './' }).then(async (reg) => {
-        if ('periodicSync' in reg) {
-          try {
-            await reg.periodicSync.register('mt-bg-noti-sync', { minInterval: 60 * 1000 });
-          } catch (e) {}
-        }
-      }).catch(() => {});
+      navigator.serviceWorker.register('./sw.js', { scope: './' }).catch(() => {});
     }
   </script>
 
@@ -288,6 +325,14 @@
         </div>
       </div>
     </header>
+
+    <!-- App Install ပြီးသားဆိုပါက ခလုတ်ကို ချက်ချင်းဖျောက်ထားမည် -->
+    <script>
+      if (isStandaloneApp() || localStorage.getItem('mt_pwa_installed') === '1') {
+        var wrapEl = document.getElementById('pwa-install-wrapper');
+        if (wrapEl) wrapEl.classList.add('hidden');
+      }
+    </script>
 
     <!-- CUSTOMER DELIVERY STATUS BANNER (3-Day Warm Message) -->
     <div id="customer-delivery-banner" class="hidden max-w-6xl mx-auto px-2.5 pt-2"></div>
@@ -419,7 +464,7 @@
     </div>
   </div>
 
-  <!-- ================= PWA INSTALL GUIDE MODAL (WITH ONE-TAP CHROME INTENT) ================= -->
+  <!-- ================= CHROME PWA INSTALL GUIDE MODAL ================= -->
   <div id="pwa-guide-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-md w-full p-5 shadow-xl">
       <div class="flex justify-between items-center border-b pb-3 mb-3">
@@ -430,9 +475,9 @@
         <button onclick="closePWAGuide()" class="text-gray-500 hover:text-gray-800 font-bold text-xl">✕</button>
       </div>
 
-      <!-- One-Tap Open in Chrome Button for Android -->
-      <div class="mb-3 p-3 bg-amber-50 border border-amber-300 rounded-xl text-center space-y-2">
-        <p class="text-xs font-bold text-gray-800">⚠️ လက်ရှိ Browser မှ တိုက်ရိုက်ဒေါင်းမရပါက အောက်ပါခလုတ်ကို နှိပ်ပြီး <b>Chrome</b> ဖြင့် ဖွင့်ပါ-</p>
+      <!-- Non-Chrome Browser မှ ဝင်လာပါက Chrome ဖြင့် ဖွင့်ရန် ခလုတ် -->
+      <div id="open-in-chrome-box" class="mb-3 p-3 bg-amber-50 border border-amber-300 rounded-xl text-center space-y-2">
+        <p class="text-xs font-bold text-gray-800">⚠️ App ဒေါင်းယူရန် <b>Google Chrome Browser</b> ဖြင့် ဖွင့်ပေးပါ-</p>
         <a href="intent://kflowcreated-stack.github.io/minitrend-kids/?role=customer#Intent;scheme=https;package=com.android.chrome;end"
            class="block w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-2.5 px-3 rounded-xl text-xs sm:text-sm shadow">
           🚀 Chrome ဖြင့် တိုက်ရိုက်ဖွင့်၍ App သွင်းမည်
@@ -441,8 +486,8 @@
 
       <div class="space-y-2.5 text-xs text-gray-700 leading-relaxed">
         <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl">
-          <p class="font-extrabold text-emerald-900 mb-1">🤖 Android ဖုန်းများ:</p>
-          <p>• <b>Chrome သုံးနေပါက:</b> ညာဘက်အပေါ်ထောင့်ရှိ <b>အစက် ၃ စက် (⋮)</b> ကို နှိပ်ပြီး <b>"Install app"</b> ကို ရွေးပါ။<br>• <b>Mi / တခြား Browser သုံးနေပါက:</b> ညာဘက်အောက်ခြေရှိ <b>မျဉ်း ၃ ကြောင်း (≡)</b> ကို နှိပ်ပြီး <b>"Add to Home screen"</b> ကို ရွေးပါ။</p>
+          <p class="font-extrabold text-emerald-900 mb-1">🌐 Google Chrome Browser မှ App ဒေါင်းယူနည်း:</p>
+          <p>၁။ Chrome ၏ ညာဘက်အပေါ်ထောင့်ရှိ <b>အစက် ၃ စက် (⋮)</b> ကို နှိပ်ပါ။<br>၂။ ပေါ်လာသော စာရင်းထဲမှ <b>"Add to Home screen"</b> သို့မဟုတ် <b>"Install app"</b> ကို နှိပ်ပြီး <b>Install</b> နှိပ်လိုက်ပါ။</p>
         </div>
         <div class="p-3 bg-pink-50 border border-pink-200 rounded-xl">
           <p class="font-extrabold text-pink-900 mb-1">🍎 iPhone / iPad (Safari Browser):</p>
@@ -638,7 +683,6 @@
     let latestOrderMessage = "";
     let pushPopupTimer = null;
 
-    // ဝယ်သူ သို့မဟုတ် ပိုင်ရှင်က မျက်နှာပြင်ကို ပထမဆုံး တစ်ချက်ထိလိုက်သည်နှင့် System Notification ခွင့်ပြုချက် တစ်ကြိမ် တောင်းပေးခြင်း
     function setupAutoSystemNotiPermission() {
       const requestOnce = async () => {
         if ('Notification' in window && Notification.permission === 'default') {
@@ -653,7 +697,6 @@
       document.addEventListener('touchstart', requestOnce, { once: true });
     }
 
-    // ================= FORMAT ORDER DATE & TIME FOR ADMIN ACTIVE ORDERS =================
     function formatOrderDateTime(val) {
       if (!val) return "📅 အချိန်မှတ်တမ်းမရှိပါ";
       const str = val.toString().trim();
@@ -676,7 +719,6 @@
       return `📅 ${str}`;
     }
 
-    // ================= SYSTEM NOTIFICATION + IN-APP NOTIFICATION ENGINE =================
     function playNotiChime() {
       try {
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -708,7 +750,6 @@
     }
 
     async function sendPhoneNotification(title, bodyText, tagId, delayMs = 0) {
-      // ၁။ App ဖွင့်ထားချိန် မြင်ရမည့် အပေါ်ဆုံး Notification Card နှင့် အသံ
       const popup = document.getElementById('push-noti-popup');
       document.getElementById('push-noti-title').innerText = "🔔 " + (title || "MiniTrend Kids");
       document.getElementById('push-noti-body').innerText = bodyText || "";
@@ -725,7 +766,6 @@
         popup.classList.add('hidden');
       }, 10000);
 
-      // ၂။ App အပြင်ဘက် ရောက်နေချိန် ဖုန်း System Status Bar တွင် Icon ပုံလေးဖြင့် ပေါ်စေခြင်း
       if (!('Notification' in window)) return;
 
       if (Notification.permission === 'default') {
@@ -820,7 +860,6 @@
       btn.innerText = "🔔 ဝယ်သူများထံ Notification ချက်ချင်းပို့မည်";
     }
 
-    // ================= ACTIVE ORDER BANNER MANAGEMENT (CUSTOMER) =================
     function getSavedCustomerOrders() {
       try {
         return JSON.parse(localStorage.getItem('mt_customer_orders') || '[]');
@@ -882,7 +921,6 @@
       } catch (err) {}
     }
 
-    // ================= VISITOR ANALYTICS & ADMIN ORDER CONTROL =================
     function trackCustomerVisit() {
       if (sessionStorage.getItem('mt_visit_logged')) return;
       sessionStorage.setItem('mt_visit_logged', '1');
@@ -892,8 +930,7 @@
       if (/android/i.test(ua)) device = 'Android';
       else if (/iPad|iPhone|iPod/.test(ua)) device = 'iPhone / iPad';
 
-      const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-      const mode = isStandalone ? 'App (PWA)' : 'Browser';
+      const mode = isStandaloneApp() ? 'App (PWA)' : 'Browser';
 
       fetch(APPS_SCRIPT_ORDER_URL, {
         method: "POST",
@@ -961,7 +998,6 @@
         }
 
         if (stats.pendingOrders && stats.pendingOrders.length > 0) {
-          // ဝယ်သူထံမှ အော်ဒါအသစ် ဝင်လာပါက ပိုင်ရှင်ဖုန်းသို့ System Notification ပို့ပေးခြင်း
           const newestOrder = stats.pendingOrders[0];
           const lastAdminOrderId = localStorage.getItem('mt_admin_last_order_id');
           if (newestOrder && newestOrder.orderId && lastAdminOrderId !== newestOrder.orderId) {
@@ -1040,38 +1076,37 @@
         .replace('၁ နှစ် - ၂ နှစ်', '၁-၂ နှစ်');
     }
 
-    // ================= PWA INSTALL HANDLER =================
-    let deferredInstallPrompt = null;
-
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredInstallPrompt = e;
-    });
-
-    window.addEventListener('appinstalled', () => {
-      deferredInstallPrompt = null;
-      const wrap = document.getElementById('pwa-install-wrapper');
-      if (wrap) wrap.classList.add('hidden');
-    });
-
-    if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
-      document.addEventListener('DOMContentLoaded', () => {
-        const wrap = document.getElementById('pwa-install-wrapper');
-        if (wrap) wrap.classList.add('hidden');
-      });
+    // ================= CHROME PWA INSTALL HANDLER =================
+    function isChromeBrowser() {
+      const ua = navigator.userAgent || '';
+      const isOtherBrowser = /MiuiBrowser|XiaoMi|FBAN|FBAV|Viber|Line|SamsungBrowser|UCBrowser|Opera|OPR|EdgA/i.test(ua);
+      return /Chrome\/[.0-9]*/.test(ua) && !isOtherBrowser;
     }
 
     async function triggerPWAInstall() {
-      if (deferredInstallPrompt) {
-        deferredInstallPrompt.prompt();
-        const { outcome } = await deferredInstallPrompt.userChoice;
+      if (window.__deferredInstallPrompt) {
+        window.__deferredInstallPrompt.prompt();
+        const { outcome } = await window.__deferredInstallPrompt.userChoice;
         if (outcome === 'accepted') {
-          deferredInstallPrompt = null;
+          window.__deferredInstallPrompt = null;
+          localStorage.setItem('mt_pwa_installed', '1');
+          const wrap = document.getElementById('pwa-install-wrapper');
+          if (wrap) wrap.classList.add('hidden');
         }
-      } else {
-        document.getElementById('pwa-guide-modal').classList.remove('hidden');
-        pushModalHistory('pwaguide');
+        return;
       }
+
+      const chromeBox = document.getElementById('open-in-chrome-box');
+      if (chromeBox) {
+        if (isChromeBrowser()) {
+          chromeBox.classList.add('hidden');
+        } else {
+          chromeBox.classList.remove('hidden');
+        }
+      }
+
+      document.getElementById('pwa-guide-modal').classList.remove('hidden');
+      pushModalHistory('pwaguide');
     }
 
     function closePWAGuide() {
@@ -1137,7 +1172,6 @@
       }
     });
 
-    // ================= FULL-SCREEN IMAGE LIGHTBOX WITH DESCRIPTION =================
     function openImageLightbox(productId) {
       const product = products.find(p => p.id === productId);
       if (!product) return;
@@ -1255,6 +1289,25 @@
 
     async function loadProducts() {
       const loader = document.getElementById('loading-indicator');
+
+      // ဖုန်းထဲတွင် ယခင်သိမ်းထားသော ပစ္စည်းစာရင်းရှိပါက Chrome တွင် မစောင့်ရဘဲ ချက်ချင်းပြသပေးမည်
+      try {
+        const cachedRaw = localStorage.getItem('mt_cached_products');
+        if (cachedRaw) {
+          const cachedParsed = JSON.parse(cachedRaw);
+          if (Array.isArray(cachedParsed) && cachedParsed.length > 0) {
+            products = cachedParsed;
+            products.forEach(p => {
+              const firstAvail = AGE_SIZES.find(sz => p.stocks && p.stocks[sz] > 0) || AGE_SIZES[0];
+              if (!selectedSizes[p.id]) selectedSizes[p.id] = firstAvail;
+            });
+            loader.classList.add('hidden');
+            renderProducts();
+            renderAdminProducts();
+          }
+        }
+      } catch (e) {}
+
       let loadedItems = [];
 
       try {
@@ -1285,7 +1338,13 @@
         } catch (err) {}
       }
 
-      products = loadedItems.length > 0 ? loadedItems : defaultProducts;
+      if (loadedItems.length > 0) {
+        products = loadedItems;
+        try { localStorage.setItem('mt_cached_products', JSON.stringify(loadedItems)); } catch (e) {}
+      } else if (products.length === 0) {
+        products = defaultProducts;
+      }
+
       loader.classList.add('hidden');
       renderProducts();
       renderAdminProducts();
@@ -1294,6 +1353,11 @@
     function init() {
       setupExitGuard();
       setupAutoSystemNotiPermission();
+
+      if (isStandaloneApp() || localStorage.getItem('mt_pwa_installed') === '1') {
+        const wrap = document.getElementById('pwa-install-wrapper');
+        if (wrap) wrap.classList.add('hidden');
+      }
 
       const params = new URLSearchParams(window.location.search);
       const role = params.get('role') || window.location.hash.replace('#', '');
@@ -1310,7 +1374,6 @@
       syncCustomerOrderStatus();
       loadProducts();
 
-      // စက္ကန့် ၂၀ တစ်ကြိမ် နောက်ကွယ်မှ Notification နှင့် အော်ဒါအသစ်များကို အလိုအလျောက် စစ်ပေးသည်
       setInterval(() => {
         if (!document.getElementById('customer-view').classList.contains('hidden')) {
           syncCustomerOrderStatus();
@@ -1719,7 +1782,6 @@ ${itemLines}
 
       const orderedItemsPayload = cart.map(i => ({ name: i.name, size: i.size, qty: i.qty }));
 
-      // ၁။ ဝယ်သူဖုန်းထဲတွင် ၃ ရက်အတွင်း ပို့ပေးမည့် စာတန်း သိမ်းဆည်းပြီး Viber သို့ ရောက်သွားချိန် (App အပြင်ဘက်) တွင်ပါ System Notification ချက်ချင်း ထုတ်ပေးသည်
       const existingOrders = getSavedCustomerOrders();
       existingOrders.unshift({
         orderId: orderId,
@@ -1733,11 +1795,9 @@ ${itemLines}
       updateCartUI();
       renderCustomerDeliveryBanner();
 
-      // ချက်ချင်း ၁ ကြိမ် နှင့် Viber ထဲ ရောက်သွားချိန် (၂.၅ စက္ကန့်အကြာ) တွင် ဖုန်းအပေါ်ဆုံးမှ Icon ပုံဖြင့် Notification ထပ်မံကျလာမည်
       sendPhoneNotification("MiniTrend Kids 💝", ORDER_THANK_YOU_MSG, "order-" + orderId, 0);
       sendPhoneNotification("MiniTrend Kids 💝", ORDER_THANK_YOU_MSG, "order-viber-" + orderId, 2500);
 
-      // ၂။ Google Sheet (Admin Active Orders) သို့ အော်ဒါပို့သည်
       try {
         await fetch(APPS_SCRIPT_ORDER_URL, {
           method: "POST",
