@@ -306,6 +306,16 @@
       }
     </script>
 
+    <!-- Customer Background Notification Enable Banner (Only shows if not yet granted) -->
+    <div id="customer-noti-prompt-bar" class="hidden max-w-6xl mx-auto px-2.5 pt-2">
+      <div class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl px-3 py-2 flex justify-between items-center gap-2 shadow-sm">
+        <p class="text-[11px] sm:text-xs font-bold">🔔 ပစ္စည်းအသစ်နှင့် ပရိုမိုးရှင်း Noti များ ဖုန်းထဲတိုက်ရိုက်ရယူရန်</p>
+        <button type="button" onclick="enableCustomerPushNoti()" class="bg-amber-300 hover:bg-amber-400 text-gray-900 font-extrabold text-[11px] px-3 py-1 rounded-full shrink-0 shadow">
+          ဖွင့်မည် (Allow)
+        </button>
+      </div>
+    </div>
+
     <!-- Active Size Recommendation Banner -->
     <div id="recommended-size-banner" class="hidden max-w-6xl mx-auto px-2.5 pt-2">
       <div class="bg-amber-50 border border-amber-400 rounded-xl p-2 flex justify-between items-center gap-2 shadow-sm">
@@ -415,6 +425,7 @@
           🔔 ဝယ်သူများထံ Notification ချက်ချင်းပို့မည်
         </button>
       </form>
+      <div id="broadcast-send-result" class="mt-2.5 text-xs font-bold hidden"></div>
       <div id="last-broadcast-info" class="mt-3 text-xs text-gray-600 hidden bg-white/80 p-2.5 rounded-xl border border-pink-100"></div>
     </div>
 
@@ -639,7 +650,6 @@
     let latestOrderMessage = "";
     let pushPopupTimer = null;
 
-    // ဝယ်သူ၏ အမည်၊ ဖုန်းနံပါတ်နှင့် လိပ်စာကို ဖုန်းထဲတွင် သိမ်းဆည်းခြင်း / ပြန်လည်ဖြည့်သွင်းခြင်း
     function saveCustomerProfile(name, phone, address) {
       try {
         localStorage.setItem('mt_saved_customer_info', JSON.stringify({
@@ -695,8 +705,12 @@
           const isAdminOpen = document.getElementById('admin-view') && !document.getElementById('admin-view').classList.contains('hidden');
           const targetTag = (initialRole === 'admin' || isAdminOpen) ? 'admin' : 'customer';
 
-          await OneSignal.Notifications.requestPermission();
           OneSignal.User.addTag("role", targetTag);
+          if (OneSignal.Notifications.permission) {
+            await OneSignal.User.PushSubscription.optIn();
+            const promptBar = document.getElementById('customer-noti-prompt-bar');
+            if (promptBar) promptBar.classList.add('hidden');
+          }
         } catch (e) {}
       });
 
@@ -706,12 +720,30 @@
       document.head.appendChild(s);
     }
 
+    function enableCustomerPushNoti() {
+      loadOneSignalLazy();
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      window.OneSignalDeferred.push(async function(OneSignal) {
+        try {
+          await OneSignal.Notifications.requestPermission();
+          await OneSignal.User.PushSubscription.optIn();
+          OneSignal.User.addTag("role", "customer");
+          const promptBar = document.getElementById('customer-noti-prompt-bar');
+          if (promptBar) promptBar.classList.add('hidden');
+          alert("✅ Notification ဖွင့်ပြီးပါပြီ! App ပိတ်ထားချိန်တွင်ပါ ပစ္စည်းအသစ်နှင့် ပရိုမိုးရှင်းသတင်းများ တိုက်ရိုက်ရရှိပါမည်။");
+        } catch (e) {
+          alert("⚠️ Browser Setting ထဲတွင် Notification (Allow) ကို ဖွင့်ပေးပါခင်ဗျာ။");
+        }
+      });
+    }
+
     function registerOwnerDevicePush(showAlertMsg) {
       loadOneSignalLazy();
       window.OneSignalDeferred = window.OneSignalDeferred || [];
       window.OneSignalDeferred.push(async function(OneSignal) {
         try {
           await OneSignal.Notifications.requestPermission();
+          await OneSignal.User.PushSubscription.optIn();
           OneSignal.User.addTag("role", "admin");
           localStorage.setItem("mt_owner_push_linked", "1");
           const statusEl = document.getElementById("owner-push-status");
@@ -733,11 +765,22 @@
     function setupAutoSystemNotiPermission() {
       const requestOnce = async () => {
         loadOneSignalLazy();
-        if ('Notification' in window && Notification.permission === 'default') {
+        window.OneSignalDeferred = window.OneSignalDeferred || [];
+        window.OneSignalDeferred.push(async function(OneSignal) {
           try {
-            await Notification.requestPermission();
+            const isAdminOpen = document.getElementById('admin-view') && !document.getElementById('admin-view').classList.contains('hidden');
+            const roleTag = isAdminOpen ? "admin" : "customer";
+            if (!OneSignal.Notifications.permission) {
+              await OneSignal.Notifications.requestPermission();
+            }
+            await OneSignal.User.PushSubscription.optIn();
+            OneSignal.User.addTag("role", roleTag);
+            const promptBar = document.getElementById('customer-noti-prompt-bar');
+            if (promptBar && OneSignal.Notifications.permission) {
+              promptBar.classList.add('hidden');
+            }
           } catch (e) {}
-        }
+        });
         document.removeEventListener('click', requestOnce);
         document.removeEventListener('touchstart', requestOnce);
       };
@@ -883,22 +926,33 @@
       if (!message) return;
 
       const btn = document.getElementById('btn-send-broadcast');
+      const resultEl = document.getElementById('broadcast-send-result');
       btn.disabled = true;
       btn.innerText = "⏳ Notification ပေးပို့နေပါသည်...";
 
       try {
-        await fetch(APPS_SCRIPT_ORDER_URL, {
+        const res = await fetch(APPS_SCRIPT_ORDER_URL, {
           method: "POST",
-          mode: "no-cors",
-          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             action: "sendBroadcast",
             title: title,
             message: message
           })
         });
+        const data = await res.json();
         document.getElementById('broadcast-message').value = "";
         sendPhoneNotification(title, message, 'owner-preview-' + Date.now());
+
+        if (resultEl && data && data.pushResult) {
+          resultEl.classList.remove('hidden');
+          if (data.pushResult.recipients && data.pushResult.recipients > 0) {
+            resultEl.className = "mt-2.5 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 p-2.5 rounded-xl";
+            resultEl.innerText = `✅ ဝယ်သူဖုန်း (${data.pushResult.recipients}) လုံးဆီသို့ Background Push Notification ပေးပို့ပြီးပါပြီ!`;
+          } else {
+            resultEl.className = "mt-2.5 text-xs font-bold text-amber-800 bg-amber-50 border border-amber-200 p-2.5 rounded-xl";
+            resultEl.innerText = "⚠️ စာသားသိမ်းပြီးပါပြီ (လက်ရှိ OneSignal တွင် Noti Allow နှိပ်ထားသော ဝယ်သူဖုန်း 0 လုံး ဖြစ်နေပါသည် — ဝယ်သူဖုန်းမှ Noti Allow တစ်ကြိမ်နှိပ်ထားရန် လိုအပ်ပါသည်)";
+          }
+        }
         setTimeout(() => refreshAdminAll(), 800);
       } catch (err) {
         alert("ပေးပို့ရာတွင် အမှားရှိနေပါသည်။");
@@ -1427,6 +1481,12 @@
         switchRole('customer');
         trackCustomerVisit();
       }
+
+      if (role !== 'admin' && 'Notification' in window && Notification.permission === 'default') {
+        const promptBar = document.getElementById('customer-noti-prompt-bar');
+        if (promptBar) promptBar.classList.remove('hidden');
+      }
+
       syncCustomerOrderStatus();
       loadProducts();
       loadOneSignalLazy();
@@ -1832,7 +1892,6 @@
       const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
       const grandTotal = subtotal + DELIVERY_FEE;
 
-      // နောက်အကြိမ်များတွင် Auto ဖြည့်ပေးနိုင်ရန် ဝယ်သူအချက်အလက်ကို သိမ်းဆည်းထားမည်
       saveCustomerProfile(name, phone, address);
 
       let itemLines = cart.map((item, idx) => 
