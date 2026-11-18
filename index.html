@@ -306,11 +306,11 @@
       }
     </script>
 
-    <!-- Customer Background Notification Enable Banner (Only shows if not yet granted) -->
+    <!-- Customer Background Notification Enable Banner -->
     <div id="customer-noti-prompt-bar" class="hidden max-w-6xl mx-auto px-2.5 pt-2">
       <div class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl px-3 py-2 flex justify-between items-center gap-2 shadow-sm">
         <p class="text-[11px] sm:text-xs font-bold">🔔 ပစ္စည်းအသစ်နှင့် ပရိုမိုးရှင်း Noti များ ဖုန်းထဲတိုက်ရိုက်ရယူရန်</p>
-        <button type="button" onclick="enableCustomerPushNoti()" class="bg-amber-300 hover:bg-amber-400 text-gray-900 font-extrabold text-[11px] px-3 py-1 rounded-full shrink-0 shadow">
+        <button type="button" id="btn-enable-cust-noti" onclick="enableCustomerPushNoti()" class="bg-amber-300 hover:bg-amber-400 active:scale-95 text-gray-900 font-extrabold text-[11px] px-3 py-1 rounded-full shrink-0 shadow cursor-pointer">
           ဖွင့်မည် (Allow)
         </button>
       </div>
@@ -390,7 +390,7 @@
           ဝယ်သူအော်ဒါတင်လိုက်သည်နှင့် သင့်ဖုန်း Sleep ဖြစ်နေချိန်မှာပါ Noti တက်စေရန် ညာဘက်ခလုတ်ကို တစ်ကြိမ်နှိပ်ထားပါ။
         </p>
       </div>
-      <button type="button" onclick="registerOwnerDevicePush(true)" class="bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs sm:text-sm shadow shrink-0 cursor-pointer">
+      <button type="button" id="btn-owner-push" onclick="registerOwnerDevicePush(true)" class="bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs sm:text-sm shadow shrink-0 cursor-pointer">
         🔔 ပိုင်ရှင်ဖုန်း Noti ချိတ်ဆက်မည်
       </button>
     </div>
@@ -572,7 +572,6 @@
           </p>
         </form>
 
-        <!-- အော်ဒါတင်ပြီးနောက် ပေါ်လာမည့် အတည်ပြုစာတန်း -->
         <div id="order-confirm-note" class="hidden mt-3 p-3 bg-amber-50 border border-amber-300 rounded-xl text-xs font-bold text-amber-900 leading-relaxed text-center">
           viber မှာ ပစ္စည်းစာရင်းပို့ပြီးတာနဲ့ မေမေရဲ့ အော်ဒါကို အတည်ပြုပြီးသွားပါပြီး၊ ထပ်နှိပ်စရာမလိုတော့ပါ၊ ထပ်ပြီး order တင်မယ်ဆို၊ ပစ္စည်းတွေ ရွေးပြီးတော့ ထပ်တင်လို့ရပါတယ်
         </div>
@@ -708,6 +707,7 @@
           OneSignal.User.addTag("role", targetTag);
           if (OneSignal.Notifications.permission) {
             await OneSignal.User.PushSubscription.optIn();
+            try { localStorage.setItem('mt_onesignal_registered', '1'); } catch (e) {}
             const promptBar = document.getElementById('customer-noti-prompt-bar');
             if (promptBar) promptBar.classList.add('hidden');
           }
@@ -720,72 +720,133 @@
       document.head.appendChild(s);
     }
 
-    function enableCustomerPushNoti() {
+    function syncOneSignalSubscription(roleTag, showResultAlert) {
       loadOneSignalLazy();
-      window.OneSignalDeferred = window.OneSignalDeferred || [];
-      window.OneSignalDeferred.push(async function(OneSignal) {
-        try {
-          await OneSignal.Notifications.requestPermission();
-          await OneSignal.User.PushSubscription.optIn();
-          OneSignal.User.addTag("role", "customer");
-          const promptBar = document.getElementById('customer-noti-prompt-bar');
-          if (promptBar) promptBar.classList.add('hidden');
-          alert("✅ Notification ဖွင့်ပြီးပါပြီ! App ပိတ်ထားချိန်တွင်ပါ ပစ္စည်းအသစ်နှင့် ပရိုမိုးရှင်းသတင်းများ တိုက်ရိုက်ရရှိပါမည်။");
-        } catch (e) {
-          alert("⚠️ Browser Setting ထဲတွင် Notification (Allow) ကို ဖွင့်ပေးပါခင်ဗျာ။");
-        }
-      });
-    }
+      return new Promise((resolve) => {
+        let finished = false;
+        const timer = setTimeout(() => {
+          if (!finished) {
+            finished = true;
+            if (showResultAlert) {
+              alert("⚠️ ဖုန်းတွင် Notification ခွင့်ပြုပြီးသော်လည်း အင်တာနက်လိုင်း (သို့) VPN ကြောင့် OneSignal Server နှင့် မချိတ်ဆက်နိုင်သေးပါ။\n\nကျေးဇူးပြု၍ VPN ခဏဖွင့်ပြီး စာမျက်နှာကို Refresh တစ်ကြိမ် ပြန်လုပ်ပေးပါခင်ဗျာ။");
+            }
+            resolve(false);
+          }
+        }, 6000);
 
-    function registerOwnerDevicePush(showAlertMsg) {
-      loadOneSignalLazy();
-      window.OneSignalDeferred = window.OneSignalDeferred || [];
-      window.OneSignalDeferred.push(async function(OneSignal) {
-        try {
-          await OneSignal.Notifications.requestPermission();
-          await OneSignal.User.PushSubscription.optIn();
-          OneSignal.User.addTag("role", "admin");
-          localStorage.setItem("mt_owner_push_linked", "1");
-          const statusEl = document.getElementById("owner-push-status");
-          if (statusEl) {
-            statusEl.innerText = "✅ ဤဖုန်းအား ဆိုင်ပိုင်ရှင်ဖုန်းအဖြစ် ချိတ်ဆက်ပြီးပါပြီ (ဝယ်သူအော်ဒါတင်တိုင်း Noti တက်ပါမည်)";
-            statusEl.className = "text-xs font-bold text-emerald-700 mt-1.5";
-          }
-          if (showAlertMsg) {
-            alert("✅ ဆိုင်ပိုင်ရှင်ဖုန်းအဖြစ် Notification ချိတ်ဆက်ပြီးပါပြီ!\n\nယခု App ကို ပိတ်ထားလျှင် (သို့) ဖုန်း Screen ပိတ်ထားလျှင်ပင် ဝယ်သူအော်ဒါတင်လိုက်သည်နှင့် ဖုန်းထဲသို့ Noti ချက်ချင်း တက်လာပါမည်။");
-          }
-        } catch (e) {
-          if (showAlertMsg) {
-            alert("⚠️ Browser တွင် Notification ခွင့်ပြုချက် (Allow) ကို အရင်ဖွင့်ပေးပါခင်ဗျာ။");
-          }
-        }
-      });
-    }
-
-    function setupAutoSystemNotiPermission() {
-      const requestOnce = async () => {
-        loadOneSignalLazy();
         window.OneSignalDeferred = window.OneSignalDeferred || [];
         window.OneSignalDeferred.push(async function(OneSignal) {
           try {
-            const isAdminOpen = document.getElementById('admin-view') && !document.getElementById('admin-view').classList.contains('hidden');
-            const roleTag = isAdminOpen ? "admin" : "customer";
-            if (!OneSignal.Notifications.permission) {
-              await OneSignal.Notifications.requestPermission();
-            }
             await OneSignal.User.PushSubscription.optIn();
             OneSignal.User.addTag("role", roleTag);
-            const promptBar = document.getElementById('customer-noti-prompt-bar');
-            if (promptBar && OneSignal.Notifications.permission) {
-              promptBar.classList.add('hidden');
+            clearTimeout(timer);
+            if (!finished) {
+              finished = true;
+              try { localStorage.setItem('mt_onesignal_registered', '1'); } catch (e) {}
+              if (showResultAlert) {
+                alert("✅ Notification ဖွင့်ပြီးပါပြီ! App ပိတ်ထားချိန်တွင်ပါ ပစ္စည်းအသစ်နှင့် ပရိုမိုးရှင်းသတင်းများ တိုက်ရိုက်ရရှိပါမည်။");
+              }
+              resolve(true);
             }
-          } catch (e) {}
+          } catch (err) {
+            clearTimeout(timer);
+            if (!finished) {
+              finished = true;
+              if (showResultAlert) {
+                alert("⚠️ Notification ချိတ်ဆက်ရာတွင် အခက်အခဲရှိနေပါသည်။ VPN ခဏဖွင့်ပြီး ထပ်မံစမ်းသပ်ပေးပါ။");
+              }
+              resolve(false);
+            }
+          }
         });
-        document.removeEventListener('click', requestOnce);
-        document.removeEventListener('touchstart', requestOnce);
-      };
-      document.addEventListener('click', requestOnce, { once: true });
-      document.addEventListener('touchstart', requestOnce, { once: true });
+      });
+    }
+
+    async function enableCustomerPushNoti() {
+      const btn = document.getElementById('btn-enable-cust-noti');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerText = "⏳ ဖွင့်နေပါသည်...";
+      }
+
+      if (!('Notification' in window)) {
+        alert("⚠️ iPhone ဖြစ်ပါက Safari Browser ဖြင့် ဖွင့်ပြီး အောက်ခြေ Share (⬆️) - Add to Home Screen ဖြင့် App အရင်သွင်းပြီးမှ ဖွင့်ပေးပါခင်ဗျာ။");
+        if (btn) { btn.disabled = false; btn.innerText = "ဖွင့်မည် (Allow)"; }
+        return;
+      }
+
+      if (Notification.permission === 'denied') {
+        alert("⚠️ ဤဖုန်းတွင် Notification ကို ပိတ် (Block) ထားမိပါသည်။\n\nပြန်ဖွင့်ရန် Chrome ၏ အပေါ်ဆုံး Address Bar ဘေးရှိ Setting ပုံလေး (သို့) အစက် ၃ စက် (⋮) - Site settings - Notifications ကို နှိပ်ပြီး Allow ရွေးပေးပါခင်ဗျာ။");
+        if (btn) { btn.disabled = false; btn.innerText = "ဖွင့်မည် (Allow)"; }
+        return;
+      }
+
+      let perm = Notification.permission;
+      if (perm !== 'granted') {
+        try {
+          perm = await Notification.requestPermission();
+        } catch (e) {}
+      }
+
+      if (perm === 'granted') {
+        const promptBar = document.getElementById('customer-noti-prompt-bar');
+        if (promptBar) promptBar.classList.add('hidden');
+
+        try {
+          if ('serviceWorker' in navigator) {
+            const reg = await navigator.serviceWorker.ready;
+            if (reg && reg.showNotification) {
+              await reg.showNotification("MiniTrend Kids 🔔", {
+                body: "Notification ဖွင့်ပြီးပါပြီ! ပရိုမိုးရှင်းနှင့် ပစ္စည်းအသစ်များ ရရှိပါမည်။",
+                icon: "./icon.png?v=3"
+              });
+            }
+          }
+        } catch (e) {}
+
+        await syncOneSignalSubscription("customer", true);
+      } else {
+        alert("⚠️ Notification ခွင့်ပြုချက် (Allow) ကို နှိပ်ပေးမှသာ သတင်းအသစ်များ ရရှိနိုင်ပါမည်ခင်ဗျာ။");
+      }
+
+      if (btn) {
+        btn.disabled = false;
+        btn.innerText = "ဖွင့်မည် (Allow)";
+      }
+    }
+
+    async function registerOwnerDevicePush(showAlertMsg) {
+      const btn = document.getElementById('btn-owner-push');
+      if (btn && showAlertMsg) {
+        btn.disabled = true;
+        btn.innerText = "⏳ ချိတ်ဆက်နေပါသည်...";
+      }
+
+      if ('Notification' in window && Notification.permission !== 'granted') {
+        try {
+          await Notification.requestPermission();
+        } catch (e) {}
+      }
+
+      if ('Notification' in window && Notification.permission === 'granted') {
+        localStorage.setItem("mt_owner_push_linked", "1");
+        const statusEl = document.getElementById("owner-push-status");
+        if (statusEl) {
+          statusEl.innerText = "✅ ဤဖုန်းအား ဆိုင်ပိုင်ရှင်ဖုန်းအဖြစ် ချိတ်ဆက်ပြီးပါပြီ (ဝယ်သူအော်ဒါတင်တိုင်း Noti တက်ပါမည်)";
+          statusEl.className = "text-xs font-bold text-emerald-700 mt-1.5";
+        }
+        await syncOneSignalSubscription("admin", false);
+        if (showAlertMsg) {
+          alert("✅ ဆိုင်ပိုင်ရှင်ဖုန်းအဖြစ် Notification ချိတ်ဆက်ပြီးပါပြီ!\n\nယခု App ကို ပိတ်ထားလျှင် (သို့) ဖုန်း Screen ပိတ်ထားလျှင်ပင် ဝယ်သူအော်ဒါတင်လိုက်သည်နှင့် ဖုန်းထဲသို့ Noti ချက်ချင်း တက်လာပါမည်။");
+        }
+      } else if (showAlertMsg) {
+        alert("⚠️ Browser တွင် Notification ခွင့်ပြုချက် (Allow) ကို အရင်ဖွင့်ပေးပါခင်ဗျာ။");
+      }
+
+      if (btn) {
+        btn.disabled = false;
+        btn.innerText = "🔔 ပိုင်ရှင်ဖုန်း Noti ချိတ်ဆက်မည်";
+      }
     }
 
     function formatOrderDateTime(val) {
@@ -858,12 +919,6 @@
       }, 10000);
 
       if (!('Notification' in window)) return;
-
-      if (Notification.permission === 'default') {
-        try {
-          await Notification.requestPermission();
-        } catch (e) {}
-      }
 
       if (Notification.permission === 'granted') {
         try {
@@ -1453,7 +1508,6 @@
 
     function init() {
       setupExitGuard();
-      setupAutoSystemNotiPermission();
       loadSavedCustomerProfile();
 
       if (isStandaloneApp() || localStorage.getItem('mt_pwa_installed') === '1') {
@@ -1482,9 +1536,15 @@
         trackCustomerVisit();
       }
 
-      if (role !== 'admin' && 'Notification' in window && Notification.permission === 'default') {
-        const promptBar = document.getElementById('customer-noti-prompt-bar');
-        if (promptBar) promptBar.classList.remove('hidden');
+      if (role !== 'admin') {
+        const hasPerm = ('Notification' in window && Notification.permission === 'granted');
+        const hasOneSignal = localStorage.getItem('mt_onesignal_registered') === '1';
+        if (!hasPerm) {
+          const promptBar = document.getElementById('customer-noti-prompt-bar');
+          if (promptBar) promptBar.classList.remove('hidden');
+        } else if (!hasOneSignal) {
+          syncOneSignalSubscription("customer", false);
+        }
       }
 
       syncCustomerOrderStatus();
