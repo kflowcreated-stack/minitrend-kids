@@ -9,9 +9,9 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="MiniTrend Kids" />
-  <link rel="manifest" href="./manifest.json?v=2026" />
-  <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/6618/6618812.png" />
-  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/6618/6618812.png" />
+  <link rel="manifest" href="./manifest.json?v=3" />
+  <link rel="icon" type="image/png" href="./icon.png?v=3" />
+  <link rel="apple-touch-icon" href="./icon.png?v=3" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Padauk:wght@400;700&display=swap" rel="stylesheet">
   <style>
@@ -107,7 +107,7 @@
     ];
 
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js?v=2026').catch(() => {});
+      navigator.serviceWorker.register('./sw.js?v=3').catch(() => {});
     }
   </script>
 
@@ -149,9 +149,9 @@
         <div class="flex items-center gap-2 min-w-0 scene-3d">
           <div class="relative w-10 h-10 shrink-0 flex items-center justify-center">
             <div class="absolute inset-0 rounded-2xl bg-gradient-to-tr from-pink-500 via-rose-400 to-amber-300 opacity-30 blur-sm animate-pulse"></div>
-            <img src="https://cdn-icons-png.flaticon.com/512/6618/6618812.png" 
+            <img src="./icon.png?v=3" 
                  alt="MiniTrend 3D Icon" 
-                 class="w-9 h-9 object-contain icon-3d-animate relative z-10" />
+                 class="w-9 h-9 rounded-xl object-cover icon-3d-animate relative z-10" />
             <span class="absolute -top-1 -right-1 text-xs badge-3d-pop z-20">✨</span>
           </div>
           <div class="truncate">
@@ -235,15 +235,47 @@
 
   <!-- ================= ADMIN DASHBOARD ================= -->
   <div id="admin-view" class="hidden max-w-6xl mx-auto px-4 py-6">
-    <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
+    <div class="flex flex-wrap justify-between items-center gap-3 mb-5">
       <div>
-        <h2 class="text-2xl font-bold text-gray-900">🔐 ဆိုင်ပိုင်ရှင် စီမံခန့်ခွဲမှု (Admin Panel)</h2>
-        <p class="text-sm text-gray-500">Google Sheets မှ အသက်အရွယ်တစ်ခုချင်းစီအလိုက် လက်ကျန် Stock များကို စစ်ဆေးနိုင်ပါသည်</p>
+        <h2 class="text-xl sm:text-2xl font-bold text-gray-900">🔐 ဆိုင်ပိုင်ရှင် စီမံခန့်ခွဲမှု (Admin Panel)</h2>
+        <p class="text-xs sm:text-sm text-gray-500">ဝင်ကြည့်သူ ဦးရေနှင့် လက်ကျန် Stock များကို တစ်နေရာတည်းတွင် စစ်ဆေးနိုင်ပါသည်</p>
+      </div>
+      <div class="flex gap-2">
+        <button onclick="loadVisitorStats()" class="bg-pink-600 hover:bg-pink-700 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-sm transition">🔄 စာရင်းပြန်စစ်မည်</button>
+        <button onclick="switchRole('customer')" class="bg-gray-800 hover:bg-gray-900 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-sm transition">🛍️ ဆိုင်မျက်နှာပြင်သို့</button>
       </div>
     </div>
 
-    <div class="bg-white p-6 rounded-2xl shadow-sm border">
-      <h3 class="font-bold text-lg mb-4">လက်ရှိ Google Sheet မှ ပစ္စည်းနှင့် အရွယ်အစားအလိုက် Stock စာရင်း</h3>
+    <!-- Visitor Analytics Cards -->
+    <div class="grid grid-cols-3 gap-2.5 sm:gap-4 mb-5">
+      <div class="bg-gradient-to-br from-pink-500 to-rose-600 text-white p-3.5 sm:p-5 rounded-2xl shadow-sm">
+        <p class="text-[11px] sm:text-xs font-bold text-pink-100">📊 ယနေ့ ဝင်ကြည့်သူ</p>
+        <p id="stat-today" class="text-2xl sm:text-3xl font-extrabold mt-1">...</p>
+        <p class="text-[10px] text-pink-100 mt-0.5">Today Visitors</p>
+      </div>
+      <div class="bg-white border border-pink-100 p-3.5 sm:p-5 rounded-2xl shadow-sm">
+        <p class="text-[11px] sm:text-xs font-bold text-gray-500">📅 မနေ့က ဝင်ကြည့်သူ</p>
+        <p id="stat-yesterday" class="text-2xl sm:text-3xl font-extrabold text-gray-800 mt-1">...</p>
+        <p class="text-[10px] text-gray-400 mt-0.5">Yesterday</p>
+      </div>
+      <div class="bg-white border border-amber-200 p-3.5 sm:p-5 rounded-2xl shadow-sm">
+        <p class="text-[11px] sm:text-xs font-bold text-amber-700">👥 စုစုပေါင်း ဝင်ကြည့်သူ</p>
+        <p id="stat-total" class="text-2xl sm:text-3xl font-extrabold text-amber-600 mt-1">...</p>
+        <p class="text-[10px] text-gray-400 mt-0.5">Total Visitors</p>
+      </div>
+    </div>
+
+    <!-- Recent Visitors Log -->
+    <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border mb-6">
+      <h3 class="font-bold text-sm sm:text-base text-gray-800 mb-3">🕒 နောက်ဆုံး ဝင်ကြည့်ခဲ့သည့် မှတ်တမ်း (Recent 10)</h3>
+      <div id="recent-visitors-list" class="divide-y text-xs text-gray-600">
+        <p class="py-3 text-gray-400">⏳ ဝင်ကြည့်သူ စာရင်း ရယူနေပါသည်...</p>
+      </div>
+    </div>
+
+    <!-- Stock List -->
+    <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border">
+      <h3 class="font-bold text-base sm:text-lg mb-4">📦 လက်ရှိ Google Sheet မှ ပစ္စည်းနှင့် အရွယ်အစားအလိုက် Stock စာရင်း</h3>
       <div id="admin-product-list" class="divide-y"></div>
     </div>
   </div>
@@ -253,7 +285,7 @@
     <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl">
       <div class="flex justify-between items-center border-b pb-3 mb-4">
         <div class="flex items-center gap-2">
-          <img src="https://cdn-icons-png.flaticon.com/512/6618/6618812.png" class="w-8 h-8 object-contain" />
+          <img src="./icon.png?v=3" class="w-8 h-8 rounded-lg object-cover" />
           <h3 class="text-base font-bold text-gray-900">MiniTrend Kids App ထည့်သွင်းနည်း</h3>
         </div>
         <button onclick="closePWAGuide()" class="text-gray-500 hover:text-gray-800 font-bold text-xl">✕</button>
@@ -444,6 +476,73 @@
     let selectedSizes = {};
     let selectedColors = {};
     let latestOrderMessage = "";
+
+    // ================= VISITOR ANALYTICS (TRACKING & ADMIN STATS) =================
+    function trackCustomerVisit() {
+      if (sessionStorage.getItem('mt_visit_logged')) return;
+      sessionStorage.setItem('mt_visit_logged', '1');
+
+      const ua = navigator.userAgent || '';
+      let device = 'Computer';
+      if (/android/i.test(ua)) device = 'Android';
+      else if (/iPad|iPhone|iPod/.test(ua)) device = 'iPhone / iPad';
+
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+      const mode = isStandalone ? 'App (PWA)' : 'Browser';
+
+      fetch(APPS_SCRIPT_ORDER_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "visit",
+          device: device,
+          mode: mode
+        })
+      }).catch(() => {});
+    }
+
+    async function loadVisitorStats() {
+      const todayEl = document.getElementById('stat-today');
+      const yesterdayEl = document.getElementById('stat-yesterday');
+      const totalEl = document.getElementById('stat-total');
+      const listEl = document.getElementById('recent-visitors-list');
+
+      if (!todayEl) return;
+      todayEl.innerText = "...";
+      yesterdayEl.innerText = "...";
+      totalEl.innerText = "...";
+
+      try {
+        const res = await fetch(`${APPS_SCRIPT_ORDER_URL}?action=getVisitors&t=${Date.now()}`);
+        const stats = await res.json();
+        todayEl.innerText = (stats.today || 0).toLocaleString() + " ဦး";
+        yesterdayEl.innerText = (stats.yesterday || 0).toLocaleString() + " ဦး";
+        totalEl.innerText = (stats.total || 0).toLocaleString() + " ဦး";
+
+        if (stats.recent && stats.recent.length > 0) {
+          listEl.innerHTML = stats.recent.map(r => `
+            <div class="py-2 flex justify-between items-center gap-2">
+              <div>
+                <span class="font-bold text-gray-800">📅 ${r.date}</span>
+                <span class="text-gray-500 ml-1.5">⏰ ${r.time}</span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <span class="bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full text-[11px] font-bold">${r.device}</span>
+                <span class="${r.mode.includes('App') ? 'bg-emerald-100 text-emerald-700' : 'bg-pink-50 text-pink-600'} px-2 py-0.5 rounded-full text-[11px] font-bold">${r.mode}</span>
+              </div>
+            </div>
+          `).join('');
+        } else {
+          listEl.innerHTML = `<p class="py-3 text-gray-400">ဝင်ကြည့်သူ မှတ်တမ်း မရှိသေးပါ။</p>`;
+        }
+      } catch (err) {
+        todayEl.innerText = "0 ဦး";
+        yesterdayEl.innerText = "0 ဦး";
+        totalEl.innerText = "0 ဦး";
+        listEl.innerHTML = `<p class="py-3 text-red-500">Apps Script တွင် New Version Deploy လုပ်ပြီးကြောင်း စစ်ဆေးပေးပါ။</p>`;
+      }
+    }
 
     function normalizeCategory(raw) {
       const val = (raw || '').toString().trim().toLowerCase();
@@ -695,10 +794,12 @@
       if (role === 'customer') {
         document.getElementById('top-role-bar').classList.add('hidden');
         switchRole('customer');
+        trackCustomerVisit();
       } else if (role === 'admin') {
         switchRole('admin');
       } else {
         switchRole('customer');
+        trackCustomerVisit();
       }
       loadProducts();
     }
@@ -821,6 +922,7 @@
       if (role === 'admin') {
         document.getElementById('customer-view').classList.add('hidden');
         document.getElementById('admin-view').classList.remove('hidden');
+        loadVisitorStats();
       } else {
         document.getElementById('admin-view').classList.add('hidden');
         document.getElementById('customer-view').classList.remove('hidden');
