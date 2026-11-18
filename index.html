@@ -547,6 +547,9 @@
         </div>
 
         <form id="checkout-form" onsubmit="prepareOrder(event)" class="space-y-3">
+          <div id="saved-profile-badge" class="hidden bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl px-3 py-2 text-[11px] font-bold flex justify-between items-center gap-2">
+            <span>✨ ယခင်ဖြည့်ထားသော အမည်၊ ဖုန်းနှင့် လိပ်စာကို အလိုအလျောက် ဖြည့်ပေးထားပါသည်</span>
+          </div>
           <input type="text" id="cust-name" required placeholder="ဝယ်ယူသူ အမည် *" class="w-full border rounded-xl px-3 py-2 text-sm">
           <input type="tel" id="cust-phone" required placeholder="ဆက်သွယ်ရန် ဖုန်းနံပါတ် *" class="w-full border rounded-xl px-3 py-2 text-sm">
           <textarea id="cust-address" required rows="2" placeholder="ပို့ဆောင်ပေးရမည့် လိပ်စာအပြည့်အစုံ (ရန်ကုန်မြို့တွင်း) *" class="w-full border rounded-xl px-3 py-2 text-sm"></textarea>
@@ -635,6 +638,42 @@
     let selectedColors = {};
     let latestOrderMessage = "";
     let pushPopupTimer = null;
+
+    // ဝယ်သူ၏ အမည်၊ ဖုန်းနံပါတ်နှင့် လိပ်စာကို ဖုန်းထဲတွင် သိမ်းဆည်းခြင်း / ပြန်လည်ဖြည့်သွင်းခြင်း
+    function saveCustomerProfile(name, phone, address) {
+      try {
+        localStorage.setItem('mt_saved_customer_info', JSON.stringify({
+          name: name || '',
+          phone: phone || '',
+          address: address || ''
+        }));
+      } catch (e) {}
+    }
+
+    function loadSavedCustomerProfile() {
+      try {
+        const raw = localStorage.getItem('mt_saved_customer_info');
+        if (!raw) return;
+        const info = JSON.parse(raw);
+        const nameEl = document.getElementById('cust-name');
+        const phoneEl = document.getElementById('cust-phone');
+        const addrEl = document.getElementById('cust-address');
+        const badgeEl = document.getElementById('saved-profile-badge');
+
+        let hasSaved = false;
+        if (nameEl && !nameEl.value && info.name) { nameEl.value = info.name; hasSaved = true; }
+        if (phoneEl && !phoneEl.value && info.phone) { phoneEl.value = info.phone; hasSaved = true; }
+        if (addrEl && !addrEl.value && info.address) { addrEl.value = info.address; hasSaved = true; }
+
+        if (badgeEl) {
+          if (hasSaved || (info.name && info.phone && info.address)) {
+            badgeEl.classList.remove('hidden');
+          } else {
+            badgeEl.classList.add('hidden');
+          }
+        }
+      } catch (e) {}
+    }
 
     function loadOneSignalLazy() {
       if (window.__oneSignalLoaded) return;
@@ -1361,6 +1400,7 @@
     function init() {
       setupExitGuard();
       setupAutoSystemNotiPermission();
+      loadSavedCustomerProfile();
 
       if (isStandaloneApp() || localStorage.getItem('mt_pwa_installed') === '1') {
         const wrap = document.getElementById('pwa-install-wrapper');
@@ -1389,8 +1429,7 @@
       }
       syncCustomerOrderStatus();
       loadProducts();
-
-      setTimeout(loadOneSignalLazy, 2500);
+      loadOneSignalLazy();
 
       setInterval(() => {
         if (!document.getElementById('customer-view').classList.contains('hidden')) {
@@ -1734,6 +1773,7 @@
       } else {
         if (summaryEl) summaryEl.classList.remove('hidden');
         if (formEl) formEl.classList.remove('hidden');
+        loadSavedCustomerProfile();
         cartItemsEl.innerHTML = cart.map((item, idx) => `
           <div class="flex justify-between items-center bg-gray-50 p-3 rounded-xl border gap-2">
             <div class="flex items-center gap-2.5">
@@ -1791,6 +1831,9 @@
       const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
       const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
       const grandTotal = subtotal + DELIVERY_FEE;
+
+      // နောက်အကြိမ်များတွင် Auto ဖြည့်ပေးနိုင်ရန် ဝယ်သူအချက်အလက်ကို သိမ်းဆည်းထားမည်
+      saveCustomerProfile(name, phone, address);
 
       let itemLines = cart.map((item, idx) => 
         `${idx + 1}. ${item.name} [အရောင်: ${item.colorName} | အရွယ်: ${item.size}] x ${item.qty} ခု = ${(item.price * item.qty).toLocaleString()} Ks`
