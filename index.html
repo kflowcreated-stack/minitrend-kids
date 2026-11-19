@@ -193,6 +193,9 @@
 <body class="bg-pink-50/40 text-gray-800">
 
   <script>
+    // ★★★ ဆိုင်ပိုင်ရှင် Admin Panel ဝင်ရောက်ရန် Password (ကြိုက်နှစ်သက်ရာ ပြောင်းလဲနိုင်ပါသည်) ★★★
+    const ADMIN_PASSWORD = "9543";
+
     const GOOGLE_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSjes7pROE-fMhM39UGMP__RBMSsP4vlMyhg0FU60dFvEb6Ysdah3ws7xzfeCJ7CRQYcEtYtvAnb0DP/pub?gid=0&single=true&output=csv";
     const APPS_SCRIPT_ORDER_URL = "https://script.google.com/macros/s/AKfycbzjiat7rNkOGkQYjf3RT6rC4g5AdXiVtraecqUTG8wXcu4l6Dm1mmtnXpVhaxjAzsrd/exec";
 
@@ -382,6 +385,7 @@
         <button type="button" onclick="manualConnectFirebase('admin')" id="btn-admin-fcm" class="bg-purple-600 hover:bg-purple-700 active:scale-95 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-sm transition cursor-pointer">🔔 ဤဖုန်းကို Noti ချိတ်မည်</button>
         <button type="button" onclick="setupNineSheets()" id="btn-setup-sheets" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-sm transition cursor-pointer">📂 Sheet (၉) ခု အလိုအလျောက်ခွဲမည်</button>
         <button type="button" onclick="refreshAdminAll()" id="btn-refresh-admin" class="bg-pink-600 hover:bg-pink-700 active:scale-95 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-sm transition cursor-pointer">🔄 စာရင်းပြန်စစ်မည်</button>
+        <button type="button" onclick="lockAdminPanel()" class="bg-amber-500 hover:bg-amber-600 active:scale-95 text-gray-900 text-xs font-extrabold px-3.5 py-2 rounded-xl shadow-sm transition cursor-pointer">🔒 Lock</button>
         <button type="button" onclick="switchRole('customer')" class="bg-gray-800 hover:bg-gray-900 active:scale-95 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-sm transition cursor-pointer">🛍️ ဆိုင်မျက်နှာပြင်သို့</button>
       </div>
     </div>
@@ -447,6 +451,35 @@
     <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border">
       <h3 class="font-bold text-base sm:text-lg mb-4">📦 လက်ရှိ Google Sheet မှ ပစ္စည်းနှင့် အရွယ်အစားအလိုက် Stock စာရင်း</h3>
       <div id="admin-product-list" class="divide-y"></div>
+    </div>
+  </div>
+
+  <!-- ================= ADMIN PASSWORD LOCK MODAL ================= -->
+  <div id="admin-password-modal" class="fixed inset-0 bg-black/75 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-5 sm:p-6 shadow-2xl border-2 border-pink-200">
+      <div class="flex justify-between items-center border-b pb-3 mb-4">
+        <div class="flex items-center gap-2">
+          <span class="text-xl">🔐</span>
+          <h3 class="text-base sm:text-lg font-extrabold text-gray-900">ဆိုင်ပိုင်ရှင် အတည်ပြုရန်</h3>
+        </div>
+        <button type="button" onclick="closeAdminPasswordModal()" class="text-gray-400 hover:text-gray-800 font-bold text-xl leading-none px-1">✕</button>
+      </div>
+      <p class="text-xs text-gray-600 mb-4 leading-relaxed">
+        Admin Panel သို့ ဝင်ရောက်ရန် ဆိုင်ပိုင်ရှင်၏ <b>Password</b> ကို ရိုက်ထည့်ပေးပါခင်ဗျာ။
+      </p>
+      <form onsubmit="verifyAdminPassword(event)" class="space-y-3">
+        <div class="relative">
+          <input type="password" id="admin-pass-input" required autocomplete="current-password" placeholder="Password ရိုက်ထည့်ပါ..." class="w-full border-2 border-pink-200 focus:border-pink-600 rounded-xl px-3.5 py-2.5 pr-16 text-sm font-bold focus:outline-none">
+          <button type="button" onclick="toggleAdminPassVisibility()" id="btn-toggle-pass" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-[11px] font-bold text-pink-600 bg-pink-50 px-2 py-1 rounded-lg">👁️ ပြရန်</button>
+        </div>
+        <p id="admin-pass-error" class="hidden text-xs font-bold text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+          ❌ Password မှားယွင်းနေပါသည်၊ ပြန်လည်စစ်ဆေးပါ။
+        </p>
+        <div class="flex gap-2 pt-1">
+          <button type="button" onclick="closeAdminPasswordModal()" class="w-1/3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2.5 rounded-xl text-xs sm:text-sm">ပိတ်မည်</button>
+          <button type="submit" class="w-2/3 bg-pink-600 hover:bg-pink-700 text-white font-extrabold py-2.5 rounded-xl shadow text-xs sm:text-sm">🔓 ဝင်ရောက်မည်</button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -593,7 +626,7 @@
           <button onclick="copyLink('customer-link-input')" class="bg-pink-600 text-white px-3 py-1 rounded text-xs font-bold">Copy ကူးမည်</button>
         </div>
         <div class="p-3 bg-gray-100 rounded-xl border">
-          <p class="font-bold text-gray-800 mb-1">🔐 ဆိုင်ပိုင်ရှင် စီမံရန် Link:</p>
+          <p class="font-bold text-gray-800 mb-1">🔐 ဆိုင်ပိုင်ရှင် စီမံရန် Link (Password လိုအပ်သည်):</p>
           <input type="text" id="admin-link-input" readonly class="w-full bg-white border rounded px-2 py-1.5 text-xs mb-2">
           <button onclick="copyLink('admin-link-input')" class="bg-gray-800 text-white px-3 py-1 rounded text-xs font-bold">Copy ကူးမည်</button>
         </div>
@@ -641,6 +674,111 @@
     let selectedColors = {};
     let latestOrderMessage = "";
     let pushPopupTimer = null;
+
+    // Admin Password Authentication Functions
+    function isAdminAuthenticated() {
+      try {
+        return localStorage.getItem('mt_admin_auth') === ADMIN_PASSWORD;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    function openAdminPasswordModal() {
+      const modal = document.getElementById('admin-password-modal');
+      const input = document.getElementById('admin-pass-input');
+      const errEl = document.getElementById('admin-pass-error');
+      if (input) {
+        input.value = '';
+        input.type = 'password';
+      }
+      const toggleBtn = document.getElementById('btn-toggle-pass');
+      if (toggleBtn) toggleBtn.innerText = '👁️ ပြရန်';
+      if (errEl) errEl.classList.add('hidden');
+      if (modal) {
+        modal.classList.remove('hidden');
+        pushModalHistory('admin_auth');
+        setTimeout(() => { if (input) input.focus(); }, 100);
+      }
+    }
+
+    function closeAdminPasswordModal() {
+      const modal = document.getElementById('admin-password-modal');
+      if (modal) modal.classList.add('hidden');
+      if (history.state && history.state.modal === 'admin_auth') {
+        history.back();
+      }
+      if (!isAdminAuthenticated()) {
+        document.getElementById('admin-view').classList.add('hidden');
+        document.getElementById('customer-view').classList.remove('hidden');
+        updateRoleButtonsUI('customer');
+      }
+    }
+
+    function toggleAdminPassVisibility() {
+      const input = document.getElementById('admin-pass-input');
+      const btn = document.getElementById('btn-toggle-pass');
+      if (!input || !btn) return;
+      if (input.type === 'password') {
+        input.type = 'text';
+        btn.innerText = '🙈 ဖျောက်ရန်';
+      } else {
+        input.type = 'password';
+        btn.innerText = '👁️ ပြရန်';
+      }
+    }
+
+    function verifyAdminPassword(e) {
+      e.preventDefault();
+      const input = document.getElementById('admin-pass-input');
+      const errEl = document.getElementById('admin-pass-error');
+      const entered = input ? input.value.trim() : '';
+
+      if (entered === ADMIN_PASSWORD) {
+        try { localStorage.setItem('mt_admin_auth', ADMIN_PASSWORD); } catch (err) {}
+        if (errEl) errEl.classList.add('hidden');
+        document.getElementById('admin-password-modal').classList.add('hidden');
+        if (history.state && history.state.modal === 'admin_auth') {
+          history.back();
+        }
+        activateAdminView();
+      } else {
+        if (errEl) errEl.classList.remove('hidden');
+        if (input) {
+          input.value = '';
+          input.focus();
+        }
+      }
+    }
+
+    function lockAdminPanel() {
+      try { localStorage.removeItem('mt_admin_auth'); } catch (e) {}
+      switchRole('customer');
+      alert('🔒 Admin Panel ကို Password ဖြင့် ပြန်ပိတ်လိုက်ပါပြီ။');
+    }
+
+    function updateRoleButtonsUI(activeRole) {
+      const btnCust = document.getElementById('btn-role-customer');
+      const btnAdm = document.getElementById('btn-role-admin');
+      if (!btnCust || !btnAdm) return;
+      if (activeRole === 'admin') {
+        btnCust.className = "px-2.5 py-0.5 rounded bg-gray-700 text-gray-200 hover:bg-gray-600";
+        btnAdm.className = "px-2.5 py-0.5 rounded bg-pink-600 text-white font-bold";
+      } else {
+        btnCust.className = "px-2.5 py-0.5 rounded bg-pink-600 text-white font-bold";
+        btnAdm.className = "px-2.5 py-0.5 rounded bg-gray-700 text-gray-200 hover:bg-gray-600";
+      }
+    }
+
+    function activateAdminView() {
+      document.getElementById('customer-view').classList.add('hidden');
+      document.getElementById('admin-view').classList.remove('hidden');
+      updateRoleButtonsUI('admin');
+      if ('Notification' in window && Notification.permission === 'granted') {
+        initFirebasePush('admin', false);
+      }
+      loadVisitorStats();
+    }
 
     // Google Firebase Cloud Messaging (FCM) ချိတ်ဆက်ခြင်းနှင့် Token ကို Google Sheet သို့ သေချာပေါက် ပို့ပေးခြင်း
     async function initFirebasePush(roleTag, allowPrompt = false) {
@@ -711,7 +849,7 @@
         refreshAdminAll();
       } else {
         if (btn) btn.innerText = "🔔 ဤဖုန်းကို Noti ချိတ်မည်";
-        alert("⚠️ ಫုန်း Browser Settings တွင် Notification ကို Allow (ခွင့်ပြုသည်) ပေးထားကြောင်း စစ်ဆေးပေးပါ။");
+        alert("⚠️ ဖုန်း Browser Settings တွင် Notification ကို Allow (ခွင့်ပြုသည်) ပေးထားကြောင်း စစ်ဆေးပေးပါ။");
       }
     }
 
@@ -764,7 +902,6 @@
       } catch (e) {}
     }
 
-    // Android နှင့် iPhone များတွင် click စစ်စစ်ဖြင့်သာ Permission တောင်းခံပြီး Token ထုတ်ယူခြင်း
     function setupAutoSystemNotiPermission() {
       const requestOnClick = async () => {
         const isAdminOpen = document.getElementById('admin-view') && !document.getElementById('admin-view').classList.contains('hidden');
@@ -867,7 +1004,7 @@
               await reg.showNotification(title || 'MiniTrend Kids 🧸', {
                 body: bodyText || '',
                 icon: './icon.png?v=3',
-                badge: './icon.png?v=3',
+                badge: './badge.png?v=1',
                 tag: tagId || ('mt-' + Date.now()),
                 renotify: true,
                 vibrate: [250, 120, 250],
@@ -905,6 +1042,10 @@
 
     async function sendOwnerBroadcast(e) {
       e.preventDefault();
+      if (!isAdminAuthenticated()) {
+        openAdminPasswordModal();
+        return;
+      }
       const title = document.getElementById('broadcast-title').value.trim();
       const message = document.getElementById('broadcast-message').value.trim();
       if (!message) return;
@@ -995,6 +1136,10 @@
     }
 
     async function setupNineSheets() {
+      if (!isAdminAuthenticated()) {
+        openAdminPasswordModal();
+        return;
+      }
       const btn = document.getElementById('btn-setup-sheets');
       btn.disabled = true;
       btn.innerText = "⏳ Sheet (၉) ခု ဆောက်နေပါသည်...";
@@ -1014,6 +1159,10 @@
     }
 
     async function markOrderDelivered(orderId) {
+      if (!isAdminAuthenticated()) {
+        openAdminPasswordModal();
+        return;
+      }
       try {
         await fetch(APPS_SCRIPT_ORDER_URL, {
           method: "POST",
@@ -1051,6 +1200,7 @@
     }
 
     async function loadVisitorStats() {
+      if (!isAdminAuthenticated()) return;
       const todayEl = document.getElementById('stat-today');
       const yesterdayEl = document.getElementById('stat-yesterday');
       const totalEl = document.getElementById('stat-total');
@@ -1218,6 +1368,7 @@
       document.getElementById('size-calc-modal').classList.add('hidden');
       document.getElementById('link-modal').classList.add('hidden');
       document.getElementById('image-lightbox-modal').classList.add('hidden');
+      document.getElementById('admin-password-modal').classList.add('hidden');
     }
 
     function setupExitGuard() {
@@ -1236,8 +1387,9 @@
       const isSizeOpen = !document.getElementById('size-calc-modal').classList.contains('hidden');
       const isLinkOpen = !document.getElementById('link-modal').classList.contains('hidden');
       const isLightboxOpen = !document.getElementById('image-lightbox-modal').classList.contains('hidden');
+      const isAdminAuthOpen = !document.getElementById('admin-password-modal').classList.contains('hidden');
 
-      if (isCartOpen || isSizeOpen || isLinkOpen || isLightboxOpen) {
+      if (isCartOpen || isSizeOpen || isLinkOpen || isLightboxOpen || isAdminAuthOpen) {
         closeAllModalsUI();
         return;
       }
@@ -1454,23 +1606,26 @@
         trackCustomerVisit();
       }
 
-      // Permission ပေးပြီးသားဖုန်းဖြစ်ပါက စာမျက်နှာပွင့်သည်နှင့် Token ကို Google Sheet သို့ တန်းပို့ပေးမည်
       if ('Notification' in window && Notification.permission === 'granted') {
         registerVPNFreeBackgroundSync();
-        initFirebasePush(activeRole, false);
+        if (activeRole === 'admin' && isAdminAuthenticated()) {
+          initFirebasePush('admin', false);
+        } else {
+          initFirebasePush('customer', false);
+        }
       }
 
       syncCustomerOrderStatus();
       loadProducts();
 
       setInterval(() => {
-        if (!document.getElementById('customer-view').classList.contains('hidden')) {
+        if (!document.getElementById('admin-view').classList.contains('hidden')) {
+          loadVisitorStats();
+        } else {
           syncCustomerOrderStatus();
           if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
             navigator.serviceWorker.controller.postMessage({ type: 'CHECK_REMOTE_NOTI' });
           }
-        } else {
-          loadVisitorStats();
         }
       }, 20000);
     }
@@ -1591,15 +1746,17 @@
 
     function switchRole(role) {
       if (role === 'admin') {
-        document.getElementById('customer-view').classList.add('hidden');
-        document.getElementById('admin-view').classList.remove('hidden');
-        if ('Notification' in window && Notification.permission === 'granted') {
-          initFirebasePush('admin', false);
+        if (isAdminAuthenticated()) {
+          activateAdminView();
+        } else {
+          document.getElementById('admin-view').classList.add('hidden');
+          document.getElementById('customer-view').classList.remove('hidden');
+          openAdminPasswordModal();
         }
-        loadVisitorStats();
       } else {
         document.getElementById('admin-view').classList.add('hidden');
         document.getElementById('customer-view').classList.remove('hidden');
+        updateRoleButtonsUI('customer');
         if ('Notification' in window && Notification.permission === 'granted') {
           initFirebasePush('customer', false);
         }
