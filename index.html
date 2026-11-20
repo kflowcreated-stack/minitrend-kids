@@ -13,10 +13,6 @@
   <link rel="icon" type="image/png" href="./icon.png?v=3" />
   <link rel="apple-touch-icon" href="./icon.png?v=3" />
 
-  <!-- 100% Free Interactive Map Library (Leaflet + OpenStreetMap) -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
   <script>
     window.__deferredInstallPrompt = null;
     window.__pendingAutoInstall = false;
@@ -141,7 +137,6 @@
     }
     .btn-3d { box-shadow: 0 3px 0 rgba(0,0,0,0.18); transition: all 0.15s ease; }
     .btn-3d:active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(0,0,0,0.18); }
-    #customer-leaflet-map { height: 220px; width: 100%; border-radius: 12px; z-index: 10; }
   </style>
 </head>
 <body class="bg-pink-50/40 text-gray-800">
@@ -174,39 +169,6 @@
       "၆ - ၇ နှစ်",
       "၈ - ၉ နှစ်"
     ];
-
-    const YANGON_TOWNSHIP_CENTERS = {
-      "လှိုင်မြို့နယ်": [16.8458, 96.1282],
-      "ကမာရွတ်မြို့နယ်": [16.8256, 96.1319],
-      "စမ်းချောင်းမြို့နယ်": [16.8053, 96.1325],
-      "မရမ်းကုန်းမြို့နယ်": [16.8669, 96.1436],
-      "တာမွေမြို့နယ်": [16.8115, 96.1744],
-      "ရန်ကင်းမြို့နယ်": [16.8358, 96.1665],
-      "တောင်ဥက္ကလာပမြို့နယ်": [16.8489, 96.1856],
-      "မြောက်ဥက္ကလာပမြို့နယ်": [16.9061, 96.1678],
-      "သင်္ဃန်းကျွန်းမြို့နယ်": [16.8294, 96.1972],
-      "ဗဟန်းမြို့နယ်": [16.8111, 96.1558],
-      "အလုံမြို့နယ်": [16.7878, 96.1289],
-      "ကြည့်မြင်တိုင်မြို့နယ်": [16.8044, 96.1206],
-      "လမ်းမတော်မြို့နယ်": [16.7764, 96.1433],
-      "လသာမြို့နယ်": [16.7747, 96.1503],
-      "ပန်းဘဲတန်းမြို့နယ်": [16.7756, 96.1569],
-      "ကျောက်တံတားမြို့နယ်": [16.7747, 96.1617],
-      "ဗိုလ်တထောင်မြို့နယ်": [16.7731, 96.1725],
-      "ပုဇွန်တောင်မြို့နယ်": [16.7789, 96.1764],
-      "မင်္ဂလာတောင်ညွန့်မြို့နယ်": [16.7908, 96.1725],
-      "ဒဂုံမြို့နယ်": [16.7911, 96.1464],
-      "အင်းစိန်မြို့နယ်": [16.8992, 96.1036],
-      "မြောက်ဒဂုံမြို့နယ်": [16.8764, 96.1931],
-      "တောင်ဒဂုံမြို့နယ်": [16.8411, 96.2219],
-      "အရှေ့ဒဂုံမြို့နယ်": [16.9011, 96.2167],
-      "သာကေတမြို့နယ်": [16.7958, 96.2028],
-      "ဒေါပုံမြို့နယ်": [16.7897, 96.1883],
-      "မင်္ဂလာဒုံမြို့နယ်": [16.9531, 96.1356],
-      "ရွှေပြည်သာမြို့နယ်": [16.9606, 96.0825],
-      "လှိုင်သာယာမြို့နယ်": [16.8672, 96.0669],
-      "သန်လျင်မြို့နယ်": [16.7667, 96.2500]
-    };
 
     window.__swRegistrationPromise = null;
     if ('serviceWorker' in navigator) {
@@ -624,7 +586,7 @@
     </div>
   </div>
 
-  <!-- ================= CART & SMART LOCATION CHECKOUT DRAWER ================= -->
+  <!-- ================= CART & CHECKOUT DRAWER ================= -->
   <div id="cart-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex justify-end">
     <div class="bg-white w-full max-w-md h-full flex flex-col justify-between p-5 overflow-y-auto">
       <div>
@@ -663,7 +625,7 @@
           <div class="bg-blue-50/60 border border-blue-200 rounded-xl p-3 space-y-2">
             <p class="text-xs font-extrabold text-blue-900">📍 ပို့ဆောင်ရမည့် လိပ်စာနှင့် တည်နေရာ</p>
 
-            <select id="cust-township" required onchange="onTownshipChange()" class="w-full border border-blue-200 rounded-xl px-3 py-2 text-sm font-bold bg-white">
+            <select id="cust-township" required class="w-full border border-blue-200 rounded-xl px-3 py-2 text-sm font-bold bg-white">
               <option value="">-- မြို့နယ် ရွေးချယ်ပါ (ရန်ကုန်) * --</option>
               <option value="လှိုင်မြို့နယ်">လှိုင်မြို့နယ်</option>
               <option value="ကမာရွတ်မြို့နယ်">ကမာရွတ်မြို့နယ်</option>
@@ -701,25 +663,15 @@
             <input type="text" id="cust-road" required placeholder="🛣️ လမ်းအမည် / ထင်ရှားသောနေရာ (ဥပမာ- ပါရမီလမ်း၊ စိန်ဂေဟာအနီး) *" class="w-full border border-blue-200 rounded-xl px-3 py-2 text-xs sm:text-sm bg-white">
             <textarea id="cust-detail" required rows="2" placeholder="🏠 အိမ်နံပါတ်၊ အထပ်နှင့် မှတ်ချက် (ဥပမာ- တိုက် ၁၂၊ ၄ လွှာ၊ ရောက်ခါနီးဖုန်းဆက်ပါ) *" class="w-full border border-blue-200 rounded-xl px-3 py-2 text-xs sm:text-sm bg-white"></textarea>
 
-            <!-- GPS + Interactive Map Pin Picker -->
+            <!-- GPS Location Button (No Map) -->
             <input type="hidden" id="cust-map-location" value="">
-            <div class="grid grid-cols-2 gap-1.5 pt-0.5">
-              <button type="button" id="btn-gps-locate" onclick="getCustomerCurrentGPS()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-2 rounded-xl text-[11px] shadow-sm">
-                📍 လက်ရှိနေရာယူမည် (GPS)
-              </button>
-              <button type="button" id="btn-toggle-map" onclick="toggleCustomerMapPicker()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-2 rounded-xl text-[11px] shadow-sm">
-                🗺️ မြေပုံပေါ် Pin ထောက်မည်
-              </button>
-            </div>
+            <button type="button" id="btn-gps-locate" onclick="getCustomerCurrentGPS()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-3 rounded-xl text-xs shadow-sm">
+              📍 လက်ရှိနေရာယူမည် (GPS)
+            </button>
 
             <div id="customer-map-status" class="hidden flex justify-between items-center bg-emerald-50 border border-emerald-300 text-emerald-800 rounded-lg px-2.5 py-1.5 text-[11px] font-bold">
-              <span id="customer-map-status-text">✅ GPS တည်နေရာ Pin မှတ်ပြီးပါပြီ</span>
+              <span id="customer-map-status-text">✅ GPS တည်နေရာ မှတ်ပြီးပါပြီ</span>
               <button type="button" onclick="clearCustomerMapPin()" class="text-red-600 font-extrabold px-1">✕ ဖျက်</button>
-            </div>
-
-            <div id="customer-map-container" class="hidden space-y-1.5 pt-1">
-              <p class="text-[11px] text-blue-800 font-bold">👆 မြေပုံပေါ်တွင် အိမ်နေရာကို လက်ဖြင့်ထောက်၍ (သို့) အနီရောင် Pin ကို ဆွဲရွှေ့၍ သတ်မှတ်နိုင်ပါသည်-</p>
-              <div id="customer-leaflet-map" class="border-2 border-blue-300 shadow-inner"></div>
             </div>
           </div>
 
@@ -805,10 +757,6 @@
     let adminOrderRiderFilter = "ALL";
     let customerOrderStatusMap = {};
 
-    // Interactive Map Pin State (Leaflet + OpenStreetMap)
-    let customerLeafletMap = null;
-    let customerMapMarker = null;
-
     // ================= SMART GOOGLE MAPS URL BUILDER =================
     function buildSmartMapsInfo(order) {
       const rawLoc = (order.mapLocation || "").toString().trim();
@@ -823,7 +771,7 @@
           return {
             url: `https://www.google.com/maps/search/?api=1&query=${coordMatch[1]},${coordMatch[2]}`,
             isExact: true,
-            label: "📍 GPS Pin အတိအကျ"
+            label: "📍 GPS အတိအကျ"
           };
         }
       }
@@ -843,35 +791,8 @@
       };
     }
 
-    // ================= CUSTOMER MAP & GPS PICKER =================
-    function initCustomerLeafletMap(lat, lng) {
-      if (typeof L === 'undefined') {
-        alert("မြေပုံစနစ် ချိတ်ဆက်နေဆဲဖြစ်ပါသည်၊ ခဏစောင့်ပြီး ထပ်နှိပ်ပေးပါ။");
-        return;
-      }
-      const centerLat = lat || 16.8409;
-      const centerLng = lng || 96.1735;
-
-      if (!customerLeafletMap) {
-        customerLeafletMap = L.map('customer-leaflet-map').setView([centerLat, centerLng], 15);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          maxZoom: 19,
-          attribution: '&copy; OpenStreetMap'
-        }).addTo(customerLeafletMap);
-
-        customerLeafletMap.on('click', function(ev) {
-          setCustomerMapPin(ev.latlng.lat, ev.latlng.lng, false);
-        });
-      } else {
-        customerLeafletMap.setView([centerLat, centerLng], 16);
-      }
-
-      setTimeout(() => {
-        if (customerLeafletMap) customerLeafletMap.invalidateSize();
-      }, 250);
-    }
-
-    function setCustomerMapPin(lat, lng, recenter = true) {
+    // ================= CUSTOMER GPS LOCATION (NO MAP) =================
+    function setCustomerGPSLocation(lat, lng) {
       const latFixed = Number(lat).toFixed(6);
       const lngFixed = Number(lng).toFixed(6);
       const coordStr = `${latFixed},${lngFixed}`;
@@ -882,23 +803,8 @@
       const statusBox = document.getElementById('customer-map-status');
       const statusTxt = document.getElementById('customer-map-status-text');
       if (statusBox && statusTxt) {
-        statusTxt.innerText = `✅ တည်နေရာ Pin မှတ်ပြီး (${latFixed}, ${lngFixed})`;
+        statusTxt.innerText = `✅ GPS တည်နေရာ မှတ်ပြီး (${latFixed}, ${lngFixed})`;
         statusBox.classList.remove('hidden');
-      }
-
-      if (customerLeafletMap) {
-        if (customerMapMarker) {
-          customerMapMarker.setLatLng([lat, lng]);
-        } else {
-          customerMapMarker = L.marker([lat, lng], { draggable: true }).addTo(customerLeafletMap);
-          customerMapMarker.on('dragend', function(ev) {
-            const pos = ev.target.getLatLng();
-            setCustomerMapPin(pos.lat, pos.lng, false);
-          });
-        }
-        if (recenter) {
-          customerLeafletMap.setView([lat, lng], 16);
-        }
       }
     }
 
@@ -907,46 +813,11 @@
       if (locInput) locInput.value = '';
       const statusBox = document.getElementById('customer-map-status');
       if (statusBox) statusBox.classList.add('hidden');
-      if (customerMapMarker && customerLeafletMap) {
-        customerLeafletMap.removeLayer(customerMapMarker);
-        customerMapMarker = null;
-      }
-    }
-
-    function onTownshipChange() {
-      const ts = document.getElementById('cust-township').value;
-      const existingLoc = document.getElementById('cust-map-location').value;
-      if (!existingLoc && ts && YANGON_TOWNSHIP_CENTERS[ts] && customerLeafletMap) {
-        const [lat, lng] = YANGON_TOWNSHIP_CENTERS[ts];
-        customerLeafletMap.setView([lat, lng], 14);
-      }
-    }
-
-    function toggleCustomerMapPicker() {
-      const box = document.getElementById('customer-map-container');
-      if (!box) return;
-      const willOpen = box.classList.contains('hidden');
-      box.classList.toggle('hidden');
-
-      if (willOpen) {
-        const existingLoc = document.getElementById('cust-map-location').value;
-        const coordMatch = existingLoc.match(/(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/);
-        if (coordMatch) {
-          const lat = parseFloat(coordMatch[1]);
-          const lng = parseFloat(coordMatch[2]);
-          initCustomerLeafletMap(lat, lng);
-          setCustomerMapPin(lat, lng, true);
-        } else {
-          const ts = document.getElementById('cust-township').value;
-          const center = (ts && YANGON_TOWNSHIP_CENTERS[ts]) ? YANGON_TOWNSHIP_CENTERS[ts] : [16.8409, 96.1735];
-          initCustomerLeafletMap(center[0], center[1]);
-        }
-      }
     }
 
     function getCustomerCurrentGPS() {
       if (!navigator.geolocation) {
-        alert("သင့်ဖုန်း Browser တွင် GPS စနစ် မပံ့ပိုးပါ။ 🗺️ မြေပုံပေါ် Pin ထောက်မည် ကို နှိပ်၍ နေရာရွေးနိုင်ပါသည်။");
+        alert("သင့်ဖုန်း Browser တွင် GPS စနစ် မပံ့ပိုးပါ။ အပေါ်ပါ လိပ်စာအကွက်များကိုသာ ပြည့်စုံစွာ ဖြည့်ပေးပါခင်ဗျာ။");
         return;
       }
       const btn = document.getElementById('btn-gps-locate');
@@ -954,20 +825,13 @@
 
       navigator.geolocation.getCurrentPosition(
         function(pos) {
-          const lat = pos.coords.latitude;
-          const lng = pos.coords.longitude;
-          const box = document.getElementById('customer-map-container');
-          if (box) box.classList.remove('hidden');
-          initCustomerLeafletMap(lat, lng);
-          setCustomerMapPin(lat, lng, true);
-          if (btn) { btn.disabled = false; btn.innerText = "✅ GPS ရရှိပါပြီ"; }
+          setCustomerGPSLocation(pos.coords.latitude, pos.coords.longitude);
+          if (btn) { btn.disabled = false; btn.innerText = "✅ GPS တည်နေရာ ရရှိပါပြီ"; }
           setTimeout(() => { if (btn) btn.innerText = "📍 လက်ရှိနေရာယူမည် (GPS)"; }, 2500);
         },
         function() {
           if (btn) { btn.disabled = false; btn.innerText = "📍 လက်ရှိနေရာယူမည် (GPS)"; }
-          alert("⚠️ GPS ဖွင့်မရပါ (ဖုန်း Location ဖွင့်ထားကြောင်း စစ်ဆေးပါ)။ 🗺️ မြေပုံပေါ် Pin ထောက်မည် ခလုတ်ကို နှိပ်၍ လက်ဖြင့် နေရာထောက်ပေးနိုင်ပါသည်။");
-          const box = document.getElementById('customer-map-container');
-          if (box && box.classList.contains('hidden')) toggleCustomerMapPicker();
+          alert("⚠️ GPS ဖွင့်မရပါ (ဖုန်း Location ဖွင့်ထားကြောင်း စစ်ဆေးပါ)။ GPS မထည့်ဘဲ အပေါ်ပါ မြို့နယ်နှင့် လမ်းလိပ်စာဖြင့်လည်း အော်ဒါတင်နိုင်ပါသည်။");
         },
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
       );
@@ -1226,7 +1090,7 @@
               <div class="grid grid-cols-2 gap-2 pt-1">
                 <a href="tel:${o.phone}" class="bg-white border-2 border-blue-200 text-blue-700 font-extrabold py-2 rounded-xl text-xs text-center">📞 ဖုန်းခေါ်မည်</a>
                 <a href="${mapInfo.url}" target="_blank" class="${mapInfo.isExact ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-emerald-700 border-emerald-300'} border-2 font-extrabold py-2 rounded-xl text-xs text-center shadow-sm">
-                  ${mapInfo.isExact ? '📍 Google Maps (Pin အတိအကျ)' : '🗺️ Google Maps ရှာမည်'}
+                  ${mapInfo.isExact ? '📍 Google Maps (GPS အတိအကျ)' : '🗺️ Google Maps ရှာမည်'}
                 </a>
               </div>
               <div class="grid grid-cols-2 gap-2">
@@ -1604,7 +1468,7 @@
           const statusBox = document.getElementById('customer-map-status');
           const statusTxt = document.getElementById('customer-map-status-text');
           if (statusBox && statusTxt) {
-            statusTxt.innerText = `✅ ယခင် GPS Pin မှတ်ထားပြီး (${info.mapLocation})`;
+            statusTxt.innerText = `✅ ယခင် GPS မှတ်ထားပြီး (${info.mapLocation})`;
             statusBox.classList.remove('hidden');
           }
           hasSaved = true;
@@ -2426,7 +2290,6 @@
       const modal = document.getElementById('cart-modal');
       if (modal.classList.contains('hidden')) {
         modal.classList.remove('hidden'); updateCartUI(); pushModalHistory('cart');
-        setTimeout(() => { if (customerLeafletMap) customerLeafletMap.invalidateSize(); }, 300);
       } else {
         modal.classList.add('hidden');
         if (history.state && history.state.modal === 'cart') history.back();
@@ -2457,7 +2320,7 @@
       saveCustomerProfile(name, phone, township, road, detail, mapLocation);
 
       let itemLines = cart.map((item, idx) => `${idx + 1}. ${item.name} [အရောင်: ${item.colorName} | အရွယ်: ${item.size}] x ${item.qty} ခု = ${(item.price * item.qty).toLocaleString()} Ks`).join('\n');
-      const mapLineViber = mapLocation ? `\n🗺️ Map Pin: https://www.google.com/maps/search/?api=1&query=${mapLocation}` : '';
+      const mapLineViber = mapLocation ? `\n🗺️ GPS Map: https://www.google.com/maps/search/?api=1&query=${mapLocation}` : '';
 
       latestOrderMessage = `🛍️ MiniTrend Kids အော်ဒါအသစ် (${orderId})\n-------------------------\n👤 အမည်: ${name}\n📞 ဖုန်း: ${phone}\n📍 လိပ်စာ: ${fullAddress}${mapLineViber}\n-------------------------\n📦 မှာယူသည့် စာရင်း:\n${itemLines}\n-------------------------\n🧾 ပစ္စည်းတန်ဖိုး: ${subtotal.toLocaleString()} ကျပ်\n🚚 Delivery ခ: ${DELIVERY_FEE.toLocaleString()} ကျပ်\n💰 စုစုပေါင်းကျသင့်ငွေ (COD): ${grandTotal.toLocaleString()} ကျပ်`;
       silentCopy(latestOrderMessage);
