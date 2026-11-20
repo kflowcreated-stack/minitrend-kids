@@ -13,7 +13,6 @@
   <link rel="icon" type="image/png" href="./icon.png?v=3" />
   <link rel="apple-touch-icon" href="./icon.png?v=3" />
 
-  <!-- Direct Install Prompt နှင့် Standalone Mode စစ်ဆေးခြင်း -->
   <script>
     window.__deferredInstallPrompt = null;
     window.__pendingAutoInstall = false;
@@ -55,7 +54,6 @@
     });
   </script>
 
-  <!-- Google Firebase Cloud Messaging SDK (VPN-Free) -->
   <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-messaging-compat.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
@@ -65,14 +63,10 @@
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
     @media all and (display-mode: standalone), (display-mode: minimal-ui), (display-mode: fullscreen) {
-      #pwa-install-wrapper {
-        display: none !important;
-      }
+      #pwa-install-wrapper { display: none !important; }
     }
 
-    .scene-3d {
-      perspective: 600px;
-    }
+    .scene-3d { perspective: 600px; }
 
     @keyframes floatRotate3D {
       0%, 100% {
@@ -120,82 +114,35 @@
       100% { transform: translate(-50%, 0); opacity: 1; }
     }
 
-    .noti-slide-in {
-      animation: slideDownNoti 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-
-    .app-download-glow {
-      position: relative;
-      overflow: hidden;
-      animation: flashGlowBtn 1.3s ease-in-out infinite;
-    }
-
+    .noti-slide-in { animation: slideDownNoti 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .app-download-glow { position: relative; overflow: hidden; animation: flashGlowBtn 1.3s ease-in-out infinite; }
     .app-download-glow::after {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 60%;
-      height: 100%;
+      content: ""; position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
       background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.85), transparent);
-      animation: headerShine 1.8s infinite;
-      pointer-events: none;
+      animation: headerShine 1.8s infinite; pointer-events: none;
     }
-
-    .arrow-bounce-anim {
-      display: inline-block;
-      animation: arrowPointBounce 0.8s ease-in-out infinite;
-      filter: drop-shadow(0 2px 4px rgba(219, 39, 119, 0.4));
-    }
-
-    .icon-3d-animate {
-      transform-style: preserve-3d;
-      animation: floatRotate3D 3.2s ease-in-out infinite;
-    }
-
-    .badge-3d-pop {
-      animation: bounce3DBadge 2.2s ease-in-out infinite;
-    }
-
-    .title-3d-text {
-      text-shadow: 0 2px 0 #fbcfe8, 0 3px 6px rgba(219, 39, 119, 0.28);
-    }
-
+    .arrow-bounce-anim { display: inline-block; animation: arrowPointBounce 0.8s ease-in-out infinite; filter: drop-shadow(0 2px 4px rgba(219, 39, 119, 0.4)); }
+    .icon-3d-animate { transform-style: preserve-3d; animation: floatRotate3D 3.2s ease-in-out infinite; }
+    .badge-3d-pop { animation: bounce3DBadge 2.2s ease-in-out infinite; }
+    .title-3d-text { text-shadow: 0 2px 0 #fbcfe8, 0 3px 6px rgba(219, 39, 119, 0.28); }
     .header-3d-glass {
-      position: relative;
-      overflow: hidden;
+      position: relative; overflow: hidden;
       background: linear-gradient(135deg, #ffffff 0%, #fff1f2 60%, #fef3c7 100%);
       box-shadow: 0 4px 15px -3px rgba(219, 39, 119, 0.15), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
     }
-
     .header-3d-glass::after {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 45%;
-      height: 100%;
+      content: ""; position: absolute; top: 0; left: 0; width: 45%; height: 100%;
       background: linear-gradient(90deg, transparent, rgba(255,255,255,0.65), transparent);
-      animation: headerShine 4.5s infinite;
-      pointer-events: none;
+      animation: headerShine 4.5s infinite; pointer-events: none;
     }
-
-    .btn-3d {
-      box-shadow: 0 3px 0 rgba(0,0,0,0.18);
-      transition: all 0.15s ease;
-    }
-    .btn-3d:active {
-      transform: translateY(2px);
-      box-shadow: 0 1px 0 rgba(0,0,0,0.18);
-    }
+    .btn-3d { box-shadow: 0 3px 0 rgba(0,0,0,0.18); transition: all 0.15s ease; }
+    .btn-3d:active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(0,0,0,0.18); }
   </style>
 </head>
 <body class="bg-pink-50/40 text-gray-800">
 
   <script>
-    // ★★★ ဆိုင်ပိုင်ရှင် Admin Panel ဝင်ရောက်ရန် Password (ကြိုက်နှစ်သက်ရာ ပြောင်းလဲနိုင်ပါသည်) ★★★
     const ADMIN_PASSWORD = "9543";
-
     const GOOGLE_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSjes7pROE-fMhM39UGMP__RBMSsP4vlMyhg0FU60dFvEb6Ysdah3ws7xzfeCJ7CRQYcEtYtvAnb0DP/pub?gid=0&single=true&output=csv";
     const APPS_SCRIPT_ORDER_URL = "https://script.google.com/macros/s/AKfycbzjiat7rNkOGkQYjf3RT6rC4g5AdXiVtraecqUTG8wXcu4l6Dm1mmtnXpVhaxjAzsrd/exec";
 
@@ -209,10 +156,9 @@
     };
     const FIREBASE_VAPID_KEY = "BEDkISmwDq6ytVzt2e-eWRndSXKxPttzdfxnKXETfJGhdnn_Se4b778DZ9YEi6NQDdy6gHuNz4twCZuKtzItqSI";
 
-    const OWNER_VIBER_PHONE = "959942739543"; 
+    const OWNER_VIBER_PHONE = "959942739543";
     const OWNER_DISPLAY_PHONE = "09942739543";
     const DELIVERY_FEE = 4500;
-
     const ORDER_THANK_YOU_MSG = "MiniTrend Kids ကိုရွေးချယ်တဲ့အတွက် ကျေးဇူးတင်ပါတယ်၊ မေမေတို့ ရဲ့အချစ်ဆုံးလေးအတွက် ပစ္စည်းကို ၃ ရက်အတွင်း အိမ်အရောက်ပို့ပေးပါမယ်";
 
     const AGE_SIZES = [
@@ -230,7 +176,7 @@
     }
   </script>
 
-  <!-- ================= TOP NOTIFICATION BANNER ================= -->
+  <!-- TOP NOTIFICATION BANNER -->
   <div id="push-noti-popup" class="fixed top-3 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-md hidden noti-slide-in">
     <div class="bg-gray-900/95 text-white rounded-2xl p-3.5 shadow-2xl border-2 border-pink-400 flex items-start gap-3 backdrop-blur-md">
       <img src="./icon.png?v=3" class="w-11 h-11 rounded-xl object-cover shrink-0 border border-white/20" />
@@ -245,7 +191,7 @@
     </div>
   </div>
 
-  <!-- Double-Back Exit Toast Message -->
+  <!-- Double-Back Exit Toast -->
   <div id="exit-toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 bg-gray-900/95 text-white text-xs sm:text-sm font-bold px-5 py-3 rounded-full shadow-xl border border-white/15 transition-opacity duration-300 opacity-0 pointer-events-none whitespace-nowrap">
     ⚠️ ထွက်ရန် Back ခလုတ်ကို နောက်တစ်ကြိမ် ထပ်နှိပ်ပါ
   </div>
@@ -256,8 +202,9 @@
       <span class="inline-block w-2 h-2 rounded-full bg-green-400"></span>
       <span class="font-bold">MiniTrend Kids</span>
     </div>
-    <div class="flex items-center gap-1.5">
+    <div class="flex items-center gap-1.5 flex-wrap">
       <button onclick="switchRole('customer')" id="btn-role-customer" class="px-2.5 py-0.5 rounded bg-pink-600 text-white font-bold">🛍️ ဝယ်ယူသူ</button>
+      <button onclick="switchRole('delivery')" id="btn-role-delivery" class="px-2.5 py-0.5 rounded bg-gray-700 text-gray-200 hover:bg-gray-600">🚚 Delivery</button>
       <button onclick="switchRole('admin')" id="btn-role-admin" class="px-2.5 py-0.5 rounded bg-gray-700 text-gray-200 hover:bg-gray-600">🔐 ပိုင်ရှင်</button>
       <button onclick="openLinkModal()" class="px-2.5 py-0.5 rounded bg-amber-500 text-gray-900 font-bold hover:bg-amber-400">🔗 Link</button>
     </div>
@@ -265,7 +212,6 @@
 
   <!-- ================= CUSTOMER STOREFRONT ================= -->
   <div id="customer-view">
-    <!-- Top COD & Viber Announcement Strip -->
     <div class="bg-gradient-to-r from-rose-600 via-pink-600 to-purple-700 text-white text-[10px] sm:text-xs py-1 px-2.5">
       <div class="max-w-6xl mx-auto flex justify-between items-center gap-1">
         <span class="font-bold truncate">🚚 ရန်ကုန်မြို့တွင်း အိမ်ရောက်ငွေချေ (COD)</span>
@@ -276,21 +222,16 @@
       </div>
     </div>
 
-    <!-- 3D Animated Sticky Header -->
     <header class="header-3d-glass sticky top-0 z-30 border-b border-pink-100">
       <div class="max-w-6xl mx-auto px-2 py-1.5 flex justify-between items-center gap-1">
         <div class="flex items-center gap-1.5 min-w-0 scene-3d">
           <div class="relative w-9 h-9 sm:w-10 sm:h-10 shrink-0 flex items-center justify-center">
             <div class="absolute inset-0 rounded-2xl bg-gradient-to-tr from-pink-500 via-rose-400 to-amber-300 opacity-30 blur-sm animate-pulse"></div>
-            <img src="./icon.png?v=3" 
-                 alt="MiniTrend 3D Icon" 
-                 class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl object-cover icon-3d-animate relative z-10" />
+            <img src="./icon.png?v=3" alt="MiniTrend 3D Icon" class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl object-cover icon-3d-animate relative z-10" />
             <span class="absolute -top-1 -right-1 text-xs badge-3d-pop z-20">✨</span>
           </div>
           <div class="truncate">
-            <div class="flex items-center gap-1">
-              <h1 class="text-xs sm:text-lg font-extrabold text-pink-600 leading-tight truncate title-3d-text">MiniTrend Kids</h1>
-            </div>
+            <h1 class="text-xs sm:text-lg font-extrabold text-pink-600 leading-tight truncate title-3d-text">MiniTrend Kids</h1>
             <p class="text-[9px] sm:text-[10px] text-gray-600 font-bold truncate">ကလေးဖက်ရှင်နှင့် အသုံးအဆောင်</p>
           </div>
         </div>
@@ -302,11 +243,9 @@
               <span>📲 App ဒေါင်းမည်</span>
             </button>
           </div>
-
           <button onclick="openSizeModal()" class="btn-3d bg-amber-400 hover:bg-amber-500 text-gray-900 px-2 sm:px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-extrabold flex items-center gap-0.5">
             <span>📏 Size တွက်ရန်</span>
           </button>
-
           <button onclick="toggleCart()" class="btn-3d relative bg-pink-600 hover:bg-pink-700 text-white px-2 sm:px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-bold flex items-center gap-1">
             <span>🛍️</span>
             <span id="cart-count" class="bg-amber-300 text-gray-900 text-[10px] px-1.5 rounded-full font-extrabold">0</span>
@@ -322,7 +261,6 @@
       }
     </script>
 
-    <!-- Active Size Recommendation Banner -->
     <div id="recommended-size-banner" class="hidden max-w-6xl mx-auto px-2.5 pt-2">
       <div class="bg-amber-50 border border-amber-400 rounded-xl p-2 flex justify-between items-center gap-2 shadow-sm">
         <div class="flex items-center gap-1.5 min-w-0">
@@ -336,7 +274,6 @@
       </div>
     </div>
 
-    <!-- Search & 9-Category Bar -->
     <section class="max-w-6xl mx-auto px-2.5 pt-2">
       <div class="flex flex-col md:flex-row gap-1.5 justify-between items-center">
         <div class="w-full md:w-64 flex gap-1.5 items-center">
@@ -357,13 +294,11 @@
       </div>
     </section>
 
-    <!-- 2x2 Product Grid -->
     <main class="max-w-6xl mx-auto px-2 py-2">
       <div id="loading-indicator" class="text-center py-8 text-pink-600 font-bold text-xs">⏳ ပစ္စည်းစာရင်းများ ရယူနေပါသည်...</div>
       <div id="product-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4"></div>
     </main>
 
-    <!-- Footer -->
     <footer class="bg-white border-t mt-6 py-5 px-4 text-center text-xs text-gray-600 space-y-1.5">
       <p class="font-bold text-gray-800 text-sm">MiniTrend Kids — ကလေးဖက်ရှင်နှင့် အသုံးအဆောင် ကမ္ဘာ</p>
       <p>🚚 ရန်ကုန်မြို့တွင်း အိမ်ရောက်ငွေချေ (COD) ဝန်ဆောင်မှု ရှိပါသည် (ပို့ဆောင်ခ ၄,၅၀၀ ကျပ်)</p>
@@ -374,16 +309,89 @@
     </footer>
   </div>
 
+  <!-- ================= DELIVERY RIDER PANEL (?role=delivery) ================= -->
+  <div id="delivery-view" class="hidden max-w-3xl mx-auto px-4 py-6">
+    <!-- Rider Login Card -->
+    <div id="delivery-login-card" class="bg-white rounded-2xl shadow-lg border-2 border-blue-200 max-w-md mx-auto p-6 mt-6">
+      <div class="text-center mb-5">
+        <div class="w-14 h-14 bg-blue-100 text-blue-700 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-2">🚚</div>
+        <h2 class="text-xl font-extrabold text-gray-900">Delivery ဝန်ထမ်း ဝင်ရောက်ရန်</h2>
+        <p class="text-xs text-gray-500 mt-1">မိမိအမည်ကို ရွေးချယ်ပြီး PIN နံပါတ် ရိုက်ထည့်ပါ</p>
+      </div>
+      <form onsubmit="handleRiderLogin(event)" class="space-y-3.5">
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1">👤 ဝန်ထမ်းအမည် ရွေးချယ်ပါ</label>
+          <select id="rider-login-select" required class="w-full border-2 border-blue-200 rounded-xl px-3 py-2.5 text-sm font-bold bg-gray-50 focus:outline-none focus:border-blue-600">
+            <option value="">⏳ ဝန်ထမ်းစာရင်း ရယူနေပါသည်...</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1">🔑 ဝန်ထမ်း PIN နံပါတ်</label>
+          <input type="password" inputmode="numeric" id="rider-login-pin" required placeholder="ဥပမာ - 1001" class="w-full border-2 border-blue-200 rounded-xl px-3.5 py-2.5 text-sm font-bold focus:outline-none focus:border-blue-600">
+        </div>
+        <p id="rider-login-error" class="hidden text-xs font-bold text-red-600 bg-red-50 border border-red-200 rounded-xl p-2.5">❌ PIN နံပါတ် မှားယွင်းနေပါသည်၊ ပြန်လည်စစ်ဆေးပါ။</p>
+        <button type="submit" id="btn-rider-login" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-3 rounded-xl shadow text-sm">🔓 Delivery Panel သို့ ဝင်မည်</button>
+      </form>
+    </div>
+
+    <!-- Logged-In Rider Dashboard -->
+    <div id="delivery-dashboard" class="hidden space-y-5">
+      <div class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-4 sm:p-5 rounded-2xl shadow-md flex flex-wrap justify-between items-center gap-3">
+        <div>
+          <p class="text-xs text-blue-100 font-bold">🚚 MiniTrend Kids Delivery</p>
+          <h2 id="rider-header-name" class="text-lg sm:text-xl font-extrabold mt-0.5">ဝန်ထမ်းအမည်</h2>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button type="button" onclick="connectRiderFirebase()" id="btn-rider-fcm" class="bg-amber-400 hover:bg-amber-300 text-gray-900 text-xs font-extrabold px-3 py-2 rounded-xl shadow-sm">🔔 ဤဖုန်း Noti ချိတ်မည်</button>
+          <button type="button" onclick="loadDeliveryDashboard(false)" id="btn-rider-refresh" class="bg-white/20 hover:bg-white/30 text-white text-xs font-bold px-3 py-2 rounded-xl">🔄 ပြန်စစ်မည်</button>
+          <button type="button" onclick="logoutRider()" class="bg-red-500/90 hover:bg-red-600 text-white text-xs font-bold px-3 py-2 rounded-xl">🔒 ထွက်မည်</button>
+        </div>
+      </div>
+
+      <!-- Rider Daily Summary Cards -->
+      <div class="grid grid-cols-3 gap-2.5 sm:gap-4">
+        <div class="bg-white border border-blue-200 p-3.5 rounded-2xl shadow-sm text-center">
+          <p class="text-[11px] font-bold text-gray-500">📦 ပို့ရန်ကျန်</p>
+          <p id="rider-stat-pending" class="text-2xl font-extrabold text-blue-600 mt-1">0</p>
+        </div>
+        <div class="bg-white border border-emerald-200 p-3.5 rounded-2xl shadow-sm text-center">
+          <p class="text-[11px] font-bold text-gray-500">✅ ယနေ့ပို့ပြီး</p>
+          <p id="rider-stat-done" class="text-2xl font-extrabold text-emerald-600 mt-1">0</p>
+        </div>
+        <div class="bg-emerald-600 text-white p-3.5 rounded-2xl shadow-sm text-center">
+          <p class="text-[11px] font-bold text-emerald-100">💰 ယနေ့ COD</p>
+          <p id="rider-stat-cod" class="text-lg sm:text-xl font-extrabold mt-1">0 Ks</p>
+        </div>
+      </div>
+
+      <!-- Rider Assigned Pending Orders -->
+      <div class="bg-white rounded-2xl shadow-sm border border-blue-100 p-4 sm:p-5">
+        <h3 class="font-extrabold text-sm sm:text-base text-gray-900 mb-3">📋 မိမိတာဝန်ကျသော ပို့ဆောင်ရန် အော်ဒါများ</h3>
+        <div id="rider-pending-list" class="space-y-3.5">
+          <p class="text-xs text-gray-400 py-4 text-center">⏳ အော်ဒါစာရင်း ရယူနေပါသည်...</p>
+        </div>
+      </div>
+
+      <!-- Rider Today's Completed Orders (For Cash Settlement) -->
+      <div class="bg-white rounded-2xl shadow-sm border border-emerald-100 p-4 sm:p-5">
+        <h3 class="font-extrabold text-sm sm:text-base text-gray-900 mb-3">🧾 ယနေ့ ပို့ဆောင်ပြီး ငွေကောက်မှတ်တမ်း</h3>
+        <div id="rider-done-list" class="divide-y text-xs">
+          <p class="text-gray-400 py-3">ယနေ့ ပို့ဆောင်ပြီးသော အော်ဒါ မရှိသေးပါ။</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ================= ADMIN DASHBOARD ================= -->
   <div id="admin-view" class="hidden max-w-6xl mx-auto px-4 py-6">
     <div class="flex flex-wrap justify-between items-center gap-3 mb-5">
       <div>
         <h2 class="text-xl sm:text-2xl font-bold text-gray-900">🔐 ဆိုင်ပိုင်ရှင် စီမံခန့်ခွဲမှု (Admin Panel)</h2>
-        <p class="text-xs sm:text-sm text-gray-500">ဝယ်သူများထံ Notification ပေးပို့ခြင်း၊ အော်ဒါစစ်ဆေးခြင်းနှင့် Stock စီမံခြင်း</p>
+        <p class="text-xs sm:text-sm text-gray-500">အော်ဒါခွဲဝေတာဝန်ပေးခြင်း၊ Delivery ဝန်ထမ်းစီမံခြင်း၊ Notification နှင့် Stock စစ်ဆေးခြင်း</p>
       </div>
       <div class="flex flex-wrap gap-2">
         <button type="button" onclick="manualConnectFirebase('admin')" id="btn-admin-fcm" class="bg-purple-600 hover:bg-purple-700 active:scale-95 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-sm transition cursor-pointer">🔔 ဤဖုန်းကို Noti ချိတ်မည်</button>
-        <button type="button" onclick="setupNineSheets()" id="btn-setup-sheets" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-sm transition cursor-pointer">📂 Sheet (၉) ခု အလိုအလျောက်ခွဲမည်</button>
+        <button type="button" onclick="setupNineSheets()" id="btn-setup-sheets" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-sm transition cursor-pointer">📂 Sheet (၉) ခု + Riders ဆောက်မည်</button>
         <button type="button" onclick="refreshAdminAll()" id="btn-refresh-admin" class="bg-pink-600 hover:bg-pink-700 active:scale-95 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-sm transition cursor-pointer">🔄 စာရင်းပြန်စစ်မည်</button>
         <button type="button" onclick="lockAdminPanel()" class="bg-amber-500 hover:bg-amber-600 active:scale-95 text-gray-900 text-xs font-extrabold px-3.5 py-2 rounded-xl shadow-sm transition cursor-pointer">🔒 Lock</button>
         <button type="button" onclick="switchRole('customer')" class="bg-gray-800 hover:bg-gray-900 active:scale-95 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-sm transition cursor-pointer">🛍️ ဆိုင်မျက်နှာပြင်သို့</button>
@@ -409,34 +417,72 @@
       </div>
     </div>
 
-    <!-- OWNER DAILY NOTIFICATION SENDER (Firebase Cloud Messaging) -->
+    <!-- Pending Orders + Multi-Rider Assignment Management -->
+    <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-emerald-200 mb-6">
+      <div class="flex flex-wrap justify-between items-center gap-2 mb-3">
+        <div>
+          <h3 class="font-extrabold text-sm sm:text-base text-gray-900">🚚 ပို့ဆောင်ရန် ကျန်ရှိသော အော်ဒါများနှင့် ဝန်ထမ်းခွဲဝေမှု (Active Orders)</h3>
+          <p class="text-[11px] text-gray-500">အော်ဒါတစ်ခုချင်းစီတွင် ပို့ဆောင်မည့် Delivery ဝန်ထမ်းကို ရွေးချယ်၍ <b>"📌 တာဝန်ပေး"</b> နှိပ်ပါက ထိုဝန်ထမ်းဖုန်းသို့ Notification ချက်ချင်းဝင်ပါမည်။</p>
+        </div>
+      </div>
+
+      <!-- Rider Filter Pills & Workload Overview -->
+      <div id="admin-rider-filter-bar" class="flex gap-1.5 overflow-x-auto pb-2 mb-3 no-scrollbar"></div>
+
+      <!-- Today's Rider COD Settlement Summary -->
+      <div id="admin-cod-summary-box" class="hidden mb-4 bg-blue-50/80 border border-blue-200 rounded-xl p-3">
+        <p class="text-xs font-extrabold text-blue-900 mb-2">💰 ယနေ့ ဝန်ထမ်းအလိုက် ပို့ပြီးနှင့် COD ငွေစာရင်းရှင်းတမ်း</p>
+        <div id="admin-cod-summary-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 text-xs"></div>
+      </div>
+
+      <div id="admin-pending-orders" class="divide-y text-xs">
+        <p class="py-3 text-gray-400">⏳ အော်ဒါစာရင်း ရယူနေပါသည်...</p>
+      </div>
+    </div>
+
+    <!-- DELIVERY RIDERS MANAGEMENT (10+ Staff) -->
+    <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-blue-200 mb-6">
+      <div class="flex flex-wrap justify-between items-center gap-2 mb-3">
+        <div>
+          <h3 class="font-extrabold text-sm sm:text-base text-gray-900">👥 Delivery ဝန်ထမ်းများ စီမံခန့်ခွဲရန် (၁၀ ဦးနှင့်အထက်)</h3>
+          <p class="text-[11px] text-gray-500">ဝန်ထမ်းအမည်၊ ဖုန်းနံပါတ်နှင့် Login ဝင်ရမည့် PIN နံပါတ်များကို ဤနေရာမှ တိုက်ရိုက်ပြင်ဆင်/ထပ်တိုးနိုင်ပါသည်။</p>
+        </div>
+        <button type="button" onclick="toggleRiderManager()" id="btn-toggle-riders" class="bg-blue-50 text-blue-700 border border-blue-200 text-xs font-bold px-3 py-1.5 rounded-xl">▼ ဝန်ထမ်းစာရင်း ဖွင့်/ပိတ်</button>
+      </div>
+
+      <div id="admin-rider-manager-body" class="space-y-4">
+        <form onsubmit="saveRiderFromAdmin(event)" class="bg-blue-50/60 border border-blue-100 rounded-xl p-3 grid grid-cols-1 sm:grid-cols-5 gap-2 text-xs">
+          <input type="hidden" id="edit-rider-id" value="">
+          <input type="text" id="edit-rider-name" required placeholder="ဝန်ထမ်းအမည် (ဥပမာ- ကိုကျော်) *" class="border rounded-lg px-2.5 py-2 bg-white font-bold sm:col-span-2">
+          <input type="tel" id="edit-rider-phone" placeholder="ဖုန်းနံပါတ် (09...)" class="border rounded-lg px-2.5 py-2 bg-white">
+          <input type="text" id="edit-rider-pin" required placeholder="PIN (ဥပမာ- 1001) *" class="border rounded-lg px-2.5 py-2 bg-white font-bold">
+          <div class="flex gap-1">
+            <button type="submit" id="btn-save-rider" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-3 rounded-lg">💾 သိမ်းမည်</button>
+            <button type="button" onclick="resetRiderForm()" id="btn-cancel-rider" class="hidden bg-gray-200 text-gray-700 font-bold py-2 px-2.5 rounded-lg">✕</button>
+          </div>
+        </form>
+
+        <div id="admin-riders-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 text-xs">
+          <p class="text-gray-400">⏳ ဝန်ထမ်းစာရင်း ရယူနေပါသည်...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- OWNER DAILY NOTIFICATION SENDER -->
     <div class="bg-gradient-to-r from-purple-50 via-pink-50 to-amber-50 p-4 sm:p-5 rounded-2xl shadow-sm border border-pink-200 mb-6">
       <div class="flex flex-wrap justify-between items-center gap-2 mb-1">
         <h3 class="font-extrabold text-sm sm:text-base text-gray-900">📢 ဝယ်သူများထံ နေ့စဉ် Notification ပေးပို့ရန် (Google Firebase Push)</h3>
         <span id="fcm-sub-badge" class="bg-purple-100 text-purple-800 border border-purple-300 text-[11px] font-extrabold px-2.5 py-0.5 rounded-full">📲 Noti ချိတ်ဆက်ထားသူ: ... ဦး</span>
       </div>
-      <p class="text-xs text-gray-600 mb-3">အောက်ပါအကွက်တွင် နေ့စဉ် ပရိုမိုးရှင်း သို့မဟုတ် ပစ္စည်းအသစ်ရောက်ကြောင်း ရေးသားပြီး ပို့လိုက်ပါက ဖုန်း Sleep ဖြစ်နေလျှင်ပင် ဝယ်သူဖုန်းများဆီသို့ MiniTrend Kids Icon ပုံလေးဖြင့် Notification တက်လာပါမည်။</p>
+      <p class="text-xs text-gray-600 mb-3">အောက်ပါအကွက်တွင် နေ့စဉ် ပရိုမိုးရှင်း သို့မဟုတ် ပစ္စည်းအသစ်ရောက်ကြောင်း ရေးသားပြီး ပို့လိုက်ပါက ဖုန်း Sleep ဖြစ်နေလျှင်ပင် ဝယ်သူဖုန်းများဆီသို့ Notification တက်လာပါမည်။</p>
       <form onsubmit="sendOwnerBroadcast(event)" class="space-y-2.5 text-xs sm:text-sm">
         <input type="text" id="broadcast-title" value="MiniTrend Kids မှ သတင်းကောင်းလေး! 🎁" required placeholder="Notification ခေါင်းစဉ် *" class="w-full border border-pink-200 rounded-xl px-3 py-2 bg-white font-bold">
-        <textarea id="broadcast-message" rows="2" required placeholder="ဝယ်သူများထံ ပို့ချင်သည့် စာသား ရေးပါ (ဥပမာ - မေမေတို့ရေ ဒီနေ့ နွေရာသီဝတ် အဆင်အသစ်လေးတွေ ရောက်ပါတယ်နော် 🧸✨) *" class="w-full border border-pink-200 rounded-xl px-3 py-2 bg-white"></textarea>
+        <textarea id="broadcast-message" rows="2" required placeholder="ဝယ်သူများထံ ပို့ချင်သည့် စာသား ရေးပါ *" class="w-full border border-pink-200 rounded-xl px-3 py-2 bg-white"></textarea>
         <button type="submit" id="btn-send-broadcast" class="bg-pink-600 hover:bg-pink-700 text-white font-extrabold px-5 py-2.5 rounded-xl shadow text-xs sm:text-sm">
           🔔 ဝယ်သူများထံ Notification ချက်ချင်းပို့မည်
         </button>
       </form>
       <div id="last-broadcast-info" class="mt-3 text-xs text-gray-600 hidden bg-white/80 p-2.5 rounded-xl border border-pink-100"></div>
-    </div>
-
-    <!-- Pending Orders Management -->
-    <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-emerald-200 mb-6">
-      <div class="flex justify-between items-center mb-3">
-        <div>
-          <h3 class="font-bold text-sm sm:text-base text-gray-900">🚚 ပို့ဆောင်ရန် ကျန်ရှိသော အော်ဒါများ (Active Orders)</h3>
-          <p class="text-[11px] text-gray-500">ဝယ်သူထံ ပစ္စည်းရောက်ရှိသွားပါက <b>"✅ ပို့ပေးပြီး"</b> ကို နှိပ်လိုက်လျှင် ဝယ်သူ၏ ခြင်းတောင်းထဲမှ ထိုအော်ဒါစာရင်း အလိုအလျောက် ပျောက်သွားပါမည်။</p>
-        </div>
-      </div>
-      <div id="admin-pending-orders" class="divide-y text-xs">
-        <p class="py-3 text-gray-400">⏳ အော်ဒါစာရင်း ရယူနေပါသည်...</p>
-      </div>
     </div>
 
     <!-- Recent Visitors Log -->
@@ -464,17 +510,13 @@
         </div>
         <button type="button" onclick="closeAdminPasswordModal()" class="text-gray-400 hover:text-gray-800 font-bold text-xl leading-none px-1">✕</button>
       </div>
-      <p class="text-xs text-gray-600 mb-4 leading-relaxed">
-        Admin Panel သို့ ဝင်ရောက်ရန် ဆိုင်ပိုင်ရှင်၏ <b>Password</b> ကို ရိုက်ထည့်ပေးပါခင်ဗျာ။
-      </p>
+      <p class="text-xs text-gray-600 mb-4 leading-relaxed">Admin Panel သို့ ဝင်ရောက်ရန် ဆိုင်ပိုင်ရှင်၏ <b>Password</b> ကို ရိုက်ထည့်ပေးပါခင်ဗျာ။</p>
       <form onsubmit="verifyAdminPassword(event)" class="space-y-3">
         <div class="relative">
           <input type="password" id="admin-pass-input" required autocomplete="current-password" placeholder="Password ရိုက်ထည့်ပါ..." class="w-full border-2 border-pink-200 focus:border-pink-600 rounded-xl px-3.5 py-2.5 pr-16 text-sm font-bold focus:outline-none">
           <button type="button" onclick="toggleAdminPassVisibility()" id="btn-toggle-pass" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-[11px] font-bold text-pink-600 bg-pink-50 px-2 py-1 rounded-lg">👁️ ပြရန်</button>
         </div>
-        <p id="admin-pass-error" class="hidden text-xs font-bold text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
-          ❌ Password မှားယွင်းနေပါသည်၊ ပြန်လည်စစ်ဆေးပါ။
-        </p>
+        <p id="admin-pass-error" class="hidden text-xs font-bold text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">❌ Password မှားယွင်းနေပါသည်၊ ပြန်လည်စစ်ဆေးပါ။</p>
         <div class="flex gap-2 pt-1">
           <button type="button" onclick="closeAdminPasswordModal()" class="w-1/3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2.5 rounded-xl text-xs sm:text-sm">ပိတ်မည်</button>
           <button type="submit" class="w-2/3 bg-pink-600 hover:bg-pink-700 text-white font-extrabold py-2.5 rounded-xl shadow text-xs sm:text-sm">🔓 ဝင်ရောက်မည်</button>
@@ -483,7 +525,7 @@
     </div>
   </div>
 
-  <!-- ================= FULL-SCREEN IMAGE LIGHTBOX MODAL WITH DESCRIPTION ================= -->
+  <!-- ================= FULL-SCREEN IMAGE LIGHTBOX MODAL ================= -->
   <div id="image-lightbox-modal" onclick="closeImageLightbox()" class="fixed inset-0 bg-black/90 z-50 hidden flex flex-col items-center justify-center p-3 sm:p-4 backdrop-blur-sm overflow-y-auto">
     <button type="button" onclick="closeImageLightbox()" class="fixed top-3 right-3 z-50 bg-white/20 hover:bg-white/35 text-white w-10 h-10 rounded-full flex items-center justify-center text-xl font-bold shadow-lg transition">✕</button>
     <div onclick="event.stopPropagation()" class="max-w-lg w-full flex flex-col items-center my-auto">
@@ -512,7 +554,6 @@
         <button onclick="closeSizeModal()" class="text-gray-500 hover:text-gray-800 font-bold text-xl">✕</button>
       </div>
       <p class="text-xs text-gray-600 mb-3">ကလေး၏ <b>အသက်၊ ကိုယ်အလေးချိန်နှင့် အရပ်အမြင့်</b> တို့ကို ထည့်သွင်းလိုက်ပါက အသင့်တော်ဆုံး Size နှင့် လက်ကျန်ရှိသော ပစ္စည်းများကို ရှာဖွေပေးပါမည်။</p>
-
       <form onsubmit="calculateKidSize(event)" class="space-y-3 text-sm">
         <div>
           <label class="block text-xs font-bold text-gray-700 mb-1">🎂 ကလေးအသက် (Age) *</label>
@@ -524,7 +565,6 @@
             </select>
           </div>
         </div>
-
         <div>
           <label class="block text-xs font-bold text-gray-700 mb-1">⚖️ ကလေးကိုယ်အလေးချိန် (Weight) *</label>
           <div class="flex gap-2">
@@ -535,7 +575,6 @@
             </select>
           </div>
         </div>
-
         <div>
           <label class="block text-xs font-bold text-gray-700 mb-1">📐 ကလေးအရပ်အမြင့် (Height) *</label>
           <div class="flex gap-2">
@@ -550,7 +589,6 @@
             </div>
           </div>
         </div>
-
         <button type="submit" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-2.5 rounded-xl shadow text-sm">🔍 ကိုက်ညီမည့် Size နှင့် ပစ္စည်းများ ရှာမည်</button>
       </form>
     </div>
@@ -619,11 +657,16 @@
         <h3 class="text-lg font-bold">🔗 သီးသန့် Link များ ရယူရန်</h3>
         <button onclick="closeLinkModal()" class="text-gray-500 font-bold text-lg">✕</button>
       </div>
-      <div class="space-y-4 text-sm">
+      <div class="space-y-3 text-sm">
         <div class="p-3 bg-pink-50 rounded-xl border border-pink-200">
-          <p class="font-bold text-pink-700 mb-1">🛍️ ဝယ်ယူသူများထံ Viber မှ Share ရမည့် Link:</p>
+          <p class="font-bold text-pink-700 mb-1">🛍️ ဝယ်ယူသူများထံ Share ရမည့် Link:</p>
           <input type="text" id="customer-link-input" readonly class="w-full bg-white border rounded px-2 py-1.5 text-xs mb-2">
           <button onclick="copyLink('customer-link-input')" class="bg-pink-600 text-white px-3 py-1 rounded text-xs font-bold">Copy ကူးမည်</button>
+        </div>
+        <div class="p-3 bg-blue-50 rounded-xl border border-blue-200">
+          <p class="font-bold text-blue-800 mb-1">🚚 Delivery ဝန်ထမ်း (၁၀ ဦး) ထံ ပေးရမည့် Link:</p>
+          <input type="text" id="delivery-link-input" readonly class="w-full bg-white border rounded px-2 py-1.5 text-xs mb-2">
+          <button onclick="copyLink('delivery-link-input')" class="bg-blue-600 text-white px-3 py-1 rounded text-xs font-bold">Copy ကူးမည်</button>
         </div>
         <div class="p-3 bg-gray-100 rounded-xl border">
           <p class="font-bold text-gray-800 mb-1">🔐 ဆိုင်ပိုင်ရှင် စီမံရန် Link (Password လိုအပ်သည်):</p>
@@ -643,22 +686,8 @@
         trending: true,
         description: "ချည်သား ၁၀၀% အေးမြပြီး ကလေးအသားအရေနှင့် အထူးသင့်တော်သော နွေရာသီဝတ် စပန့်ဝမ်းဆက် ဖြစ်ပါသည်။",
         originalPrice: 6500,
-        prices: {
-          "၆ လ - ၁ နှစ်": 4000,
-          "၁ နှစ် - ၂ နှစ်": 4500,
-          "၂ - ၃ နှစ်": 5000,
-          "၄ - ၅ နှစ်": 6000,
-          "၆ - ၇ နှစ်": 7000,
-          "၈ - ၉ နှစ်": 8000
-        },
-        stocks: {
-          "၆ လ - ၁ နှစ်": 5,
-          "၁ နှစ် - ၂ နှစ်": 8,
-          "၂ - ၃ နှစ်": 10,
-          "၄ - ၅ နှစ်": 6,
-          "၆ - ၇ နှစ်": 4,
-          "၈ - ၉ နှစ်": 2
-        },
+        prices: { "၆ လ - ၁ နှစ်": 4000, "၁ နှစ် - ၂ နှစ်": 4500, "၂ - ၃ နှစ်": 5000, "၄ - ၅ နှစ်": 6000, "၆ - ၇ နှစ်": 7000, "၈ - ၉ နှစ်": 8000 },
+        stocks: { "၆ လ - ၁ နှစ်": 5, "၁ နှစ် - ၂ နှစ်": 8, "၂ - ၃ နှစ်": 10, "၄ - ၅ နှစ်": 6, "၆ - ၇ နှစ်": 4, "၈ - ၉ နှစ်": 2 },
         variants: [
           { colorName: "အသားရောင်", image: "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=500&q=80" },
           { colorName: "ပန်းရောင်", image: "https://images.unsplash.com/photo-1522771930-78848d9293e8?w=500&q=80" }
@@ -675,23 +704,23 @@
     let latestOrderMessage = "";
     let pushPopupTimer = null;
 
-    // Admin Password Authentication Functions
+    // Multi-Rider State
+    let adminRidersList = [];
+    let adminPendingOrdersCache = [];
+    let adminRiderStatsCache = [];
+    let adminOrderRiderFilter = "ALL";
+    let customerOrderStatusMap = {};
+
+    // ================= ADMIN AUTH =================
     function isAdminAuthenticated() {
-      try {
-        return localStorage.getItem('mt_admin_auth') === ADMIN_PASSWORD;
-      } catch (e) {
-        return false;
-      }
+      try { return localStorage.getItem('mt_admin_auth') === ADMIN_PASSWORD; } catch (e) { return false; }
     }
 
     function openAdminPasswordModal() {
       const modal = document.getElementById('admin-password-modal');
       const input = document.getElementById('admin-pass-input');
       const errEl = document.getElementById('admin-pass-error');
-      if (input) {
-        input.value = '';
-        input.type = 'password';
-      }
+      if (input) { input.value = ''; input.type = 'password'; }
       const toggleBtn = document.getElementById('btn-toggle-pass');
       if (toggleBtn) toggleBtn.innerText = '👁️ ပြရန်';
       if (errEl) errEl.classList.add('hidden');
@@ -705,13 +734,9 @@
     function closeAdminPasswordModal() {
       const modal = document.getElementById('admin-password-modal');
       if (modal) modal.classList.add('hidden');
-      if (history.state && history.state.modal === 'admin_auth') {
-        history.back();
-      }
+      if (history.state && history.state.modal === 'admin_auth') history.back();
       if (!isAdminAuthenticated()) {
-        document.getElementById('admin-view').classList.add('hidden');
-        document.getElementById('customer-view').classList.remove('hidden');
-        updateRoleButtonsUI('customer');
+        switchRole('customer');
       }
     }
 
@@ -719,13 +744,8 @@
       const input = document.getElementById('admin-pass-input');
       const btn = document.getElementById('btn-toggle-pass');
       if (!input || !btn) return;
-      if (input.type === 'password') {
-        input.type = 'text';
-        btn.innerText = '🙈 ဖျောက်ရန်';
-      } else {
-        input.type = 'password';
-        btn.innerText = '👁️ ပြရန်';
-      }
+      if (input.type === 'password') { input.type = 'text'; btn.innerText = '🙈 ဖျောက်ရန်'; }
+      else { input.type = 'password'; btn.innerText = '👁️ ပြရန်'; }
     }
 
     function verifyAdminPassword(e) {
@@ -733,21 +753,15 @@
       const input = document.getElementById('admin-pass-input');
       const errEl = document.getElementById('admin-pass-error');
       const entered = input ? input.value.trim() : '';
-
       if (entered === ADMIN_PASSWORD) {
         try { localStorage.setItem('mt_admin_auth', ADMIN_PASSWORD); } catch (err) {}
         if (errEl) errEl.classList.add('hidden');
         document.getElementById('admin-password-modal').classList.add('hidden');
-        if (history.state && history.state.modal === 'admin_auth') {
-          history.back();
-        }
+        if (history.state && history.state.modal === 'admin_auth') history.back();
         activateAdminView();
       } else {
         if (errEl) errEl.classList.remove('hidden');
-        if (input) {
-          input.value = '';
-          input.focus();
-        }
+        if (input) { input.value = ''; input.focus(); }
       }
     }
 
@@ -759,19 +773,18 @@
 
     function updateRoleButtonsUI(activeRole) {
       const btnCust = document.getElementById('btn-role-customer');
+      const btnDel = document.getElementById('btn-role-delivery');
       const btnAdm = document.getElementById('btn-role-admin');
-      if (!btnCust || !btnAdm) return;
-      if (activeRole === 'admin') {
-        btnCust.className = "px-2.5 py-0.5 rounded bg-gray-700 text-gray-200 hover:bg-gray-600";
-        btnAdm.className = "px-2.5 py-0.5 rounded bg-pink-600 text-white font-bold";
-      } else {
-        btnCust.className = "px-2.5 py-0.5 rounded bg-pink-600 text-white font-bold";
-        btnAdm.className = "px-2.5 py-0.5 rounded bg-gray-700 text-gray-200 hover:bg-gray-600";
-      }
+      if (!btnCust || !btnDel || !btnAdm) return;
+      const idleCls = "px-2.5 py-0.5 rounded bg-gray-700 text-gray-200 hover:bg-gray-600";
+      btnCust.className = activeRole === 'customer' ? "px-2.5 py-0.5 rounded bg-pink-600 text-white font-bold" : idleCls;
+      btnDel.className = activeRole === 'delivery' ? "px-2.5 py-0.5 rounded bg-blue-600 text-white font-bold" : idleCls;
+      btnAdm.className = activeRole === 'admin' ? "px-2.5 py-0.5 rounded bg-pink-600 text-white font-bold" : idleCls;
     }
 
     function activateAdminView() {
       document.getElementById('customer-view').classList.add('hidden');
+      document.getElementById('delivery-view').classList.add('hidden');
       document.getElementById('admin-view').classList.remove('hidden');
       updateRoleButtonsUI('admin');
       if ('Notification' in window && Notification.permission === 'granted') {
@@ -780,14 +793,461 @@
       loadVisitorStats();
     }
 
-    // Google Firebase Cloud Messaging (FCM) ချိတ်ဆက်ခြင်းနှင့် Token ကို Google Sheet သို့ သေချာပေါက် ပို့ပေးခြင်း
+    // ================= DELIVERY RIDER PANEL =================
+    function getSavedRiderSession() {
+      try { return JSON.parse(localStorage.getItem('mt_rider_session') || 'null'); } catch (e) { return null; }
+    }
+
+    function saveRiderSession(obj) {
+      try { localStorage.setItem('mt_rider_session', JSON.stringify(obj)); } catch (e) {}
+    }
+
+    async function activateDeliveryView() {
+      document.getElementById('customer-view').classList.add('hidden');
+      document.getElementById('admin-view').classList.add('hidden');
+      document.getElementById('delivery-view').classList.remove('hidden');
+      updateRoleButtonsUI('delivery');
+
+      const saved = getSavedRiderSession();
+      if (saved && saved.id && saved.pin) {
+        document.getElementById('delivery-login-card').classList.add('hidden');
+        document.getElementById('delivery-dashboard').classList.remove('hidden');
+        document.getElementById('rider-header-name').innerText = `${saved.name} (${saved.id})`;
+        if ('Notification' in window && Notification.permission === 'granted') {
+          initFirebasePush('rider:' + saved.id, false);
+        }
+        loadDeliveryDashboard(false);
+      } else {
+        document.getElementById('delivery-dashboard').classList.add('hidden');
+        document.getElementById('delivery-login-card').classList.remove('hidden');
+        loadRiderLoginDropdown();
+      }
+    }
+
+    async function loadRiderLoginDropdown() {
+      const sel = document.getElementById('rider-login-select');
+      if (!sel) return;
+      try {
+        const res = await fetch(`${APPS_SCRIPT_ORDER_URL}?action=getDeliveryData&t=${Date.now()}`, { cache: "no-store" });
+        const data = await res.json();
+        if (data && Array.isArray(data.riders) && data.riders.length > 0) {
+          sel.innerHTML = `<option value="">-- ဝန်ထမ်းအမည် ရွေးချယ်ပါ --</option>` +
+            data.riders.map(r => `<option value="${r.id}">${r.id} — ${r.name}</option>`).join('');
+        } else {
+          sel.innerHTML = `<option value="">ဝန်ထမ်းစာရင်း မရှိသေးပါ</option>`;
+        }
+      } catch (e) {
+        sel.innerHTML = `<option value="">⚠️ ချိတ်ဆက်မှု မအောင်မြင်ပါ</option>`;
+      }
+    }
+
+    async function handleRiderLogin(e) {
+      e.preventDefault();
+      const riderId = document.getElementById('rider-login-select').value.trim();
+      const pin = document.getElementById('rider-login-pin').value.trim();
+      const errEl = document.getElementById('rider-login-error');
+      const btn = document.getElementById('btn-rider-login');
+      if (!riderId || !pin) return;
+
+      btn.disabled = true;
+      btn.innerText = "⏳ စစ်ဆေးနေပါသည်...";
+      errEl.classList.add('hidden');
+
+      try {
+        const res = await fetch(`${APPS_SCRIPT_ORDER_URL}?action=getDeliveryData&riderId=${encodeURIComponent(riderId)}&pin=${encodeURIComponent(pin)}&t=${Date.now()}`, { cache: "no-store" });
+        const data = await res.json();
+        if (data && data.status === 'ok' && data.rider) {
+          saveRiderSession({ id: data.rider.id, name: data.rider.name, pin: pin });
+          document.getElementById('rider-login-pin').value = '';
+          activateDeliveryView();
+          renderRiderDashboardData(data, false);
+        } else {
+          errEl.classList.remove('hidden');
+        }
+      } catch (err) {
+        errEl.innerText = "⚠️ အင်တာနက်ချိတ်ဆက်မှု စစ်ဆေးပေးပါ။";
+        errEl.classList.remove('hidden');
+      }
+
+      btn.disabled = false;
+      btn.innerText = "🔓 Delivery Panel သို့ ဝင်မည်";
+    }
+
+    function logoutRider() {
+      try { localStorage.removeItem('mt_rider_session'); } catch (e) {}
+      document.getElementById('delivery-dashboard').classList.add('hidden');
+      document.getElementById('delivery-login-card').classList.remove('hidden');
+      loadRiderLoginDropdown();
+    }
+
+    async function connectRiderFirebase() {
+      const saved = getSavedRiderSession();
+      if (!saved || !saved.id) return;
+      const btn = document.getElementById('btn-rider-fcm');
+      if (btn) btn.innerText = "⏳ ချိတ်ဆက်နေသည်...";
+      const roleKey = "rider:" + saved.id;
+      sessionStorage.removeItem("mt_fcm_synced_" + roleKey);
+      const tk = await initFirebasePush(roleKey, true);
+      if (tk) {
+        if (btn) btn.innerText = "✅ Noti ချိတ်ပြီး";
+        alert(`✅ ${saved.name} ၏ ဖုန်းကို Notification စနစ်နှင့် ချိတ်ဆက်ပြီးပါပြီ! အော်ဒါတာဝန်ပေးလိုက်တိုင်း ဖုန်းသို့ တိုက်ရိုက်တက်လာပါမည်။`);
+      } else {
+        if (btn) btn.innerText = "🔔 ဤဖုန်း Noti ချိတ်မည်";
+        alert("⚠️ Browser Settings တွင် Notification ကို Allow ပေးထားကြောင်း စစ်ဆေးပါ။");
+      }
+    }
+
+    async function loadDeliveryDashboard(silent = false) {
+      const saved = getSavedRiderSession();
+      if (!saved || !saved.id || !saved.pin) return;
+      const btn = document.getElementById('btn-rider-refresh');
+      if (btn && !silent) btn.innerText = "⏳ စစ်နေသည်...";
+
+      try {
+        const res = await fetch(`${APPS_SCRIPT_ORDER_URL}?action=getDeliveryData&riderId=${encodeURIComponent(saved.id)}&pin=${encodeURIComponent(saved.pin)}&t=${Date.now()}`, { cache: "no-store" });
+        const data = await res.json();
+        if (data && data.status === 'unauthorized') {
+          logoutRider();
+          return;
+        }
+        if (data && data.status === 'ok') {
+          renderRiderDashboardData(data, silent);
+        }
+      } catch (e) {}
+
+      if (btn && !silent) btn.innerText = "🔄 ပြန်စစ်မည်";
+    }
+
+    function renderRiderDashboardData(data, silent) {
+      const pending = data.pendingOrders || [];
+      const done = data.todayDelivered || [];
+      const codTotal = Number(data.todayCodTotal || 0);
+
+      document.getElementById('rider-stat-pending').innerText = pending.length;
+      document.getElementById('rider-stat-done').innerText = done.length;
+      document.getElementById('rider-stat-cod').innerText = codTotal.toLocaleString() + " Ks";
+
+      if (pending.length > 0) {
+        const newestId = pending[0].orderId;
+        const lastKey = 'mt_rider_last_order_' + (data.rider ? data.rider.id : '');
+        const prevId = localStorage.getItem(lastKey);
+        if (newestId && prevId && prevId !== newestId) {
+          sendPhoneNotification(
+            `📦 ပို့ဆောင်ရန် အော်ဒါအသစ်! (${newestId})`,
+            `${pending[0].name} — 📍 ${pending[0].address}`,
+            'rider-ord-' + newestId
+          );
+        }
+        localStorage.setItem(lastKey, newestId);
+      }
+
+      const pendingEl = document.getElementById('rider-pending-list');
+      if (pending.length === 0) {
+        pendingEl.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs sm:text-sm">🎉 လက်ရှိ ပို့ဆောင်ရန် ကျန်ရှိသော အော်ဒါ မရှိပါ</div>`;
+      } else {
+        pendingEl.innerHTML = pending.map(o => {
+          const isOnWay = o.status === 'ပို့ဆောင်နေပြီ';
+          const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(o.address + ' Yangon')}`;
+          return `
+            <div class="border-2 ${isOnWay ? 'border-amber-400 bg-amber-50/40' : 'border-blue-100 bg-gray-50/50'} rounded-2xl p-3.5 space-y-2.5">
+              <div class="flex flex-wrap justify-between items-center gap-1.5">
+                <span class="font-extrabold text-gray-900 text-sm">🧾 ${o.orderId}</span>
+                <span class="${isOnWay ? 'bg-amber-500 text-white' : 'bg-blue-600 text-white'} text-[11px] font-extrabold px-2.5 py-0.5 rounded-full">
+                  ${isOnWay ? '🚚 ပို့ဆောင်နေပြီ' : '📌 တာဝန်ပေးထားသည်'}
+                </span>
+              </div>
+              <div class="text-xs space-y-1">
+                <p class="font-extrabold text-gray-900 text-sm">👤 ${o.name} — <span class="text-blue-700">${o.phone}</span></p>
+                <p class="text-gray-700 leading-relaxed">📍 <b>လိပ်စာ:</b> ${o.address}</p>
+                <p class="text-pink-700 font-bold whitespace-pre-line bg-white p-2 rounded-xl border border-pink-100">${o.itemsText}</p>
+                <div class="flex justify-between items-center pt-1">
+                  <span class="text-[11px] text-gray-500">${formatOrderDateTime(o.dateTime)}</span>
+                  <span class="text-sm font-extrabold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-lg">💰 COD: ${Number(o.grandTotal).toLocaleString()} ကျပ်</span>
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-2 pt-1">
+                <a href="tel:${o.phone}" class="bg-white border-2 border-blue-200 text-blue-700 font-extrabold py-2 rounded-xl text-xs text-center">📞 ဖုန်းခေါ်မည်</a>
+                <a href="${mapsUrl}" target="_blank" class="bg-white border-2 border-emerald-200 text-emerald-700 font-extrabold py-2 rounded-xl text-xs text-center">🗺️ Google Maps</a>
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <button type="button" onclick="riderUpdateOrder('${o.orderId}', 'ပို့ဆောင်နေပြီ')" ${isOnWay ? 'disabled' : ''} class="${isOnWay ? 'bg-amber-200 text-amber-800 cursor-not-allowed' : 'bg-amber-500 hover:bg-amber-600 text-white'} font-extrabold py-2.5 rounded-xl text-xs shadow-sm">
+                  ${isOnWay ? '🚚 လမ်းပေါ်ရောက်နေပြီ' : '🚚 စတင်ပို့ဆောင်မည်'}
+                </button>
+                <button type="button" onclick="riderUpdateOrder('${o.orderId}', 'ပို့ပြီး')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-2.5 rounded-xl text-xs shadow-sm">
+                  ✅ ပို့ပေးပြီး (ငွေကောက်ပြီး)
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      const doneEl = document.getElementById('rider-done-list');
+      if (done.length === 0) {
+        doneEl.innerHTML = `<p class="text-gray-400 py-3">ယနေ့ ပို့ဆောင်ပြီးသော အော်ဒါ မရှိသေးပါ။</p>`;
+      } else {
+        doneEl.innerHTML = done.map(o => `
+          <div class="py-2.5 flex justify-between items-center gap-2">
+            <div>
+              <p class="font-bold text-gray-800">✅ ${o.orderId} — ${o.name}</p>
+              <p class="text-[11px] text-gray-500">⏰ ${o.deliveredAt || o.dateTime}</p>
+            </div>
+            <span class="font-extrabold text-emerald-700">${Number(o.grandTotal).toLocaleString()} Ks</span>
+          </div>
+        `).join('');
+      }
+    }
+
+    async function riderUpdateOrder(orderId, newStatus) {
+      const saved = getSavedRiderSession();
+      if (!saved || !saved.id) return;
+      if (newStatus === 'ပို့ပြီး') {
+        if (!confirm(`အော်ဒါ #${orderId} ကို ဝယ်သူထံ ပို့ဆောင်ပြီး (COD ငွေကောက်ခံပြီး) ဖြစ်ကြောင်း အတည်ပြုပါသလား?`)) return;
+      }
+
+      try {
+        await fetch(APPS_SCRIPT_ORDER_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "updateOrderStatus",
+            orderId: orderId,
+            status: newStatus,
+            riderId: saved.id,
+            riderName: saved.name,
+            byRider: true
+          })
+        });
+        setTimeout(() => loadDeliveryDashboard(false), 900);
+      } catch (e) {
+        alert("အခြေအနေ ပြောင်းလဲရာတွင် အမှားရှိနေပါသည်။");
+      }
+    }
+
+    // ================= ADMIN RIDER MANAGEMENT & ORDER ASSIGNMENT =================
+    function toggleRiderManager() {
+      const body = document.getElementById('admin-rider-manager-body');
+      if (body) body.classList.toggle('hidden');
+    }
+
+    function editRiderInAdmin(riderId) {
+      const r = adminRidersList.find(x => x.id === riderId);
+      if (!r) return;
+      document.getElementById('edit-rider-id').value = r.id;
+      document.getElementById('edit-rider-name').value = r.name;
+      document.getElementById('edit-rider-phone').value = r.phone || '';
+      document.getElementById('edit-rider-pin').value = r.pin || '';
+      document.getElementById('btn-save-rider').innerText = "✏️ ပြင်ဆင်မည်";
+      document.getElementById('btn-cancel-rider').classList.remove('hidden');
+      document.getElementById('edit-rider-name').focus();
+    }
+
+    function resetRiderForm() {
+      document.getElementById('edit-rider-id').value = '';
+      document.getElementById('edit-rider-name').value = '';
+      document.getElementById('edit-rider-phone').value = '';
+      document.getElementById('edit-rider-pin').value = '';
+      document.getElementById('btn-save-rider').innerText = "💾 သိမ်းမည်";
+      document.getElementById('btn-cancel-rider').classList.add('hidden');
+    }
+
+    async function saveRiderFromAdmin(e) {
+      e.preventDefault();
+      if (!isAdminAuthenticated()) { openAdminPasswordModal(); return; }
+      const riderId = document.getElementById('edit-rider-id').value.trim();
+      const name = document.getElementById('edit-rider-name').value.trim();
+      const phone = document.getElementById('edit-rider-phone').value.trim();
+      const pin = document.getElementById('edit-rider-pin').value.trim();
+      const btn = document.getElementById('btn-save-rider');
+      btn.disabled = true;
+      btn.innerText = "⏳...";
+
+      try {
+        await fetch(APPS_SCRIPT_ORDER_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action: "saveRider", riderId, name, phone, pin })
+        });
+        resetRiderForm();
+        setTimeout(() => loadVisitorStats(), 900);
+      } catch (err) {
+        alert("သိမ်းဆည်းရာတွင် အမှားရှိနေပါသည်။");
+      }
+      btn.disabled = false;
+    }
+
+    async function deleteRiderInAdmin(riderId) {
+      if (!isAdminAuthenticated()) { openAdminPasswordModal(); return; }
+      const r = adminRidersList.find(x => x.id === riderId);
+      if (!confirm(`ဝန်ထမ်း (${r ? r.name : riderId}) ကို စာရင်းမှ ဖျက်မှာ သေချာပါသလား?`)) return;
+      try {
+        await fetch(APPS_SCRIPT_ORDER_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action: "deleteRider", riderId })
+        });
+        setTimeout(() => loadVisitorStats(), 900);
+      } catch (e) {}
+    }
+
+    function setAdminRiderFilter(filterKey) {
+      adminOrderRiderFilter = filterKey;
+      renderAdminOrdersAndRiders();
+    }
+
+    async function assignOrderToRider(orderId) {
+      if (!isAdminAuthenticated()) { openAdminPasswordModal(); return; }
+      const sel = document.getElementById('assign-select-' + orderId);
+      const btn = document.getElementById('assign-btn-' + orderId);
+      if (!sel) return;
+      const riderId = sel.value;
+      const riderObj = adminRidersList.find(r => r.id === riderId);
+      const riderName = riderObj ? riderObj.name : "";
+
+      if (btn) { btn.disabled = true; btn.innerText = "⏳ ပို့နေသည်..."; }
+      try {
+        await fetch(APPS_SCRIPT_ORDER_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "assignRider",
+            orderId: orderId,
+            riderId: riderId,
+            riderName: riderName
+          })
+        });
+        setTimeout(() => loadVisitorStats(), 900);
+      } catch (e) {
+        if (btn) { btn.disabled = false; btn.innerText = "📌 တာဝန်ပေး"; }
+      }
+    }
+
+    function renderAdminOrdersAndRiders() {
+      // 1. Render Riders Management Cards
+      const ridersEl = document.getElementById('admin-riders-list');
+      if (ridersEl) {
+        if (adminRidersList.length === 0) {
+          ridersEl.innerHTML = `<p class="text-gray-400">ဝန်ထမ်းစာရင်း မရှိသေးပါ။</p>`;
+        } else {
+          ridersEl.innerHTML = adminRidersList.map(r => `
+            <div class="border border-gray-200 rounded-xl p-2.5 flex justify-between items-center gap-2 bg-gray-50/50">
+              <div class="min-w-0">
+                <p class="font-extrabold text-gray-900 truncate">🚚 ${r.id} — ${r.name}</p>
+                <p class="text-[11px] text-gray-500">📞 ${r.phone || 'ဖုန်းမထည့်ရသေး'} | 🔑 PIN: <b class="text-blue-700">${r.pin}</b></p>
+              </div>
+              <div class="flex gap-1 shrink-0">
+                <button type="button" onclick="editRiderInAdmin('${r.id}')" class="bg-amber-100 text-amber-800 px-2 py-1 rounded-lg font-bold text-[11px]">✏️</button>
+                <button type="button" onclick="deleteRiderInAdmin('${r.id}')" class="bg-red-100 text-red-700 px-2 py-1 rounded-lg font-bold text-[11px]">🗑️</button>
+              </div>
+            </div>
+          `).join('');
+        }
+      }
+
+      // 2. Render Today's COD Settlement Summary
+      const codBox = document.getElementById('admin-cod-summary-box');
+      const codList = document.getElementById('admin-cod-summary-list');
+      const activeStats = adminRiderStatsCache.filter(s => s.pendingCount > 0 || s.todayDeliveredCount > 0);
+      if (codBox && codList) {
+        if (activeStats.length > 0) {
+          codBox.classList.remove('hidden');
+          codList.innerHTML = activeStats.map(s => `
+            <div class="bg-white border border-blue-100 rounded-lg p-2 flex justify-between items-center">
+              <div>
+                <p class="font-extrabold text-gray-900">${s.riderId} — ${s.riderName}</p>
+                <p class="text-[10px] text-gray-500">ကျန်: <b class="text-blue-700">${s.pendingCount}</b> | ယနေ့ပြီး: <b class="text-emerald-700">${s.todayDeliveredCount}</b></p>
+              </div>
+              <span class="font-extrabold text-emerald-700 bg-emerald-50 px-2 py-1 rounded-md">${Number(s.todayCodTotal).toLocaleString()} Ks</span>
+            </div>
+          `).join('');
+        } else {
+          codBox.classList.add('hidden');
+        }
+      }
+
+      // 3. Render Filter Pills
+      const filterBar = document.getElementById('admin-rider-filter-bar');
+      const unassignedCount = adminPendingOrdersCache.filter(o => !o.riderId).length;
+      if (filterBar) {
+        const pillCls = (key) => adminOrderRiderFilter === key
+          ? 'bg-pink-600 text-white border-pink-600 font-extrabold'
+          : 'bg-white text-gray-700 border-gray-200 font-bold hover:bg-gray-50';
+
+        let pillsHtml = `
+          <button type="button" onclick="setAdminRiderFilter('ALL')" class="px-2.5 py-1 rounded-full border text-[11px] whitespace-nowrap ${pillCls('ALL')}">📋 အားလုံး (${adminPendingOrdersCache.length})</button>
+          <button type="button" onclick="setAdminRiderFilter('UNASSIGNED')" class="px-2.5 py-1 rounded-full border text-[11px] whitespace-nowrap ${pillCls('UNASSIGNED')}">⚠️ မသတ်မှတ်ရသေး (${unassignedCount})</button>
+        `;
+        adminRiderStatsCache.forEach(s => {
+          if (s.pendingCount > 0 || adminOrderRiderFilter === s.riderId) {
+            pillsHtml += `<button type="button" onclick="setAdminRiderFilter('${s.riderId}')" class="px-2.5 py-1 rounded-full border text-[11px] whitespace-nowrap ${pillCls(s.riderId)}">🚚 ${s.riderName} (${s.pendingCount})</button>`;
+          }
+        });
+        filterBar.innerHTML = pillsHtml;
+      }
+
+      // 4. Render Filtered Active Orders with Rider Assignment Dropdown
+      const pendingOrdersEl = document.getElementById('admin-pending-orders');
+      if (!pendingOrdersEl) return;
+
+      const filteredOrders = adminPendingOrdersCache.filter(o => {
+        if (adminOrderRiderFilter === 'ALL') return true;
+        if (adminOrderRiderFilter === 'UNASSIGNED') return !o.riderId;
+        return o.riderId === adminOrderRiderFilter;
+      });
+
+      if (filteredOrders.length === 0) {
+        pendingOrdersEl.innerHTML = `<p class="py-4 text-gray-400">ရွေးချယ်ထားသော စာရင်းတွင် ပို့ဆောင်ရန် ကျန်ရှိသော အော်ဒါ မရှိပါ။</p>`;
+        return;
+      }
+
+      pendingOrdersEl.innerHTML = filteredOrders.map(o => {
+        let statusBadge = `<span class="bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full text-[10px] font-extrabold">⏳ မသတ်မှတ်ရသေး</span>`;
+        if (o.status === 'ပို့ဆောင်နေပြီ') {
+          statusBadge = `<span class="bg-amber-500 text-white px-2 py-0.5 rounded-full text-[10px] font-extrabold">🚚 ${o.riderName || 'ဝန်ထမ်း'} လာပို့နေပြီ</span>`;
+        } else if (o.riderId) {
+          statusBadge = `<span class="bg-blue-600 text-white px-2 py-0.5 rounded-full text-[10px] font-extrabold">📌 ${o.riderName || o.riderId} တာဝန်ကျ</span>`;
+        }
+
+        const riderOptions = `<option value="">-- ဝန်ထမ်း ရွေးချယ်ရန် --</option>` +
+          adminRidersList.map(r => `<option value="${r.id}" ${o.riderId === r.id ? 'selected' : ''}>${r.id} — ${r.name}</option>`).join('');
+
+        return `
+          <div class="py-3.5 flex flex-col lg:flex-row justify-between lg:items-center gap-3">
+            <div class="space-y-1 flex-1">
+              <div class="flex flex-wrap items-center gap-1.5">
+                <p class="font-extrabold text-gray-900 text-xs sm:text-sm">🧾 ${o.orderId} — ${o.name} (${o.phone})</p>
+                ${statusBadge}
+                <span class="bg-amber-100 text-amber-900 border border-amber-300 px-2 py-0.5 rounded-full text-[10px] font-extrabold">${formatOrderDateTime(o.dateTime)}</span>
+              </div>
+              <p class="text-gray-600 text-[11px]">📍 ${o.address}</p>
+              <p class="text-pink-700 font-bold text-[11px] whitespace-pre-line">${o.itemsText}</p>
+              <p class="text-gray-900 font-extrabold text-xs">💰 စုစုပေါင်း: ${Number(o.grandTotal || 0).toLocaleString()} ကျပ်</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2 shrink-0">
+              <select id="assign-select-${o.orderId}" class="border-2 border-blue-200 rounded-xl px-2.5 py-2 text-xs font-bold bg-blue-50/40 text-gray-800">
+                ${riderOptions}
+              </select>
+              <button type="button" id="assign-btn-${o.orderId}" onclick="assignOrderToRider('${o.orderId}')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-3 py-2 rounded-xl text-xs shadow-sm">
+                📌 တာဝန်ပေး
+              </button>
+              <button type="button" onclick="markOrderDelivered('${o.orderId}')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-2 rounded-xl text-xs shadow-sm">
+                ✅ ပို့ပေးပြီး
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ================= FIREBASE PUSH =================
     async function initFirebasePush(roleTag, allowPrompt = false) {
       try {
         if (!('Notification' in window) || !('serviceWorker' in navigator) || typeof firebase === 'undefined') return null;
-
-        if (!firebase.apps.length) {
-          firebase.initializeApp(FIREBASE_CONFIG);
-        }
+        if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
 
         const messaging = firebase.messaging();
         if (!window.__fcmForegroundBound) {
@@ -828,14 +1288,12 @@
             sessionStorage.setItem(sessionSyncKey, "1");
           }
           const adminBtn = document.getElementById('btn-admin-fcm');
-          if (adminBtn && roleTag === 'admin') {
-            adminBtn.innerText = "✅ ဤဖုန်း Noti ချိတ်ပြီး";
-          }
+          if (adminBtn && roleTag === 'admin') adminBtn.innerText = "✅ ဤဖုန်း Noti ချိတ်ပြီး";
+          const riderBtn = document.getElementById('btn-rider-fcm');
+          if (riderBtn && roleTag.startsWith('rider:')) riderBtn.innerText = "✅ Noti ချိတ်ပြီး";
           return currentToken;
         }
-      } catch (e) {
-        console.error("FCM Init Error:", e);
-      }
+      } catch (e) {}
       return null;
     }
 
@@ -849,18 +1307,12 @@
         refreshAdminAll();
       } else {
         if (btn) btn.innerText = "🔔 ဤဖုန်းကို Noti ချိတ်မည်";
-        alert("⚠️ ဖုန်း Browser Settings တွင် Notification ကို Allow (ခွင့်ပြုသည်) ပေးထားကြောင်း စစ်ဆေးပေးပါ။");
+        alert("⚠️ ဖုန်း Browser Settings တွင် Notification ကို Allow ပေးထားကြောင်း စစ်ဆေးပေးပါ။");
       }
     }
 
     function saveCustomerProfile(name, phone, address) {
-      try {
-        localStorage.setItem('mt_saved_customer_info', JSON.stringify({
-          name: name || '',
-          phone: phone || '',
-          address: address || ''
-        }));
-      } catch (e) {}
+      try { localStorage.setItem('mt_saved_customer_info', JSON.stringify({ name: name || '', phone: phone || '', address: address || '' })); } catch (e) {}
     }
 
     function loadSavedCustomerProfile() {
@@ -872,19 +1324,11 @@
         const phoneEl = document.getElementById('cust-phone');
         const addrEl = document.getElementById('cust-address');
         const badgeEl = document.getElementById('saved-profile-badge');
-
         let hasSaved = false;
         if (nameEl && !nameEl.value && info.name) { nameEl.value = info.name; hasSaved = true; }
         if (phoneEl && !phoneEl.value && info.phone) { phoneEl.value = info.phone; hasSaved = true; }
         if (addrEl && !addrEl.value && info.address) { addrEl.value = info.address; hasSaved = true; }
-
-        if (badgeEl) {
-          if (hasSaved || (info.name && info.phone && info.address)) {
-            badgeEl.classList.remove('hidden');
-          } else {
-            badgeEl.classList.add('hidden');
-          }
-        }
+        if (badgeEl) badgeEl.classList.toggle('hidden', !(hasSaved || (info.name && info.phone && info.address)));
       } catch (e) {}
     }
 
@@ -892,20 +1336,23 @@
       try {
         if ('serviceWorker' in navigator) {
           const reg = await navigator.serviceWorker.ready;
-          if ('periodicSync' in reg) {
-            await reg.periodicSync.register('minitrend-noti-sync', { minInterval: 15 * 60 * 1000 });
-          }
-          if ('sync' in reg) {
-            await reg.sync.register('minitrend-noti-sync');
-          }
+          if ('periodicSync' in reg) await reg.periodicSync.register('minitrend-noti-sync', { minInterval: 15 * 60 * 1000 });
+          if ('sync' in reg) await reg.sync.register('minitrend-noti-sync');
         }
       } catch (e) {}
     }
 
     function setupAutoSystemNotiPermission() {
       const requestOnClick = async () => {
-        const isAdminOpen = document.getElementById('admin-view') && !document.getElementById('admin-view').classList.contains('hidden');
-        const roleTag = isAdminOpen ? 'admin' : 'customer';
+        const isAdminOpen = !document.getElementById('admin-view').classList.contains('hidden');
+        const isDeliveryOpen = !document.getElementById('delivery-view').classList.contains('hidden');
+        let roleTag = 'customer';
+        if (isAdminOpen) roleTag = 'admin';
+        else if (isDeliveryOpen) {
+          const r = getSavedRiderSession();
+          if (!r || !r.id) return;
+          roleTag = 'rider:' + r.id;
+        }
         const token = await initFirebasePush(roleTag, true);
         if (token) {
           registerVPNFreeBackgroundSync();
@@ -921,19 +1368,11 @@
       const parsed = new Date(str);
       if (str.includes('T') && !isNaN(parsed.getTime())) {
         const datePart = parsed.toLocaleDateString('en-CA', { timeZone: 'Asia/Yangon' });
-        const timePart = parsed.toLocaleTimeString('en-US', {
-          timeZone: 'Asia/Yangon',
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit',
-          hour12: true
-        });
+        const timePart = parsed.toLocaleTimeString('en-US', { timeZone: 'Asia/Yangon', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
         return `📅 ${datePart} | ⏰ ${timePart}`;
       }
       const parts = str.split(' ');
-      if (parts.length >= 2) {
-        return `📅 ${parts[0]} | ⏰ ${parts.slice(1).join(' ')}`;
-      }
+      if (parts.length >= 2) return `📅 ${parts[0]} | ⏰ ${parts.slice(1).join(' ')}`;
       return `📅 ${str}`;
     }
 
@@ -945,25 +1384,16 @@
         const osc1 = ctx.createOscillator();
         const osc2 = ctx.createOscillator();
         const gain = ctx.createGain();
-
-        osc1.type = 'sine';
-        osc2.type = 'triangle';
+        osc1.type = 'sine'; osc2.type = 'triangle';
         osc1.frequency.setValueAtTime(880, ctx.currentTime);
         osc1.frequency.setValueAtTime(1174.66, ctx.currentTime + 0.12);
         osc2.frequency.setValueAtTime(440, ctx.currentTime);
         osc2.frequency.setValueAtTime(587.33, ctx.currentTime + 0.12);
-
         gain.gain.setValueAtTime(0.25, ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.55);
-
-        osc1.connect(gain);
-        osc2.connect(gain);
-        gain.connect(ctx.destination);
-
-        osc1.start();
-        osc2.start();
-        osc1.stop(ctx.currentTime + 0.55);
-        osc2.stop(ctx.currentTime + 0.55);
+        osc1.connect(gain); osc2.connect(gain); gain.connect(ctx.destination);
+        osc1.start(); osc2.start();
+        osc1.stop(ctx.currentTime + 0.55); osc2.stop(ctx.currentTime + 0.55);
       } catch (e) {}
     }
 
@@ -972,58 +1402,33 @@
       document.getElementById('push-noti-title').innerText = "🔔 " + (title || "MiniTrend Kids");
       document.getElementById('push-noti-body').innerText = bodyText || "";
       popup.classList.remove('hidden');
-
       playNotiChime();
-
-      if (navigator.vibrate) {
-        navigator.vibrate([250, 120, 250]);
-      }
-
+      if (navigator.vibrate) navigator.vibrate([250, 120, 250]);
       if (pushPopupTimer) clearTimeout(pushPopupTimer);
-      pushPopupTimer = setTimeout(() => {
-        popup.classList.add('hidden');
-      }, 10000);
+      pushPopupTimer = setTimeout(() => { popup.classList.add('hidden'); }, 10000);
 
-      if (!('Notification' in window)) return;
-
-      if (Notification.permission === 'granted') {
-        try {
-          if ('serviceWorker' in navigator) {
-            const reg = await navigator.serviceWorker.ready;
-            if (reg && reg.active && delayMs > 0) {
-              reg.active.postMessage({
-                type: 'SHOW_SYSTEM_NOTI',
-                title: title || 'MiniTrend Kids 🧸',
-                body: bodyText || '',
-                tag: tagId || ('mt-' + Date.now()),
-                delayMs: delayMs
-              });
-              return;
-            }
-            if (reg && reg.showNotification) {
-              await reg.showNotification(title || 'MiniTrend Kids 🧸', {
-                body: bodyText || '',
-                icon: './icon.png?v=3',
-                badge: './badge.png?v=1',
-                tag: tagId || ('mt-' + Date.now()),
-                renotify: true,
-                vibrate: [250, 120, 250],
-                data: { url: window.location.href }
-              });
-              return;
-            }
+      if (!('Notification' in window) || Notification.permission !== 'granted') return;
+      try {
+        if ('serviceWorker' in navigator) {
+          const reg = await navigator.serviceWorker.ready;
+          if (reg && reg.active && delayMs > 0) {
+            reg.active.postMessage({ type: 'SHOW_SYSTEM_NOTI', title: title || 'MiniTrend Kids 🧸', body: bodyText || '', tag: tagId || ('mt-' + Date.now()), delayMs: delayMs });
+            return;
           }
-          new Notification(title || 'MiniTrend Kids 🧸', {
-            body: bodyText || '',
-            icon: './icon.png?v=3'
-          });
-        } catch (e) {}
-      }
+          if (reg && reg.showNotification) {
+            await reg.showNotification(title || 'MiniTrend Kids 🧸', {
+              body: bodyText || '', icon: './icon.png?v=3', badge: './badge.png?v=1',
+              tag: tagId || ('mt-' + Date.now()), renotify: true, vibrate: [250, 120, 250],
+              data: { url: window.location.href }
+            });
+            return;
+          }
+        }
+        new Notification(title || 'MiniTrend Kids 🧸', { body: bodyText || '', icon: './icon.png?v=3' });
+      } catch (e) {}
     }
 
-    function closePushPopup() {
-      document.getElementById('push-noti-popup').classList.add('hidden');
-    }
+    function closePushPopup() { document.getElementById('push-noti-popup').classList.add('hidden'); }
 
     async function checkAndTriggerBroadcastNoti(latestNoti) {
       if (!latestNoti || !latestNoti.id || !latestNoti.message) return;
@@ -1042,71 +1447,47 @@
 
     async function sendOwnerBroadcast(e) {
       e.preventDefault();
-      if (!isAdminAuthenticated()) {
-        openAdminPasswordModal();
-        return;
-      }
+      if (!isAdminAuthenticated()) { openAdminPasswordModal(); return; }
       const title = document.getElementById('broadcast-title').value.trim();
       const message = document.getElementById('broadcast-message').value.trim();
       if (!message) return;
-
       const btn = document.getElementById('btn-send-broadcast');
-      btn.disabled = true;
-      btn.innerText = "⏳ Firebase သို့ ပေးပို့နေပါသည်...";
+      btn.disabled = true; btn.innerText = "⏳ Firebase သို့ ပေးပို့နေပါသည်...";
 
       try {
         await fetch(APPS_SCRIPT_ORDER_URL, {
-          method: "POST",
-          mode: "no-cors",
+          method: "POST", mode: "no-cors",
           headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({
-            action: "sendBroadcast",
-            title: title,
-            message: message
-          })
+          body: JSON.stringify({ action: "sendBroadcast", title: title, message: message })
         });
         document.getElementById('broadcast-message').value = "";
         setTimeout(() => refreshAdminAll(), 1000);
-      } catch (err) {
-        alert("ပေးပို့ရာတွင် အမှားရှိနေပါသည်။");
-      }
+      } catch (err) { alert("ပေးပို့ရာတွင် အမှားရှိနေပါသည်။"); }
 
       btn.disabled = false;
       btn.innerText = "✅ ပေးပို့ပြီးပါပြီ (ဖုန်းများသို့ ရောက်ရှိသွားပါပြီ)";
-      setTimeout(() => {
-        btn.innerText = "🔔 ဝယ်သူများထံ Notification ချက်ချင်းပို့မည်";
-      }, 2500);
+      setTimeout(() => { btn.innerText = "🔔 ဝယ်သူများထံ Notification ချက်ချင်းပို့မည်"; }, 2500);
     }
 
     function getSavedCustomerOrders() {
-      try {
-        return JSON.parse(localStorage.getItem('mt_customer_orders') || '[]');
-      } catch (e) {
-        return [];
-      }
+      try { return JSON.parse(localStorage.getItem('mt_customer_orders') || '[]'); } catch (e) { return []; }
     }
 
-    function saveCustomerOrders(list) {
-      localStorage.setItem('mt_customer_orders', JSON.stringify(list));
-    }
+    function saveCustomerOrders(list) { localStorage.setItem('mt_customer_orders', JSON.stringify(list)); }
 
     async function syncCustomerOrderStatus() {
       const orders = getSavedCustomerOrders();
-
       try {
         const ids = orders.map(o => o.orderId).join(',');
         const res = await fetch(`${APPS_SCRIPT_ORDER_URL}?action=checkOrders&ids=${encodeURIComponent(ids)}&t=${Date.now()}`, { cache: "no-store" });
         const data = await res.json();
         if (data && data.status === 'ok') {
-          if (data.latestNoti) {
-            checkAndTriggerBroadcastNoti(data.latestNoti);
-          }
+          if (data.latestNoti) checkAndTriggerBroadcastNoti(data.latestNoti);
+          if (data.orderStatusMap) customerOrderStatusMap = data.orderStatusMap;
           if (orders.length > 0 && Array.isArray(data.activeOrderIds)) {
             const stillActive = orders.filter(o => data.activeOrderIds.includes(o.orderId));
             saveCustomerOrders(stillActive);
-            if (!document.getElementById('cart-modal').classList.contains('hidden')) {
-              updateCartUI();
-            }
+            if (!document.getElementById('cart-modal').classList.contains('hidden')) updateCartUI();
           }
         }
       } catch (err) {}
@@ -1115,58 +1496,39 @@
     function trackCustomerVisit() {
       if (sessionStorage.getItem('mt_visit_logged')) return;
       sessionStorage.setItem('mt_visit_logged', '1');
-
       const ua = navigator.userAgent || '';
       let device = 'Computer';
       if (/android/i.test(ua)) device = 'Android';
       else if (/iPad|iPhone|iPod/.test(ua)) device = 'iPhone / iPad';
-
       const mode = isStandaloneApp() ? 'App (PWA)' : 'Browser';
-
       fetch(APPS_SCRIPT_ORDER_URL, {
-        method: "POST",
-        mode: "no-cors",
+        method: "POST", mode: "no-cors",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({
-          action: "visit",
-          device: device,
-          mode: mode
-        })
+        body: JSON.stringify({ action: "visit", device: device, mode: mode })
       }).catch(() => {});
     }
 
     async function setupNineSheets() {
-      if (!isAdminAuthenticated()) {
-        openAdminPasswordModal();
-        return;
-      }
+      if (!isAdminAuthenticated()) { openAdminPasswordModal(); return; }
       const btn = document.getElementById('btn-setup-sheets');
-      btn.disabled = true;
-      btn.innerText = "⏳ Sheet (၉) ခု ဆောက်နေပါသည်...";
+      btn.disabled = true; btn.innerText = "⏳ Sheet များ ဆောက်နေပါသည်...";
       try {
         await fetch(APPS_SCRIPT_ORDER_URL, {
-          method: "POST",
-          mode: "no-cors",
+          method: "POST", mode: "no-cors",
           headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({ action: "setupCategorySheets" })
         });
-        alert("✅ Google Sheet ထဲတွင် (ဝမ်းဆက်၊ နွေရာသီဝတ်၊ အင်္ကျီ၊ ဘောင်းဘီ၊ ဦးထုတ်၊ ဖိနပ်၊ မွေးကင်းစလေးများ၊ သင်ကြားရေး၊ ကစားစရာ) Sheet (၉) ခုလုံးကို တည်ဆောက်ပေးပြီးပါပြီ!");
-      } catch (e) {
-        alert("Google Sheet နှင့် ချိတ်ဆက်ရာတွင် အမှားရှိနေပါသည်။");
-      }
-      btn.disabled = false;
-      btn.innerText = "📂 Sheet (၉) ခု အလိုအလျောက်ခွဲမည်";
+        alert("✅ Category Sheet (၉) ခုနှင့် Delivery ဝန်ထမ်း ၁၀ ဦးစာရင်း (Riders) Sheet ကို တည်ဆောက်ပြီးပါပြီ!");
+        setTimeout(() => loadVisitorStats(), 1000);
+      } catch (e) { alert("Google Sheet နှင့် ချိတ်ဆက်ရာတွင် အမှားရှိနေပါသည်။"); }
+      btn.disabled = false; btn.innerText = "📂 Sheet (၉) ခု + Riders ဆောက်မည်";
     }
 
     async function markOrderDelivered(orderId) {
-      if (!isAdminAuthenticated()) {
-        openAdminPasswordModal();
-        return;
-      }
+      if (!isAdminAuthenticated()) { openAdminPasswordModal(); return; }
       try {
         await fetch(APPS_SCRIPT_ORDER_URL, {
-          method: "POST",
-          mode: "no-cors",
+          method: "POST", mode: "no-cors",
           headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({ action: "markDelivered", orderId: orderId })
         });
@@ -1176,26 +1538,12 @@
 
     async function refreshAdminAll() {
       const btn = document.getElementById('btn-refresh-admin');
+      if (btn) { btn.disabled = true; btn.innerText = "⏳ စစ်ဆေးနေသည်..."; }
+      try { localStorage.removeItem('mt_cached_products'); } catch (e) {}
+      await Promise.all([loadVisitorStats(), loadProducts()]);
       if (btn) {
-        btn.disabled = true;
-        btn.innerText = "⏳ စစ်ဆေးနေသည်...";
-      }
-
-      try {
-        localStorage.removeItem('mt_cached_products');
-      } catch (e) {}
-
-      await Promise.all([
-        loadVisitorStats(),
-        loadProducts()
-      ]);
-
-      if (btn) {
-        btn.disabled = false;
-        btn.innerText = "✅ စာရင်းသစ်ရပါပြီ";
-        setTimeout(() => {
-          btn.innerText = "🔄 စာရင်းပြန်စစ်မည်";
-        }, 1800);
+        btn.disabled = false; btn.innerText = "✅ စာရင်းသစ်ရပါပြီ";
+        setTimeout(() => { btn.innerText = "🔄 စာရင်းပြန်စစ်မည်"; }, 1800);
       }
     }
 
@@ -1205,10 +1553,8 @@
       const yesterdayEl = document.getElementById('stat-yesterday');
       const totalEl = document.getElementById('stat-total');
       const listEl = document.getElementById('recent-visitors-list');
-      const pendingOrdersEl = document.getElementById('admin-pending-orders');
       const broadcastInfoEl = document.getElementById('last-broadcast-info');
       const fcmSubBadge = document.getElementById('fcm-sub-badge');
-
       if (!todayEl) return;
 
       try {
@@ -1221,14 +1567,17 @@
         if (fcmSubBadge && stats.fcmSubscribers !== undefined) {
           fcmSubBadge.innerText = `📲 Noti ချိတ်ဆက်ထားသူ: ${stats.fcmSubscribers} ဦး`;
         }
-
         if (stats.latestNoti && stats.latestNoti.message) {
           broadcastInfoEl.classList.remove('hidden');
           broadcastInfoEl.innerHTML = `<b>📌 နောက်ဆုံးပို့ထားသော Notification (${stats.latestNoti.time}):</b><br><span class="text-pink-700 font-bold">${stats.latestNoti.title}</span> — ${stats.latestNoti.message}`;
         }
 
-        if (stats.pendingOrders && stats.pendingOrders.length > 0) {
-          const newestOrder = stats.pendingOrders[0];
+        adminRidersList = stats.riders || [];
+        adminPendingOrdersCache = stats.pendingOrders || [];
+        adminRiderStatsCache = stats.riderStats || [];
+
+        if (adminPendingOrdersCache.length > 0) {
+          const newestOrder = adminPendingOrdersCache[0];
           const lastAdminOrderId = localStorage.getItem('mt_admin_last_order_id');
           if (newestOrder && newestOrder.orderId && lastAdminOrderId !== newestOrder.orderId) {
             localStorage.setItem('mt_admin_last_order_id', newestOrder.orderId);
@@ -1238,28 +1587,9 @@
               newestOrder.orderId
             );
           }
-
-          pendingOrdersEl.innerHTML = stats.pendingOrders.map(o => `
-            <div class="py-3.5 flex flex-col sm:flex-row justify-between sm:items-center gap-2.5">
-              <div class="space-y-1">
-                <div class="flex flex-wrap items-center gap-2">
-                  <p class="font-extrabold text-gray-900 text-xs sm:text-sm">🧾 ${o.orderId} — ${o.name} (${o.phone})</p>
-                  <span class="bg-amber-100 text-amber-900 border border-amber-300 px-2.5 py-0.5 rounded-full text-[11px] font-extrabold shadow-sm">
-                    ${formatOrderDateTime(o.dateTime)}
-                  </span>
-                </div>
-                <p class="text-gray-600 text-[11px]">📍 ${o.address}</p>
-                <p class="text-pink-700 font-bold text-[11px] whitespace-pre-line">${o.itemsText}</p>
-                <p class="text-gray-900 font-extrabold text-xs">💰 စုစုပေါင်း: ${Number(o.grandTotal || 0).toLocaleString()} ကျပ်</p>
-              </div>
-              <button type="button" onclick="markOrderDelivered('${o.orderId}')" class="self-start sm:self-center bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3.5 py-2 rounded-xl text-xs shadow-sm shrink-0">
-                ✅ ပို့ပေးပြီး (Delivered)
-              </button>
-            </div>
-          `).join('');
-        } else {
-          pendingOrdersEl.innerHTML = `<p class="py-3 text-gray-400">လက်ရှိ ပို့ဆောင်ရန် ကျန်ရှိသော အော်ဒါ မရှိပါ။</p>`;
         }
+
+        renderAdminOrdersAndRiders();
 
         if (stats.recent && stats.recent.length > 0) {
           listEl.innerHTML = stats.recent.map(r => `
@@ -1278,13 +1608,12 @@
           listEl.innerHTML = `<p class="py-3 text-gray-400">ဝင်ကြည့်သူ မှတ်တမ်း မရှိသေးပါ။</p>`;
         }
       } catch (err) {
-        todayEl.innerText = "0 ဦး";
-        yesterdayEl.innerText = "0 ဦး";
-        totalEl.innerText = "0 ဦး";
+        todayEl.innerText = "0 ဦး"; yesterdayEl.innerText = "0 ဦး"; totalEl.innerText = "0 ဦး";
         listEl.innerHTML = `<p class="py-3 text-red-500">Apps Script တွင် New Version Deploy လုပ်ပြီးကြောင်း စစ်ဆေးပေးပါ။</p>`;
       }
     }
 
+    // ================= STOREFRONT & PRODUCTS =================
     function normalizeCategory(raw) {
       const val = (raw || '').toString().trim().toLowerCase();
       if (!val) return 'sets';
@@ -1301,9 +1630,7 @@
     }
 
     function shortSizeLabel(sizeStr) {
-      return sizeStr
-        .replace('၆ လ - ၁ နှစ်', '၆လ-၁နှစ်')
-        .replace('၁ နှစ် - ၂ နှစ်', '၁-၂ နှစ်');
+      return sizeStr.replace('၆ လ - ၁ နှစ်', '၆လ-၁နှစ်').replace('၁ နှစ် - ၂ နှစ်', '၁-၂ နှစ်');
     }
 
     function isAndroidInAppBrowser() {
@@ -1328,25 +1655,15 @@
     }
 
     async function triggerPWAInstall() {
-      if (window.__deferredInstallPrompt) {
-        await runNativeInstallPrompt();
-        return;
-      }
-
+      if (window.__deferredInstallPrompt) { await runNativeInstallPrompt(); return; }
       if (isAndroidInAppBrowser()) {
         window.location.href = "intent://kflowcreated-stack.github.io/minitrend-kids/?role=customer#Intent;scheme=https;package=com.android.chrome;end";
         return;
       }
-
       const btn = document.getElementById('pwa-install-btn');
       if (btn) btn.innerHTML = '<span>⏳ ပြင်ဆင်နေပါသည်...</span>';
       window.__pendingAutoInstall = true;
-
-      setTimeout(() => {
-        if (window.__pendingAutoInstall) {
-          if (btn) btn.innerHTML = '<span>📲 App ဒေါင်းမည်</span>';
-        }
-      }, 15000);
+      setTimeout(() => { if (window.__pendingAutoInstall && btn) btn.innerHTML = '<span>📲 App ဒေါင်းမည်</span>'; }, 15000);
     }
 
     let lastBackPressTime = 0;
@@ -1354,13 +1671,9 @@
 
     function showExitToast() {
       const toast = document.getElementById('exit-toast');
-      toast.classList.remove('opacity-0');
-      toast.classList.add('opacity-100');
+      toast.classList.remove('opacity-0'); toast.classList.add('opacity-100');
       if (toastTimer) clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => {
-        toast.classList.remove('opacity-100');
-        toast.classList.add('opacity-0');
-      }, 2000);
+      toastTimer = setTimeout(() => { toast.classList.remove('opacity-100'); toast.classList.add('opacity-0'); }, 2000);
     }
 
     function closeAllModalsUI() {
@@ -1377,31 +1690,21 @@
     }
 
     function pushModalHistory(modalName) {
-      if (!history.state || history.state.modal !== modalName) {
-        history.pushState({ modal: modalName }, "", "");
-      }
+      if (!history.state || history.state.modal !== modalName) history.pushState({ modal: modalName }, "", "");
     }
 
     window.addEventListener('popstate', function () {
-      const isCartOpen = !document.getElementById('cart-modal').classList.contains('hidden');
-      const isSizeOpen = !document.getElementById('size-calc-modal').classList.contains('hidden');
-      const isLinkOpen = !document.getElementById('link-modal').classList.contains('hidden');
-      const isLightboxOpen = !document.getElementById('image-lightbox-modal').classList.contains('hidden');
-      const isAdminAuthOpen = !document.getElementById('admin-password-modal').classList.contains('hidden');
-
-      if (isCartOpen || isSizeOpen || isLinkOpen || isLightboxOpen || isAdminAuthOpen) {
-        closeAllModalsUI();
-        return;
-      }
+      const isAnyOpen =
+        !document.getElementById('cart-modal').classList.contains('hidden') ||
+        !document.getElementById('size-calc-modal').classList.contains('hidden') ||
+        !document.getElementById('link-modal').classList.contains('hidden') ||
+        !document.getElementById('image-lightbox-modal').classList.contains('hidden') ||
+        !document.getElementById('admin-password-modal').classList.contains('hidden');
+      if (isAnyOpen) { closeAllModalsUI(); return; }
 
       const now = Date.now();
-      if (now - lastBackPressTime < 2000) {
-        history.back();
-      } else {
-        lastBackPressTime = now;
-        showExitToast();
-        history.pushState({ page: 'home_guard' }, "", "");
-      }
+      if (now - lastBackPressTime < 2000) history.back();
+      else { lastBackPressTime = now; showExitToast(); history.pushState({ page: 'home_guard' }, "", ""); }
     });
 
     function openImageLightbox(productId) {
@@ -1416,7 +1719,6 @@
       document.getElementById('lightbox-caption').innerText = product.name;
       document.getElementById('lightbox-color-badge').innerText = `ရွေးချယ်ထားသော အရောင်: ${activeVariant.colorName} | အရွယ်: ${activeSize}`;
       document.getElementById('lightbox-price-badge').innerText = `${currentPrice.toLocaleString()} Ks`;
-
       const defaultDesc = `အရည်အသွေးကောင်းမွန်ပြီး ကလေးငယ်များ သက်တောင့်သက်သာ ဝတ်ဆင်အသုံးပြုနိုင်ပါသည်။ ရရှိနိုင်သော အရောင် (${product.variants.map(v => v.colorName).join('၊ ')}) ရှိပါသည်။`;
       document.getElementById('lightbox-description').innerText = product.description || defaultDesc;
 
@@ -1426,25 +1728,16 @@
 
     function closeImageLightbox() {
       document.getElementById('image-lightbox-modal').classList.add('hidden');
-      if (history.state && history.state.modal === 'lightbox') {
-        history.back();
-      }
+      if (history.state && history.state.modal === 'lightbox') history.back();
     }
 
     function parseCSVLine(line) {
-      const result = [];
-      let current = '';
-      let inQuotes = false;
+      const result = []; let current = ''; let inQuotes = false;
       for (let i = 0; i < line.length; i++) {
         const char = line[i];
-        if (char === '"') {
-          inQuotes = !inQuotes;
-        } else if (char === ',' && !inQuotes) {
-          result.push(current.trim());
-          current = '';
-        } else {
-          current += char;
-        }
+        if (char === '"') inQuotes = !inQuotes;
+        else if (char === ',' && !inQuotes) { result.push(current.trim()); current = ''; }
+        else current += char;
       }
       result.push(current.trim());
       return result;
@@ -1458,45 +1751,24 @@
 
     function buildProductFromRow(c, indexId) {
       const p6m1y = parseNum(c[3], 0);
-      const p12y  = parseNum(c[4], p6m1y);
-      const p23y  = parseNum(c[5], p6m1y);
-      const p45y  = parseNum(c[6], p6m1y);
-      const p67y  = parseNum(c[7], p6m1y);
-      const p89y  = parseNum(c[8], p6m1y);
-
       const variants = [];
-      if (c[9] && c[11])  variants.push({ colorName: c[9],  image: c[11] });
+      if (c[9] && c[11]) variants.push({ colorName: c[9], image: c[11] });
       if (c[12] && c[13]) variants.push({ colorName: c[12], image: c[13] });
       if (c[14] && c[15]) variants.push({ colorName: c[14], image: c[15] });
       if (c[16] && c[17]) variants.push({ colorName: c[16], image: c[17] });
-
-      if (variants.length === 0) {
-        variants.push({ colorName: "မူရင်းအရောင်", image: "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=500&q=80" });
-      }
-
-      const origPriceVal = parseNum(c[18], 0);
-
-      const s6m1y = parseNum(c[19], 0);
-      const s12y  = parseNum(c[20], 0);
-      const s23y  = parseNum(c[21], 0);
-      const s45y  = parseNum(c[22], 0);
-      const s67y  = parseNum(c[23], 0);
-      const s89y  = parseNum(c[24], 0);
+      if (variants.length === 0) variants.push({ colorName: "မူရင်းအရောင်", image: "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=500&q=80" });
 
       const stocksObj = {
-        "၆ လ - ၁ နှစ်": s6m1y,
-        "၁ နှစ် - ၂ နှစ်": s12y,
-        "၂ - ၃ နှစ်": s23y,
-        "၄ - ၅ နှစ်": s45y,
-        "၆ - ၇ နှစ်": s67y,
-        "၈ - ၉ နှစ်": s89y
+        "၆ လ - ၁ နှစ်": parseNum(c[19], 0),
+        "၁ နှစ် - ၂ နှစ်": parseNum(c[20], 0),
+        "၂ - ၃ နှစ်": parseNum(c[21], 0),
+        "၄ - ၅ နှစ်": parseNum(c[22], 0),
+        "၆ - ၇ နှစ်": parseNum(c[23], 0),
+        "၈ - ၉ နှစ်": parseNum(c[24], 0)
       };
 
       const firstAvailableSize = AGE_SIZES.find(sz => stocksObj[sz] > 0) || AGE_SIZES[0];
-      if (!selectedSizes[indexId]) {
-        selectedSizes[indexId] = firstAvailableSize;
-      }
-
+      if (!selectedSizes[indexId]) selectedSizes[indexId] = firstAvailableSize;
       const descText = (c[25] && c[25].trim() !== '') ? c[25].trim() : ((c[10] && !c[10].startsWith('http')) ? c[10].trim() : '');
 
       return {
@@ -1505,14 +1777,14 @@
         category: normalizeCategory(c[1]),
         trending: (c[2] || '').toString().toUpperCase() === 'TRUE',
         description: descText,
-        originalPrice: origPriceVal,
+        originalPrice: parseNum(c[18], 0),
         prices: {
           "၆ လ - ၁ နှစ်": p6m1y,
-          "၁ နှစ် - ၂ နှစ်": p12y,
-          "၂ - ၃ နှစ်": p23y,
-          "၄ - ၅ နှစ်": p45y,
-          "၆ - ၇ နှစ်": p67y,
-          "၈ - ၉ နှစ်": p89y
+          "၁ နှစ် - ၂ နှစ်": parseNum(c[4], p6m1y),
+          "၂ - ၃ နှစ်": parseNum(c[5], p6m1y),
+          "၄ - ၅ နှစ်": parseNum(c[6], p6m1y),
+          "၆ - ၇ နှစ်": parseNum(c[7], p6m1y),
+          "၈ - ၉ နှစ်": parseNum(c[8], p6m1y)
         },
         stocks: stocksObj,
         variants
@@ -1521,7 +1793,6 @@
 
     async function loadProducts() {
       const loader = document.getElementById('loading-indicator');
-
       try {
         const cachedRaw = localStorage.getItem('mt_cached_products');
         if (cachedRaw) {
@@ -1533,21 +1804,17 @@
               if (!selectedSizes[p.id]) selectedSizes[p.id] = firstAvail;
             });
             loader.classList.add('hidden');
-            renderProducts();
-            renderAdminProducts();
+            renderProducts(); renderAdminProducts();
           }
         }
       } catch (e) {}
 
       let loadedItems = [];
-
       try {
         const res = await fetch(`${APPS_SCRIPT_ORDER_URL}?action=getProducts&t=${Date.now()}`, { cache: "no-store" });
         const data = await res.json();
         if (data && data.status === 'ok') {
-          if (data.latestNoti) {
-            checkAndTriggerBroadcastNoti(data.latestNoti);
-          }
+          if (data.latestNoti) checkAndTriggerBroadcastNoti(data.latestNoti);
           if (Array.isArray(data.rows) && data.rows.length > 0) {
             loadedItems = data.rows.map((r, idx) => buildProductFromRow(r, idx + 1));
           }
@@ -1562,9 +1829,7 @@
           const lines = csvText.split(/\r?\n/).filter(l => l.trim() !== '');
           for (let i = 1; i < lines.length; i++) {
             const c = parseCSVLine(lines[i]);
-            if (c[0]) {
-              loadedItems.push(buildProductFromRow(c, i));
-            }
+            if (c[0]) loadedItems.push(buildProductFromRow(c, i));
           }
         } catch (err) {}
       }
@@ -1577,8 +1842,7 @@
       }
 
       loader.classList.add('hidden');
-      renderProducts();
-      renderAdminProducts();
+      renderProducts(); renderAdminProducts();
     }
 
     function init() {
@@ -1593,12 +1857,14 @@
 
       const params = new URLSearchParams(window.location.search);
       const role = params.get('role') || window.location.hash.replace('#', '');
-      const activeRole = role === 'admin' ? 'admin' : 'customer';
 
       if (role === 'customer') {
         document.getElementById('top-role-bar').classList.add('hidden');
         switchRole('customer');
         trackCustomerVisit();
+      } else if (role === 'delivery') {
+        document.getElementById('top-role-bar').classList.add('hidden');
+        switchRole('delivery');
       } else if (role === 'admin') {
         switchRole('admin');
       } else {
@@ -1608,19 +1874,26 @@
 
       if ('Notification' in window && Notification.permission === 'granted') {
         registerVPNFreeBackgroundSync();
-        if (activeRole === 'admin' && isAdminAuthenticated()) {
+        if (role === 'admin' && isAdminAuthenticated()) {
           initFirebasePush('admin', false);
+        } else if (role === 'delivery') {
+          const savedR = getSavedRiderSession();
+          if (savedR && savedR.id) initFirebasePush('rider:' + savedR.id, false);
         } else {
           initFirebasePush('customer', false);
         }
       }
 
-      syncCustomerOrderStatus();
-      loadProducts();
+      if (role !== 'delivery') {
+        syncCustomerOrderStatus();
+        loadProducts();
+      }
 
       setInterval(() => {
         if (!document.getElementById('admin-view').classList.contains('hidden')) {
           loadVisitorStats();
+        } else if (!document.getElementById('delivery-view').classList.contains('hidden')) {
+          loadDeliveryDashboard(true);
         } else {
           syncCustomerOrderStatus();
           if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
@@ -1630,90 +1903,45 @@
       }, 20000);
     }
 
-    function openSizeModal() {
-      document.getElementById('size-calc-modal').classList.remove('hidden');
-      pushModalHistory('size');
-    }
-
+    function openSizeModal() { document.getElementById('size-calc-modal').classList.remove('hidden'); pushModalHistory('size'); }
     function closeSizeModal() {
       document.getElementById('size-calc-modal').classList.add('hidden');
-      if (history.state && history.state.modal === 'size') {
-        history.back();
-      }
+      if (history.state && history.state.modal === 'size') history.back();
     }
 
     function toggleHeightInputMode() {
       const unit = document.getElementById('height-unit').value;
-      if (unit === 'ft') {
-        document.getElementById('kid-height-cm').classList.add('hidden');
-        document.getElementById('kid-height-ft-box').classList.remove('hidden');
-      } else {
-        document.getElementById('kid-height-ft-box').classList.add('hidden');
-        document.getElementById('kid-height-cm').classList.remove('hidden');
-      }
+      document.getElementById('kid-height-cm').classList.toggle('hidden', unit === 'ft');
+      document.getElementById('kid-height-ft-box').classList.toggle('hidden', unit !== 'ft');
     }
 
     function calculateKidSize(e) {
       e.preventDefault();
-
       const rawAge = parseFloat(document.getElementById('kid-age').value) || 0;
       const ageUnit = document.getElementById('age-unit').value;
       const ageMonths = ageUnit === 'years' ? rawAge * 12 : rawAge;
-
-      let ageIndex = 0;
-      if (ageMonths <= 12) ageIndex = 0;
-      else if (ageMonths <= 24) ageIndex = 1;
-      else if (ageMonths <= 36) ageIndex = 2;
-      else if (ageMonths <= 60) ageIndex = 3;
-      else if (ageMonths <= 84) ageIndex = 4;
-      else ageIndex = 5;
+      let ageIndex = ageMonths <= 12 ? 0 : ageMonths <= 24 ? 1 : ageMonths <= 36 ? 2 : ageMonths <= 60 ? 3 : ageMonths <= 84 ? 4 : 5;
 
       let weight = parseFloat(document.getElementById('kid-weight').value) || 0;
-      const wUnit = document.getElementById('weight-unit').value;
-      if (wUnit === 'lb') {
-        weight = weight * 0.453592;
-      }
-
-      let weightIndex = 0;
-      if (weight <= 9.5) weightIndex = 0;
-      else if (weight <= 12) weightIndex = 1;
-      else if (weight <= 14.5) weightIndex = 2;
-      else if (weight <= 19) weightIndex = 3;
-      else if (weight <= 24.5) weightIndex = 4;
-      else weightIndex = 5;
+      if (document.getElementById('weight-unit').value === 'lb') weight *= 0.453592;
+      let weightIndex = weight <= 9.5 ? 0 : weight <= 12 ? 1 : weight <= 14.5 ? 2 : weight <= 19 ? 3 : weight <= 24.5 ? 4 : 5;
 
       let heightCm = 0;
-      const hUnit = document.getElementById('height-unit').value;
-      if (hUnit === 'ft') {
-        const ft = parseFloat(document.getElementById('kid-height-ft').value) || 0;
-        const inch = parseFloat(document.getElementById('kid-height-in').value) || 0;
-        heightCm = (ft * 30.48) + (inch * 2.54);
+      if (document.getElementById('height-unit').value === 'ft') {
+        heightCm = ((parseFloat(document.getElementById('kid-height-ft').value) || 0) * 30.48) + ((parseFloat(document.getElementById('kid-height-in').value) || 0) * 2.54);
       } else {
         heightCm = parseFloat(document.getElementById('kid-height-cm').value) || 0;
       }
+      let heightIndex = heightCm <= 78 ? 0 : heightCm <= 88 ? 1 : heightCm <= 98 ? 2 : heightCm <= 112 ? 3 : heightCm <= 125 ? 4 : 5;
 
-      let heightIndex = 0;
-      if (heightCm <= 78) heightIndex = 0;
-      else if (heightCm <= 88) heightIndex = 1;
-      else if (heightCm <= 98) heightIndex = 2;
-      else if (heightCm <= 112) heightIndex = 3;
-      else if (heightCm <= 125) heightIndex = 4;
-      else heightIndex = 5;
-
-      const finalIndex = Math.max(ageIndex, weightIndex, heightIndex);
-      const matchedSize = AGE_SIZES[finalIndex] || "၂ - ၃ နှစ်";
-
+      const matchedSize = AGE_SIZES[Math.max(ageIndex, weightIndex, heightIndex)] || "၂ - ၃ နှစ်";
       recommendedSizeFilter = matchedSize;
-      products.forEach(p => {
-        selectedSizes[p.id] = matchedSize;
-      });
-
+      products.forEach(p => { selectedSizes[p.id] = matchedSize; });
       const ageText = ageUnit === 'years' ? `${rawAge} နှစ်` : `${rawAge} လ`;
       document.getElementById('rec-size-badge').innerText = matchedSize;
       document.getElementById('rec-size-desc').innerText = `ကလေးအသက် (${ageText})၊ အလေးချိန်နှင့် အရပ်အလိုက် ရွေးထုတ်ထားပါသည်။`;
       document.getElementById('recommended-size-banner').classList.remove('hidden');
-      closeSizeModal();
-      renderProducts();
+      closeSizeModal(); renderProducts();
     }
 
     function clearSizeFilter() {
@@ -1723,43 +1951,35 @@
     }
 
     function silentCopy(text) {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).catch(() => legacyCopy(text));
-      } else {
-        legacyCopy(text);
-      }
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).catch(() => legacyCopy(text));
+      else legacyCopy(text);
     }
 
     function legacyCopy(text) {
-      const temp = document.createElement('textarea');
-      temp.value = text;
-      document.body.appendChild(temp);
-      temp.select();
-      document.execCommand('copy');
-      document.body.removeChild(temp);
+      const temp = document.createElement('textarea'); temp.value = text;
+      document.body.appendChild(temp); temp.select(); document.execCommand('copy'); document.body.removeChild(temp);
     }
 
-    function copyViberNumber() {
-      silentCopy(OWNER_DISPLAY_PHONE);
-      alert('Viber နံပါတ် (09942739543) ကို Copy ကူးပြီးပါပြီ!');
-    }
+    function copyViberNumber() { silentCopy(OWNER_DISPLAY_PHONE); alert('Viber နံပါတ် (09942739543) ကို Copy ကူးပြီးပါပြီ!'); }
 
     function switchRole(role) {
       if (role === 'admin') {
-        if (isAdminAuthenticated()) {
-          activateAdminView();
-        } else {
+        if (isAdminAuthenticated()) activateAdminView();
+        else {
           document.getElementById('admin-view').classList.add('hidden');
+          document.getElementById('delivery-view').classList.add('hidden');
           document.getElementById('customer-view').classList.remove('hidden');
           openAdminPasswordModal();
         }
+      } else if (role === 'delivery') {
+        activateDeliveryView();
       } else {
         document.getElementById('admin-view').classList.add('hidden');
+        document.getElementById('delivery-view').classList.add('hidden');
         document.getElementById('customer-view').classList.remove('hidden');
         updateRoleButtonsUI('customer');
-        if ('Notification' in window && Notification.permission === 'granted') {
-          initFirebasePush('customer', false);
-        }
+        if (products.length === 0) loadProducts();
+        if ('Notification' in window && Notification.permission === 'granted') initFirebasePush('customer', false);
         syncCustomerOrderStatus();
       }
     }
@@ -1767,24 +1987,15 @@
     function setCategory(cat) {
       currentCategory = cat;
       document.querySelectorAll('.cat-btn').forEach(btn => {
-        if (btn.dataset.cat === cat) {
-          btn.className = "cat-btn bg-pink-600 text-white px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap shadow-sm";
-        } else {
-          btn.className = "cat-btn bg-white text-gray-700 border px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap";
-        }
+        btn.className = btn.dataset.cat === cat
+          ? "cat-btn bg-pink-600 text-white px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap shadow-sm"
+          : "cat-btn bg-white text-gray-700 border px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap";
       });
       renderProducts();
     }
 
-    function selectSize(productId, size) {
-      selectedSizes[productId] = size;
-      renderProducts();
-    }
-
-    function selectColor(productId, colorIdx) {
-      selectedColors[productId] = colorIdx;
-      renderProducts();
-    }
+    function selectSize(productId, size) { selectedSizes[productId] = size; renderProducts(); }
+    function selectColor(productId, colorIdx) { selectedColors[productId] = colorIdx; renderProducts(); }
 
     function renderProducts() {
       const search = document.getElementById('search-input').value.toLowerCase();
@@ -1806,14 +2017,10 @@
         const currentPrice = (p.prices && p.prices[activeSize]) ? p.prices[activeSize] : 0;
         const currentStock = (p.stocks && p.stocks[activeSize] !== undefined) ? p.stocks[activeSize] : 0;
         const totalAllSizesStock = AGE_SIZES.reduce((sum, sz) => sum + ((p.stocks && p.stocks[sz]) || 0), 0);
-
         const basePrice = (p.prices && p.prices["၆ လ - ၁ နှစ်"]) ? p.prices["၆ လ - ၁ နှစ်"] : currentPrice;
-        const priceDiff = currentPrice - basePrice;
-        const displayOriginalPrice = (p.originalPrice && p.originalPrice > basePrice) ? (p.originalPrice + priceDiff) : 0;
-
+        const displayOriginalPrice = (p.originalPrice && p.originalPrice > basePrice) ? (p.originalPrice + (currentPrice - basePrice)) : 0;
         const isSizeSoldOut = currentStock <= 0;
         const isEntireProductSoldOut = totalAllSizesStock <= 0;
-
         const variants = p.variants;
         const activeColorIdx = selectedColors[p.id] !== undefined ? selectedColors[p.id] : 0;
         const activeVariant = variants[activeColorIdx] || variants[0];
@@ -1823,60 +2030,34 @@
             <div>
               <div onclick="openImageLightbox(${p.id})" class="relative h-40 sm:h-60 bg-gray-100 cursor-zoom-in group overflow-hidden">
                 <img src="${activeVariant.image}" alt="${p.name}" class="w-full h-full object-cover object-top transition-all duration-300 group-hover:scale-105 ${isEntireProductSoldOut ? 'grayscale' : ''}">
-                
-                ${isEntireProductSoldOut 
+                ${isEntireProductSoldOut
                   ? '<div class="absolute inset-0 bg-black/55 flex items-center justify-center"><span class="bg-red-600 text-white font-extrabold px-2.5 py-1 rounded-full text-[10px] shadow-lg">❌ Sold Out</span></div>'
-                  : (p.trending ? '<span class="absolute top-1.5 left-1.5 bg-rose-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow">🔥 Trending</span>' : '')
-                }
-
-                ${(!isEntireProductSoldOut && displayOriginalPrice > currentPrice) 
-                  ? `<span class="absolute top-1.5 right-1.5 bg-amber-400 text-gray-900 text-[9px] font-extrabold px-1.5 py-0.5 rounded-full shadow">🏷️ Sale</span>` 
-                  : ''
-                }
-
+                  : (p.trending ? '<span class="absolute top-1.5 left-1.5 bg-rose-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow">🔥 Trending</span>' : '')}
+                ${(!isEntireProductSoldOut && displayOriginalPrice > currentPrice) ? '<span class="absolute top-1.5 right-1.5 bg-amber-400 text-gray-900 text-[9px] font-extrabold px-1.5 py-0.5 rounded-full shadow">🏷️ Sale</span>' : ''}
                 <span class="absolute bottom-1 right-1.5 bg-black/65 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full max-w-[48%] truncate">${activeVariant.colorName} 🔍</span>
-                
-                <span class="absolute bottom-1 left-1.5 ${isSizeSoldOut ? 'bg-red-600 text-white' : 'bg-white/95 text-emerald-700'} text-[9px] font-extrabold px-1.5 py-0.5 rounded-full shadow-sm">
-                  ${isSizeSoldOut ? `❌ ကုန်` : `လက်ကျန်: ${currentStock}`}
-                </span>
+                <span class="absolute bottom-1 left-1.5 ${isSizeSoldOut ? 'bg-red-600 text-white' : 'bg-white/95 text-emerald-700'} text-[9px] font-extrabold px-1.5 py-0.5 rounded-full shadow-sm">${isSizeSoldOut ? '❌ ကုန်' : `လက်ကျန်: ${currentStock}`}</span>
               </div>
-
               <div class="p-1.5 sm:p-3">
                 <h3 onclick="openImageLightbox(${p.id})" class="font-bold text-gray-800 text-[11px] sm:text-sm truncate leading-tight cursor-pointer hover:text-pink-600">${p.name}</h3>
-                
                 <div class="flex items-baseline gap-1 mb-1">
                   <span class="text-pink-600 font-extrabold text-xs sm:text-base">${currentPrice.toLocaleString()} Ks</span>
-                  ${displayOriginalPrice > currentPrice 
-                    ? `<span class="text-gray-400 line-through text-[9px] sm:text-xs font-bold">${displayOriginalPrice.toLocaleString()}</span>` 
-                    : ''
-                  }
+                  ${displayOriginalPrice > currentPrice ? `<span class="text-gray-400 line-through text-[9px] sm:text-xs font-bold">${displayOriginalPrice.toLocaleString()}</span>` : ''}
                 </div>
-
                 <div class="flex items-center gap-1 mb-1 overflow-x-auto no-scrollbar">
-                  ${variants.map((v, idx) => `
-                    <button type="button" onclick="selectColor(${p.id}, ${idx})" class="px-1.5 py-0.5 rounded-full border text-[9px] sm:text-[11px] font-bold whitespace-nowrap transition ${activeColorIdx === idx ? 'border-pink-600 bg-pink-600 text-white' : 'border-gray-200 bg-gray-50 text-gray-700'}">
-                      ${v.colorName}
-                    </button>
-                  `).join('')}
+                  ${variants.map((v, idx) => `<button type="button" onclick="selectColor(${p.id}, ${idx})" class="px-1.5 py-0.5 rounded-full border text-[9px] sm:text-[11px] font-bold whitespace-nowrap transition ${activeColorIdx === idx ? 'border-pink-600 bg-pink-600 text-white' : 'border-gray-200 bg-gray-50 text-gray-700'}">${v.colorName}</button>`).join('')}
                 </div>
-
                 <div class="grid grid-cols-3 gap-0.5">
                   ${AGE_SIZES.map(s => {
-                    const szStock = (p.stocks && p.stocks[s] !== undefined) ? p.stocks[s] : 0;
-                    const isOut = szStock <= 0;
-                    return `
-                      <button type="button" onclick="selectSize(${p.id}, '${s}')" class="px-0.5 py-0.5 text-[9px] sm:text-[10px] rounded border font-bold transition text-center truncate ${activeSize === s ? 'bg-pink-600 text-white border-pink-600' : (isOut ? 'bg-gray-100 text-gray-300 border-gray-100 line-through' : 'bg-gray-50 text-gray-700')}">${shortSizeLabel(s)}</button>
-                    `;
+                    const isOut = ((p.stocks && p.stocks[s]) || 0) <= 0;
+                    return `<button type="button" onclick="selectSize(${p.id}, '${s}')" class="px-0.5 py-0.5 text-[9px] sm:text-[10px] rounded border font-bold transition text-center truncate ${activeSize === s ? 'bg-pink-600 text-white border-pink-600' : (isOut ? 'bg-gray-100 text-gray-300 border-gray-100 line-through' : 'bg-gray-50 text-gray-700')}">${shortSizeLabel(s)}</button>`;
                   }).join('')}
                 </div>
               </div>
             </div>
-
             <div class="px-1.5 pb-1.5 sm:px-3 sm:pb-3">
               ${isSizeSoldOut
                 ? `<button disabled class="w-full bg-gray-200 text-gray-500 font-bold py-1 sm:py-2 rounded-lg text-[10px] sm:text-xs cursor-not-allowed">❌ ပစ္စည်းကုန်ပါပြီ</button>`
-                : `<button onclick="addToCart(${p.id})" class="w-full bg-gray-900 hover:bg-pink-600 active:scale-95 text-white font-bold py-1 sm:py-2 rounded-lg text-[10px] sm:text-xs transition">+ ခြင်းတောင်းထဲထည့်</button>`
-              }
+                : `<button onclick="addToCart(${p.id})" class="w-full bg-gray-900 hover:bg-pink-600 active:scale-95 text-white font-bold py-1 sm:py-2 rounded-lg text-[10px] sm:text-xs transition">+ ခြင်းတောင်းထဲထည့်</button>`}
             </div>
           </div>
         `;
@@ -1886,53 +2067,28 @@
     function addToCart(productId) {
       const product = products.find(p => p.id === productId);
       if (!product) return;
-
       const size = selectedSizes[productId] || "၆ လ - ၁ နှစ်";
       const availableSizeStock = (product.stocks && product.stocks[size] !== undefined) ? product.stocks[size] : 0;
-      if (availableSizeStock <= 0) {
-        alert(`ရွေးချယ်ထားသော (${size}) အရွယ်အစား ပစ္စည်းကုန်သွားပါပြီခင်ဗျာ။`);
-        return;
-      }
+      if (availableSizeStock <= 0) { alert(`ရွေးချယ်ထားသော (${size}) အရွယ်အစား ပစ္စည်းကုန်သွားပါပြီခင်ဗျာ။`); return; }
 
       const unitPrice = (product.prices && product.prices[size]) ? product.prices[size] : 0;
-      const variants = product.variants;
       const colorIdx = selectedColors[productId] !== undefined ? selectedColors[productId] : 0;
-      const chosenVariant = variants[colorIdx] || variants[0];
-
+      const chosenVariant = product.variants[colorIdx] || product.variants[0];
       const currentInCartSizeQty = cart.filter(item => item.id === productId && item.size === size).reduce((s, i) => s + i.qty, 0);
-      if (currentInCartSizeQty + 1 > availableSizeStock) {
-        alert(`(${size}) အရွယ်အစားအတွက် လက်ကျန် (${availableSizeStock} ခု) သာ ကျန်ရှိပါတော့သည်ခင်ဗျာ။`);
-        return;
-      }
+      if (currentInCartSizeQty + 1 > availableSizeStock) { alert(`(${size}) အရွယ်အစားအတွက် လက်ကျန် (${availableSizeStock} ခု) သာ ကျန်ရှိပါတော့သည်ခင်ဗျာ။`); return; }
 
       const existing = cart.find(item => item.id === productId && item.size === size && item.colorName === chosenVariant.colorName);
-      if (existing) {
-        existing.qty += 1;
-      } else {
-        cart.push({
-          id: product.id,
-          name: product.name,
-          size: size,
-          colorName: chosenVariant.colorName,
-          image: chosenVariant.image,
-          price: unitPrice,
-          qty: 1
-        });
-      }
+      if (existing) existing.qty += 1;
+      else cart.push({ id: product.id, name: product.name, size, colorName: chosenVariant.colorName, image: chosenVariant.image, price: unitPrice, qty: 1 });
       document.getElementById('order-confirm-note').classList.add('hidden');
       document.getElementById('viber-action-box').classList.add('hidden');
       updateCartUI();
     }
 
-    function removeFromCart(index) {
-      cart.splice(index, 1);
-      updateCartUI();
-    }
+    function removeFromCart(index) { cart.splice(index, 1); updateCartUI(); }
 
     function updateCartUI() {
-      const totalCount = cart.reduce((sum, item) => sum + item.qty, 0);
-      document.getElementById('cart-count').innerText = totalCount;
-
+      document.getElementById('cart-count').innerText = cart.reduce((sum, item) => sum + item.qty, 0);
       const cartItemsEl = document.getElementById('cart-items');
       const summaryEl = document.getElementById('cart-price-summary');
       const formEl = document.getElementById('checkout-form');
@@ -1941,14 +2097,22 @@
         const activeOrders = getSavedCustomerOrders();
         if (activeOrders.length > 0) {
           cartItemsEl.innerHTML = activeOrders.map(ord => {
-            const detailLines = ord.itemsText
-              ? `<div class="mt-2 pt-2 border-t border-emerald-200 text-left text-xs text-pink-700 font-bold whitespace-pre-line leading-relaxed">${ord.itemsText}</div>`
-              : '';
+            const liveInfo = customerOrderStatusMap[ord.orderId] || {};
+            let badgeText = "🚚 ပို့ဆောင်ဆဲ";
+            let badgeColor = "bg-emerald-600";
+            if (liveInfo.status === "ပို့ဆောင်နေပြီ") {
+              badgeText = `🚚 ${liveInfo.riderName || 'ဝန်ထမ်း'} လာပို့နေပြီ`;
+              badgeColor = "bg-amber-500";
+            } else if (liveInfo.riderName) {
+              badgeText = `📌 ${liveInfo.riderName} တာဝန်ယူထားသည်`;
+              badgeColor = "bg-blue-600";
+            }
+            const detailLines = ord.itemsText ? `<div class="mt-2 pt-2 border-t border-emerald-200 text-left text-xs text-pink-700 font-bold whitespace-pre-line leading-relaxed">${ord.itemsText}</div>` : '';
             return `
               <div class="bg-emerald-50 border border-emerald-300 rounded-xl p-3.5 text-left space-y-1.5">
-                <div class="flex justify-between items-center gap-2">
+                <div class="flex flex-wrap justify-between items-center gap-2">
                   <span class="font-extrabold text-gray-900 text-xs sm:text-sm">🧾 အော်ဒါအမှတ်: #${ord.orderId}</span>
-                  <span class="bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">🚚 ပို့ဆောင်ဆဲ</span>
+                  <span class="${badgeColor} text-white text-[10px] font-bold px-2 py-0.5 rounded-full">${badgeText}</span>
                 </div>
                 <p class="text-xs font-bold text-emerald-900 leading-relaxed">💝 ${ORDER_THANK_YOU_MSG}</p>
                 ${detailLines}
@@ -1985,38 +2149,26 @@
 
       const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
       const currentDelivery = cart.length > 0 ? DELIVERY_FEE : 0;
-      const grandTotal = subtotal + currentDelivery;
-
       document.getElementById('cart-subtotal').innerText = subtotal.toLocaleString() + ' ကျပ်';
       document.getElementById('cart-delivery').innerText = currentDelivery.toLocaleString() + ' ကျပ်';
-      document.getElementById('cart-total').innerText = grandTotal.toLocaleString() + ' ကျပ်';
+      document.getElementById('cart-total').innerText = (subtotal + currentDelivery).toLocaleString() + ' ကျပ်';
     }
 
     function toggleCart() {
       const modal = document.getElementById('cart-modal');
-      const isOpening = modal.classList.contains('hidden');
-      if (isOpening) {
-        modal.classList.remove('hidden');
-        updateCartUI();
-        pushModalHistory('cart');
+      if (modal.classList.contains('hidden')) {
+        modal.classList.remove('hidden'); updateCartUI(); pushModalHistory('cart');
       } else {
         modal.classList.add('hidden');
-        if (history.state && history.state.modal === 'cart') {
-          history.back();
-        }
+        if (history.state && history.state.modal === 'cart') history.back();
       }
     }
 
     async function prepareOrder(e) {
       e.preventDefault();
-      if (cart.length === 0) {
-        alert('ကျေးဇူးပြု၍ ပစ္စည်းအရင် ရွေးချယ်ပါခင်ဗျာ။');
-        return;
-      }
-
+      if (cart.length === 0) { alert('ကျေးဇူးပြု၍ ပစ္စည်းအရင် ရွေးချယ်ပါခင်ဗျာ။'); return; }
       const submitBtn = document.getElementById('submit-order-btn');
-      submitBtn.disabled = true;
-      submitBtn.innerText = "⏳ အော်ဒါပို့ရန် ပြင်ဆင်နေပါသည်...";
+      submitBtn.disabled = true; submitBtn.innerText = "⏳ အော်ဒါပို့ရန် ပြင်ဆင်နေပါသည်...";
 
       const orderId = "MT-" + Math.floor(100000 + Math.random() * 900000);
       const name = document.getElementById('cust-name').value.trim();
@@ -2028,79 +2180,38 @@
 
       saveCustomerProfile(name, phone, address);
 
-      let itemLines = cart.map((item, idx) => 
-        `${idx + 1}. ${item.name} [အရောင်: ${item.colorName} | အရွယ်: ${item.size}] x ${item.qty} ခု = ${(item.price * item.qty).toLocaleString()} Ks`
-      ).join('\n');
-
-      latestOrderMessage = 
-`🛍️ MiniTrend Kids အော်ဒါအသစ် (${orderId})
--------------------------
-👤 အမည်: ${name}
-📞 ဖုန်း: ${phone}
-📍 လိပ်စာ: ${address}
--------------------------
-📦 မှာယူသည့် စာရင်း:
-${itemLines}
--------------------------
-🧾 ပစ္စည်းတန်ဖိုး: ${subtotal.toLocaleString()} ကျပ်
-🚚 Delivery ခ: ${DELIVERY_FEE.toLocaleString()} ကျပ်
-💰 စုစုပေါင်းကျသင့်ငွေ (COD): ${grandTotal.toLocaleString()} ကျပ်`;
-
+      let itemLines = cart.map((item, idx) => `${idx + 1}. ${item.name} [အရောင်: ${item.colorName} | အရွယ်: ${item.size}] x ${item.qty} ခု = ${(item.price * item.qty).toLocaleString()} Ks`).join('\n');
+      latestOrderMessage = `🛍️ MiniTrend Kids အော်ဒါအသစ် (${orderId})\n-------------------------\n👤 အမည်: ${name}\n📞 ဖုန်း: ${phone}\n📍 လိပ်စာ: ${address}\n-------------------------\n📦 မှာယူသည့် စာရင်း:\n${itemLines}\n-------------------------\n🧾 ပစ္စည်းတန်ဖိုး: ${subtotal.toLocaleString()} ကျပ်\n🚚 Delivery ခ: ${DELIVERY_FEE.toLocaleString()} ကျပ်\n💰 စုစုပေါင်းကျသင့်ငွေ (COD): ${grandTotal.toLocaleString()} ကျပ်`;
       silentCopy(latestOrderMessage);
 
       const orderedItemsPayload = cart.map(i => ({ name: i.name, size: i.size, qty: i.qty }));
-
       const existingOrders = getSavedCustomerOrders();
-      existingOrders.unshift({
-        orderId: orderId,
-        totalQty: totalQty,
-        itemsText: itemLines,
-        delivery: DELIVERY_FEE,
-        grandTotal: grandTotal,
-        createdAt: Date.now()
-      });
+      existingOrders.unshift({ orderId, totalQty, itemsText: itemLines, delivery: DELIVERY_FEE, grandTotal, createdAt: Date.now() });
       saveCustomerOrders(existingOrders);
 
-      cart = [];
-      updateCartUI();
-
+      cart = []; updateCartUI();
       sendPhoneNotification("MiniTrend Kids 💝", ORDER_THANK_YOU_MSG, "order-" + orderId, 0);
       sendPhoneNotification("MiniTrend Kids 💝", ORDER_THANK_YOU_MSG, "order-viber-" + orderId, 2500);
 
       try {
         await fetch(APPS_SCRIPT_ORDER_URL, {
-          method: "POST",
-          mode: "no-cors",
+          method: "POST", mode: "no-cors",
           headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({
-            orderId,
-            name,
-            phone,
-            address,
-            itemsText: itemLines,
-            items: orderedItemsPayload,
-            subtotal,
-            delivery: DELIVERY_FEE,
-            grandTotal,
-            fcmToken: window.__currentFcmToken || ""
+            orderId, name, phone, address, itemsText: itemLines, items: orderedItemsPayload,
+            subtotal, delivery: DELIVERY_FEE, grandTotal, fcmToken: window.__currentFcmToken || ""
           })
         });
-      } catch (err) {
-        console.error("Order log error:", err);
-      }
+      } catch (err) {}
 
       submitBtn.disabled = false;
       submitBtn.innerHTML = `<span>💬 Viber မှတစ်ဆင့် အော်ဒါပို့မည်</span>`;
-
       const encodedText = encodeURIComponent(latestOrderMessage);
       const directUrl = `viber://chat?number=%2B${OWNER_VIBER_PHONE}&text=${encodedText}`;
-      const forwardUrl = `viber://forward?text=${encodedText}`;
-
       document.getElementById('viber-direct-btn').href = directUrl;
-      document.getElementById('viber-forward-btn').href = forwardUrl;
+      document.getElementById('viber-forward-btn').href = `viber://forward?text=${encodedText}`;
       document.getElementById('order-confirm-note').classList.remove('hidden');
       document.getElementById('viber-action-box').classList.remove('hidden');
-
       window.location.href = directUrl;
     }
 
@@ -2112,13 +2223,13 @@ ${itemLines}
 
     function renderAdminProducts() {
       const list = document.getElementById('admin-product-list');
+      if (!list) return;
       list.innerHTML = products.map(p => {
         const firstImg = (p.variants && p.variants[0]) ? p.variants[0].image : '';
         const basePrice = p.prices ? p.prices["၆ လ - ၁ နှစ်"] : 0;
         const maxPrice = p.prices ? p.prices["၈ - ၉ နှစ်"] : 0;
         const stockBreakdown = AGE_SIZES.map(sz => `${sz}: <b>${(p.stocks && p.stocks[sz]) || 0}</b>`).join(' | ');
         const totalStock = AGE_SIZES.reduce((sum, sz) => sum + ((p.stocks && p.stocks[sz]) || 0), 0);
-
         return `
           <div class="py-3.5 flex flex-col sm:flex-row justify-between sm:items-center gap-3">
             <div class="flex items-start gap-3">
@@ -2140,6 +2251,7 @@ ${itemLines}
     function openLinkModal() {
       const baseUrl = window.location.origin + window.location.pathname;
       document.getElementById('customer-link-input').value = `${baseUrl}?role=customer`;
+      document.getElementById('delivery-link-input').value = `${baseUrl}?role=delivery`;
       document.getElementById('admin-link-input').value = `${baseUrl}?role=admin`;
       document.getElementById('link-modal').classList.remove('hidden');
       pushModalHistory('link');
@@ -2147,15 +2259,12 @@ ${itemLines}
 
     function closeLinkModal() {
       document.getElementById('link-modal').classList.add('hidden');
-      if (history.state && history.state.modal === 'link') {
-        history.back();
-      }
+      if (history.state && history.state.modal === 'link') history.back();
     }
 
     function copyLink(inputId) {
       const input = document.getElementById(inputId);
-      input.select();
-      document.execCommand('copy');
+      input.select(); document.execCommand('copy');
       alert('Link ကို Copy ကူးယူပြီးပါပြီ!');
     }
 
