@@ -492,6 +492,34 @@
     </div>
   </div>
 
+  <!-- ================= PWA INSTALL GUIDE MODAL (iOS & ANDROID FALLBACK) ================= -->
+  <div id="pwa-guide-modal" onclick="closePwaGuideModal()" class="fixed inset-0 bg-black/75 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+    <div onclick="event.stopPropagation()" class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl border-2 border-emerald-300 space-y-3.5">
+      <div class="flex justify-between items-center border-b pb-3">
+        <div class="flex items-center gap-2.5">
+          <img src="./icon.png?v=3" alt="MiniTrend Kids" class="w-10 h-10 rounded-xl object-cover border border-pink-200 shadow-sm" />
+          <div>
+            <h3 id="pwa-guide-title" class="text-sm sm:text-base font-extrabold text-gray-900">📲 App ထည့်သွင်းနည်း</h3>
+            <p id="pwa-guide-subtitle" class="text-[11px] text-gray-500 font-bold">MiniTrend Kids</p>
+          </div>
+        </div>
+        <button type="button" onclick="closePwaGuideModal()" class="text-gray-400 hover:text-gray-800 font-bold text-xl leading-none px-1">✕</button>
+      </div>
+
+      <div id="pwa-guide-body" class="space-y-2.5 text-xs sm:text-sm text-gray-700 leading-relaxed"></div>
+
+      <div id="pwa-guide-copy-wrap" class="hidden pt-1">
+        <button type="button" onclick="copyStoreLinkForInstall()" id="btn-copy-install-link" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-extrabold py-2.5 rounded-xl text-xs shadow-sm">
+          📋 ဆိုင် Link Copy ကူးမည် (Safari တွင် ဖွင့်ရန်)
+        </button>
+      </div>
+
+      <button type="button" onclick="closePwaGuideModal()" class="w-full bg-gray-900 hover:bg-gray-800 text-white font-extrabold py-2.5 rounded-xl text-xs sm:text-sm">
+        နားလည်ပါပြီ (ပိတ်မည်)
+      </button>
+    </div>
+  </div>
+
   <!-- ================= ADMIN PASSWORD LOCK MODAL ================= -->
   <div id="admin-password-modal" class="fixed inset-0 bg-black/75 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
     <div class="bg-white rounded-2xl max-w-sm w-full p-5 sm:p-6 shadow-2xl border-2 border-pink-200">
@@ -1337,7 +1365,6 @@
         return o.riderId === adminOrderRiderFilter;
       });
 
-      // Delivery မှ COD ငွေပေးချေပြီး အော်ဒါများကို ထိပ်ဆုံးတွင် အရင်ပြမည်
       filteredOrders.sort((a, b) => {
         const aCod = a.status === 'COD ငွေပေးချေပြီး' ? 1 : 0;
         const bCod = b.status === 'COD ငွေပေးချေပြီး' ? 1 : 0;
@@ -1373,7 +1400,6 @@
 
         const safeMapVal = (o.mapLocation || '').replace(/"/g, '&quot;');
 
-        // Delivery မှ COD နှိပ်ထားသော အော်ဒါတွင်သာ (COD Finished) ခလုတ်/အိုင်ကွန် ပေါ်လာမည်
         const confirmActionBtn = isCodPaid
           ? `<button type="button" onclick="markOrderDelivered('${o.orderId}', this)" class="bg-emerald-600 hover:bg-emerald-700 ring-4 ring-emerald-300 animate-pulse font-extrabold px-4 py-2 text-white rounded-xl text-xs shadow-md cursor-pointer">✅ COD Finished</button>`
           : `<button type="button" onclick="markOrderDelivered('${o.orderId}', this)" class="bg-gray-200 hover:bg-emerald-600 hover:text-white text-gray-700 font-bold px-3 py-2 rounded-xl text-xs transition cursor-pointer" title="Delivery မပါဘဲ တိုက်ရိုက်ပို့ပြီးကြောင်း မှတ်သားရန်">✓ တိုက်ရိုက်ပို့ပြီး</button>`;
@@ -1678,7 +1704,6 @@
           const serverIds = serverOrders.map(o => o.orderId);
           const nowMs = Date.now();
 
-          // Admin မှ (COD Finished) နှိပ်၍ 'ပို့ပြီး' ဖြစ်မှသာ ဝယ်သူဘက်တွင် ပစ္စည်းပို့ပြီးကြောင်း Noti တက်ပြီး ခြင်းတောင်းမှ ပျောက်မည်
           const completedNow = localOrders.filter(o => deliveredIds.includes(o.orderId));
           completedNow.forEach(doneOrd => {
             sendPhoneNotification(
@@ -1688,7 +1713,6 @@
             );
           });
 
-          // Sheet ထဲသို့ သိမ်းဆည်းနေဆဲ အော်ဒါအသစ်များ + Google Sheet မှ Active အော်ဒါအားလုံးကို ပေါင်းစည်းမည်
           const finalOrders = [];
           const seenIds = {};
 
@@ -1828,7 +1852,6 @@
           }
         }
 
-        // Delivery ဝန်ထမ်း COD ငွေပေးချေပြီး နှိပ်ထားသော အော်ဒါအသစ်ရှိပါက Admin ဘက်တွင်သာ Noti ပြမည်
         try {
           const notifiedCodIds = JSON.parse(localStorage.getItem('mt_admin_notified_cod_ids') || '[]');
           const newlyCodPaid = adminPendingOrdersCache.filter(o => o.status === 'COD ငွေပေးချေပြီး' && !notifiedCodIds.includes(o.orderId));
@@ -1869,6 +1892,181 @@
       }
     }
 
+    // ================= PWA INSTALL (BOTH iOS & ANDROID) =================
+    function isIOSDevice() {
+      const ua = navigator.userAgent || '';
+      return /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    }
+
+    function isIOSInAppBrowser() {
+      const ua = navigator.userAgent || '';
+      return isIOSDevice() && /FBAN|FBAV|Viber|Line|Instagram|MicroMessenger|Messenger|GSA/i.test(ua);
+    }
+
+    function isIOSChrome() {
+      const ua = navigator.userAgent || '';
+      return isIOSDevice() && /CriOS/i.test(ua);
+    }
+
+    function isAndroidInAppBrowser() {
+      const ua = navigator.userAgent || '';
+      return /Android/i.test(ua) && /MiuiBrowser|XiaoMi|FBAN|FBAV|Viber|Line|SamsungBrowser|UCBrowser|Opera|OPR|EdgA/i.test(ua);
+    }
+
+    function copyStoreLinkForInstall() {
+      const url = window.location.origin + window.location.pathname + '?role=customer';
+      silentCopy(url);
+      const btn = document.getElementById('btn-copy-install-link');
+      if (btn) {
+        btn.innerText = "✅ Link Copy ကူးပြီးပါပြီ (Safari တွင် Paste ချဖွင့်ပါ)";
+        setTimeout(() => { btn.innerText = "📋 ဆိုင် Link Copy ကူးမည် (Safari တွင် ဖွင့်ရန်)"; }, 3000);
+      }
+    }
+
+    function openPwaGuideModal(mode) {
+      const titleEl = document.getElementById('pwa-guide-title');
+      const subEl = document.getElementById('pwa-guide-subtitle');
+      const bodyEl = document.getElementById('pwa-guide-body');
+      const copyWrap = document.getElementById('pwa-guide-copy-wrap');
+      const modal = document.getElementById('pwa-guide-modal');
+      if (!modal || !bodyEl) return;
+
+      if (mode === 'ios_inapp') {
+        titleEl.innerText = "🍎 iPhone တွင် App သွင်းနည်း";
+        subEl.innerText = "Safari ဖြင့် အရင်ဖွင့်ပေးရန် လိုအပ်ပါသည်";
+        copyWrap.classList.remove('hidden');
+        bodyEl.innerHTML = `
+          <div class="bg-amber-50 border border-amber-300 rounded-xl p-2.5 text-amber-900 font-bold text-xs">
+            ⚠️ Viber / Facebook အတွင်းမှ တိုက်ရိုက် App သွင်း၍ မရပါ။ Safari Browser ဖြင့် အရင်ဖွင့်ပေးပါ။
+          </div>
+          <div class="space-y-2">
+            <div class="flex items-start gap-2.5 bg-gray-50 p-2.5 rounded-xl border">
+              <span class="bg-pink-600 text-white w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-extrabold shrink-0 mt-0.5">၁</span>
+              <p>အောက်ပါ <b>"📋 ဆိုင် Link Copy ကူးမည်"</b> ခလုတ်ကို နှိပ်ပြီး <b>Safari</b> Browser ထဲတွင် Paste ချ၍ ဖွင့်ပါ (သို့မဟုတ် ညာဘက်အောက်/အပေါ်ရှိ <b>🧭 Safari</b> အိုင်ကွန်ကို နှိပ်ပါ)။</p>
+            </div>
+            <div class="flex items-start gap-2.5 bg-gray-50 p-2.5 rounded-xl border">
+              <span class="bg-pink-600 text-white w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-extrabold shrink-0 mt-0.5">၂</span>
+              <p>Safari အောက်ခြေ အလယ်ရှိ <b>Share ခလုတ် (⬆️)</b> ကို နှိပ်ပါ။</p>
+            </div>
+            <div class="flex items-start gap-2.5 bg-gray-50 p-2.5 rounded-xl border">
+              <span class="bg-pink-600 text-white w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-extrabold shrink-0 mt-0.5">၃</span>
+              <p>အောက်သို့ ဆွဲချပြီး <b>Add to Home Screen (➕)</b> → ညာဘက်အပေါ်ရှိ <b>Add</b> ကို နှိပ်လိုက်ပါ။</p>
+            </div>
+          </div>
+        `;
+      } else if (mode === 'ios_browser') {
+        const shareLocationText = isIOSChrome()
+          ? 'အပေါ်ညာဘက်ထောင့် (Link ဘေး) ရှိ <b>Share ခလုတ် (⬆️)</b> ကို နှိပ်ပါ။'
+          : 'ဖုန်းအောက်ခြေ အလယ်ရှိ <b>Share ခလုတ် (⬆️ လေးထောင့်ထဲမှ အပေါ်မြှား)</b> ကို နှိပ်ပါ။';
+        titleEl.innerText = "🍎 iPhone တွင် App ထည့်သွင်းနည်း";
+        subEl.innerText = "စက္ကန့် ၁၀ အတွင်း အလွယ်တကူ သွင်းနိုင်ပါသည်";
+        copyWrap.classList.add('hidden');
+        bodyEl.innerHTML = `
+          <div class="space-y-2">
+            <div class="flex items-start gap-2.5 bg-pink-50/70 p-2.5 rounded-xl border border-pink-200">
+              <span class="bg-pink-600 text-white w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-extrabold shrink-0 mt-0.5">၁</span>
+              <p>${shareLocationText}</p>
+            </div>
+            <div class="flex items-start gap-2.5 bg-pink-50/70 p-2.5 rounded-xl border border-pink-200">
+              <span class="bg-pink-600 text-white w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-extrabold shrink-0 mt-0.5">၂</span>
+              <p>ပေါ်လာသော စာရင်းကို အောက်ဘက်သို့ ဆွဲချပြီး <b>Add to Home Screen (➕)</b> ကို နှိပ်ပါ။</p>
+            </div>
+            <div class="flex items-start gap-2.5 bg-pink-50/70 p-2.5 rounded-xl border border-pink-200">
+              <span class="bg-pink-600 text-white w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-extrabold shrink-0 mt-0.5">၃</span>
+              <p>ညာဘက်အပေါ်ထောင့်ရှိ <b>Add</b> ကို နှိပ်လိုက်ပါက ဖုန်းမျက်နှာပြင်ပေါ်တွင် <b>MiniTrend Kids App</b> ပေါ်လာပါမည်။</p>
+            </div>
+          </div>
+          <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-2.5 text-[11px] text-emerald-900 font-bold">
+            💡 App သွင်းပြီးပါက ဖုန်းမျက်နှာပြင်ပေါ်က MiniTrend Kids App အိုင်ကွန်လေးမှ တိုက်ရိုက်ဖွင့်သုံးနိုင်ပါသည်။
+          </div>
+        `;
+      } else {
+        titleEl.innerText = "🤖 Android / Browser မှ App သွင်းနည်း";
+        subEl.innerText = "Chrome Browser မှတစ်ဆင့် သွင်းနိုင်ပါသည်";
+        copyWrap.classList.remove('hidden');
+        const copyBtn = document.getElementById('btn-copy-install-link');
+        if (copyBtn) copyBtn.innerText = "📋 ဆိုင် Link Copy ကူးမည် (Chrome တွင် ဖွင့်ရန်)";
+        bodyEl.innerHTML = `
+          <div class="space-y-2">
+            <div class="flex items-start gap-2.5 bg-emerald-50/70 p-2.5 rounded-xl border border-emerald-200">
+              <span class="bg-emerald-600 text-white w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-extrabold shrink-0 mt-0.5">၁</span>
+              <p>Chrome Browser ညာဘက်အပေါ်ထောင့်ရှိ <b>အစက် ၃ စက် (⋮)</b> ကို နှိပ်ပါ။</p>
+            </div>
+            <div class="flex items-start gap-2.5 bg-emerald-50/70 p-2.5 rounded-xl border border-emerald-200">
+              <span class="bg-emerald-600 text-white w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-extrabold shrink-0 mt-0.5">၂</span>
+              <p><b>Add to Home screen</b> (သို့မဟုတ် <b>Install app</b>) ကို နှိပ်ပါ။</p>
+            </div>
+            <div class="flex items-start gap-2.5 bg-emerald-50/70 p-2.5 rounded-xl border border-emerald-200">
+              <span class="bg-emerald-600 text-white w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-extrabold shrink-0 mt-0.5">၃</span>
+              <p><b>Install</b> ကို နှိပ်လိုက်ပါက ဖုန်းမျက်နှာပြင်ပေါ်တွင် App အဖြစ် ရောက်ရှိသွားပါမည်။</p>
+            </div>
+          </div>
+        `;
+      }
+
+      modal.classList.remove('hidden');
+      pushModalHistory('pwa_guide');
+    }
+
+    function closePwaGuideModal() {
+      const modal = document.getElementById('pwa-guide-modal');
+      if (modal) modal.classList.add('hidden');
+      if (history.state && history.state.modal === 'pwa_guide') history.back();
+    }
+
+    async function runNativeInstallPrompt() {
+      const btn = document.getElementById('pwa-install-btn');
+      if (btn) btn.innerHTML = '<span>📲 App ဒေါင်းမည်</span>';
+      if (!window.__deferredInstallPrompt) return;
+      try {
+        window.__deferredInstallPrompt.prompt();
+        const choice = await window.__deferredInstallPrompt.userChoice;
+        if (choice && choice.outcome === 'accepted') {
+          window.__deferredInstallPrompt = null;
+          localStorage.setItem('mt_pwa_installed', '1');
+          const wrap = document.getElementById('pwa-install-wrapper');
+          if (wrap) wrap.classList.add('hidden');
+        }
+      } catch (e) {}
+    }
+
+    async function triggerPWAInstall() {
+      // ၁။ Android Chrome / Desktop တွင် Native Install Prompt အသင့်ရှိနေပါက ချက်ချင်းဖွင့်မည်
+      if (window.__deferredInstallPrompt) {
+        await runNativeInstallPrompt();
+        return;
+      }
+
+      // ၂။ iPhone / iPad (iOS) ဖြစ်ပါက "ပြင်ဆင်နေပါသည်" မပြတော့ဘဲ iOS Install လမ်းညွှန် ချက်ချင်းဖွင့်မည်
+      if (isIOSDevice()) {
+        if (isIOSInAppBrowser()) {
+          openPwaGuideModal('ios_inapp');
+        } else {
+          openPwaGuideModal('ios_browser');
+        }
+        return;
+      }
+
+      // ၃။ Android Viber / Facebook / Xiaomi Browser ဖြစ်ပါက Chrome သို့ တိုက်ရိုက်ပြောင်းဖွင့်မည်
+      if (isAndroidInAppBrowser()) {
+        window.location.href = "intent://kflowcreated-stack.github.io/minitrend-kids/?role=customer#Intent;scheme=https;package=com.android.chrome;end";
+        return;
+      }
+
+      // ၄။ Android Chrome / Desktop တွင် Prompt ခဏစောင့်ပြီး မတက်ပါက Manual လမ်းညွှန်ပြမည်
+      const btn = document.getElementById('pwa-install-btn');
+      if (btn) btn.innerHTML = '<span>⏳ ပြင်ဆင်နေပါသည်...</span>';
+      window.__pendingAutoInstall = true;
+
+      setTimeout(() => {
+        if (window.__pendingAutoInstall) {
+          window.__pendingAutoInstall = false;
+          if (btn) btn.innerHTML = '<span>📲 App ဒေါင်းမည်</span>';
+          openPwaGuideModal('android_manual');
+        }
+      }, 2500);
+    }
+
     // ================= STOREFRONT & PRODUCTS =================
     function normalizeCategory(raw) {
       const val = (raw || '').toString().trim().toLowerCase();
@@ -1889,39 +2087,6 @@
       return sizeStr.replace('၆ လ - ၁ နှစ်', '၆လ-၁နှစ်').replace('၁ နှစ် - ၂ နှစ်', '၁-၂ နှစ်');
     }
 
-    function isAndroidInAppBrowser() {
-      const ua = navigator.userAgent || '';
-      return /Android/i.test(ua) && /MiuiBrowser|XiaoMi|FBAN|FBAV|Viber|Line|SamsungBrowser|UCBrowser|Opera|OPR|EdgA/i.test(ua);
-    }
-
-    async function runNativeInstallPrompt() {
-      const btn = document.getElementById('pwa-install-btn');
-      if (btn) btn.innerHTML = '<span>📲 App ဒေါင်းမည်</span>';
-      if (!window.__deferredInstallPrompt) return;
-      try {
-        window.__deferredInstallPrompt.prompt();
-        const choice = await window.__deferredInstallPrompt.userChoice;
-        if (choice && choice.outcome === 'accepted') {
-          window.__deferredInstallPrompt = null;
-          localStorage.setItem('mt_pwa_installed', '1');
-          const wrap = document.getElementById('pwa-install-wrapper');
-          if (wrap) wrap.classList.add('hidden');
-        }
-      } catch (e) {}
-    }
-
-    async function triggerPWAInstall() {
-      if (window.__deferredInstallPrompt) { await runNativeInstallPrompt(); return; }
-      if (isAndroidInAppBrowser()) {
-        window.location.href = "intent://kflowcreated-stack.github.io/minitrend-kids/?role=customer#Intent;scheme=https;package=com.android.chrome;end";
-        return;
-      }
-      const btn = document.getElementById('pwa-install-btn');
-      if (btn) btn.innerHTML = '<span>⏳ ပြင်ဆင်နေပါသည်...</span>';
-      window.__pendingAutoInstall = true;
-      setTimeout(() => { if (window.__pendingAutoInstall && btn) btn.innerHTML = '<span>📲 App ဒေါင်းမည်</span>'; }, 15000);
-    }
-
     let lastBackPressTime = 0;
     let toastTimer = null;
 
@@ -1938,6 +2103,7 @@
       document.getElementById('link-modal').classList.add('hidden');
       document.getElementById('image-lightbox-modal').classList.add('hidden');
       document.getElementById('admin-password-modal').classList.add('hidden');
+      document.getElementById('pwa-guide-modal').classList.add('hidden');
     }
 
     function setupExitGuard() {
@@ -1955,7 +2121,8 @@
         !document.getElementById('size-calc-modal').classList.contains('hidden') ||
         !document.getElementById('link-modal').classList.contains('hidden') ||
         !document.getElementById('image-lightbox-modal').classList.contains('hidden') ||
-        !document.getElementById('admin-password-modal').classList.contains('hidden');
+        !document.getElementById('admin-password-modal').classList.contains('hidden') ||
+        !document.getElementById('pwa-guide-modal').classList.contains('hidden');
       if (isAnyOpen) { closeAllModalsUI(); return; }
 
       const now = Date.now();
