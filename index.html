@@ -1621,18 +1621,64 @@
     function saveCustomerOrders(list) { localStorage.setItem('mt_customer_orders', JSON.stringify(list)); }
 
     async function syncCustomerOrderStatus() {
-      const orders = getSavedCustomerOrders();
+      const localOrders = getSavedCustomerOrders();
+      let savedPhone = "";
       try {
-        const ids = orders.map(o => o.orderId).join(',');
-        const res = await fetch(`${APPS_SCRIPT_ORDER_URL}?action=checkOrders&ids=${encodeURIComponent(ids)}&t=${Date.now()}`, { cache: "no-store" });
+        const prof = JSON.parse(localStorage.getItem('mt_saved_customer_info') || '{}');
+        savedPhone = (prof.phone || "").trim();
+      } catch (e) {}
+
+      try {
+        const ids = localOrders.map(o => o.orderId).join(',');
+        const res = await fetch(`${APPS_SCRIPT_ORDER_URL}?action=checkOrders&ids=${encodeURIComponent(ids)}&phone=${encodeURIComponent(savedPhone)}&t=${Date.now()}`, { cache: "no-store" });
         const data = await res.json();
         if (data && data.status === 'ok') {
           if (data.latestNoti) checkAndTriggerBroadcastNoti(data.latestNoti);
           if (data.orderStatusMap) customerOrderStatusMap = data.orderStatusMap;
-          if (orders.length > 0 && Array.isArray(data.activeOrderIds)) {
-            const stillActive = orders.filter(o => data.activeOrderIds.includes(o.orderId));
-            saveCustomerOrders(stillActive);
-            if (!document.getElementById('cart-modal').classList.contains('hidden')) updateCartUI();
+
+          const deliveredIds = Array.isArray(data.deliveredOrderIds) ? data.deliveredOrderIds : [];
+          const serverOrders = Array.isArray(data.matchedOrders) ? data.matchedOrders : [];
+          const serverIds = serverOrders.map(o => o.orderId);
+          const nowMs = Date.now();
+
+          const completedNow = localOrders.filter(o => deliveredIds.includes(o.orderId));
+          completedNow.forEach(doneOrd => {
+            sendPhoneNotification(
+              `✅ ပစ္စည်းပို့ဆောင်မှု ပြီးစီးပါပြီ! (${doneOrd.orderId})`,
+              "MiniTrend Kids ကို အားပေးတဲ့အတွက် ကျေးဇူးအများကြီးတင်ပါတယ်ရှင် 💝",
+              "delivered-" + doneOrd.orderId
+            );
+          });
+
+          const finalOrders = [];
+          const seenIds = {};
+
+          localOrders.forEach(lo => {
+            if (deliveredIds.includes(lo.orderId)) return;
+            if (!serverIds.includes(lo.orderId) && (!lo.createdAt || (nowMs - lo.createdAt) < 120000)) {
+              seenIds[lo.orderId] = true;
+              finalOrders.push(lo);
+            }
+          });
+
+          serverOrders.forEach(so => {
+            if (seenIds[so.orderId]) return;
+            seenIds[so.orderId] = true;
+            const prevLocal = localOrders.find(x => x.orderId === so.orderId);
+            finalOrders.push({
+              orderId: so.orderId,
+              dateTime: so.dateTime || "",
+              itemsText: so.itemsText || (prevLocal ? prevLocal.itemsText : ""),
+              delivery: Number(so.delivery || DELIVERY_FEE),
+              grandTotal: Number(so.grandTotal || 0),
+              createdAt: (prevLocal && prevLocal.createdAt) ? prevLocal.createdAt : nowMs
+            });
+          });
+
+          saveCustomerOrders(finalOrders);
+
+          if (!document.getElementById('cart-modal').classList.contains('hidden')) {
+            updateCartUI();
           }
         }
       } catch (err) {}
@@ -2219,42 +2265,54 @@
 
     function removeFromCart(index) { cart.splice(index, 1); updateCartUI(); }
 
+    function buildActiveOrdersCardsHTML(activeOrders) {
+      if (!activeOrders || activeOrders.length === 0) return '';
+      const headerHtml = `
+        <div class="flex justify-between items-center bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-extrabold">
+          <span>📦 မှာယူထားသော အော်ဒါများ</span>
+          <span class="bg-amber-300 text-gray-900 px-2 py-0.5 rounded-full">စုစုပေါင်း ${activeOrders.length} ခု</span>
+        </div>
+      `;
+      const cardsHtml = activeOrders.map((ord, idx) => {
+        const liveInfo = customerOrderStatusMap[ord.orderId] || {};
+        let badgeText = "🚚 ပို့ဆောင်ဆဲ";
+        let badgeColor = "bg-emerald-600";
+        if (liveInfo.status === "ပို့ဆောင်နေပြီ" || liveInfo.status === "COD ငွေပေးချေပြီး") {
+          badgeText = `🚚 ${liveInfo.riderName || 'ဝန်ထမ်း'} လာပို့နေပြီ`;
+          badgeColor = "bg-amber-500";
+        } else if (liveInfo.riderName) {
+          badgeText = `📌 ${liveInfo.riderName} တာဝန်ယူထားသည်`;
+          badgeColor = "bg-blue-600";
+        }
+        const detailLines = ord.itemsText ? `<div class="mt-2 pt-2 border-t border-emerald-200 text-left text-xs text-pink-700 font-bold whitespace-pre-line leading-relaxed">${ord.itemsText}</div>` : '';
+        return `
+          <div class="bg-emerald-50 border border-emerald-300 rounded-xl p-3.5 text-left space-y-1.5">
+            <div class="flex flex-wrap justify-between items-center gap-2">
+              <span class="font-extrabold text-gray-900 text-xs sm:text-sm">(${idx + 1}) 🧾 #${ord.orderId}</span>
+              <span class="${badgeColor} text-white text-[10px] font-bold px-2 py-0.5 rounded-full">${badgeText}</span>
+            </div>
+            <p class="text-xs font-bold text-emerald-900 leading-relaxed">💝 ${ORDER_THANK_YOU_MSG}</p>
+            ${detailLines}
+            <div class="pt-1.5 border-t border-emerald-200 text-xs font-extrabold text-gray-900 space-y-0.5">
+              <p>🚚 Delivery ခ: ${(Number(ord.delivery || DELIVERY_FEE)).toLocaleString()} ကျပ်</p>
+              <p>💰 စုစုပေါင်းကျသင့်ငွေ (COD): <span class="text-pink-600">${Number(ord.grandTotal).toLocaleString()} ကျပ်</span></p>
+            </div>
+          </div>
+        `;
+      }).join('');
+      return headerHtml + cardsHtml;
+    }
+
     function updateCartUI() {
       document.getElementById('cart-count').innerText = cart.reduce((sum, item) => sum + item.qty, 0);
       const cartItemsEl = document.getElementById('cart-items');
       const summaryEl = document.getElementById('cart-price-summary');
       const formEl = document.getElementById('checkout-form');
+      const activeOrders = getSavedCustomerOrders();
 
       if (cart.length === 0) {
-        const activeOrders = getSavedCustomerOrders();
         if (activeOrders.length > 0) {
-          cartItemsEl.innerHTML = activeOrders.map(ord => {
-            const liveInfo = customerOrderStatusMap[ord.orderId] || {};
-            let badgeText = "🚚 ပို့ဆောင်ဆဲ";
-            let badgeColor = "bg-emerald-600";
-            if (liveInfo.status === "ပို့ဆောင်နေပြီ") {
-              badgeText = `🚚 ${liveInfo.riderName || 'ဝန်ထမ်း'} လာပို့နေပြီ`;
-              badgeColor = "bg-amber-500";
-            } else if (liveInfo.riderName) {
-              badgeText = `📌 ${liveInfo.riderName} တာဝန်ယူထားသည်`;
-              badgeColor = "bg-blue-600";
-            }
-            const detailLines = ord.itemsText ? `<div class="mt-2 pt-2 border-t border-emerald-200 text-left text-xs text-pink-700 font-bold whitespace-pre-line leading-relaxed">${ord.itemsText}</div>` : '';
-            return `
-              <div class="bg-emerald-50 border border-emerald-300 rounded-xl p-3.5 text-left space-y-1.5">
-                <div class="flex flex-wrap justify-between items-center gap-2">
-                  <span class="font-extrabold text-gray-900 text-xs sm:text-sm">🧾 အော်ဒါအမှတ်: #${ord.orderId}</span>
-                  <span class="${badgeColor} text-white text-[10px] font-bold px-2 py-0.5 rounded-full">${badgeText}</span>
-                </div>
-                <p class="text-xs font-bold text-emerald-900 leading-relaxed">💝 ${ORDER_THANK_YOU_MSG}</p>
-                ${detailLines}
-                <div class="pt-1.5 border-t border-emerald-200 text-xs font-extrabold text-gray-900 space-y-0.5">
-                  <p>🚚 Delivery ခ: ${(Number(ord.delivery || DELIVERY_FEE)).toLocaleString()} ကျပ်</p>
-                  <p>💰 စုစုပေါင်းကျသင့်ငွေ (COD): <span class="text-pink-600">${Number(ord.grandTotal).toLocaleString()} ကျပ်</span></p>
-                </div>
-              </div>
-            `;
-          }).join('');
+          cartItemsEl.innerHTML = buildActiveOrdersCardsHTML(activeOrders);
         } else {
           cartItemsEl.innerHTML = '<p class="text-center text-gray-400 text-sm py-8">ခြင်းတောင်းထဲတွင် ပစ္စည်းမရှိသေးပါ</p>';
         }
@@ -2264,7 +2322,7 @@
         if (summaryEl) summaryEl.classList.remove('hidden');
         if (formEl) formEl.classList.remove('hidden');
         loadSavedCustomerProfile();
-        cartItemsEl.innerHTML = cart.map((item, idx) => `
+        const currentCartHtml = cart.map((item, idx) => `
           <div class="flex justify-between items-center bg-gray-50 p-3 rounded-xl border gap-2">
             <div class="flex items-center gap-2.5">
               <img src="${item.image}" class="w-12 h-12 rounded-lg object-cover border">
@@ -2277,6 +2335,12 @@
             <button onclick="removeFromCart(${idx})" class="text-red-500 text-xs font-bold px-2 py-1">ဖျက်မည်</button>
           </div>
         `).join('');
+
+        const activeOrdersSection = activeOrders.length > 0
+          ? `<div class="pt-3 mt-3 border-t border-dashed border-emerald-300 space-y-2.5">${buildActiveOrdersCardsHTML(activeOrders)}</div>`
+          : '';
+
+        cartItemsEl.innerHTML = currentCartHtml + activeOrdersSection;
       }
 
       const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
@@ -2289,7 +2353,10 @@
     function toggleCart() {
       const modal = document.getElementById('cart-modal');
       if (modal.classList.contains('hidden')) {
-        modal.classList.remove('hidden'); updateCartUI(); pushModalHistory('cart');
+        modal.classList.remove('hidden');
+        updateCartUI();
+        syncCustomerOrderStatus();
+        pushModalHistory('cart');
       } else {
         modal.classList.add('hidden');
         if (history.state && history.state.modal === 'cart') history.back();
