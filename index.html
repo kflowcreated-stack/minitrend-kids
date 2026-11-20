@@ -352,7 +352,7 @@
           <p id="rider-stat-pending" class="text-2xl font-extrabold text-blue-600 mt-1">0</p>
         </div>
         <div class="bg-white border border-emerald-200 p-3.5 rounded-2xl shadow-sm text-center">
-          <p class="text-[11px] font-bold text-gray-500">✅ ယနေ့ပို့ပြီး</p>
+          <p class="text-[11px] font-bold text-gray-500">💰 ယနေ့ COD ပြီး</p>
           <p id="rider-stat-done" class="text-2xl font-extrabold text-emerald-600 mt-1">0</p>
         </div>
         <div class="bg-emerald-600 text-white p-3.5 rounded-2xl shadow-sm text-center">
@@ -369,9 +369,9 @@
       </div>
 
       <div class="bg-white rounded-2xl shadow-sm border border-emerald-100 p-4 sm:p-5">
-        <h3 class="font-extrabold text-sm sm:text-base text-gray-900 mb-3">🧾 ယနေ့ ပို့ဆောင်ပြီး ငွေကောက်မှတ်တမ်း</h3>
+        <h3 class="font-extrabold text-sm sm:text-base text-gray-900 mb-3">🧾 ယနေ့ COD ငွေပေးချေပြီး မှတ်တမ်း</h3>
         <div id="rider-done-list" class="divide-y text-xs">
-          <p class="text-gray-400 py-3">ယနေ့ ပို့ဆောင်ပြီးသော အော်ဒါ မရှိသေးပါ။</p>
+          <p class="text-gray-400 py-3">ယနေ့ COD ငွေပေးချေပြီးသော အော်ဒါ မရှိသေးပါ။</p>
         </div>
       </div>
     </div>
@@ -382,7 +382,7 @@
     <div class="flex flex-wrap justify-between items-center gap-3 mb-5">
       <div>
         <h2 class="text-xl sm:text-2xl font-bold text-gray-900">🔐 ဆိုင်ပိုင်ရှင် စီမံခန့်ခွဲမှု (Admin Panel)</h2>
-        <p class="text-xs sm:text-sm text-gray-500">အော်ဒါခွဲဝေတာဝန်ပေးခြင်း၊ Map Link ထည့်ခြင်း၊ Delivery ဝန်ထမ်းစီမံခြင်းနှင့် Stock စစ်ဆေးခြင်း</p>
+        <p class="text-xs sm:text-sm text-gray-500">အော်ဒါခွဲဝေတာဝန်ပေးခြင်း၊ (COD Finished) အတည်ပြုခြင်း၊ Map Link ထည့်ခြင်းနှင့် Stock စစ်ဆေးခြင်း</p>
       </div>
       <div class="flex flex-wrap gap-2">
         <button type="button" onclick="manualConnectFirebase('admin')" id="btn-admin-fcm" class="bg-purple-600 hover:bg-purple-700 active:scale-95 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-sm transition cursor-pointer">🔔 ဤဖုန်းကို Noti ချိတ်မည်</button>
@@ -411,12 +411,12 @@
       </div>
     </div>
 
-    <!-- Pending Orders + Multi-Rider Assignment + Admin Map Link Input -->
+    <!-- Pending Orders + Multi-Rider Assignment + COD Finished Confirmation -->
     <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-emerald-200 mb-6">
       <div class="flex flex-wrap justify-between items-center gap-2 mb-3">
         <div>
-          <h3 class="font-extrabold text-sm sm:text-base text-gray-900">🚚 ပို့ဆောင်ရန် ကျန်ရှိသော အော်ဒါများနှင့် ဝန်ထမ်းခွဲဝေမှု (Active Orders)</h3>
-          <p class="text-[11px] text-gray-500">ဝယ်သူ Viber မှ Location ပို့လာပါက Google Maps Link ကို ကူးထည့်သိမ်းပေးပြီး ဝန်ထမ်းထံ တာဝန်ပေးနိုင်ပါသည်။</p>
+          <h3 class="font-extrabold text-sm sm:text-base text-gray-900">🚚 ပို့ဆောင်ရန် ကျန်ရှိသော အော်ဒါများနှင့် (COD Finished) အတည်ပြုမှု</h3>
+          <p class="text-[11px] text-gray-500">Delivery ဝန်ထမ်း COD ငွေပေးချေပြီးကြောင်း နှိပ်ပါက သက်ဆိုင်ရာအော်ဒါတွင် <b>"✅ COD Finished"</b> ခလုတ်ပေါ်လာမည်ဖြစ်ပြီး Admin မှ နှိပ်အတည်ပြုမှသာ ဝယ်သူထံ ပစ္စည်းပို့ပြီးကြောင်း Noti ဝင်၍ ခြင်းတောင်းမှ အော်ဒါပျောက်ပါမည်။</p>
         </div>
       </div>
 
@@ -1097,8 +1097,8 @@
                 <button type="button" onclick="riderUpdateOrder('${o.orderId}', 'ပို့ဆောင်နေပြီ')" ${isOnWay ? 'disabled' : ''} class="${isOnWay ? 'bg-amber-200 text-amber-800 cursor-not-allowed' : 'bg-amber-500 hover:bg-amber-600 text-white'} font-extrabold py-2.5 rounded-xl text-xs shadow-sm">
                   ${isOnWay ? '🚚 လမ်းပေါ်ရောက်နေပြီ' : '🚚 စတင်ပို့ဆောင်မည်'}
                 </button>
-                <button type="button" onclick="riderUpdateOrder('${o.orderId}', 'ပို့ပြီး')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-2.5 rounded-xl text-xs shadow-sm">
-                  ✅ ပို့ပေးပြီး (ငွေကောက်ပြီး)
+                <button type="button" onclick="riderUpdateOrder('${o.orderId}', 'COD ငွေပေးချေပြီး')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-2.5 rounded-xl text-xs shadow-sm">
+                  💰 COD ငွေပေးချေပြီးပြီ
                 </button>
               </div>
             </div>
@@ -1108,25 +1108,33 @@
 
       const doneEl = document.getElementById('rider-done-list');
       if (done.length === 0) {
-        doneEl.innerHTML = `<p class="text-gray-400 py-3">ယနေ့ ပို့ဆောင်ပြီးသော အော်ဒါ မရှိသေးပါ။</p>`;
+        doneEl.innerHTML = `<p class="text-gray-400 py-3">ယနေ့ COD ငွေပေးချေပြီးသော အော်ဒါ မရှိသေးပါ။</p>`;
       } else {
-        doneEl.innerHTML = done.map(o => `
-          <div class="py-2.5 flex justify-between items-center gap-2">
-            <div>
-              <p class="font-bold text-gray-800">✅ ${o.orderId} — ${o.name}</p>
-              <p class="text-[11px] text-gray-500">⏰ ${o.deliveredAt || o.dateTime}</p>
+        doneEl.innerHTML = done.map(o => {
+          const isAdminConfirmed = o.status === 'ပို့ပြီး';
+          return `
+            <div class="py-2.5 flex justify-between items-center gap-2">
+              <div>
+                <p class="font-bold text-gray-800">${isAdminConfirmed ? '✅' : '💰'} ${o.orderId} — ${o.name}</p>
+                <div class="flex flex-wrap items-center gap-1.5 mt-0.5">
+                  <span class="${isAdminConfirmed ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'} text-[10px] font-extrabold px-2 py-0.5 rounded-full">
+                    ${isAdminConfirmed ? '✅ Admin (COD Finished) အတည်ပြုပြီး' : '⏳ Admin (COD Finished) အတည်ပြုရန် စောင့်ဆိုင်းဆဲ'}
+                  </span>
+                  <span class="text-[11px] text-gray-500">⏰ ${o.deliveredAt || o.dateTime}</span>
+                </div>
+              </div>
+              <span class="font-extrabold text-emerald-700 shrink-0">${Number(o.grandTotal).toLocaleString()} Ks</span>
             </div>
-            <span class="font-extrabold text-emerald-700">${Number(o.grandTotal).toLocaleString()} Ks</span>
-          </div>
-        `).join('');
+          `;
+        }).join('');
       }
     }
 
     async function riderUpdateOrder(orderId, newStatus) {
       const saved = getSavedRiderSession();
       if (!saved || !saved.id) return;
-      if (newStatus === 'ပို့ပြီး') {
-        if (!confirm(`အော်ဒါ #${orderId} ကို ဝယ်သူထံ ပို့ဆောင်ပြီး (COD ငွေကောက်ခံပြီး) ဖြစ်ကြောင်း အတည်ပြုပါသလား?`)) return;
+      if (newStatus === 'COD ငွေပေးချေပြီး') {
+        if (!confirm(`အော်ဒါ #${orderId} အတွက် ဝယ်သူထံမှ COD ငွေပေးချေပြီး (ငွေကောက်ခံပြီး) ဖြစ်ကြောင်း Admin ထံ အကြောင်းကြားပါမည်လား?`)) return;
       }
       try {
         await fetch(APPS_SCRIPT_ORDER_URL, {
@@ -1274,7 +1282,7 @@
 
       const codBox = document.getElementById('admin-cod-summary-box');
       const codList = document.getElementById('admin-cod-summary-list');
-      const activeStats = adminRiderStatsCache.filter(s => s.pendingCount > 0 || s.todayDeliveredCount > 0);
+      const activeStats = adminRiderStatsCache.filter(s => s.pendingCount > 0 || s.codWaitingCount > 0 || s.todayDeliveredCount > 0);
       if (codBox && codList) {
         if (activeStats.length > 0) {
           codBox.classList.remove('hidden');
@@ -1282,7 +1290,7 @@
             <div class="bg-white border border-blue-100 rounded-lg p-2 flex justify-between items-center">
               <div>
                 <p class="font-extrabold text-gray-900">${s.riderId} — ${s.riderName}</p>
-                <p class="text-[10px] text-gray-500">ကျန်: <b class="text-blue-700">${s.pendingCount}</b> | ယနေ့ပြီး: <b class="text-emerald-700">${s.todayDeliveredCount}</b></p>
+                <p class="text-[10px] text-gray-500">ကျန်: <b class="text-blue-700">${s.pendingCount}</b> | COD Finished စစ်ရန်: <b class="text-amber-600">${s.codWaitingCount || 0}</b> | ယနေ့ပြီး: <b class="text-emerald-700">${s.todayDeliveredCount}</b></p>
               </div>
               <span class="font-extrabold text-emerald-700 bg-emerald-50 px-2 py-1 rounded-md">${Number(s.todayCodTotal).toLocaleString()} Ks</span>
             </div>
@@ -1294,18 +1302,26 @@
 
       const filterBar = document.getElementById('admin-rider-filter-bar');
       const unassignedCount = adminPendingOrdersCache.filter(o => !o.riderId).length;
+      const codCollectedCount = adminPendingOrdersCache.filter(o => o.status === 'COD ငွေပေးချေပြီး').length;
+
       if (filterBar) {
         const pillCls = (key) => adminOrderRiderFilter === key
           ? 'bg-pink-600 text-white border-pink-600 font-extrabold'
           : 'bg-white text-gray-700 border-gray-200 font-bold hover:bg-gray-50';
 
+        const codPillCls = adminOrderRiderFilter === 'COD_PAID'
+          ? 'bg-emerald-600 text-white border-emerald-600 font-extrabold'
+          : (codCollectedCount > 0 ? 'bg-emerald-50 text-emerald-800 border-emerald-400 font-extrabold animate-pulse' : 'bg-white text-gray-700 border-gray-200 font-bold');
+
         let pillsHtml = `
           <button type="button" onclick="setAdminRiderFilter('ALL')" class="px-2.5 py-1 rounded-full border text-[11px] whitespace-nowrap ${pillCls('ALL')}">📋 အားလုံး (${adminPendingOrdersCache.length})</button>
+          <button type="button" onclick="setAdminRiderFilter('COD_PAID')" class="px-2.5 py-1 rounded-full border text-[11px] whitespace-nowrap ${codPillCls}">🔔 COD Finished (${codCollectedCount})</button>
           <button type="button" onclick="setAdminRiderFilter('UNASSIGNED')" class="px-2.5 py-1 rounded-full border text-[11px] whitespace-nowrap ${pillCls('UNASSIGNED')}">⚠️ မသတ်မှတ်ရသေး (${unassignedCount})</button>
         `;
         adminRiderStatsCache.forEach(s => {
-          if (s.pendingCount > 0 || adminOrderRiderFilter === s.riderId) {
-            pillsHtml += `<button type="button" onclick="setAdminRiderFilter('${s.riderId}')" class="px-2.5 py-1 rounded-full border text-[11px] whitespace-nowrap ${pillCls(s.riderId)}">🚚 ${s.riderName} (${s.pendingCount})</button>`;
+          const riderActiveTotal = adminPendingOrdersCache.filter(o => o.riderId === s.riderId).length;
+          if (riderActiveTotal > 0 || adminOrderRiderFilter === s.riderId) {
+            pillsHtml += `<button type="button" onclick="setAdminRiderFilter('${s.riderId}')" class="px-2.5 py-1 rounded-full border text-[11px] whitespace-nowrap ${pillCls(s.riderId)}">🚚 ${s.riderName} (${riderActiveTotal})</button>`;
           }
         });
         filterBar.innerHTML = pillsHtml;
@@ -1316,8 +1332,16 @@
 
       const filteredOrders = adminPendingOrdersCache.filter(o => {
         if (adminOrderRiderFilter === 'ALL') return true;
+        if (adminOrderRiderFilter === 'COD_PAID') return o.status === 'COD ငွေပေးချေပြီး';
         if (adminOrderRiderFilter === 'UNASSIGNED') return !o.riderId;
         return o.riderId === adminOrderRiderFilter;
+      });
+
+      // Delivery မှ COD ငွေပေးချေပြီး အော်ဒါများကို ထိပ်ဆုံးတွင် အရင်ပြမည်
+      filteredOrders.sort((a, b) => {
+        const aCod = a.status === 'COD ငွေပေးချေပြီး' ? 1 : 0;
+        const bCod = b.status === 'COD ငွေပေးချေပြီး' ? 1 : 0;
+        return bCod - aCod;
       });
 
       if (filteredOrders.length === 0) {
@@ -1326,21 +1350,37 @@
       }
 
       pendingOrdersEl.innerHTML = filteredOrders.map(o => {
+        const isCodPaid = o.status === 'COD ငွေပေးချေပြီး';
         const mapInfo = buildSmartMapsInfo(o);
         let statusBadge = `<span class="bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full text-[10px] font-extrabold">⏳ မသတ်မှတ်ရသေး</span>`;
-        if (o.status === 'ပို့ဆောင်နေပြီ') {
+        if (isCodPaid) {
+          statusBadge = `<span class="bg-emerald-600 text-white px-2.5 py-0.5 rounded-full text-[10px] font-extrabold shadow-sm">🔔 Delivery COD ငွေကောက်ပြီး</span>`;
+        } else if (o.status === 'ပို့ဆောင်နေပြီ') {
           statusBadge = `<span class="bg-amber-500 text-white px-2 py-0.5 rounded-full text-[10px] font-extrabold">🚚 ${o.riderName || 'ဝန်ထမ်း'} လာပို့နေပြီ</span>`;
         } else if (o.riderId) {
           statusBadge = `<span class="bg-blue-600 text-white px-2 py-0.5 rounded-full text-[10px] font-extrabold">📌 ${o.riderName || o.riderId} တာဝန်ကျ</span>`;
         }
+
+        const codAlertBanner = isCodPaid ? `
+          <div class="bg-emerald-100 border-2 border-emerald-400 text-emerald-950 rounded-xl px-3 py-2 text-xs font-extrabold flex flex-wrap justify-between items-center gap-2">
+            <span>🔔 ဝန်ထမ်း (${o.riderName || o.riderId}) မှ COD ငွေ (${Number(o.grandTotal || 0).toLocaleString()} ကျပ်) ပေးချေပြီးကြောင်း အကြောင်းကြားထားပါသည်!</span>
+            <span class="text-[11px] bg-white text-emerald-800 px-2 py-0.5 rounded-lg border border-emerald-300">👉 "✅ COD Finished" ကို နှိပ်မှ ဝယ်သူထံ ပို့ပြီးကြောင်း Noti ဝင်ပါမည်</span>
+          </div>
+        ` : '';
 
         const riderOptions = `<option value="">-- ဝန်ထမ်း ရွေးချယ်ရန် --</option>` +
           adminRidersList.map(r => `<option value="${r.id}" ${o.riderId === r.id ? 'selected' : ''}>${r.id} — ${r.name}</option>`).join('');
 
         const safeMapVal = (o.mapLocation || '').replace(/"/g, '&quot;');
 
+        // Delivery မှ COD နှိပ်ထားသော အော်ဒါတွင်သာ (COD Finished) ခလုတ်/အိုင်ကွန် ပေါ်လာမည်
+        const confirmActionBtn = isCodPaid
+          ? `<button type="button" onclick="markOrderDelivered('${o.orderId}', this)" class="bg-emerald-600 hover:bg-emerald-700 ring-4 ring-emerald-300 animate-pulse font-extrabold px-4 py-2 text-white rounded-xl text-xs shadow-md cursor-pointer">✅ COD Finished</button>`
+          : `<button type="button" onclick="markOrderDelivered('${o.orderId}', this)" class="bg-gray-200 hover:bg-emerald-600 hover:text-white text-gray-700 font-bold px-3 py-2 rounded-xl text-xs transition cursor-pointer" title="Delivery မပါဘဲ တိုက်ရိုက်ပို့ပြီးကြောင်း မှတ်သားရန်">✓ တိုက်ရိုက်ပို့ပြီး</button>`;
+
         return `
-          <div class="py-4 space-y-2.5">
+          <div class="${isCodPaid ? 'bg-emerald-50/70 border-2 border-emerald-400 rounded-2xl p-3 my-2.5 shadow-sm' : 'py-4'} space-y-2.5">
+            ${codAlertBanner}
             <div class="flex flex-col lg:flex-row justify-between lg:items-start gap-3">
               <div class="space-y-1 flex-1">
                 <div class="flex flex-wrap items-center gap-1.5">
@@ -1360,14 +1400,11 @@
                 <button type="button" id="assign-btn-${o.orderId}" onclick="assignOrderToRider('${o.orderId}')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-3 py-2 rounded-xl text-xs shadow-sm">
                   📌 တာဝန်ပေး
                 </button>
-                <button type="button" onclick="markOrderDelivered('${o.orderId}')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-2 rounded-xl text-xs shadow-sm">
-                  ✅ ပို့ပေးပြီး
-                </button>
+                ${confirmActionBtn}
               </div>
             </div>
 
-            <!-- Admin Map Link / GPS Paste Bar -->
-            <div class="flex flex-wrap items-center gap-1.5 bg-gray-50 border border-gray-200 rounded-xl p-2">
+            <div class="flex flex-wrap items-center gap-1.5 bg-white/80 border border-gray-200 rounded-xl p-2">
               <span class="text-[11px] font-bold text-gray-600 shrink-0">🗺️ Map Link / GPS:</span>
               <input type="text" id="admin-map-input-${o.orderId}" value="${safeMapVal}" placeholder="Viber မှ Google Maps Link သို့မဟုတ် 16.82...,96.13... ကူးထည့်ပါ" class="flex-1 min-w-[180px] border rounded-lg px-2.5 py-1.5 text-[11px] bg-white">
               <button type="button" id="admin-map-btn-${o.orderId}" onclick="saveOrderMapLinkFromAdmin('${o.orderId}')" class="bg-gray-800 hover:bg-gray-900 text-white font-bold px-2.5 py-1.5 rounded-lg text-[11px]">💾 Map သိမ်း</button>
@@ -1641,15 +1678,17 @@
           const serverIds = serverOrders.map(o => o.orderId);
           const nowMs = Date.now();
 
+          // Admin မှ (COD Finished) နှိပ်၍ 'ပို့ပြီး' ဖြစ်မှသာ ဝယ်သူဘက်တွင် ပစ္စည်းပို့ပြီးကြောင်း Noti တက်ပြီး ခြင်းတောင်းမှ ပျောက်မည်
           const completedNow = localOrders.filter(o => deliveredIds.includes(o.orderId));
           completedNow.forEach(doneOrd => {
             sendPhoneNotification(
               `✅ ပစ္စည်းပို့ဆောင်မှု ပြီးစီးပါပြီ! (${doneOrd.orderId})`,
-              "MiniTrend Kids ကို အားပေးတဲ့အတွက် ကျေးဇူးအများကြီးတင်ပါတယ်ရှင် 💝",
+              "သင်မှာယူထားသော ပစ္စည်းပို့ဆောင်မှု ပြီးစီးပါပြီ။ MiniTrend Kids ကို အားပေးတဲ့အတွက် ကျေးဇူးအများကြီးတင်ပါတယ်ရှင် 💝",
               "delivered-" + doneOrd.orderId
             );
           });
 
+          // Sheet ထဲသို့ သိမ်းဆည်းနေဆဲ အော်ဒါအသစ်များ + Google Sheet မှ Active အော်ဒါအားလုံးကို ပေါင်းစည်းမည်
           const finalOrders = [];
           const seenIds = {};
 
@@ -1715,16 +1754,25 @@
       btn.disabled = false; btn.innerText = "📂 Sheet (၉) ခု + Riders ဆောက်မည်";
     }
 
-    async function markOrderDelivered(orderId) {
+    async function markOrderDelivered(orderId, btnEl) {
       if (!isAdminAuthenticated()) { openAdminPasswordModal(); return; }
+      if (btnEl) {
+        btnEl.disabled = true;
+        btnEl.innerText = "⏳ အတည်ပြုနေသည်...";
+      }
       try {
         await fetch(APPS_SCRIPT_ORDER_URL, {
           method: "POST", mode: "no-cors",
           headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({ action: "markDelivered", orderId })
         });
-        setTimeout(() => refreshAdminAll(), 800);
-      } catch (e) {}
+        setTimeout(() => refreshAdminAll(), 900);
+      } catch (e) {
+        if (btnEl) {
+          btnEl.disabled = false;
+          btnEl.innerText = "✅ COD Finished";
+        }
+      }
     }
 
     async function refreshAdminAll() {
@@ -1779,6 +1827,23 @@
             );
           }
         }
+
+        // Delivery ဝန်ထမ်း COD ငွေပေးချေပြီး နှိပ်ထားသော အော်ဒါအသစ်ရှိပါက Admin ဘက်တွင်သာ Noti ပြမည်
+        try {
+          const notifiedCodIds = JSON.parse(localStorage.getItem('mt_admin_notified_cod_ids') || '[]');
+          const newlyCodPaid = adminPendingOrdersCache.filter(o => o.status === 'COD ငွေပေးချေပြီး' && !notifiedCodIds.includes(o.orderId));
+          if (newlyCodPaid.length > 0) {
+            newlyCodPaid.forEach(codOrd => {
+              notifiedCodIds.push(codOrd.orderId);
+              sendPhoneNotification(
+                `💰 COD Finished — ${codOrd.riderName || codOrd.riderId || 'Delivery'}`,
+                `${codOrd.orderId} — ${codOrd.name} | 💰 ${Number(codOrd.grandTotal || 0).toLocaleString()} ကျပ် (Admin မှ '✅ COD Finished' ကို နှိပ်၍ အတည်ပြုပါ)`,
+                'cod-paid-' + codOrd.orderId
+              );
+            });
+            localStorage.setItem('mt_admin_notified_cod_ids', JSON.stringify(notifiedCodIds.slice(-100)));
+          }
+        } catch (e) {}
 
         renderAdminOrdersAndRiders();
 
