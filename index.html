@@ -2777,7 +2777,7 @@
       const baseDir = window.location.origin + window.location.pathname.replace(/[^/]*$/, '');
       const baseUrl = window.location.origin + window.location.pathname;
       document.getElementById('customer-link-input').value = `${baseUrl}?role=customer`;
-      document.getElementById('delivery-link-input').value = `${baseDir}delivery.html`;
+      document.getElementById('delivery-link-input').value = `${baseDir}delivery/`;
       document.getElementById('admin-link-input').value = `${baseUrl}?role=admin`;
       document.getElementById('link-modal').classList.remove('hidden');
       pushModalHistory('link');
