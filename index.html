@@ -2,12 +2,12 @@
 <html lang="my">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>MiniTrend Kids - ကလေးဖက်ရှင်နှင့် အသုံးအဆောင်များ</title>
   <meta name="theme-color" content="#db2777" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="MiniTrend Kids" />
   <link rel="manifest" href="./manifest.json?v=4" />
   <link rel="icon" type="image/png" href="./icon.png?v=3" />
@@ -68,7 +68,19 @@
       -webkit-text-size-adjust: 100%;
       overflow-x: hidden;
     }
-    body { font-family: 'Pyidaungsu', 'Myanmar Text', 'Noto Sans Myanmar', system-ui, -apple-system, sans-serif; }
+    body {
+      font-family: 'Pyidaungsu', 'Myanmar Text', 'Noto Sans Myanmar', system-ui, -apple-system, sans-serif;
+      padding-top: env(safe-area-inset-top, 0px);
+    }
+    .sticky-safe-top {
+      top: env(safe-area-inset-top, 0px);
+    }
+    .noti-safe-top {
+      top: calc(0.75rem + env(safe-area-inset-top, 0px));
+    }
+    .drawer-safe-top {
+      padding-top: calc(1.25rem + env(safe-area-inset-top, 0px));
+    }
     button, a { touch-action: manipulation; }
     /* iPhone တွင် စာရိုက်အကွက်နှိပ်လျှင် Auto-Zoom မဖြစ်စေရန် 16px သတ်မှတ်ထားသည် */
     input, select, textarea {
@@ -193,7 +205,7 @@
   </script>
 
   <!-- TOP NOTIFICATION BANNER -->
-  <div id="push-noti-popup" class="fixed top-3 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-md hidden noti-slide-in">
+  <div id="push-noti-popup" class="fixed noti-safe-top left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-md hidden noti-slide-in">
     <div class="bg-gray-900/95 text-white rounded-2xl p-3.5 shadow-2xl border-2 border-pink-400 flex items-start gap-3 backdrop-blur-md">
       <img src="./icon.png?v=3" class="w-11 h-11 rounded-xl object-cover shrink-0 border border-white/20" />
       <div class="flex-1 min-w-0">
@@ -238,7 +250,7 @@
       </div>
     </div>
 
-    <header class="header-3d-glass sticky top-0 z-30 border-b border-pink-100">
+    <header class="header-3d-glass sticky sticky-safe-top z-30 border-b border-pink-100">
       <div class="max-w-6xl mx-auto px-2 py-1.5 flex justify-between items-center gap-1">
         <div class="flex items-center gap-1.5 min-w-0 scene-3d">
           <div class="relative w-9 h-9 sm:w-10 sm:h-10 shrink-0 flex items-center justify-center">
@@ -563,7 +575,7 @@
 
   <!-- ================= FULL-SCREEN IMAGE LIGHTBOX MODAL ================= -->
   <div id="image-lightbox-modal" onclick="closeImageLightbox()" class="fixed inset-0 bg-black/90 z-50 hidden flex flex-col items-center justify-center p-3 sm:p-4 backdrop-blur-sm overflow-y-auto">
-    <button type="button" onclick="closeImageLightbox()" class="fixed top-3 right-3 z-50 bg-white/20 hover:bg-white/35 text-white w-10 h-10 rounded-full flex items-center justify-center text-xl font-bold shadow-lg transition">✕</button>
+    <button type="button" onclick="closeImageLightbox()" class="fixed noti-safe-top right-3 z-50 bg-white/20 hover:bg-white/35 text-white w-10 h-10 rounded-full flex items-center justify-center text-xl font-bold shadow-lg transition">✕</button>
     <div onclick="event.stopPropagation()" class="max-w-lg w-full flex flex-col items-center my-auto">
       <img id="lightbox-img" src="" alt="" class="max-h-[62vh] w-auto max-w-full object-contain rounded-2xl shadow-2xl border border-white/15 bg-black/40">
       <div class="mt-3 w-full bg-white rounded-2xl p-4 shadow-2xl border border-pink-100 text-left">
@@ -632,11 +644,11 @@
 
   <!-- ================= CART & CHECKOUT DRAWER ================= -->
   <div id="cart-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex justify-end">
-    <div class="bg-white w-full max-w-md h-full flex flex-col justify-between p-5 overflow-y-auto">
+    <div class="bg-white w-full max-w-md h-full flex flex-col justify-between p-5 drawer-safe-top overflow-y-auto">
       <div>
         <div class="flex justify-between items-center border-b pb-3 mb-4">
           <h3 class="text-lg font-bold text-gray-900">🛍️ ဝယ်ယူမည့် ခြင်းတောင်း</h3>
-          <button onclick="toggleCart()" class="text-gray-500 hover:text-gray-800 text-xl font-bold">✕</button>
+          <button onclick="toggleCart()" class="text-gray-500 hover:text-gray-800 text-xl font-bold px-2 py-1">✕</button>
         </div>
         <div id="cart-items" class="space-y-3 mb-5"></div>
       </div>
