@@ -1,254 +1,168 @@
-self.addEventListener('push', (event) => {
-  if (!event.data) return;
-  event.stopImmediatePropagation();
+const NOTI_STATE_CACHE = 'minitrend-noti-state-v1';
+const APPS_SCRIPT_ORDER_URL = 'https://script.google.com/macros/s/AKfycbzjiat7rNkOGkQYjf3RT6rC4g5AdXiVtraecqUTG8wXcu4l6Dm1mmtnXpVhaxjAzsrd/exec';
+const ICON_URL = 'https://kflowcreated-stack.github.io/minitrend-kids/icon.png?v=3';
+const BADGE_URL = 'https://kflowcreated-stack.github.io/minitrend-kids/badge.png?v=1';
+const DEFAULT_URL = 'https://kflowcreated-stack.github.io/minitrend-kids/?role=customer';
 
-  let payload = {};
-  try {
-    payload = event.data.json();
-  } catch (e) {
-    payload = { notification: { title: 'MiniTrend Kids 🎁', body: event.data.text() } };
-  }
-
-  const noti = payload.notification || {};
-  const data = payload.data || {};
-  const title = noti.title || data.title || 'MiniTrend Kids 🎁';
-  const body = noti.body || data.body || '';
-  const icon = noti.icon || data.icon || './icon.png?v=3';
-  const badge = noti.badge || data.badge || './badge.png?v=1';
-  const linkUrl = data.url || (payload.fcmOptions && payload.fcmOptions.link) || './?role=customer';
-
-  event.waitUntil(
-    self.registration.showNotification(title, {
-      body: body,
-      icon: icon,
-      badge: badge,
-      tag: 'mt-fcm-' + Date.now(),
-      renotify: true,
-      silent: false,
-      requireInteraction: true,
-      vibrate: [500, 200, 500, 200, 500],
-      data: { url: linkUrl }
-    })
-  );
-});
-
-importScripts('https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/10.13.2/firebase-messaging-compat.js');
-
-firebase.initializeApp({
-  apiKey: "AIzaSyDyb--Qc9tic7g8GOzVWYi8vpLMSfTaI5U",
-  authDomain: "minitrend-kids.firebaseapp.com",
-  projectId: "minitrend-kids",
-  storageBucket: "minitrend-kids.firebasestorage.app",
-  messagingSenderId: "523213115439",
-  appId: "1:523213115439:web:0e97b742e7d067943f36da"
-});
-
-try {
-  const messaging = firebase.messaging();
-  messaging.onBackgroundMessage(() => {});
-} catch (e) {}
-
-const CACHE_NAME = 'minitrend-kids-v15';
-const STATE_CACHE = 'minitrend-noti-state-v1';
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzjiat7rNkOGkQYjf3RT6rC4g5AdXiVtraecqUTG8wXcu4l6Dm1mmtnXpVhaxjAzsrd/exec';
-
-const APP_SHELL = [
-  './',
-  './index.html',
-  './manifest.json?v=4',
-  './icon.png?v=3',
-  './badge.png?v=1',
-  'https://cdn.tailwindcss.com'
-];
-
-self.addEventListener('install', (event) => {
+self.addEventListener('install', function() {
   self.skipWaiting();
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return Promise.allSettled(
-        APP_SHELL.map((url) => cache.add(url).catch(() => {}))
-      );
-    })
-  );
 });
 
-self.addEventListener('activate', (event) => {
+self.addEventListener('activate', function(event) {
   event.waitUntil(
-    caches.keys().then((keys) => {
+    caches.keys().then(function(keys) {
       return Promise.all(
-        keys.map((key) => {
-          if (key !== CACHE_NAME && key !== STATE_CACHE) {
+        keys.map(function(key) {
+          if (key !== NOTI_STATE_CACHE) {
             return caches.delete(key);
           }
         })
       );
-    }).then(() => self.clients.claim())
+    }).then(function() {
+      return self.clients.claim();
+    })
   );
 });
 
-async function displaySystemNotification(title, body, tag) {
+// Firebase Push ဝင်လာသည့်အခါ ၁ ကြိမ်တည်းသာ ပြသပေးမည့် စနစ်
+self.addEventListener('push', function(event) {
+  event.waitUntil((async function() {
+    let payload = {};
+    try {
+      if (event.data) {
+        payload = event.data.json();
+      }
+    } catch (e) {
+      try {
+        payload = { data: { body: event.data.text() } };
+      } catch (err) {}
+    }
+
+    const d = payload.data || {};
+    const n = payload.notification || {};
+    const title = d.title || n.title || 'MiniTrend Kids 🎁';
+    const body = d.body || n.body || '';
+    const url = d.url || (payload.fcmOptions && payload.fcmOptions.link) || DEFAULT_URL;
+    const tag = d.tag || d.notiId || ('mt-' + title + '-' + body).substring(0, 64);
+
+    let isDuplicate = false;
+    try {
+      const cache = await caches.open(NOTI_STATE_CACHE);
+      const seenKey = 'seen-' + encodeURIComponent(tag);
+      const prevResp = await cache.match(seenKey);
+      if (prevResp) {
+        const prevTime = parseInt(await prevResp.text(), 10) || 0;
+        if (Date.now() - prevTime < 60000) {
+          isDuplicate = true;
+        }
+      }
+      await cache.put(seenKey, new Response(String(Date.now())));
+      if (d.notiId) {
+        await cache.put('last-noti-id', new Response(String(d.notiId)));
+      }
+    } catch (e) {}
+
+    const options = {
+      body: body,
+      icon: d.icon || ICON_URL,
+      badge: d.badge || BADGE_URL,
+      tag: tag,
+      renotify: false,
+      silent: isDuplicate,
+      requireInteraction: !isDuplicate,
+      data: { url: url }
+    };
+    if (!isDuplicate) {
+      options.vibrate = [300, 150, 300];
+    }
+
+    await self.registration.showNotification(title, options);
+  })());
+});
+
+async function checkRemoteBroadcast() {
   try {
-    await self.registration.showNotification(title || 'MiniTrend Kids 🧸', {
-      body: body || '',
-      icon: './icon.png?v=3',
-      badge: './badge.png?v=1',
-      tag: tag || ('mt-noti-' + Date.now()),
-      renotify: true,
-      silent: false,
-      requireInteraction: true,
-      vibrate: [500, 200, 500, 200, 500],
-      data: { url: './?role=customer' }
+    const res = await fetch(APPS_SCRIPT_ORDER_URL + '?action=checkOrders&t=' + Date.now(), { cache: 'no-store' });
+    const data = await res.json();
+    if (!data || data.status !== 'ok' || !data.latestNoti || !data.latestNoti.id || !data.latestNoti.message) {
+      return;
+    }
+
+    const noti = data.latestNoti;
+    const cache = await caches.open(NOTI_STATE_CACHE);
+    const lastResp = await cache.match('last-noti-id');
+    const lastId = lastResp ? (await lastResp.text()).trim() : '';
+
+    if (lastId === String(noti.id)) {
+      return;
+    }
+
+    await cache.put('last-noti-id', new Response(String(noti.id)));
+    await cache.put('seen-' + encodeURIComponent(noti.id), new Response(String(Date.now())));
+
+    await self.registration.showNotification(noti.title || 'MiniTrend Kids 🎁', {
+      body: noti.message,
+      icon: ICON_URL,
+      badge: BADGE_URL,
+      tag: String(noti.id),
+      renotify: false,
+      vibrate: [300, 150, 300],
+      data: { url: DEFAULT_URL }
     });
   } catch (e) {}
 }
 
-self.addEventListener('notificationclick', (event) => {
-  event.notification.close();
-  const targetUrl = (event.notification.data && event.notification.data.url) ? event.notification.data.url : './?role=customer';
+self.addEventListener('message', function(event) {
+  const msg = event.data || {};
+  if (msg.type === 'SHOW_SYSTEM_NOTI') {
+    const delay = Number(msg.delayMs || 0);
+    const showFn = function() {
+      return self.registration.showNotification(msg.title || 'MiniTrend Kids 🧸', {
+        body: msg.body || '',
+        icon: ICON_URL,
+        badge: BADGE_URL,
+        tag: msg.tag || ('mt-' + Date.now()),
+        renotify: false,
+        vibrate: [250, 120, 250],
+        data: { url: msg.url || DEFAULT_URL }
+      });
+    };
+    event.waitUntil(
+      delay > 0
+        ? new Promise(function(resolve) { setTimeout(function() { showFn().then(resolve); }, delay); })
+        : showFn()
+    );
+  } else if (msg.type === 'CHECK_REMOTE_NOTI') {
+    event.waitUntil(checkRemoteBroadcast());
+  }
+});
 
+self.addEventListener('sync', function(event) {
+  if (event.tag === 'minitrend-noti-sync') {
+    event.waitUntil(checkRemoteBroadcast());
+  }
+});
+
+self.addEventListener('periodicsync', function(event) {
+  if (event.tag === 'minitrend-noti-sync') {
+    event.waitUntil(checkRemoteBroadcast());
+  }
+});
+
+self.addEventListener('notificationclick', function(event) {
+  event.notification.close();
+  const targetUrl = (event.notification.data && event.notification.data.url) || DEFAULT_URL;
   event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
-      for (let i = 0; i < windowClients.length; i++) {
-        const client = windowClients[i];
-        if ('focus' in client) {
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(clientList) {
+      for (let i = 0; i < clientList.length; i++) {
+        const client = clientList[i];
+        if (client.url === targetUrl && 'focus' in client) {
           return client.focus();
         }
       }
       if (clients.openWindow) {
         return clients.openWindow(targetUrl);
       }
-    })
-  );
-});
-
-self.addEventListener('periodicsync', (event) => {
-  if (event.tag === 'minitrend-noti-sync') {
-    event.waitUntil(checkRemoteBroadcastInSW());
-  }
-});
-
-self.addEventListener('sync', (event) => {
-  if (event.tag === 'minitrend-noti-sync') {
-    event.waitUntil(checkRemoteBroadcastInSW());
-  }
-});
-
-self.addEventListener('message', (event) => {
-  if (!event.data) return;
-
-  if (event.data.type === 'SHOW_SYSTEM_NOTI') {
-    const { title, body, tag, delayMs } = event.data;
-    if (delayMs && delayMs > 0) {
-      event.waitUntil(
-        new Promise((resolve) => {
-          setTimeout(async () => {
-            await displaySystemNotification(title, body, tag);
-            resolve();
-          }, delayMs);
-        })
-      );
-    } else {
-      event.waitUntil(displaySystemNotification(title, body, tag));
-    }
-  }
-
-  if (event.data.type === 'CHECK_REMOTE_NOTI') {
-    event.waitUntil(checkRemoteBroadcastInSW());
-  }
-});
-
-async function checkRemoteBroadcastInSW() {
-  try {
-    const res = await fetch(APPS_SCRIPT_URL + '?action=checkOrders&ids=&t=' + Date.now());
-    const data = await res.json();
-    if (!data || !data.latestNoti || !data.latestNoti.id) return;
-
-    const stateCache = await caches.open(STATE_CACHE);
-    const prevRes = await stateCache.match('last-noti-id');
-    const prevId = prevRes ? await prevRes.text() : '';
-
-    if (prevId !== data.latestNoti.id) {
-      await stateCache.put('last-noti-id', new Response(data.latestNoti.id));
-      await displaySystemNotification(
-        data.latestNoti.title || 'MiniTrend Kids 🎁',
-        data.latestNoti.message,
-        data.latestNoti.id
-      );
-    }
-  } catch (e) {}
-}
-
-self.addEventListener('fetch', (event) => {
-  const req = event.request;
-  const url = new URL(req.url);
-
-  if (
-    req.method !== 'GET' ||
-    url.hostname.includes('script.google.com') ||
-    url.hostname.includes('googleusercontent.com') ||
-    url.hostname.includes('docs.google.com') ||
-    url.hostname.includes('googleapis.com') ||
-    url.hostname.includes('gstatic.com')
-  ) {
-    return;
-  }
-
-  if (req.mode === 'navigate') {
-    event.respondWith(
-      new Promise((resolve) => {
-        let settled = false;
-        const timer = setTimeout(async () => {
-          if (settled) return;
-          const cached =
-            (await caches.match('./index.html', { ignoreSearch: true })) ||
-            (await caches.match('./', { ignoreSearch: true }));
-          if (cached) {
-            settled = true;
-            resolve(cached);
-          }
-        }, 1500);
-
-        fetch(req)
-          .then((networkRes) => {
-            clearTimeout(timer);
-            if (networkRes && networkRes.status === 200) {
-              const clone = networkRes.clone();
-              caches.open(CACHE_NAME).then((cache) => cache.put('./index.html', clone));
-            }
-            if (!settled) {
-              settled = true;
-              resolve(networkRes);
-            }
-          })
-          .catch(async () => {
-            clearTimeout(timer);
-            if (!settled) {
-              settled = true;
-              const cached =
-                (await caches.match('./index.html', { ignoreSearch: true })) ||
-                (await caches.match('./', { ignoreSearch: true }));
-              resolve(cached || Response.error());
-            }
-          });
-      })
-    );
-    return;
-  }
-
-  event.respondWith(
-    caches.match(req, { ignoreSearch: true }).then((cachedRes) => {
-      const networkFetch = fetch(req)
-        .then((networkRes) => {
-          if (networkRes && networkRes.status === 200) {
-            const clone = networkRes.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(req, clone));
-          }
-          return networkRes;
-        })
-        .catch(() => cachedRes);
-
-      return cachedRes || networkFetch;
     })
   );
 });
