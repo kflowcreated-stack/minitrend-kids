@@ -410,7 +410,7 @@
     <div class="flex flex-wrap justify-between items-center gap-3 mb-5">
       <div>
         <h2 class="text-xl sm:text-2xl font-bold text-gray-900">🔐 ဆိုင်ပိုင်ရှင် စီမံခန့်ခွဲမှု (Admin Panel)</h2>
-        <p class="text-xs sm:text-sm text-gray-500">အော်ဒါခွဲဝေတာဝန်ပေးခြင်း၊ (COD Finished) အတည်ပြုခြင်း၊ Map Link ထည့်ခြင်းနှင့် Stock စစ်ဆေးခြင်း</p>
+        <p class="text-xs sm:text-sm text-gray-500">ပစ္စည်းပုံတိုက်စစ်ထုပ်ပိုးခြင်း၊ အော်ဒါခွဲဝေတာဝန်ပေးခြင်း၊ (COD Finished) အတည်ပြုခြင်းနှင့် Stock စစ်ဆေးခြင်း</p>
       </div>
       <div class="flex flex-wrap gap-2">
         <button type="button" onclick="manualConnectFirebase('admin')" id="btn-admin-fcm" class="bg-purple-600 hover:bg-purple-700 active:scale-95 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-sm transition cursor-pointer">🔔 ဤဖုန်းကို Noti ချိတ်မည်</button>
@@ -439,12 +439,12 @@
       </div>
     </div>
 
-    <!-- Pending Orders + Multi-Rider Assignment + COD Finished Confirmation -->
+    <!-- Pending Orders + Packing Photos + Multi-Rider Assignment + COD Finished Confirmation -->
     <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-emerald-200 mb-6">
       <div class="flex flex-wrap justify-between items-center gap-2 mb-3">
         <div>
-          <h3 class="font-extrabold text-sm sm:text-base text-gray-900">🚚 ပို့ဆောင်ရန် ကျန်ရှိသော အော်ဒါများနှင့် (COD Finished) အတည်ပြုမှု</h3>
-          <p class="text-[11px] text-gray-500">Delivery ဝန်ထမ်း COD ငွေပေးချေပြီးကြောင်း နှိပ်ပါက သက်ဆိုင်ရာအော်ဒါတွင် <b>"✅ COD Finished"</b> ခလုတ်ပေါ်လာမည်ဖြစ်ပြီး Admin မှ နှိပ်အတည်ပြုမှသာ ဝယ်သူထံ ပစ္စည်းပို့ပြီးကြောင်း Noti ဝင်၍ ခြင်းတောင်းမှ အော်ဒါပျောက်ပါမည်။</p>
+          <h3 class="font-extrabold text-sm sm:text-base text-gray-900">🚚 ပို့ဆောင်ရန် ကျန်ရှိသော အော်ဒါများ (ပုံတိုက်စစ်ထုပ်ပိုးရန်နှင့် COD Finished)</h3>
+          <p class="text-[11px] text-gray-500">ဝယ်သူမှာထားသော ပစ္စည်းပုံများကို နှိပ်၍ အကြီးချဲ့ကြည့်နိုင်ပြီး ထုပ်ပိုးပြီးတိုင်း <b>☑ အမှန်ခြစ်</b> ခြစ်ထားနိုင်ပါသည်။ Delivery ဝန်ထမ်း COD ငွေပေးချေပြီးကြောင်း နှိပ်ပါက <b>"✅ COD Finished"</b> ခလုတ်ကို Admin မှ နှိပ်အတည်ပြုပေးပါ။</p>
         </div>
       </div>
 
@@ -812,6 +812,93 @@
     let adminRiderStatsCache = [];
     let adminOrderRiderFilter = "ALL";
     let customerOrderStatusMap = {};
+    window.__adminItemPreviewMap = {};
+
+    function escapeHtml(str) {
+      return (str || '').toString()
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    // ================= ADMIN PACKING PHOTOS & CHECKLIST =================
+    function getPackingChecks() {
+      try { return JSON.parse(localStorage.getItem('mt_admin_packing_checks') || '{}'); } catch (e) { return {}; }
+    }
+
+    function togglePackingCheck(orderId, itemIdx) {
+      const checks = getPackingChecks();
+      const key = `${orderId}_${itemIdx}`;
+      if (checks[key]) delete checks[key];
+      else checks[key] = true;
+      try { localStorage.setItem('mt_admin_packing_checks', JSON.stringify(checks)); } catch (e) {}
+      renderAdminOrdersAndRiders();
+    }
+
+    function lookupProductImage(itemName, colorName) {
+      if (!itemName || !Array.isArray(products) || products.length === 0) return "";
+      const normName = itemName.toString().trim().toLowerCase();
+      const normColor = (colorName || "").toString().trim().toLowerCase();
+      const matched = products.find(p => (p.name || "").toString().trim().toLowerCase() === normName)
+        || products.find(p => (p.name || "").toString().trim().toLowerCase().includes(normName) || normName.includes((p.name || "").toString().trim().toLowerCase()));
+      if (!matched || !Array.isArray(matched.variants) || matched.variants.length === 0) return "";
+      if (normColor) {
+        const vMatch = matched.variants.find(v => (v.colorName || "").toString().trim().toLowerCase() === normColor)
+          || matched.variants.find(v => (v.colorName || "").toString().trim().toLowerCase().includes(normColor));
+        if (vMatch && vMatch.image) return vMatch.image;
+      }
+      return matched.variants[0].image || "";
+    }
+
+    function parseOrderItemsForAdmin(order) {
+      let parsedList = [];
+      if (order.itemsJson) {
+        try {
+          const arr = JSON.parse(order.itemsJson);
+          if (Array.isArray(arr) && arr.length > 0) {
+            parsedList = arr.map(it => {
+              const nm = (it.name || "").toString().trim();
+              const cl = (it.colorName || "").toString().trim();
+              const sz = (it.size || "").toString().trim();
+              const qt = Number(it.qty || 1);
+              const pr = Number(it.price || 0);
+              const img = (it.image && it.image.toString().trim()) ? it.image.toString().trim() : lookupProductImage(nm, cl);
+              return { name: nm, colorName: cl, size: sz, qty: qt, price: pr, image: img };
+            });
+          }
+        } catch (e) {}
+      }
+
+      // ယခင်တင်ထားပြီးသား အော်ဒါအဟောင်းများအတွက် itemsText မှ အလိုအလျောက် ဖတ်၍ ပုံရှာပေးခြင်း
+      if (parsedList.length === 0 && order.itemsText) {
+        const lines = order.itemsText.toString().split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+        lines.forEach(line => {
+          const m = line.match(/^\d+\.\s*(.+?)\s*\[အရောင်:\s*(.+?)\s*\|\s*အရွယ်:\s*(.+?)\]\s*x\s*(\d+)/);
+          if (m) {
+            const nm = m[1].trim();
+            const cl = m[2].trim();
+            const sz = m[3].trim();
+            const qt = parseInt(m[4], 10) || 1;
+            parsedList.push({ name: nm, colorName: cl, size: sz, qty: qt, price: 0, image: lookupProductImage(nm, cl) });
+          }
+        });
+      }
+      return parsedList;
+    }
+
+    function openAdminItemPreview(previewKey) {
+      const info = window.__adminItemPreviewMap[previewKey];
+      if (!info) return;
+      document.getElementById('lightbox-img').src = info.image || './icon.png?v=3';
+      document.getElementById('lightbox-caption').innerText = info.name || 'ပစ္စည်းအမည်';
+      document.getElementById('lightbox-color-badge').innerText = `🎨 အရောင်: ${info.colorName || 'မူရင်း'} | 📏 Size: ${info.size || '-'} | 📦 အရေအတွက်: ${info.qty || 1} ခု`;
+      document.getElementById('lightbox-price-badge').innerText = `x ${info.qty || 1} ခု`;
+      document.getElementById('lightbox-description').innerText = `🧾 အော်ဒါနံပါတ်: ${info.orderId}\n👤 ဝယ်ယူသူ: ${info.customerName}\n\n👉 ဤပုံနှင့် အရောင်/Size ကို စတော့ပစ္စည်းနှင့် တိုက်စစ်ပြီးမှ ထုပ်ပိုးပေးပါခင်ဗျာ။`;
+      document.getElementById('image-lightbox-modal').classList.remove('hidden');
+      pushModalHistory('lightbox');
+    }
 
     // ================= SMART GOOGLE MAPS URL BUILDER =================
     function buildSmartMapsInfo(order) {
@@ -879,7 +966,11 @@
           alert("⚠️ iPhone တွင် GPS တည်နေရာ ရှာမတွေ့သေးပါ။\nSettings → Privacy & Security → Location Services → Safari Websites ကို 'While Using the App' ဖွင့်ထားကြောင်း စစ်ဆေးပါ (သို့မဟုတ်) GPS မထည့်ဘဲ အပေါ်ပါ လိပ်စာဖြင့် အော်ဒါတင်နိုင်ပါသည်။");
         }
       } else {
-        alert("⚠️ GPS ဖွင့်မရပါ (ဖုန်း Location ဖွင့်ထားကြောင်း စစ်ဆေးပါ)။ GPS မထည့်ဘဲ အပေါ်ပါ မြို့နယ်နှင့် လမ်းလိပ်စာဖြင့်လည်း အော်ဒါတင်နိုင်ပါသည်။");
+        if (errCode === 1) {
+          alert("⚠️ Android တွင် Location ခွင့်ပြုချက် ပိတ်ထားပါသည်။\nChrome → ⋮ → Settings → Site settings → Location ကို ဖွင့်ပေးပါ (သို့မဟုတ်) GPS မထည့်ဘဲ အပေါ်ပါ မြို့နယ်နှင့် လမ်းလိပ်စာဖြင့် အော်ဒါတင်နိုင်ပါသည်။");
+        } else {
+          alert("⚠️ GPS ဖွင့်မရပါ (ဖုန်း Location ဖွင့်ထားကြောင်းနှင့် Chrome ဖြင့် ဖွင့်ထားကြောင်း စစ်ဆေးပါ)။ GPS မထည့်ဘဲ အပေါ်ပါ မြို့နယ်နှင့် လမ်းလိပ်စာဖြင့်လည်း အော်ဒါတင်နိုင်ပါသည်။");
+        }
       }
     }
 
@@ -1156,7 +1247,7 @@
           const isOnWay = o.status === 'ပို့ဆောင်နေပြီ';
           const mapInfo = buildSmartMapsInfo(o);
           const detailBlock = o.addressDetail
-            ? `<p class="text-gray-800 bg-amber-50 border border-amber-200 rounded-lg px-2.5 py-1.5">🏠 <b>အိမ်နံပါတ်/မှတ်ချက်:</b> ${o.addressDetail}</p>`
+            ? `<p class="text-gray-800 bg-amber-50 border border-amber-200 rounded-lg px-2.5 py-1.5">🏠 <b>အိမ်နံပါတ်/မှတ်ချက်:</b> ${escapeHtml(o.addressDetail)}</p>`
             : '';
           return `
             <div class="border-2 ${isOnWay ? 'border-amber-400 bg-amber-50/40' : 'border-blue-100 bg-gray-50/50'} rounded-2xl p-3.5 space-y-2.5">
@@ -1172,10 +1263,10 @@
                 </div>
               </div>
               <div class="text-xs space-y-1.5">
-                <p class="font-extrabold text-gray-900 text-sm">👤 ${o.name} — <span class="text-blue-700">${o.phone}</span></p>
-                <p class="text-gray-700 leading-relaxed">📍 <b>လိပ်စာ:</b> ${o.address}</p>
+                <p class="font-extrabold text-gray-900 text-sm">👤 ${escapeHtml(o.name)} — <span class="text-blue-700">${escapeHtml(o.phone)}</span></p>
+                <p class="text-gray-700 leading-relaxed">📍 <b>လိပ်စာ:</b> ${escapeHtml(o.address)}</p>
                 ${detailBlock}
-                <p class="text-pink-700 font-bold whitespace-pre-line bg-white p-2 rounded-xl border border-pink-100">${o.itemsText}</p>
+                <p class="text-pink-700 font-bold whitespace-pre-line bg-white p-2 rounded-xl border border-pink-100">${escapeHtml(o.itemsText)}</p>
                 <div class="flex justify-between items-center pt-1">
                   <span class="text-[11px] text-gray-500">${formatOrderDateTime(o.dateTime)}</span>
                   <span class="text-sm font-extrabold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-lg">💰 COD: ${Number(o.grandTotal).toLocaleString()} ကျပ်</span>
@@ -1209,7 +1300,7 @@
           return `
             <div class="py-2.5 flex justify-between items-center gap-2">
               <div>
-                <p class="font-bold text-gray-800">${isAdminConfirmed ? '✅' : '💰'} ${o.orderId} — ${o.name}</p>
+                <p class="font-bold text-gray-800">${isAdminConfirmed ? '✅' : '💰'} ${o.orderId} — ${escapeHtml(o.name)}</p>
                 <div class="flex flex-wrap items-center gap-1.5 mt-0.5">
                   <span class="${isAdminConfirmed ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'} text-[10px] font-extrabold px-2 py-0.5 rounded-full">
                     ${isAdminConfirmed ? '✅ Admin (COD Finished) အတည်ပြုပြီး' : '⏳ Admin (COD Finished) အတည်ပြုရန် စောင့်ဆိုင်းဆဲ'}
@@ -1362,8 +1453,8 @@
           ridersEl.innerHTML = adminRidersList.map(r => `
             <div class="border border-gray-200 rounded-xl p-2.5 flex justify-between items-center gap-2 bg-gray-50/50">
               <div class="min-w-0">
-                <p class="font-extrabold text-gray-900 truncate">🚚 ${r.id} — ${r.name}</p>
-                <p class="text-[11px] text-gray-500">📞 ${r.phone || 'ဖုန်းမထည့်ရသေး'} | 🔑 PIN: <b class="text-blue-700">${r.pin}</b></p>
+                <p class="font-extrabold text-gray-900 truncate">🚚 ${r.id} — ${escapeHtml(r.name)}</p>
+                <p class="text-[11px] text-gray-500">📞 ${escapeHtml(r.phone || 'ဖုန်းမထည့်ရသေး')} | 🔑 PIN: <b class="text-blue-700">${escapeHtml(r.pin)}</b></p>
               </div>
               <div class="flex gap-1 shrink-0">
                 <button type="button" onclick="editRiderInAdmin('${r.id}')" class="bg-amber-100 text-amber-800 px-2 py-1 rounded-lg font-bold text-[11px]">✏️</button>
@@ -1383,7 +1474,7 @@
           codList.innerHTML = activeStats.map(s => `
             <div class="bg-white border border-blue-100 rounded-lg p-2 flex justify-between items-center">
               <div>
-                <p class="font-extrabold text-gray-900">${s.riderId} — ${s.riderName}</p>
+                <p class="font-extrabold text-gray-900">${s.riderId} — ${escapeHtml(s.riderName)}</p>
                 <p class="text-[10px] text-gray-500">ကျန်: <b class="text-blue-700">${s.pendingCount}</b> | COD Finished စစ်ရန်: <b class="text-amber-600">${s.codWaitingCount || 0}</b> | ယနေ့ပြီး: <b class="text-emerald-700">${s.todayDeliveredCount}</b></p>
               </div>
               <span class="font-extrabold text-emerald-700 bg-emerald-50 px-2 py-1 rounded-md">${Number(s.todayCodTotal).toLocaleString()} Ks</span>
@@ -1415,7 +1506,7 @@
         adminRiderStatsCache.forEach(s => {
           const riderActiveTotal = adminPendingOrdersCache.filter(o => o.riderId === s.riderId).length;
           if (riderActiveTotal > 0 || adminOrderRiderFilter === s.riderId) {
-            pillsHtml += `<button type="button" onclick="setAdminRiderFilter('${s.riderId}')" class="px-2.5 py-1 rounded-full border text-[11px] whitespace-nowrap ${pillCls(s.riderId)}">🚚 ${s.riderName} (${riderActiveTotal})</button>`;
+            pillsHtml += `<button type="button" onclick="setAdminRiderFilter('${s.riderId}')" class="px-2.5 py-1 rounded-full border text-[11px] whitespace-nowrap ${pillCls(s.riderId)}">🚚 ${escapeHtml(s.riderName)} (${riderActiveTotal})</button>`;
           }
         });
         filterBar.innerHTML = pillsHtml;
@@ -1442,6 +1533,9 @@
         return;
       }
 
+      window.__adminItemPreviewMap = {};
+      const packingChecks = getPackingChecks();
+
       pendingOrdersEl.innerHTML = filteredOrders.map(o => {
         const isCodPaid = o.status === 'COD ငွေပေးချေပြီး';
         const mapInfo = buildSmartMapsInfo(o);
@@ -1449,20 +1543,81 @@
         if (isCodPaid) {
           statusBadge = `<span class="bg-emerald-600 text-white px-2.5 py-0.5 rounded-full text-[10px] font-extrabold shadow-sm">🔔 Delivery COD ငွေကောက်ပြီး</span>`;
         } else if (o.status === 'ပို့ဆောင်နေပြီ') {
-          statusBadge = `<span class="bg-amber-500 text-white px-2 py-0.5 rounded-full text-[10px] font-extrabold">🚚 ${o.riderName || 'ဝန်ထမ်း'} လာပို့နေပြီ</span>`;
+          statusBadge = `<span class="bg-amber-500 text-white px-2 py-0.5 rounded-full text-[10px] font-extrabold">🚚 ${escapeHtml(o.riderName || 'ဝန်ထမ်း')} လာပို့နေပြီ</span>`;
         } else if (o.riderId) {
-          statusBadge = `<span class="bg-blue-600 text-white px-2 py-0.5 rounded-full text-[10px] font-extrabold">📌 ${o.riderName || o.riderId} တာဝန်ကျ</span>`;
+          statusBadge = `<span class="bg-blue-600 text-white px-2 py-0.5 rounded-full text-[10px] font-extrabold">📌 ${escapeHtml(o.riderName || o.riderId)} တာဝန်ကျ</span>`;
         }
 
         const codAlertBanner = isCodPaid ? `
           <div class="bg-emerald-100 border-2 border-emerald-400 text-emerald-950 rounded-xl px-3 py-2 text-xs font-extrabold flex flex-wrap justify-between items-center gap-2">
-            <span>🔔 ဝန်ထမ်း (${o.riderName || o.riderId}) မှ COD ငွေ (${Number(o.grandTotal || 0).toLocaleString()} ကျပ်) ပေးချေပြီးကြောင်း အကြောင်းကြားထားပါသည်!</span>
+            <span>🔔 ဝန်ထမ်း (${escapeHtml(o.riderName || o.riderId)}) မှ COD ငွေ (${Number(o.grandTotal || 0).toLocaleString()} ကျပ်) ပေးချေပြီးကြောင်း အကြောင်းကြားထားပါသည်!</span>
             <span class="text-[11px] bg-white text-emerald-800 px-2 py-0.5 rounded-lg border border-emerald-300">👉 "✅ COD Finished" ကို နှိပ်မှ ဝယ်သူထံ ပို့ပြီးကြောင်း Noti ဝင်ပါမည်</span>
           </div>
         ` : '';
 
+        // ပစ္စည်းပုံနှင့် ထုပ်ပိုးရန် Checklist တည်ဆောက်ခြင်း
+        const orderItems = parseOrderItemsForAdmin(o);
+        let packingSectionHtml = '';
+
+        if (orderItems.length > 0) {
+          let packedCount = 0;
+          const cardsHtml = orderItems.map((it, idx) => {
+            const pKey = `${o.orderId}_${idx}`;
+            const isChecked = !!packingChecks[pKey];
+            if (isChecked) packedCount++;
+            window.__adminItemPreviewMap[pKey] = {
+              orderId: o.orderId,
+              customerName: o.name || '',
+              name: it.name,
+              colorName: it.colorName,
+              size: it.size,
+              qty: it.qty,
+              image: it.image
+            };
+            const thumbHtml = it.image
+              ? `<button type="button" onclick="openAdminItemPreview('${pKey}')" class="relative w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden border-2 ${isChecked ? 'border-emerald-400' : 'border-pink-200'} shrink-0 bg-gray-100 cursor-zoom-in group">
+                   <img src="${escapeHtml(it.image)}" alt="${escapeHtml(it.name)}" class="w-full h-full object-cover object-top">
+                   <span class="absolute bottom-0.5 right-0.5 bg-black/70 text-white text-[9px] px-1 rounded">🔍</span>
+                 </button>`
+              : `<div class="w-14 h-14 sm:w-16 sm:h-16 rounded-xl border border-dashed border-gray-300 bg-gray-100 flex items-center justify-center text-[10px] text-gray-400 font-bold shrink-0">ပုံမရှိ</div>`;
+
+            return `
+              <div class="flex items-center gap-2.5 p-2 rounded-xl border ${isChecked ? 'bg-emerald-50/90 border-emerald-300' : 'bg-white border-pink-100'} transition">
+                <label class="flex items-center cursor-pointer shrink-0 p-1">
+                  <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="togglePackingCheck('${o.orderId}', ${idx})" class="w-5 h-5 accent-emerald-600 rounded cursor-pointer">
+                </label>
+                ${thumbHtml}
+                <div class="flex-1 min-w-0 space-y-1">
+                  <p class="font-extrabold text-xs sm:text-sm ${isChecked ? 'line-through text-gray-400' : 'text-gray-900'} leading-snug">${idx + 1}. ${escapeHtml(it.name)}</p>
+                  <div class="flex flex-wrap items-center gap-1">
+                    ${it.colorName ? `<span class="bg-purple-100 text-purple-800 border border-purple-200 px-1.5 py-0.5 rounded-md text-[10px] font-extrabold">🎨 ${escapeHtml(it.colorName)}</span>` : ''}
+                    ${it.size ? `<span class="bg-pink-100 text-pink-800 border border-pink-200 px-1.5 py-0.5 rounded-md text-[10px] font-extrabold">📏 ${escapeHtml(it.size)}</span>` : ''}
+                    <span class="bg-gray-900 text-white px-2 py-0.5 rounded-md text-[10px] font-extrabold">x ${it.qty} ခု</span>
+                    ${it.price > 0 ? `<span class="text-[10px] font-bold text-gray-500">${(it.price * it.qty).toLocaleString()} Ks</span>` : ''}
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('');
+
+          const allPacked = packedCount === orderItems.length;
+          packingSectionHtml = `
+            <div class="bg-pink-50/50 border border-pink-200 rounded-xl p-2.5 space-y-2 mt-1.5">
+              <div class="flex justify-between items-center gap-2">
+                <span class="text-[11px] font-extrabold text-gray-800">📦 ထုပ်ပိုးရန် ပစ္စည်းပုံနှင့် စာရင်း (ပုံနှိပ်၍ အကြီးချဲ့ကြည့်နိုင်သည်)</span>
+                <span class="${allPacked ? 'bg-emerald-600 text-white' : 'bg-amber-100 text-amber-900 border border-amber-300'} px-2 py-0.5 rounded-full text-[10px] font-extrabold shrink-0">
+                  ${allPacked ? `✅ ထုပ်ပိုးစုံပြီ (${packedCount}/${orderItems.length})` : `☑️ ထုပ်ပိုးပြီး: ${packedCount}/${orderItems.length}`}
+                </span>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-2">${cardsHtml}</div>
+            </div>
+          `;
+        } else {
+          packingSectionHtml = `<p class="text-pink-700 font-bold text-[11px] whitespace-pre-line bg-pink-50/60 border border-pink-100 rounded-xl p-2 mt-1">${escapeHtml(o.itemsText)}</p>`;
+        }
+
         const riderOptions = `<option value="">-- ဝန်ထမ်း ရွေးချယ်ရန် --</option>` +
-          adminRidersList.map(r => `<option value="${r.id}" ${o.riderId === r.id ? 'selected' : ''}>${r.id} — ${r.name}</option>`).join('');
+          adminRidersList.map(r => `<option value="${r.id}" ${o.riderId === r.id ? 'selected' : ''}>${r.id} — ${escapeHtml(r.name)}</option>`).join('');
 
         const safeMapVal = (o.mapLocation || '').replace(/"/g, '&quot;');
 
@@ -1474,16 +1629,16 @@
           <div class="${isCodPaid ? 'bg-emerald-50/70 border-2 border-emerald-400 rounded-2xl p-3 my-2.5 shadow-sm' : 'py-4'} space-y-2.5">
             ${codAlertBanner}
             <div class="flex flex-col lg:flex-row justify-between lg:items-start gap-3">
-              <div class="space-y-1 flex-1">
+              <div class="space-y-1 flex-1 min-w-0">
                 <div class="flex flex-wrap items-center gap-1.5">
-                  <p class="font-extrabold text-gray-900 text-xs sm:text-sm">🧾 ${o.orderId} — ${o.name} (${o.phone})</p>
+                  <p class="font-extrabold text-gray-900 text-xs sm:text-sm">🧾 ${o.orderId} — ${escapeHtml(o.name)} (${escapeHtml(o.phone)})</p>
                   ${statusBadge}
                   <span class="${mapInfo.isExact ? 'bg-emerald-100 text-emerald-800 border-emerald-300' : 'bg-gray-100 text-gray-600 border-gray-300'} border px-2 py-0.5 rounded-full text-[10px] font-extrabold">${mapInfo.label}</span>
                   <span class="bg-amber-100 text-amber-900 border border-amber-300 px-2 py-0.5 rounded-full text-[10px] font-extrabold">${formatOrderDateTime(o.dateTime)}</span>
                 </div>
-                <p class="text-gray-600 text-[11px]">📍 ${o.address}</p>
-                <p class="text-pink-700 font-bold text-[11px] whitespace-pre-line">${o.itemsText}</p>
-                <p class="text-gray-900 font-extrabold text-xs">💰 စုစုပေါင်း: ${Number(o.grandTotal || 0).toLocaleString()} ကျပ်</p>
+                <p class="text-gray-600 text-[11px]">📍 ${escapeHtml(o.address)}</p>
+                ${packingSectionHtml}
+                <p class="text-gray-900 font-extrabold text-xs pt-1">💰 စုစုပေါင်း (COD): ${Number(o.grandTotal || 0).toLocaleString()} ကျပ်</p>
               </div>
               <div class="flex flex-wrap items-center gap-1.5 shrink-0">
                 <select id="assign-select-${o.orderId}" class="border-2 border-blue-200 rounded-xl px-2.5 py-2 text-xs font-bold bg-blue-50/40 text-gray-800">
@@ -1517,9 +1672,15 @@
         if (!window.__fcmForegroundBound) {
           window.__fcmForegroundBound = true;
           messaging.onMessage((payload) => {
-            const title = (payload.notification && payload.notification.title) || (payload.data && payload.data.title) || "MiniTrend Kids 🎁";
-            const body = (payload.notification && payload.notification.body) || (payload.data && payload.data.body) || "";
-            sendPhoneNotification(title, body, "fcm-fg-" + Date.now());
+            const d = payload.data || {};
+            const n = payload.notification || {};
+            const title = d.title || n.title || "MiniTrend Kids 🎁";
+            const body = d.body || n.body || "";
+            const tag = d.tag || d.notiId || ("fcm-fg-" + Date.now());
+            if (d.notiId && d.notiId.indexOf("NOTI-") === 0) {
+              try { localStorage.setItem('mt_last_seen_noti_id', d.notiId); } catch (e) {}
+            }
+            sendPhoneNotification(title, body, tag);
           });
         }
 
@@ -1692,7 +1853,7 @@
           if (reg && reg.showNotification) {
             await reg.showNotification(title || 'MiniTrend Kids 🧸', {
               body: bodyText || '', icon: './icon.png?v=3', badge: './badge.png?v=1',
-              tag: tagId || ('mt-' + Date.now()), renotify: true, vibrate: [250, 120, 250],
+              tag: tagId || ('mt-' + Date.now()), renotify: false, vibrate: [250, 120, 250],
               data: { url: window.location.href }
             });
             return;
@@ -1707,16 +1868,26 @@
     async function checkAndTriggerBroadcastNoti(latestNoti) {
       if (!latestNoti || !latestNoti.id || !latestNoti.message) return;
       const lastSeenId = localStorage.getItem('mt_last_seen_noti_id');
-      if (lastSeenId !== latestNoti.id) {
-        localStorage.setItem('mt_last_seen_noti_id', latestNoti.id);
-        try {
-          if ('caches' in window) {
-            const stCache = await caches.open('minitrend-noti-state-v1');
-            await stCache.put('last-noti-id', new Response(latestNoti.id));
+      if (lastSeenId === latestNoti.id) return;
+
+      // sw.js မှ Firebase Push ဖြင့် ပြပြီးသား ID ဖြစ်နေပါက ထပ်မပြရန် Cache စစ်ဆေးခြင်း
+      try {
+        if ('caches' in window) {
+          const stCache = await caches.open('minitrend-noti-state-v1');
+          const cachedResp = await stCache.match('last-noti-id');
+          if (cachedResp) {
+            const swSeenId = (await cachedResp.text()).trim();
+            if (swSeenId === latestNoti.id) {
+              localStorage.setItem('mt_last_seen_noti_id', latestNoti.id);
+              return;
+            }
           }
-        } catch (e) {}
-        sendPhoneNotification(latestNoti.title || "MiniTrend Kids 🎁", latestNoti.message, latestNoti.id);
-      }
+          await stCache.put('last-noti-id', new Response(latestNoti.id));
+        }
+      } catch (e) {}
+
+      localStorage.setItem('mt_last_seen_noti_id', latestNoti.id);
+      sendPhoneNotification(latestNoti.title || "MiniTrend Kids 🎁", latestNoti.message, latestNoti.id);
     }
 
     async function sendOwnerBroadcast(e) {
@@ -1898,7 +2069,7 @@
         }
         if (stats.latestNoti && stats.latestNoti.message) {
           broadcastInfoEl.classList.remove('hidden');
-          broadcastInfoEl.innerHTML = `<b>📌 နောက်ဆုံးပို့ထားသော Notification (${stats.latestNoti.time}):</b><br><span class="text-pink-700 font-bold">${stats.latestNoti.title}</span> — ${stats.latestNoti.message}`;
+          broadcastInfoEl.innerHTML = `<b>📌 နောက်ဆုံးပို့ထားသော Notification (${stats.latestNoti.time}):</b><br><span class="text-pink-700 font-bold">${escapeHtml(stats.latestNoti.title)}</span> — ${escapeHtml(stats.latestNoti.message)}`;
         }
 
         adminRidersList = stats.riders || [];
@@ -1913,7 +2084,7 @@
             sendPhoneNotification(
               `🛍️ ဝယ်သူထံမှ အော်ဒါအသစ်! (${newestOrder.orderId})`,
               `${newestOrder.name} (${newestOrder.phone}) — စုစုပေါင်း ${Number(newestOrder.grandTotal || 0).toLocaleString()} ကျပ်`,
-              newestOrder.orderId
+              "new-order-" + newestOrder.orderId
             );
           }
         }
@@ -2286,6 +2457,7 @@
             });
             loader.classList.add('hidden');
             renderProducts(); renderAdminProducts();
+            if (adminPendingOrdersCache.length > 0) renderAdminOrdersAndRiders();
           }
         }
       } catch (e) {}
@@ -2324,6 +2496,7 @@
 
       loader.classList.add('hidden');
       renderProducts(); renderAdminProducts();
+      if (adminPendingOrdersCache.length > 0) renderAdminOrdersAndRiders();
     }
 
     function init() {
@@ -2513,22 +2686,22 @@
           <div class="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-pink-100/80 overflow-hidden flex flex-col justify-between ${isEntireProductSoldOut ? 'opacity-80' : ''}">
             <div>
               <div onclick="openImageLightbox(${p.id})" class="relative h-40 sm:h-60 bg-gray-100 cursor-zoom-in group overflow-hidden">
-                <img src="${activeVariant.image}" alt="${p.name}" class="w-full h-full object-cover object-top transition-all duration-300 group-hover:scale-105 ${isEntireProductSoldOut ? 'grayscale' : ''}">
+                <img src="${activeVariant.image}" alt="${escapeHtml(p.name)}" class="w-full h-full object-cover object-top transition-all duration-300 group-hover:scale-105 ${isEntireProductSoldOut ? 'grayscale' : ''}">
                 ${isEntireProductSoldOut
                   ? '<div class="absolute inset-0 bg-black/55 flex items-center justify-center"><span class="bg-red-600 text-white font-extrabold px-2.5 py-1 rounded-full text-[10px] shadow-lg">❌ Sold Out</span></div>'
                   : (p.trending ? '<span class="absolute top-1.5 left-1.5 bg-rose-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow">🔥 Trending</span>' : '')}
                 ${(!isEntireProductSoldOut && displayOriginalPrice > currentPrice) ? '<span class="absolute top-1.5 right-1.5 bg-amber-400 text-gray-900 text-[9px] font-extrabold px-1.5 py-0.5 rounded-full shadow">🏷️ Sale</span>' : ''}
-                <span class="absolute bottom-1 right-1.5 bg-black/65 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full max-w-[48%] truncate">${activeVariant.colorName} 🔍</span>
+                <span class="absolute bottom-1 right-1.5 bg-black/65 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full max-w-[48%] truncate">${escapeHtml(activeVariant.colorName)} 🔍</span>
                 <span class="absolute bottom-1 left-1.5 ${isSizeSoldOut ? 'bg-red-600 text-white' : 'bg-white/95 text-emerald-700'} text-[9px] font-extrabold px-1.5 py-0.5 rounded-full shadow-sm">${isSizeSoldOut ? '❌ ကုန်' : `လက်ကျန်: ${currentStock}`}</span>
               </div>
               <div class="p-1.5 sm:p-3">
-                <h3 onclick="openImageLightbox(${p.id})" class="font-bold text-gray-800 text-[11px] sm:text-sm truncate leading-tight cursor-pointer hover:text-pink-600">${p.name}</h3>
+                <h3 onclick="openImageLightbox(${p.id})" class="font-bold text-gray-800 text-[11px] sm:text-sm truncate leading-tight cursor-pointer hover:text-pink-600">${escapeHtml(p.name)}</h3>
                 <div class="flex items-baseline gap-1 mb-1">
                   <span class="text-pink-600 font-extrabold text-xs sm:text-base">${currentPrice.toLocaleString()} Ks</span>
                   ${displayOriginalPrice > currentPrice ? `<span class="text-gray-400 line-through text-[9px] sm:text-xs font-bold">${displayOriginalPrice.toLocaleString()}</span>` : ''}
                 </div>
                 <div class="flex items-center gap-1 mb-1 overflow-x-auto no-scrollbar">
-                  ${variants.map((v, idx) => `<button type="button" onclick="selectColor(${p.id}, ${idx})" class="px-1.5 py-0.5 rounded-full border text-[9px] sm:text-[11px] font-bold whitespace-nowrap transition ${activeColorIdx === idx ? 'border-pink-600 bg-pink-600 text-white' : 'border-gray-200 bg-gray-50 text-gray-700'}">${v.colorName}</button>`).join('')}
+                  ${variants.map((v, idx) => `<button type="button" onclick="selectColor(${p.id}, ${idx})" class="px-1.5 py-0.5 rounded-full border text-[9px] sm:text-[11px] font-bold whitespace-nowrap transition ${activeColorIdx === idx ? 'border-pink-600 bg-pink-600 text-white' : 'border-gray-200 bg-gray-50 text-gray-700'}">${escapeHtml(v.colorName)}</button>`).join('')}
                 </div>
                 <div class="grid grid-cols-3 gap-0.5">
                   ${AGE_SIZES.map(s => {
@@ -2584,13 +2757,13 @@
         let badgeText = "🚚 ပို့ဆောင်ဆဲ";
         let badgeColor = "bg-emerald-600";
         if (liveInfo.status === "ပို့ဆောင်နေပြီ" || liveInfo.status === "COD ငွေပေးချေပြီး") {
-          badgeText = `🚚 ${liveInfo.riderName || 'ဝန်ထမ်း'} လာပို့နေပြီ`;
+          badgeText = `🚚 ${escapeHtml(liveInfo.riderName || 'ဝန်ထမ်း')} လာပို့နေပြီ`;
           badgeColor = "bg-amber-500";
         } else if (liveInfo.riderName) {
-          badgeText = `📌 ${liveInfo.riderName} တာဝန်ယူထားသည်`;
+          badgeText = `📌 ${escapeHtml(liveInfo.riderName)} တာဝန်ယူထားသည်`;
           badgeColor = "bg-blue-600";
         }
-        const detailLines = ord.itemsText ? `<div class="mt-2 pt-2 border-t border-emerald-200 text-left text-xs text-pink-700 font-bold whitespace-pre-line leading-relaxed">${ord.itemsText}</div>` : '';
+        const detailLines = ord.itemsText ? `<div class="mt-2 pt-2 border-t border-emerald-200 text-left text-xs text-pink-700 font-bold whitespace-pre-line leading-relaxed">${escapeHtml(ord.itemsText)}</div>` : '';
         return `
           <div class="bg-emerald-50 border border-emerald-300 rounded-xl p-3.5 text-left space-y-1.5">
             <div class="flex flex-wrap justify-between items-center gap-2">
@@ -2633,8 +2806,8 @@
             <div class="flex items-center gap-2.5">
               <img src="${item.image}" class="w-12 h-12 rounded-lg object-cover border">
               <div>
-                <p class="font-bold text-sm text-gray-800">${item.name}</p>
-                <p class="text-xs text-gray-500">အရောင်: <span class="font-bold text-purple-700">${item.colorName}</span> | အရွယ်: <span class="font-bold text-pink-600">${item.size}</span></p>
+                <p class="font-bold text-sm text-gray-800">${escapeHtml(item.name)}</p>
+                <p class="text-xs text-gray-500">အရောင်: <span class="font-bold text-purple-700">${escapeHtml(item.colorName)}</span> | အရွယ်: <span class="font-bold text-pink-600">${escapeHtml(item.size)}</span></p>
                 <p class="text-xs font-bold text-gray-800 mt-0.5">${item.price.toLocaleString()} Ks x ${item.qty} = ${(item.price * item.qty).toLocaleString()} ကျပ်</p>
               </div>
             </div>
@@ -2698,14 +2871,22 @@
       latestOrderMessage = `🛍️ MiniTrend Kids အော်ဒါအသစ် (${orderId})\n-------------------------\n👤 အမည်: ${name}\n📞 ဖုန်း: ${phone}\n📍 လိပ်စာ: ${fullAddress}${mapLineViber}\n-------------------------\n📦 မှာယူသည့် စာရင်း:\n${itemLines}\n-------------------------\n🧾 ပစ္စည်းတန်ဖိုး: ${subtotal.toLocaleString()} ကျပ်\n🚚 Delivery ခ: ${DELIVERY_FEE.toLocaleString()} ကျပ်\n💰 စုစုပေါင်းကျသင့်ငွေ (COD): ${grandTotal.toLocaleString()} ကျပ်`;
       silentCopy(latestOrderMessage);
 
-      const orderedItemsPayload = cart.map(i => ({ name: i.name, size: i.size, qty: i.qty }));
+      // ပစ္စည်းပုံ (image)၊ အရောင်၊ Size၊ ဈေး အပြည့်အစုံကို Apps Script သို့ ပို့ပေးခြင်း
+      const orderedItemsPayload = cart.map(i => ({
+        name: i.name,
+        colorName: i.colorName,
+        size: i.size,
+        qty: i.qty,
+        price: i.price,
+        image: i.image
+      }));
+
       const existingOrders = getSavedCustomerOrders();
       existingOrders.unshift({ orderId, totalQty, itemsText: itemLines, delivery: DELIVERY_FEE, grandTotal, createdAt: Date.now() });
       saveCustomerOrders(existingOrders);
 
       cart = []; updateCartUI();
       sendPhoneNotification("MiniTrend Kids 💝", ORDER_THANK_YOU_MSG, "order-" + orderId, 0);
-      sendPhoneNotification("MiniTrend Kids 💝", ORDER_THANK_YOU_MSG, "order-viber-" + orderId, 2500);
 
       try {
         fetch(APPS_SCRIPT_ORDER_URL, {
@@ -2760,7 +2941,7 @@
             <div class="flex items-start gap-3">
               <img src="${firstImg}" class="w-14 h-14 rounded-lg object-cover border mt-0.5">
               <div>
-                <p class="font-bold text-sm">${p.name}</p>
+                <p class="font-bold text-sm">${escapeHtml(p.name)}</p>
                 <p class="text-xs text-pink-600 font-bold">ဈေးနှုန်း: ${basePrice.toLocaleString()} ~ ${maxPrice.toLocaleString()} ကျပ်</p>
                 <p class="text-[11px] text-gray-600 mt-1 leading-relaxed">${stockBreakdown}</p>
               </div>
