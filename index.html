@@ -719,7 +719,6 @@
           <p class="text-xs font-bold text-green-900">✅ MiniTrend Kids ကိုရွေးချယ်တဲ့အတွက် ကျေးဇူးတင်ပါတယ်၊ မေမေတို့ ရဲ့အချစ်ဆုံးလေးအတွက် ပစ္စည်းကို ၃ ရက်အတွင်း အိမ်အရောက်ပို့ပေးပါမယ်! Viber Chat Box ထဲတွင် <b>Paste ချပြီး Send</b> နှိပ်ပေးပါ-</p>
           <a id="viber-direct-btn" href="#" class="block w-full text-center bg-[#7360f2] text-white font-bold py-2.5 rounded-lg text-xs">၁။ Viber Chat Box ပြန်ဖွင့်ရန် (09942739543)</a>
           <a id="viber-forward-btn" href="#" class="block w-full text-center bg-purple-600 text-white font-bold py-2.5 rounded-lg text-xs">၂။ စာသားအပြည့်အစုံဖြင့် Forward ရွေးပို့ရန်</a>
-          <a id="viber-add-btn" href="#" class="hidden block w-full text-center bg-indigo-600 text-white font-bold py-2.5 rounded-lg text-xs">၃။ ဖုန်းနံပါတ်မှတစ်ဆင့် Viber Chat ဖွင့်ရန် (iPhone)</a>
           <button type="button" onclick="copyOrderText()" class="w-full bg-white border border-green-400 text-green-800 font-bold py-2 rounded-lg text-xs">📋 အော်ဒါစာသား ထပ်မံ Copy ကူးမည်</button>
         </div>
       </div>
@@ -740,7 +739,7 @@
           <button onclick="copyLink('customer-link-input')" class="bg-pink-600 text-white px-3 py-1 rounded text-xs font-bold">Copy ကူးမည်</button>
         </div>
         <div class="p-3 bg-blue-50 rounded-xl border border-blue-200">
-          <p class="font-bold text-blue-800 mb-1">🚚 Delivery ဝန်ထမ်း (၁၀ ဦး) ထံ ပေးရမည့် Link:</p>
+          <p class="font-bold text-blue-800 mb-1">🚚 Delivery ဝန်ထမ်း (၁၀ ဦး) သီးသန့် App Link:</p>
           <input type="text" id="delivery-link-input" readonly class="w-full bg-white border rounded px-2 py-1.5 text-xs mb-2">
           <button onclick="copyLink('delivery-link-input')" class="bg-blue-600 text-white px-3 py-1 rounded text-xs font-bold">Copy ကူးမည်</button>
         </div>
@@ -882,7 +881,6 @@
         showGpsErrorMessage(errCode);
       };
 
-      // iOS Standalone PWA တွင် Permission Prompt ကြောင့် ကြာနေပါက ပြန်လည်ဖြေလျှော့ပေးမည့် Safety Timer
       const safetyTimer = setTimeout(() => {
         doneFail(3);
       }, 15000);
@@ -891,7 +889,6 @@
         doneSuccess,
         function(err) {
           if (finished) return;
-          // Permission Denied (1) မဟုတ်ပါက Standard Accuracy (Wi-Fi/Cell) ဖြင့် ထပ်စမ်းမည်
           if (err && err.code !== 1) {
             navigator.geolocation.getCurrentPosition(
               doneSuccess,
@@ -2682,7 +2679,6 @@
       sendPhoneNotification("MiniTrend Kids 💝", ORDER_THANK_YOU_MSG, "order-" + orderId, 0);
       sendPhoneNotification("MiniTrend Kids 💝", ORDER_THANK_YOU_MSG, "order-viber-" + orderId, 2500);
 
-      // Google Sheet သို့ နောက်ကွယ်မှ (keepalive: true) ချက်ချင်းပို့မည် — iPhone Viber Auto Open မပိတ်စေရန် await မခံထားပါ
       try {
         fetch(APPS_SCRIPT_ORDER_URL, {
           method: "POST",
@@ -2703,21 +2699,14 @@
       submitBtn.innerHTML = `<span>💬 Viber မှတစ်ဆင့် အော်ဒါပို့မည်</span>`;
 
       const encodedText = encodeURIComponent(latestOrderMessage);
-      // iPhone Viber တွင် viber://chat?number=... နောက်၌ ရှည်လျားသော &text= တွဲပါက "The requested page is unavailable." တက်တတ်သဖြင့် ဖုန်းနံပါတ်သီးသန့်ဖြင့်သာ ဖွင့်မည် (စာသားကို Copy ကူးပြီးသားဖြစ်သည်)
+      // iPhone Viber သည် viber://chat?number=... ကို "Request Unavailable" ပြတတ်သဖြင့် viber://add?number=959942739543 ဖြင့် ဖွင့်မည်
       const directUrl = isIOSDevice()
-        ? `viber://chat?number=%2B${OWNER_VIBER_PHONE}`
+        ? `viber://add?number=${OWNER_VIBER_PHONE}`
         : `viber://chat?number=%2B${OWNER_VIBER_PHONE}&text=${encodedText}`;
       const forwardUrl = `viber://forward?text=${encodedText}`;
-      const addContactUrl = `viber://add?number=${OWNER_VIBER_PHONE}`;
 
       document.getElementById('viber-direct-btn').href = directUrl;
       document.getElementById('viber-forward-btn').href = forwardUrl;
-      const addBtn = document.getElementById('viber-add-btn');
-      if (addBtn) {
-        addBtn.href = addContactUrl;
-        addBtn.classList.toggle('hidden', !isIOSDevice());
-      }
-
       document.getElementById('order-confirm-note').classList.remove('hidden');
       document.getElementById('viber-action-box').classList.remove('hidden');
 
@@ -2758,9 +2747,10 @@
     }
 
     function openLinkModal() {
+      const baseDir = window.location.origin + window.location.pathname.replace(/[^/]*$/, '');
       const baseUrl = window.location.origin + window.location.pathname;
       document.getElementById('customer-link-input').value = `${baseUrl}?role=customer`;
-      document.getElementById('delivery-link-input').value = `${baseUrl}?role=delivery`;
+      document.getElementById('delivery-link-input').value = `${baseDir}delivery.html`;
       document.getElementById('admin-link-input').value = `${baseUrl}?role=admin`;
       document.getElementById('link-modal').classList.remove('hidden');
       pushModalHistory('link');
