@@ -2,7 +2,7 @@
 <html lang="my">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>MiniTrend Kids - ကလေးဖက်ရှင်နှင့် အသုံးအဆောင်များ</title>
   <meta name="theme-color" content="#db2777" />
   <meta name="mobile-web-app-capable" content="yes" />
@@ -17,6 +17,11 @@
     window.__deferredInstallPrompt = null;
     window.__pendingAutoInstall = false;
     window.__currentFcmToken = "";
+
+    // iPhone တွင် မတော်တဆ Pinch-Zoom ကျယ်သွားခြင်းကို တားဆီးရန်
+    document.addEventListener('gesturestart', function(e) {
+      e.preventDefault();
+    });
 
     function isStandaloneApp() {
       return (
@@ -58,7 +63,18 @@
   <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-messaging-compat.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
+    html, body {
+      touch-action: manipulation;
+      -webkit-text-size-adjust: 100%;
+      overflow-x: hidden;
+    }
     body { font-family: 'Pyidaungsu', 'Myanmar Text', 'Noto Sans Myanmar', system-ui, -apple-system, sans-serif; }
+    button, a { touch-action: manipulation; }
+    /* iPhone တွင် စာရိုက်အကွက်နှိပ်လျှင် Auto-Zoom မဖြစ်စေရန် 16px သတ်မှတ်ထားသည် */
+    input, select, textarea {
+      font-size: 16px !important;
+      touch-action: manipulation;
+    }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
@@ -277,7 +293,7 @@
     <section class="max-w-6xl mx-auto px-2.5 pt-2">
       <div class="flex flex-col md:flex-row gap-1.5 justify-between items-center">
         <div class="w-full md:w-64 flex gap-1.5 items-center">
-          <input type="text" id="search-input" oninput="renderProducts()" placeholder="🔍 ပစ္စည်းအမည် ရှာဖွေရန်..." class="w-full px-3 py-1 rounded-xl border border-pink-200 bg-white focus:outline-none focus:border-pink-500 text-xs">
+          <input type="text" id="search-input" oninput="renderProducts()" placeholder="🔍 ပစ္စည်းအမည် ရှာဖွေရန်..." class="w-full px-3 py-1.5 rounded-xl border border-pink-200 bg-white focus:outline-none focus:border-pink-500 text-base">
         </div>
         <div class="flex gap-1 overflow-x-auto w-full md:w-auto pb-1 no-scrollbar">
           <button onclick="setCategory('all')" class="cat-btn bg-pink-600 text-white px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap shadow-sm" data-cat="all">✨ အားလုံး</button>
@@ -320,13 +336,13 @@
       <form onsubmit="handleRiderLogin(event)" class="space-y-3.5">
         <div>
           <label class="block text-xs font-bold text-gray-700 mb-1">👤 ဝန်ထမ်းအမည် ရွေးချယ်ပါ</label>
-          <select id="rider-login-select" required class="w-full border-2 border-blue-200 rounded-xl px-3 py-2.5 text-sm font-bold bg-gray-50 focus:outline-none focus:border-blue-600">
+          <select id="rider-login-select" required class="w-full border-2 border-blue-200 rounded-xl px-3 py-2.5 text-base font-bold bg-gray-50 focus:outline-none focus:border-blue-600">
             <option value="">⏳ ဝန်ထမ်းစာရင်း ရယူနေပါသည်...</option>
           </select>
         </div>
         <div>
           <label class="block text-xs font-bold text-gray-700 mb-1">🔑 ဝန်ထမ်း PIN နံပါတ်</label>
-          <input type="password" inputmode="numeric" id="rider-login-pin" required placeholder="ဥပမာ - 1001" class="w-full border-2 border-blue-200 rounded-xl px-3.5 py-2.5 text-sm font-bold focus:outline-none focus:border-blue-600">
+          <input type="password" inputmode="numeric" id="rider-login-pin" required placeholder="ဥပမာ - 1001" class="w-full border-2 border-blue-200 rounded-xl px-3.5 py-2.5 text-base font-bold focus:outline-none focus:border-blue-600">
         </div>
         <p id="rider-login-error" class="hidden text-xs font-bold text-red-600 bg-red-50 border border-red-200 rounded-xl p-2.5">❌ PIN နံပါတ် မှားယွင်းနေပါသည်၊ ပြန်လည်စစ်ဆေးပါ။</p>
         <button type="submit" id="btn-rider-login" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-3 rounded-xl shadow text-sm">🔓 Delivery Panel သို့ ဝင်မည်</button>
@@ -533,7 +549,7 @@
       <p class="text-xs text-gray-600 mb-4 leading-relaxed">Admin Panel သို့ ဝင်ရောက်ရန် ဆိုင်ပိုင်ရှင်၏ <b>Password</b> ကို ရိုက်ထည့်ပေးပါခင်ဗျာ။</p>
       <form onsubmit="verifyAdminPassword(event)" class="space-y-3">
         <div class="relative">
-          <input type="password" id="admin-pass-input" required autocomplete="current-password" placeholder="Password ရိုက်ထည့်ပါ..." class="w-full border-2 border-pink-200 focus:border-pink-600 rounded-xl px-3.5 py-2.5 pr-16 text-sm font-bold focus:outline-none">
+          <input type="password" id="admin-pass-input" required autocomplete="current-password" placeholder="Password ရိုက်ထည့်ပါ..." class="w-full border-2 border-pink-200 focus:border-pink-600 rounded-xl px-3.5 py-2.5 pr-16 text-base font-bold focus:outline-none">
           <button type="button" onclick="toggleAdminPassVisibility()" id="btn-toggle-pass" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-[11px] font-bold text-pink-600 bg-pink-50 px-2 py-1 rounded-lg">👁️ ပြရန်</button>
         </div>
         <p id="admin-pass-error" class="hidden text-xs font-bold text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">❌ Password မှားယွင်းနေပါသည်၊ ပြန်လည်စစ်ဆေးပါ။</p>
@@ -578,8 +594,8 @@
         <div>
           <label class="block text-xs font-bold text-gray-700 mb-1">🎂 ကလေးအသက် (Age) *</label>
           <div class="flex gap-2">
-            <input type="number" step="0.5" min="0" id="kid-age" required placeholder="ဥပမာ- 2 (သို့) 8" class="flex-1 border rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-pink-500">
-            <select id="age-unit" class="border rounded-xl px-3 py-2 text-sm font-bold bg-gray-50">
+            <input type="number" step="0.5" min="0" id="kid-age" required placeholder="ဥပမာ- 2 (သို့) 8" class="flex-1 border rounded-xl px-3 py-2 text-base focus:outline-none focus:border-pink-500">
+            <select id="age-unit" class="border rounded-xl px-3 py-2 text-base font-bold bg-gray-50">
               <option value="years">နှစ် (Years)</option>
               <option value="months">လ (Months)</option>
             </select>
@@ -588,8 +604,8 @@
         <div>
           <label class="block text-xs font-bold text-gray-700 mb-1">⚖️ ကလေးကိုယ်အလေးချိန် (Weight) *</label>
           <div class="flex gap-2">
-            <input type="number" step="0.1" min="0" id="kid-weight" required placeholder="ဥပမာ- 11 (သို့) 24" class="flex-1 border rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-pink-500">
-            <select id="weight-unit" class="border rounded-xl px-3 py-2 text-sm font-bold bg-gray-50">
+            <input type="number" step="0.1" min="0" id="kid-weight" required placeholder="ဥပမာ- 11 (သို့) 24" class="flex-1 border rounded-xl px-3 py-2 text-base focus:outline-none focus:border-pink-500">
+            <select id="weight-unit" class="border rounded-xl px-3 py-2 text-base font-bold bg-gray-50">
               <option value="kg">KG (ကီလို)</option>
               <option value="lb">LB (ပေါင်)</option>
             </select>
@@ -598,14 +614,14 @@
         <div>
           <label class="block text-xs font-bold text-gray-700 mb-1">📐 ကလေးအရပ်အမြင့် (Height) *</label>
           <div class="flex gap-2">
-            <select id="height-unit" onchange="toggleHeightInputMode()" class="border rounded-xl px-3 py-2 text-sm font-bold bg-gray-50">
+            <select id="height-unit" onchange="toggleHeightInputMode()" class="border rounded-xl px-3 py-2 text-base font-bold bg-gray-50">
               <option value="cm">CM (စင်တီမီတာ)</option>
               <option value="ft">Feet (ပေ / လက်မ)</option>
             </select>
-            <input type="number" step="0.1" id="kid-height-cm" placeholder="ဥပမာ- 85" class="flex-1 border rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-pink-500">
+            <input type="number" step="0.1" id="kid-height-cm" placeholder="ဥပမာ- 85" class="flex-1 border rounded-xl px-3 py-2 text-base focus:outline-none focus:border-pink-500">
             <div id="kid-height-ft-box" class="hidden flex-1 flex gap-1.5">
-              <input type="number" id="kid-height-ft" placeholder="ပေ (2)" class="w-1/2 border rounded-xl px-2.5 py-2 text-sm">
-              <input type="number" id="kid-height-in" placeholder="လက်မ (6)" class="w-1/2 border rounded-xl px-2.5 py-2 text-sm">
+              <input type="number" id="kid-height-ft" placeholder="ပေ (2)" class="w-1/2 border rounded-xl px-2.5 py-2 text-base">
+              <input type="number" id="kid-height-in" placeholder="လက်မ (6)" class="w-1/2 border rounded-xl px-2.5 py-2 text-base">
             </div>
           </div>
         </div>
@@ -646,14 +662,14 @@
             <span>✨ ယခင်ဖြည့်ထားသော အချက်အလက်များကို အလိုအလျောက် ဖြည့်ပေးထားပါသည်</span>
           </div>
 
-          <input type="text" id="cust-name" required placeholder="👤 ဝယ်ယူသူ အမည် *" class="w-full border rounded-xl px-3 py-2 text-sm">
-          <input type="tel" id="cust-phone" required placeholder="📞 ဆက်သွယ်ရန် ဖုန်းနံပါတ် *" class="w-full border rounded-xl px-3 py-2 text-sm">
+          <input type="text" id="cust-name" required placeholder="👤 ဝယ်ယူသူ အမည် *" class="w-full border rounded-xl px-3 py-2 text-base">
+          <input type="tel" id="cust-phone" required placeholder="📞 ဆက်သွယ်ရန် ဖုန်းနံပါတ် *" class="w-full border rounded-xl px-3 py-2 text-base">
 
           <!-- ၂ ပိုင်းခွဲ လိပ်စာစနစ် (မြို့နယ် + လမ်း နှင့် အိမ်နံပါတ်/မှတ်ချက်) -->
           <div class="bg-blue-50/60 border border-blue-200 rounded-xl p-3 space-y-2">
             <p class="text-xs font-extrabold text-blue-900">📍 ပို့ဆောင်ရမည့် လိပ်စာနှင့် တည်နေရာ</p>
 
-            <select id="cust-township" required class="w-full border border-blue-200 rounded-xl px-3 py-2 text-sm font-bold bg-white">
+            <select id="cust-township" required class="w-full border border-blue-200 rounded-xl px-3 py-2 text-base font-bold bg-white">
               <option value="">-- မြို့နယ် ရွေးချယ်ပါ (ရန်ကုန်) * --</option>
               <option value="လှိုင်မြို့နယ်">လှိုင်မြို့နယ်</option>
               <option value="ကမာရွတ်မြို့နယ်">ကမာရွတ်မြို့နယ်</option>
@@ -688,8 +704,8 @@
               <option value="အခြားမြို့နယ်">အခြားမြို့နယ်</option>
             </select>
 
-            <input type="text" id="cust-road" required placeholder="🛣️ လမ်းအမည် / ထင်ရှားသောနေရာ (ဥပမာ- ပါရမီလမ်း၊ စိန်ဂေဟာအနီး) *" class="w-full border border-blue-200 rounded-xl px-3 py-2 text-xs sm:text-sm bg-white">
-            <textarea id="cust-detail" required rows="2" placeholder="🏠 အိမ်နံပါတ်၊ အထပ်နှင့် မှတ်ချက် (ဥပမာ- တိုက် ၁၂၊ ၄ လွှာ၊ ရောက်ခါနီးဖုန်းဆက်ပါ) *" class="w-full border border-blue-200 rounded-xl px-3 py-2 text-xs sm:text-sm bg-white"></textarea>
+            <input type="text" id="cust-road" required placeholder="🛣️ လမ်းအမည် / ထင်ရှားသောနေရာ (ဥပမာ- ပါရမီလမ်း၊ စိန်ဂေဟာအနီး) *" class="w-full border border-blue-200 rounded-xl px-3 py-2 text-base bg-white">
+            <textarea id="cust-detail" required rows="2" placeholder="🏠 အိမ်နံပါတ်၊ အထပ်နှင့် မှတ်ချက် (ဥပမာ- တိုက် ၁၂၊ ၄ လွှာ၊ ရောက်ခါနီးဖုန်းဆက်ပါ) *" class="w-full border border-blue-200 rounded-xl px-3 py-2 text-base bg-white"></textarea>
 
             <!-- GPS Location Button (No Map) -->
             <input type="hidden" id="cust-map-location" value="">
@@ -735,17 +751,17 @@
       <div class="space-y-3 text-sm">
         <div class="p-3 bg-pink-50 rounded-xl border border-pink-200">
           <p class="font-bold text-pink-700 mb-1">🛍️ ဝယ်ယူသူများထံ Share ရမည့် Link:</p>
-          <input type="text" id="customer-link-input" readonly class="w-full bg-white border rounded px-2 py-1.5 text-xs mb-2">
+          <input type="text" id="customer-link-input" readonly class="w-full bg-white border rounded px-2 py-1.5 text-base mb-2">
           <button onclick="copyLink('customer-link-input')" class="bg-pink-600 text-white px-3 py-1 rounded text-xs font-bold">Copy ကူးမည်</button>
         </div>
         <div class="p-3 bg-blue-50 rounded-xl border border-blue-200">
           <p class="font-bold text-blue-800 mb-1">🚚 Delivery ဝန်ထမ်း (၁၀ ဦး) သီးသန့် App Link:</p>
-          <input type="text" id="delivery-link-input" readonly class="w-full bg-white border rounded px-2 py-1.5 text-xs mb-2">
+          <input type="text" id="delivery-link-input" readonly class="w-full bg-white border rounded px-2 py-1.5 text-base mb-2">
           <button onclick="copyLink('delivery-link-input')" class="bg-blue-600 text-white px-3 py-1 rounded text-xs font-bold">Copy ကူးမည်</button>
         </div>
         <div class="p-3 bg-gray-100 rounded-xl border">
           <p class="font-bold text-gray-800 mb-1">🔐 ဆိုင်ပိုင်ရှင် စီမံရန် Link (Password လိုအပ်သည်):</p>
-          <input type="text" id="admin-link-input" readonly class="w-full bg-white border rounded px-2 py-1.5 text-xs mb-2">
+          <input type="text" id="admin-link-input" readonly class="w-full bg-white border rounded px-2 py-1.5 text-base mb-2">
           <button onclick="copyLink('admin-link-input')" class="bg-gray-800 text-white px-3 py-1 rounded text-xs font-bold">Copy ကူးမည်</button>
         </div>
       </div>
@@ -1470,7 +1486,7 @@
 
             <div class="flex flex-wrap items-center gap-1.5 bg-white/80 border border-gray-200 rounded-xl p-2">
               <span class="text-[11px] font-bold text-gray-600 shrink-0">🗺️ Map Link / GPS:</span>
-              <input type="text" id="admin-map-input-${o.orderId}" value="${safeMapVal}" placeholder="Viber မှ Google Maps Link သို့မဟုတ် 16.82...,96.13... ကူးထည့်ပါ" class="flex-1 min-w-[180px] border rounded-lg px-2.5 py-1.5 text-[11px] bg-white">
+              <input type="text" id="admin-map-input-${o.orderId}" value="${safeMapVal}" placeholder="Viber မှ Google Maps Link သို့မဟုတ် 16.82...,96.13... ကူးထည့်ပါ" class="flex-1 min-w-[180px] border rounded-lg px-2.5 py-1.5 text-base bg-white">
               <button type="button" id="admin-map-btn-${o.orderId}" onclick="saveOrderMapLinkFromAdmin('${o.orderId}')" class="bg-gray-800 hover:bg-gray-900 text-white font-bold px-2.5 py-1.5 rounded-lg text-[11px]">💾 Map သိမ်း</button>
               <a href="${mapInfo.url}" target="_blank" class="bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold px-2.5 py-1.5 rounded-lg text-[11px]">🗺️ စမ်းကြည့်</a>
             </div>
@@ -2699,7 +2715,6 @@
       submitBtn.innerHTML = `<span>💬 Viber မှတစ်ဆင့် အော်ဒါပို့မည်</span>`;
 
       const encodedText = encodeURIComponent(latestOrderMessage);
-      // iPhone Viber သည် viber://chat?number=... ကို "Request Unavailable" ပြတတ်သဖြင့် viber://add?number=959942739543 ဖြင့် ဖွင့်မည်
       const directUrl = isIOSDevice()
         ? `viber://add?number=${OWNER_VIBER_PHONE}`
         : `viber://chat?number=%2B${OWNER_VIBER_PHONE}&text=${encodedText}`;
