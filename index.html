@@ -719,6 +719,7 @@
           <p class="text-xs font-bold text-green-900">✅ MiniTrend Kids ကိုရွေးချယ်တဲ့အတွက် ကျေးဇူးတင်ပါတယ်၊ မေမေတို့ ရဲ့အချစ်ဆုံးလေးအတွက် ပစ္စည်းကို ၃ ရက်အတွင်း အိမ်အရောက်ပို့ပေးပါမယ်! Viber Chat Box ထဲတွင် <b>Paste ချပြီး Send</b> နှိပ်ပေးပါ-</p>
           <a id="viber-direct-btn" href="#" class="block w-full text-center bg-[#7360f2] text-white font-bold py-2.5 rounded-lg text-xs">၁။ Viber Chat Box ပြန်ဖွင့်ရန် (09942739543)</a>
           <a id="viber-forward-btn" href="#" class="block w-full text-center bg-purple-600 text-white font-bold py-2.5 rounded-lg text-xs">၂။ စာသားအပြည့်အစုံဖြင့် Forward ရွေးပို့ရန်</a>
+          <a id="viber-add-btn" href="#" class="hidden block w-full text-center bg-indigo-600 text-white font-bold py-2.5 rounded-lg text-xs">၃။ ဖုန်းနံပါတ်မှတစ်ဆင့် Viber Chat ဖွင့်ရန် (iPhone)</a>
           <button type="button" onclick="copyOrderText()" class="w-full bg-white border border-green-400 text-green-800 font-bold py-2 rounded-lg text-xs">📋 အော်ဒါစာသား ထပ်မံ Copy ကူးမည်</button>
         </div>
       </div>
@@ -819,7 +820,7 @@
       };
     }
 
-    // ================= CUSTOMER GPS LOCATION (NO MAP) =================
+    // ================= CUSTOMER GPS LOCATION (iOS & ANDROID SAFE) =================
     function setCustomerGPSLocation(lat, lng) {
       const latFixed = Number(lat).toFixed(6);
       const lngFixed = Number(lng).toFixed(6);
@@ -843,6 +844,18 @@
       if (statusBox) statusBox.classList.add('hidden');
     }
 
+    function showGpsErrorMessage(errCode) {
+      if (isIOSDevice()) {
+        if (errCode === 1) {
+          alert("⚠️ iPhone တွင် GPS ခွင့်ပြုချက် ပိတ်ထားပါသည်။\n\nဖွင့်နည်း:\n1. iPhone Settings → Privacy & Security → Location Services ဖွင့်ပါ\n2. Safari Websites → 'While Using the App' ကို ရွေးပါ\n\n(GPS မထည့်ဘဲ အပေါ်ပါ မြို့နယ်နှင့် လမ်းလိပ်စာဖြင့်လည်း အော်ဒါတင်နိုင်ပါသည်။)");
+        } else {
+          alert("⚠️ iPhone တွင် GPS တည်နေရာ ရှာမတွေ့သေးပါ။\nSettings → Privacy & Security → Location Services → Safari Websites ကို 'While Using the App' ဖွင့်ထားကြောင်း စစ်ဆေးပါ (သို့မဟုတ်) GPS မထည့်ဘဲ အပေါ်ပါ လိပ်စာဖြင့် အော်ဒါတင်နိုင်ပါသည်။");
+        }
+      } else {
+        alert("⚠️ GPS ဖွင့်မရပါ (ဖုန်း Location ဖွင့်ထားကြောင်း စစ်ဆေးပါ)။ GPS မထည့်ဘဲ အပေါ်ပါ မြို့နယ်နှင့် လမ်းလိပ်စာဖြင့်လည်း အော်ဒါတင်နိုင်ပါသည်။");
+      }
+    }
+
     function getCustomerCurrentGPS() {
       if (!navigator.geolocation) {
         alert("သင့်ဖုန်း Browser တွင် GPS စနစ် မပံ့ပိုးပါ။ အပေါ်ပါ လိပ်စာအကွက်များကိုသာ ပြည့်စုံစွာ ဖြည့်ပေးပါခင်ဗျာ။");
@@ -851,17 +864,45 @@
       const btn = document.getElementById('btn-gps-locate');
       if (btn) { btn.disabled = true; btn.innerText = "⏳ GPS ရှာနေသည်..."; }
 
+      let finished = false;
+      const doneSuccess = (pos) => {
+        if (finished) return;
+        finished = true;
+        clearTimeout(safetyTimer);
+        setCustomerGPSLocation(pos.coords.latitude, pos.coords.longitude);
+        if (btn) { btn.disabled = false; btn.innerText = "✅ GPS တည်နေရာ ရရှိပါပြီ"; }
+        setTimeout(() => { if (btn) btn.innerText = "📍 လက်ရှိနေရာယူမည် (GPS)"; }, 2500);
+      };
+
+      const doneFail = (errCode) => {
+        if (finished) return;
+        finished = true;
+        clearTimeout(safetyTimer);
+        if (btn) { btn.disabled = false; btn.innerText = "📍 လက်ရှိနေရာယူမည် (GPS)"; }
+        showGpsErrorMessage(errCode);
+      };
+
+      // iOS Standalone PWA တွင် Permission Prompt ကြောင့် ကြာနေပါက ပြန်လည်ဖြေလျှော့ပေးမည့် Safety Timer
+      const safetyTimer = setTimeout(() => {
+        doneFail(3);
+      }, 15000);
+
       navigator.geolocation.getCurrentPosition(
-        function(pos) {
-          setCustomerGPSLocation(pos.coords.latitude, pos.coords.longitude);
-          if (btn) { btn.disabled = false; btn.innerText = "✅ GPS တည်နေရာ ရရှိပါပြီ"; }
-          setTimeout(() => { if (btn) btn.innerText = "📍 လက်ရှိနေရာယူမည် (GPS)"; }, 2500);
+        doneSuccess,
+        function(err) {
+          if (finished) return;
+          // Permission Denied (1) မဟုတ်ပါက Standard Accuracy (Wi-Fi/Cell) ဖြင့် ထပ်စမ်းမည်
+          if (err && err.code !== 1) {
+            navigator.geolocation.getCurrentPosition(
+              doneSuccess,
+              function(err2) { doneFail(err2 ? err2.code : 2); },
+              { enableHighAccuracy: false, timeout: 8000, maximumAge: 60000 }
+            );
+          } else {
+            doneFail(1);
+          }
         },
-        function() {
-          if (btn) { btn.disabled = false; btn.innerText = "📍 လက်ရှိနေရာယူမည် (GPS)"; }
-          alert("⚠️ GPS ဖွင့်မရပါ (ဖုန်း Location ဖွင့်ထားကြောင်း စစ်ဆေးပါ)။ GPS မထည့်ဘဲ အပေါ်ပါ မြို့နယ်နှင့် လမ်းလိပ်စာဖြင့်လည်း အော်ဒါတင်နိုင်ပါသည်။");
-        },
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        { enableHighAccuracy: true, timeout: 7000, maximumAge: 30000 }
       );
     }
 
@@ -1942,22 +1983,22 @@
           <div class="space-y-2">
             <div class="flex items-start gap-2.5 bg-gray-50 p-2.5 rounded-xl border">
               <span class="bg-pink-600 text-white w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-extrabold shrink-0 mt-0.5">၁</span>
-              <p>အောက်ပါ <b>"📋 ဆိုင် Link Copy ကူးမည်"</b> ခလုတ်ကို နှိပ်ပြီး <b>Safari</b> Browser ထဲတွင် Paste ချ၍ ဖွင့်ပါ (သို့မဟုတ် ညာဘက်အောက်/အပေါ်ရှိ <b>🧭 Safari</b> အိုင်ကွန်ကို နှိပ်ပါ)။</p>
+              <p>အောက်ပါ <b>"📋 ဆိုင် Link Copy ကူးမည်"</b> ခလုတ်ကို နှိပ်ပြီး <b>Safari</b> Browser ထဲတွင် Paste ချ၍ ဖွင့်ပါ။</p>
             </div>
             <div class="flex items-start gap-2.5 bg-gray-50 p-2.5 rounded-xl border">
               <span class="bg-pink-600 text-white w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-extrabold shrink-0 mt-0.5">၂</span>
-              <p>Safari အောက်ခြေ အလယ်ရှိ <b>Share ခလုတ် (⬆️)</b> ကို နှိပ်ပါ။</p>
+              <p>Safari ၏ <b>Share ခလုတ် (⬆️)</b> ကို နှိပ်ပါ (အောက်ခြေအလယ် သို့မဟုတ် <b>•••</b> မီနူးထဲတွင် ရှိပါသည်)။</p>
             </div>
             <div class="flex items-start gap-2.5 bg-gray-50 p-2.5 rounded-xl border">
               <span class="bg-pink-600 text-white w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-extrabold shrink-0 mt-0.5">၃</span>
-              <p>အောက်သို့ ဆွဲချပြီး <b>Add to Home Screen (➕)</b> → ညာဘက်အပေါ်ရှိ <b>Add</b> ကို နှိပ်လိုက်ပါ။</p>
+              <p><b>View More</b> ကို နှိပ်ပြီး (သို့) အောက်သို့ ဆွဲချပြီး <b>Add to Home Screen (➕)</b> → <b>Add</b> ကို နှိပ်လိုက်ပါ။</p>
             </div>
           </div>
         `;
       } else if (mode === 'ios_browser') {
         const shareLocationText = isIOSChrome()
           ? 'အပေါ်ညာဘက်ထောင့် (Link ဘေး) ရှိ <b>Share ခလုတ် (⬆️)</b> ကို နှိပ်ပါ။'
-          : 'ဖုန်းအောက်ခြေ အလယ်ရှိ <b>Share ခလုတ် (⬆️ လေးထောင့်ထဲမှ အပေါ်မြှား)</b> ကို နှိပ်ပါ။';
+          : 'Safari ၏ <b>Share ခလုတ် (⬆️)</b> ကို နှိပ်ပါ (အောက်ခြေအလယ် သို့မဟုတ် <b>•••</b> မီနူးထဲတွင် ရှိပါသည်)။';
         titleEl.innerText = "🍎 iPhone တွင် App ထည့်သွင်းနည်း";
         subEl.innerText = "စက္ကန့် ၁၀ အတွင်း အလွယ်တကူ သွင်းနိုင်ပါသည်";
         copyWrap.classList.add('hidden');
@@ -1969,7 +2010,7 @@
             </div>
             <div class="flex items-start gap-2.5 bg-pink-50/70 p-2.5 rounded-xl border border-pink-200">
               <span class="bg-pink-600 text-white w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-extrabold shrink-0 mt-0.5">၂</span>
-              <p>ပေါ်လာသော စာရင်းကို အောက်ဘက်သို့ ဆွဲချပြီး <b>Add to Home Screen (➕)</b> ကို နှိပ်ပါ။</p>
+              <p>ညာဘက်အောက်ရှိ <b>View More</b> ကို နှိပ်ပြီး (သို့မဟုတ် အောက်သို့ ဆွဲချပြီး) <b>Add to Home Screen (➕)</b> ကို နှိပ်ပါ။</p>
             </div>
             <div class="flex items-start gap-2.5 bg-pink-50/70 p-2.5 rounded-xl border border-pink-200">
               <span class="bg-pink-600 text-white w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-extrabold shrink-0 mt-0.5">၃</span>
@@ -2031,13 +2072,11 @@
     }
 
     async function triggerPWAInstall() {
-      // ၁။ Android Chrome / Desktop တွင် Native Install Prompt အသင့်ရှိနေပါက ချက်ချင်းဖွင့်မည်
       if (window.__deferredInstallPrompt) {
         await runNativeInstallPrompt();
         return;
       }
 
-      // ၂။ iPhone / iPad (iOS) ဖြစ်ပါက "ပြင်ဆင်နေပါသည်" မပြတော့ဘဲ iOS Install လမ်းညွှန် ချက်ချင်းဖွင့်မည်
       if (isIOSDevice()) {
         if (isIOSInAppBrowser()) {
           openPwaGuideModal('ios_inapp');
@@ -2047,13 +2086,11 @@
         return;
       }
 
-      // ၃။ Android Viber / Facebook / Xiaomi Browser ဖြစ်ပါက Chrome သို့ တိုက်ရိုက်ပြောင်းဖွင့်မည်
       if (isAndroidInAppBrowser()) {
         window.location.href = "intent://kflowcreated-stack.github.io/minitrend-kids/?role=customer#Intent;scheme=https;package=com.android.chrome;end";
         return;
       }
 
-      // ၄။ Android Chrome / Desktop တွင် Prompt ခဏစောင့်ပြီး မတက်ပါက Manual လမ်းညွှန်ပြမည်
       const btn = document.getElementById('pwa-install-btn');
       if (btn) btn.innerHTML = '<span>⏳ ပြင်ဆင်နေပါသည်...</span>';
       window.__pendingAutoInstall = true;
@@ -2361,13 +2398,25 @@
     }
 
     function silentCopy(text) {
-      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).catch(() => legacyCopy(text));
-      else legacyCopy(text);
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).catch(() => legacyCopy(text));
+      } else {
+        legacyCopy(text);
+      }
     }
 
     function legacyCopy(text) {
-      const temp = document.createElement('textarea'); temp.value = text;
-      document.body.appendChild(temp); temp.select(); document.execCommand('copy'); document.body.removeChild(temp);
+      const temp = document.createElement('textarea');
+      temp.value = text;
+      temp.setAttribute('readonly', '');
+      temp.style.position = 'fixed';
+      temp.style.opacity = '0';
+      document.body.appendChild(temp);
+      temp.focus();
+      temp.select();
+      try { temp.setSelectionRange(0, 99999); } catch (e) {}
+      try { document.execCommand('copy'); } catch (e) {}
+      document.body.removeChild(temp);
     }
 
     function copyViberNumber() { silentCopy(OWNER_DISPLAY_PHONE); alert('Viber နံပါတ် (09942739543) ကို Copy ကူးပြီးပါပြီ!'); }
@@ -2595,11 +2644,11 @@
       }
     }
 
-    async function prepareOrder(e) {
+    function prepareOrder(e) {
       e.preventDefault();
       if (cart.length === 0) { alert('ကျေးဇူးပြု၍ ပစ္စည်းအရင် ရွေးချယ်ပါခင်ဗျာ။'); return; }
       const submitBtn = document.getElementById('submit-order-btn');
-      submitBtn.disabled = true; submitBtn.innerText = "⏳ အော်ဒါပို့ရန် ပြင်ဆင်နေပါသည်...";
+      submitBtn.disabled = true; submitBtn.innerText = "⏳ Viber ဖွင့်နေပါသည်...";
 
       const orderId = "MT-" + Math.floor(100000 + Math.random() * 900000);
       const name = document.getElementById('cust-name').value.trim();
@@ -2633,9 +2682,12 @@
       sendPhoneNotification("MiniTrend Kids 💝", ORDER_THANK_YOU_MSG, "order-" + orderId, 0);
       sendPhoneNotification("MiniTrend Kids 💝", ORDER_THANK_YOU_MSG, "order-viber-" + orderId, 2500);
 
+      // Google Sheet သို့ နောက်ကွယ်မှ (keepalive: true) ချက်ချင်းပို့မည် — iPhone Viber Auto Open မပိတ်စေရန် await မခံထားပါ
       try {
-        await fetch(APPS_SCRIPT_ORDER_URL, {
-          method: "POST", mode: "no-cors",
+        fetch(APPS_SCRIPT_ORDER_URL, {
+          method: "POST",
+          mode: "no-cors",
+          keepalive: true,
           headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({
             orderId, name, phone, address: fullAddress,
@@ -2644,17 +2696,31 @@
             subtotal, delivery: DELIVERY_FEE, grandTotal,
             fcmToken: window.__currentFcmToken || ""
           })
-        });
+        }).catch(() => {});
       } catch (err) {}
 
       submitBtn.disabled = false;
       submitBtn.innerHTML = `<span>💬 Viber မှတစ်ဆင့် အော်ဒါပို့မည်</span>`;
+
       const encodedText = encodeURIComponent(latestOrderMessage);
-      const directUrl = `viber://chat?number=%2B${OWNER_VIBER_PHONE}&text=${encodedText}`;
+      // iPhone Viber တွင် viber://chat?number=... နောက်၌ ရှည်လျားသော &text= တွဲပါက "The requested page is unavailable." တက်တတ်သဖြင့် ဖုန်းနံပါတ်သီးသန့်ဖြင့်သာ ဖွင့်မည် (စာသားကို Copy ကူးပြီးသားဖြစ်သည်)
+      const directUrl = isIOSDevice()
+        ? `viber://chat?number=%2B${OWNER_VIBER_PHONE}`
+        : `viber://chat?number=%2B${OWNER_VIBER_PHONE}&text=${encodedText}`;
+      const forwardUrl = `viber://forward?text=${encodedText}`;
+      const addContactUrl = `viber://add?number=${OWNER_VIBER_PHONE}`;
+
       document.getElementById('viber-direct-btn').href = directUrl;
-      document.getElementById('viber-forward-btn').href = `viber://forward?text=${encodedText}`;
+      document.getElementById('viber-forward-btn').href = forwardUrl;
+      const addBtn = document.getElementById('viber-add-btn');
+      if (addBtn) {
+        addBtn.href = addContactUrl;
+        addBtn.classList.toggle('hidden', !isIOSDevice());
+      }
+
       document.getElementById('order-confirm-note').classList.remove('hidden');
       document.getElementById('viber-action-box').classList.remove('hidden');
+
       window.location.href = directUrl;
     }
 
