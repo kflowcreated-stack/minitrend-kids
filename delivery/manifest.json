@@ -1,0 +1,26 @@
+{
+  "id": "/minitrend-kids/delivery/",
+  "name": "MiniTrend Kids Delivery",
+  "short_name": "MT Delivery",
+  "description": "MiniTrend Kids Delivery ဝန်ထမ်းများအတွက် အော်ဒါပို့ဆောင်ရေး App",
+  "start_url": "/minitrend-kids/delivery/",
+  "scope": "/minitrend-kids/delivery/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#eff6ff",
+  "theme_color": "#2563eb",
+  "icons": [
+    {
+      "src": "/minitrend-kids/icon.png?v=3",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/minitrend-kids/icon.png?v=3",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
