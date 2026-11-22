@@ -3,24 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>MT Delivery - MiniTrend Kids ပို့ဆောင်ရေး</title>
-  <meta name="theme-color" content="#2563eb" />
+  <title>MiniTrend Delivery & Pickup App</title>
+  <meta name="theme-color" content="#1d4ed8" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="apple-mobile-web-app-title" content="MT Delivery" />
-  <link rel="manifest" href="./manifest.json?v=1" />
+  <meta name="apple-mobile-web-app-title" content="MiniTrend Delivery" />
+  <link rel="manifest" href="./manifest.json?v=3" />
   <link rel="icon" type="image/png" href="../icon.png?v=3" />
   <link rel="apple-touch-icon" href="../icon.png?v=3" />
 
   <script>
     window.__deferredInstallPrompt = null;
-    window.__pendingAutoInstall = false;
     window.__currentFcmToken = "";
 
-    document.addEventListener('gesturestart', function(e) {
-      e.preventDefault();
-    });
+    document.addEventListener('gesturestart', function(e) { e.preventDefault(); });
 
     function isStandaloneApp() {
       return (
@@ -31,30 +28,21 @@
       );
     }
 
-    if (isStandaloneApp()) {
-      try { localStorage.setItem('mt_delivery_pwa_installed_v2', '1'); } catch (e) {}
-    }
-
     window.addEventListener('beforeinstallprompt', function(e) {
       e.preventDefault();
       window.__deferredInstallPrompt = e;
-      try { localStorage.removeItem('mt_delivery_pwa_installed_v2'); } catch (err) {}
-      var wrap = document.getElementById('pwa-install-wrapper');
-      if (wrap && !isStandaloneApp()) {
-        wrap.classList.remove('hidden');
-      }
-      if (window.__pendingAutoInstall && typeof runNativeInstallPrompt === 'function') {
-        window.__pendingAutoInstall = false;
-        runNativeInstallPrompt();
-      }
+      var btn = document.getElementById('btn-del-install');
+      if (btn && !isStandaloneApp()) btn.classList.remove('hidden');
+      var btnLogin = document.getElementById('btn-del-install-login');
+      if (btnLogin && !isStandaloneApp()) btnLogin.classList.remove('hidden');
     });
 
     window.addEventListener('appinstalled', function() {
       window.__deferredInstallPrompt = null;
-      window.__pendingAutoInstall = false;
-      try { localStorage.setItem('mt_delivery_pwa_installed_v2', '1'); } catch (e) {}
-      var wrap = document.getElementById('pwa-install-wrapper');
-      if (wrap) wrap.classList.add('hidden');
+      var btn = document.getElementById('btn-del-install');
+      if (btn) btn.classList.add('hidden');
+      var btnLogin = document.getElementById('btn-del-install-login');
+      if (btnLogin) btnLogin.classList.add('hidden');
     });
   </script>
 
@@ -71,46 +59,23 @@
       font-family: 'Pyidaungsu', 'Myanmar Text', 'Noto Sans Myanmar', system-ui, -apple-system, sans-serif;
       padding-top: env(safe-area-inset-top, 0px);
     }
-    .sticky-safe-top { top: env(safe-area-inset-top, 0px); }
     .noti-safe-top { top: calc(0.75rem + env(safe-area-inset-top, 0px)); }
     button, a { touch-action: manipulation; }
     input, select, textarea {
       font-size: 16px !important;
       touch-action: manipulation;
     }
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-    @media all and (display-mode: standalone), (display-mode: minimal-ui), (display-mode: fullscreen) {
-      #pwa-install-wrapper { display: none !important; }
-    }
-
     @keyframes slideDownNoti {
       0% { transform: translate(-50%, -120%); opacity: 0; }
       100% { transform: translate(-50%, 0); opacity: 1; }
     }
-
-    @keyframes flashBlueGlow {
-      0%, 100% {
-        background: linear-gradient(135deg, #059669 0%, #10b981 100%);
-        box-shadow: 0 0 6px rgba(16, 185, 129, 0.55);
-        transform: scale(1);
-      }
-      50% {
-        background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
-        box-shadow: 0 0 16px rgba(52, 211, 153, 0.9);
-        transform: scale(1.04);
-      }
-    }
-
     .noti-slide-in { animation: slideDownNoti 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-    .install-glow-btn { animation: flashBlueGlow 1.5s ease-in-out infinite; }
   </style>
 </head>
-<body class="bg-blue-50/50 text-gray-800 min-h-screen">
+<body class="bg-blue-50/40 text-gray-800 min-h-screen">
 
   <script>
-    const APPS_SCRIPT_ORDER_URL = "https://script.google.com/macros/s/AKfycbzjiat7rNkOGkQYjf3RT6rC4g5AdXiVtraecqUTG8wXcu4l6Dm1mmtnXpVhaxjAzsrd/exec";
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzjiat7rNkOGkQYjf3RT6rC4g5AdXiVtraecqUTG8wXcu4l6Dm1mmtnXpVhaxjAzsrd/exec";
 
     const FIREBASE_CONFIG = {
       apiKey: "AIzaSyDyb--Qc9tic7g8GOzVWYi8vpLMSfTaI5U",
@@ -124,7 +89,7 @@
 
     window.__swRegistrationPromise = null;
     if ('serviceWorker' in navigator) {
-      window.__swRegistrationPromise = navigator.serviceWorker.register('../sw.js', { scope: './' }).catch(() => null);
+      window.__swRegistrationPromise = navigator.serviceWorker.register('../sw.js', { scope: '../' }).catch(() => null);
     }
   </script>
 
@@ -134,54 +99,22 @@
       <img src="../icon.png?v=3" class="w-11 h-11 rounded-xl object-cover shrink-0 border border-white/20" />
       <div class="flex-1 min-w-0">
         <div class="flex justify-between items-center gap-1">
-          <p id="push-noti-title" class="text-xs sm:text-sm font-extrabold text-amber-300 truncate">🔔 MT Delivery</p>
+          <p id="push-noti-title" class="text-xs sm:text-sm font-extrabold text-amber-300 truncate">🔔 MiniTrend Delivery</p>
           <span class="text-[10px] text-gray-300 shrink-0">ယခုလေးတင်</span>
         </div>
         <p id="push-noti-body" class="text-xs sm:text-sm text-white font-bold mt-1 leading-relaxed"></p>
       </div>
-      <button onclick="closePushPopup()" class="text-gray-400 hover:text-white font-bold text-lg leading-none px-1">✕</button>
+      <button type="button" onclick="closePushPopup()" class="text-gray-400 hover:text-white font-bold text-lg leading-none px-1">✕</button>
     </div>
   </div>
 
-  <!-- Double-Back Exit Toast -->
-  <div id="exit-toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 bg-gray-900/95 text-white text-xs sm:text-sm font-bold px-5 py-3 rounded-full shadow-xl border border-white/15 transition-opacity duration-300 opacity-0 pointer-events-none whitespace-nowrap">
-    ⚠️ ထွက်ရန် Back ခလုတ်ကို နောက်တစ်ကြိမ် ထပ်နှိပ်ပါ
-  </div>
+  <div class="max-w-3xl mx-auto px-3.5 py-4 sm:py-6">
 
-  <!-- STICKY DELIVERY APP HEADER -->
-  <header class="bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 text-white sticky sticky-safe-top z-30 shadow-md">
-    <div class="max-w-3xl mx-auto px-3 py-2.5 flex justify-between items-center gap-2">
-      <div class="flex items-center gap-2.5 min-w-0">
-        <img src="../icon.png?v=3" alt="MT Delivery" class="w-9 h-9 rounded-xl object-cover border-2 border-white/30 shrink-0" />
-        <div class="truncate">
-          <h1 class="text-sm sm:text-base font-extrabold leading-tight truncate">🚚 MT Delivery App</h1>
-          <p class="text-[10px] text-blue-100 font-bold truncate">MiniTrend Kids ဝန်ထမ်းပို့ဆောင်ရေး</p>
-        </div>
-      </div>
-
-      <div id="pwa-install-wrapper" class="shrink-0">
-        <button id="pwa-install-btn" onclick="triggerPWAInstall()" class="install-glow-btn text-white px-3 py-1.5 rounded-full text-xs font-extrabold border border-emerald-200 shadow-sm">
-          📲 App ဒေါင်းမည်
-        </button>
-      </div>
-    </div>
-  </header>
-
-  <script>
-    if (isStandaloneApp() || localStorage.getItem('mt_delivery_pwa_installed_v2') === '1') {
-      var wrapEl = document.getElementById('pwa-install-wrapper');
-      if (wrapEl) wrapEl.classList.add('hidden');
-    }
-  </script>
-
-  <!-- ================= MAIN DELIVERY CONTENT ================= -->
-  <main class="max-w-3xl mx-auto px-4 py-5">
-
-    <!-- RIDER LOGIN CARD -->
-    <div id="delivery-login-card" class="bg-white rounded-2xl shadow-lg border-2 border-blue-200 max-w-md mx-auto p-6 mt-4">
+    <!-- ================= LOGIN SCREEN ================= -->
+    <div id="delivery-login-card" class="bg-white rounded-2xl shadow-lg border-2 border-blue-200 max-w-md mx-auto p-6 mt-6">
       <div class="text-center mb-5">
-        <div class="w-14 h-14 bg-blue-100 text-blue-700 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-2">🚚</div>
-        <h2 class="text-xl font-extrabold text-gray-900">Delivery ဝန်ထမ်း ဝင်ရောက်ရန်</h2>
+        <div class="w-16 h-16 bg-blue-100 text-blue-700 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-2.5 border border-blue-200 shadow-sm">🚚</div>
+        <h1 class="text-xl font-extrabold text-gray-900">MiniTrend Delivery & Pickup</h1>
         <p class="text-xs text-gray-500 mt-1">မိမိအမည်ကို ရွေးချယ်ပြီး PIN နံပါတ် ရိုက်ထည့်ပါ</p>
       </div>
       <form onsubmit="handleRiderLogin(event)" class="space-y-3.5">
@@ -196,444 +129,202 @@
           <input type="password" inputmode="numeric" id="rider-login-pin" required placeholder="ဥပမာ - 1001" class="w-full border-2 border-blue-200 rounded-xl px-3.5 py-2.5 text-base font-bold focus:outline-none focus:border-blue-600">
         </div>
         <p id="rider-login-error" class="hidden text-xs font-bold text-red-600 bg-red-50 border border-red-200 rounded-xl p-2.5">❌ PIN နံပါတ် မှားယွင်းနေပါသည်၊ ပြန်လည်စစ်ဆေးပါ။</p>
-        <button type="submit" id="btn-rider-login" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-3 rounded-xl shadow text-sm">🔓 Delivery App သို့ ဝင်မည်</button>
+        <button type="submit" id="btn-rider-login" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-3 rounded-xl shadow text-sm">🔓 ဝန်ထမ်း App သို့ ဝင်ရောက်မည်</button>
       </form>
+      <div class="mt-4 pt-3 border-t border-gray-100 text-center">
+        <button type="button" id="btn-del-install-login" onclick="triggerInstall()" class="hidden text-xs font-extrabold text-blue-700 bg-blue-50 border border-blue-200 px-3.5 py-2 rounded-xl">
+          📲 ဤဖုန်းတွင် Delivery App ထည့်သွင်းမည်
+        </button>
+      </div>
     </div>
 
-    <!-- RIDER DASHBOARD -->
+    <!-- ================= RIDER DASHBOARD ================= -->
     <div id="delivery-dashboard" class="hidden space-y-4">
-      <div class="bg-white border-2 border-blue-200 p-4 rounded-2xl shadow-sm flex flex-wrap justify-between items-center gap-3">
+
+      <!-- Header -->
+      <div class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-4 sm:p-5 rounded-2xl shadow-md flex flex-wrap justify-between items-center gap-3">
         <div>
-          <p class="text-[11px] text-blue-600 font-bold">👤 ဝင်ရောက်ထားသော ဝန်ထမ်း</p>
-          <h2 id="rider-header-name" class="text-lg font-extrabold text-gray-900 mt-0.5">ဝန်ထမ်းအမည်</h2>
+          <p class="text-[11px] text-blue-100 font-bold">🚚 MiniTrend Kids — Pickup & Delivery</p>
+          <h2 id="rider-header-name" class="text-lg sm:text-xl font-extrabold mt-0.5">ဝန်ထမ်းအမည်</h2>
         </div>
-        <div class="flex flex-wrap gap-2">
-          <button type="button" onclick="connectRiderFirebase()" id="btn-rider-fcm" class="bg-amber-400 hover:bg-amber-300 text-gray-900 text-xs font-extrabold px-3 py-2 rounded-xl shadow-sm">🔔 ဤဖုန်း Noti ချိတ်မည်</button>
-          <button type="button" onclick="loadDeliveryDashboard(false)" id="btn-rider-refresh" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-2 rounded-xl">🔄 ပြန်စစ်မည်</button>
-          <button type="button" onclick="logoutRider()" class="bg-red-500 hover:bg-red-600 text-white text-xs font-bold px-3 py-2 rounded-xl">🔒 ထွက်မည်</button>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-3 gap-2.5 sm:gap-4">
-        <div class="bg-white border border-blue-200 p-3.5 rounded-2xl shadow-sm text-center">
-          <p class="text-[11px] font-bold text-gray-500">📦 ပို့ရန်ကျန်</p>
-          <p id="rider-stat-pending" class="text-2xl font-extrabold text-blue-600 mt-1">0</p>
-        </div>
-        <div class="bg-white border border-emerald-200 p-3.5 rounded-2xl shadow-sm text-center">
-          <p class="text-[11px] font-bold text-gray-500">💰 ယနေ့ COD ပြီး</p>
-          <p id="rider-stat-done" class="text-2xl font-extrabold text-emerald-600 mt-1">0</p>
-        </div>
-        <div class="bg-emerald-600 text-white p-3.5 rounded-2xl shadow-sm text-center">
-          <p class="text-[11px] font-bold text-emerald-100">💰 ယနေ့ COD</p>
-          <p id="rider-stat-cod" class="text-lg sm:text-xl font-extrabold mt-1">0 Ks</p>
+        <div class="flex flex-wrap gap-1.5">
+          <button type="button" id="btn-del-install" onclick="triggerInstall()" class="hidden bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-extrabold px-3 py-2 rounded-xl shadow-sm">📲 App သွင်း</button>
+          <button type="button" onclick="connectRiderFirebase()" id="btn-rider-fcm" class="bg-amber-400 hover:bg-amber-300 text-gray-900 text-xs font-extrabold px-3 py-2 rounded-xl shadow-sm">🔔 Noti ချိတ်မည်</button>
+          <button type="button" onclick="loadDeliveryDashboard(false)" id="btn-rider-refresh" class="bg-white/20 hover:bg-white/30 text-white text-xs font-bold px-3 py-2 rounded-xl">🔄 ပြန်စစ်</button>
+          <button type="button" onclick="logoutRider()" class="bg-red-500/90 hover:bg-red-600 text-white text-xs font-bold px-3 py-2 rounded-xl">🔒 ထွက်</button>
         </div>
       </div>
 
-      <div class="bg-white rounded-2xl shadow-sm border border-blue-100 p-4 sm:p-5">
-        <h3 class="font-extrabold text-sm sm:text-base text-gray-900 mb-3">📋 မိမိတာဝန်ကျသော ပို့ဆောင်ရန် အော်ဒါများ</h3>
-        <div id="rider-pending-list" class="space-y-3.5">
-          <p class="text-xs text-gray-400 py-4 text-center">⏳ အော်ဒါစာရင်း ရယူနေပါသည်...</p>
+      <!-- 4 Stat Cards -->
+      <div class="grid grid-cols-4 gap-2 sm:gap-3">
+        <button type="button" onclick="switchRiderTab('pickup')" class="bg-white border-2 border-purple-200 p-2.5 sm:p-3 rounded-2xl shadow-sm text-center hover:border-purple-400 transition">
+          <p class="text-[10px] sm:text-[11px] font-bold text-gray-500">📦 ကောက်ရန်</p>
+          <p id="rider-stat-pickup" class="text-xl sm:text-2xl font-extrabold text-purple-700 mt-0.5">0</p>
+        </button>
+        <button type="button" onclick="switchRiderTab('delivery')" class="bg-white border-2 border-blue-200 p-2.5 sm:p-3 rounded-2xl shadow-sm text-center hover:border-blue-400 transition">
+          <p class="text-[10px] sm:text-[11px] font-bold text-gray-500">🚚 ပို့ရန်ကျန်</p>
+          <p id="rider-stat-pending" class="text-xl sm:text-2xl font-extrabold text-blue-600 mt-0.5">0</p>
+        </button>
+        <div class="bg-white border border-emerald-200 p-2.5 sm:p-3 rounded-2xl shadow-sm text-center">
+          <p class="text-[10px] sm:text-[11px] font-bold text-gray-500">✅ ယနေ့ပြီး</p>
+          <p id="rider-stat-done" class="text-xl sm:text-2xl font-extrabold text-emerald-600 mt-0.5">0</p>
+        </div>
+        <div class="bg-emerald-600 text-white p-2.5 sm:p-3 rounded-2xl shadow-sm text-center">
+          <p class="text-[10px] sm:text-[11px] font-bold text-emerald-100">💰 ယနေ့ COD</p>
+          <p id="rider-stat-cod" class="text-xs sm:text-base font-extrabold mt-1.5 leading-tight">0 Ks</p>
         </div>
       </div>
 
-      <div class="bg-white rounded-2xl shadow-sm border border-emerald-100 p-4 sm:p-5">
-        <h3 class="font-extrabold text-sm sm:text-base text-gray-900 mb-3">🧾 ယနေ့ COD ငွေပေးချေပြီး မှတ်တမ်း</h3>
-        <div id="rider-done-list" class="divide-y text-xs">
-          <p class="text-gray-400 py-3">ယနေ့ COD ငွေပေးချေပြီးသော အော်ဒါ မရှိသေးပါ။</p>
-        </div>
-      </div>
-    </div>
-  </main>
-
-  <!-- ================= PWA INSTALL GUIDE MODAL (iOS & ANDROID FALLBACK) ================= -->
-  <div id="pwa-guide-modal" onclick="closePwaGuideModal()" class="fixed inset-0 bg-black/75 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
-    <div onclick="event.stopPropagation()" class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl border-2 border-blue-300 space-y-3.5">
-      <div class="flex justify-between items-center border-b pb-3">
-        <div class="flex items-center gap-2.5">
-          <img src="../icon.png?v=3" alt="MT Delivery" class="w-10 h-10 rounded-xl object-cover border border-blue-200 shadow-sm" />
-          <div>
-            <h3 id="pwa-guide-title" class="text-sm sm:text-base font-extrabold text-gray-900">📲 Delivery App သွင်းနည်း</h3>
-            <p id="pwa-guide-subtitle" class="text-[11px] text-gray-500 font-bold">MT Delivery</p>
-          </div>
-        </div>
-        <button type="button" onclick="closePwaGuideModal()" class="text-gray-400 hover:text-gray-800 font-bold text-xl leading-none px-1">✕</button>
-      </div>
-
-      <div id="pwa-guide-body" class="space-y-2.5 text-xs sm:text-sm text-gray-700 leading-relaxed"></div>
-
-      <div id="pwa-guide-copy-wrap" class="hidden pt-1">
-        <button type="button" onclick="copyDeliveryLinkForInstall()" id="btn-copy-install-link" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-2.5 rounded-xl text-xs shadow-sm">
-          📋 Delivery Link Copy ကူးမည်
+      <!-- MAIN ROLE TABS: PICKUP vs DELIVERY -->
+      <div class="grid grid-cols-2 gap-2 bg-white p-1.5 rounded-2xl border border-blue-200 shadow-sm">
+        <button type="button" onclick="switchRiderTab('pickup')" id="tab-btn-pickup" class="py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold text-gray-700 hover:bg-gray-100 transition">
+          📦 ဆိုင်မှကောက်ရန် <span id="tab-badge-pickup" class="ml-1 bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full text-[11px] font-extrabold">0</span>
+        </button>
+        <button type="button" onclick="switchRiderTab('delivery')" id="tab-btn-delivery" class="py-2.5 px-3 rounded-xl text-xs sm:text-sm font-extrabold bg-blue-600 text-white shadow-sm transition">
+          🚚 ဝယ်သူထံပို့ရန် <span id="tab-badge-delivery" class="ml-1 bg-white/25 px-2 py-0.5 rounded-full text-[11px] font-extrabold">0</span>
         </button>
       </div>
 
-      <button type="button" onclick="closePwaGuideModal()" class="w-full bg-gray-900 hover:bg-gray-800 text-white font-extrabold py-2.5 rounded-xl text-xs sm:text-sm">
-        နားလည်ပါပြီ (ပိတ်မည်)
-      </button>
+      <!-- ================= TAB 1: PICKUP (WITH PRODUCT PHOTOS + SHOP GROUPING + RETURN-TO-SHOP) ================= -->
+      <div id="tab-panel-pickup" class="hidden space-y-4">
+
+        <!-- Pickup from Shops -->
+        <div class="bg-white rounded-2xl shadow-sm border-2 border-purple-200 p-4">
+          <div class="mb-3">
+            <h3 class="font-extrabold text-sm sm:text-base text-gray-900">📦 ဆိုင်များမှ ပစ္စည်းသွားကောက်ရန် (ပုံတိုက်စစ်ကောက်ယူပါ)</h3>
+            <p class="text-[11px] text-gray-500 mt-0.5">ဝယ်သူမှာထားသော ပစ္စည်းပုံ (နှိပ်၍ အကြီးချဲ့ကြည့်နိုင်သည်)၊ အရောင်နှင့် Size ကို ဆိုင်ရှေ့တွင် တိုက်စစ်ပြီး <b>☑ အမှန်ခြစ်</b> ခြစ်၍ ကောက်ယူပါ။</p>
+          </div>
+          <div id="rider-pickup-list" class="space-y-4">
+            <p class="text-xs text-gray-400 py-6 text-center">⏳ ကောက်ယူရန်စာရင်း စစ်ဆေးနေပါသည်...</p>
+          </div>
+        </div>
+
+        <!-- Return Parcels Back to Shops -->
+        <div id="rider-return-to-shop-box" class="hidden bg-white rounded-2xl shadow-sm border-2 border-orange-300 p-4">
+          <div class="mb-3">
+            <h3 class="font-extrabold text-sm sm:text-base text-orange-800">↩️ ဆိုင်သို့ Return ပစ္စည်း ပြန်အပ်ရန်</h3>
+            <p class="text-[11px] text-gray-600 mt-0.5">COD ငြင်းခံရသော ပစ္စည်းများကို သက်ဆိုင်ရာဆိုင်သို့ ပြန်အပ်ပြီးပါက <b>"✅ ဆိုင်သို့ ပြန်အပ်ပြီးပြီ"</b> ကို နှိပ်ပေးပါ။</p>
+          </div>
+          <div id="rider-return-to-shop-list" class="space-y-3"></div>
+        </div>
+
+      </div>
+
+      <!-- ================= TAB 2: DELIVERY (NO PRODUCT PHOTOS — FAST & CLEAN) ================= -->
+      <div id="tab-panel-delivery" class="space-y-4">
+
+        <!-- Pending Delivery Orders -->
+        <div class="bg-white rounded-2xl shadow-sm border border-blue-200 p-4">
+          <h3 class="font-extrabold text-sm sm:text-base text-gray-900 mb-3">🚚 ဝယ်သူထံ ပို့ဆောင်ရန် အော်ဒါများ</h3>
+          <div id="rider-pending-list" class="space-y-3.5">
+            <p class="text-xs text-gray-400 py-6 text-center">⏳ အော်ဒါစာရင်း ရယူနေပါသည်...</p>
+          </div>
+        </div>
+
+        <!-- Today's COD Rejections (Need to return to Hub) -->
+        <div id="rider-today-returns-box" class="hidden bg-white rounded-2xl shadow-sm border-2 border-red-200 p-4">
+          <h3 class="font-extrabold text-sm sm:text-base text-red-700 mb-2">🔄 ယနေ့ COD ငြင်းခံရသော အထုပ်များ (Hub သို့ ပြန်အပ်ရန်)</h3>
+          <div id="rider-today-returns-list" class="divide-y text-xs"></div>
+        </div>
+
+        <!-- Today's Delivered Log -->
+        <div class="bg-white rounded-2xl shadow-sm border border-emerald-200 p-4">
+          <h3 class="font-extrabold text-sm sm:text-base text-gray-900 mb-2.5">🧾 ယနေ့ COD ငွေပေးချေပြီး မှတ်တမ်း</h3>
+          <div id="rider-done-list" class="divide-y text-xs">
+            <p class="text-gray-400 py-3">ယနေ့ COD ငွေပေးချေပြီးသော အော်ဒါ မရှိသေးပါ။</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= COD REJECTION / RETURN MODAL ================= -->
+  <div id="return-modal" onclick="closeReturnModal()" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+    <div onclick="event.stopPropagation()" class="bg-white rounded-2xl max-w-md w-full p-5 shadow-2xl border-2 border-red-300 space-y-3.5">
+      <div class="flex justify-between items-center border-b pb-2.5">
+        <h3 class="text-sm sm:text-base font-extrabold text-red-700">❌ ဝယ်သူ COD ငြင်း (Return) မှတ်တမ်းတင်ရန်</h3>
+        <button type="button" onclick="closeReturnModal()" class="text-gray-400 hover:text-gray-800 font-bold text-xl px-1">✕</button>
+      </div>
+      <p id="return-modal-order-label" class="text-xs font-extrabold text-gray-800"></p>
+      <div class="space-y-1.5 text-xs">
+        <p class="font-bold text-gray-600">အကြောင်းရင်း ရွေးချယ်ပါ:</p>
+        <label class="flex items-center gap-2 p-2.5 rounded-xl border border-gray-200 bg-gray-50 cursor-pointer">
+          <input type="radio" name="ret_reason" value="ဝယ်သူမယူတော့ (COD ငြင်း)" checked class="w-4 h-4 accent-red-600">
+          <span class="font-bold text-gray-800">❌ ဝယ်သူမယူတော့ / စိတ်ပြောင်းသွား (COD ငြင်း)</span>
+        </label>
+        <label class="flex items-center gap-2 p-2.5 rounded-xl border border-gray-200 bg-gray-50 cursor-pointer">
+          <input type="radio" name="ret_reason" value="ဖုန်းလုံးဝမကိုင် / ဖုန်းပိတ်ထား" class="w-4 h-4 accent-red-600">
+          <span class="font-bold text-gray-800">📵 ဖုန်းလုံးဝမကိုင် / ဖုန်းပိတ်ထား</span>
+        </label>
+        <label class="flex items-center gap-2 p-2.5 rounded-xl border border-gray-200 bg-gray-50 cursor-pointer">
+          <input type="radio" name="ret_reason" value="လိပ်စာမှား / ဆက်သွယ်၍မရ" class="w-4 h-4 accent-red-600">
+          <span class="font-bold text-gray-800">📍 လိပ်စာမှား / ဆက်သွယ်၍မရ</span>
+        </label>
+        <label class="flex items-center gap-2 p-2.5 rounded-xl border border-gray-200 bg-gray-50 cursor-pointer">
+          <input type="radio" name="ret_reason" value="ပစ္စည်းအနာပါ / အရောင်-Size မှား" class="w-4 h-4 accent-red-600">
+          <span class="font-bold text-gray-800">⚠️ ပစ္စည်းအနာပါ / အရောင်-Size မှား</span>
+        </label>
+      </div>
+      <div>
+        <input type="text" id="return-extra-note" placeholder="📝 အခြားမှတ်ချက် (ရှိပါက ထည့်ရေးနိုင်သည်)" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-base">
+      </div>
+      <div class="bg-red-50 border border-red-200 rounded-xl p-2.5 text-[11px] font-bold text-red-800">
+        ⚠️ ဤခလုတ်နှိပ်ပါက Admin နှင့် သက်ဆိုင်ရာဆိုင်ထံ COD ငြင်းကြောင်း ချက်ချင်း အကြောင်းကြားသွားမည်ဖြစ်ပြီး အထုပ်ကို Hub သို့ ပြန်အပ်ပေးရပါမည်။
+      </div>
+      <div class="grid grid-cols-2 gap-2">
+        <button type="button" onclick="closeReturnModal()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2.5 rounded-xl text-xs">မလုပ်တော့ပါ</button>
+        <button type="button" id="btn-submit-return" onclick="submitCodReturn()" class="bg-red-600 hover:bg-red-700 text-white font-extrabold py-2.5 rounded-xl text-xs shadow">🔄 Return အတည်ပြုမည်</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= PICKUP IMAGE LIGHTBOX ================= -->
+  <div id="image-lightbox-modal" onclick="closeImageLightbox()" class="fixed inset-0 bg-black/90 z-50 hidden flex flex-col items-center justify-center p-4 backdrop-blur-sm">
+    <button type="button" onclick="closeImageLightbox()" class="fixed noti-safe-top right-3 z-50 bg-white/20 hover:bg-white/35 text-white w-10 h-10 rounded-full flex items-center justify-center text-xl font-bold shadow-lg">✕</button>
+    <div onclick="event.stopPropagation()" class="max-w-md w-full flex flex-col items-center">
+      <img id="lightbox-img" src="" alt="" class="max-h-[65vh] w-auto max-w-full object-contain rounded-2xl shadow-2xl border border-white/15 bg-black/40">
+      <div class="mt-3 w-full bg-white rounded-2xl p-3.5 shadow-xl text-left">
+        <p id="lightbox-title" class="text-sm font-extrabold text-gray-900"></p>
+        <p id="lightbox-meta" class="text-xs font-bold text-purple-700 mt-1"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= INSTALL GUIDE MODAL ================= -->
+  <div id="install-guide-modal" onclick="closeInstallGuide()" class="fixed inset-0 bg-black/75 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+    <div onclick="event.stopPropagation()" class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl border-2 border-blue-300 space-y-3">
+      <div class="flex justify-between items-center border-b pb-2.5">
+        <h3 class="text-sm font-extrabold text-gray-900">📲 Delivery App ထည့်သွင်းနည်း</h3>
+        <button type="button" onclick="closeInstallGuide()" class="text-gray-400 font-bold text-xl px-1">✕</button>
+      </div>
+      <div class="space-y-2 text-xs text-gray-700 leading-relaxed">
+        <p><b>🤖 Android (Chrome):</b> အပေါ်ညာဘက် <b>အစက် ၃ စက် (⋮)</b> → <b>Install app / Add to Home screen</b> နှိပ်ပါ။</p>
+        <p><b>🍎 iPhone (Safari):</b> အောက်ခြေ <b>Share (⬆️)</b> → <b>Add to Home Screen (➕)</b> → <b>Add</b> နှိပ်ပါ။</p>
+      </div>
+      <button type="button" onclick="closeInstallGuide()" class="w-full bg-gray-900 text-white font-extrabold py-2.5 rounded-xl text-xs">နားလည်ပါပြီ</button>
     </div>
   </div>
 
   <script>
+    let currentRiderTab = 'delivery';
+    let hasAutoSelectedTab = false;
+    let returnTargetOrderId = "";
     let pushPopupTimer = null;
-    let lastBackPressTime = 0;
-    let toastTimer = null;
+    let lastLoadedData = null;
+    window.__pickupImgMap = {};
 
-    // ================= HELPER FUNCTIONS =================
+    function escapeHtml(str) {
+      return (str || '').toString()
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
     function isIOSDevice() {
       const ua = navigator.userAgent || '';
       return /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     }
 
-    function isIOSInAppBrowser() {
-      const ua = navigator.userAgent || '';
-      return isIOSDevice() && /FBAN|FBAV|Viber|Line|Instagram|MicroMessenger|Messenger|GSA/i.test(ua);
-    }
-
-    function isIOSChrome() {
-      const ua = navigator.userAgent || '';
-      return isIOSDevice() && /CriOS/i.test(ua);
-    }
-
-    function isAndroidInAppBrowser() {
-      const ua = navigator.userAgent || '';
-      return /Android/i.test(ua) && /MiuiBrowser|XiaoMi|FBAN|FBAV|Viber|Line|SamsungBrowser|UCBrowser|Opera|OPR|EdgA/i.test(ua);
-    }
-
-    function silentCopy(text) {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).catch(() => legacyCopy(text));
-      } else {
-        legacyCopy(text);
-      }
-    }
-
-    function legacyCopy(text) {
-      const temp = document.createElement('textarea');
-      temp.value = text;
-      temp.setAttribute('readonly', '');
-      temp.style.position = 'fixed';
-      temp.style.opacity = '0';
-      document.body.appendChild(temp);
-      temp.focus();
-      temp.select();
-      try { temp.setSelectionRange(0, 99999); } catch (e) {}
-      try { document.execCommand('copy'); } catch (e) {}
-      document.body.removeChild(temp);
-    }
-
-    function formatOrderDateTime(val) {
-      if (!val) return "📅 အချိန်မှတ်တမ်းမရှိပါ";
-      const str = val.toString().trim();
-      const parsed = new Date(str);
-      if (str.includes('T') && !isNaN(parsed.getTime())) {
-        const datePart = parsed.toLocaleDateString('en-CA', { timeZone: 'Asia/Yangon' });
-        const timePart = parsed.toLocaleTimeString('en-US', { timeZone: 'Asia/Yangon', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
-        return `📅 ${datePart} | ⏰ ${timePart}`;
-      }
-      const parts = str.split(' ');
-      if (parts.length >= 2) return `📅 ${parts[0]} | ⏰ ${parts.slice(1).join(' ')}`;
-      return `📅 ${str}`;
-    }
-
-    function buildSmartMapsInfo(order) {
-      const rawLoc = (order.mapLocation || "").toString().trim();
-      const rawQuery = (order.mapQuery || "").toString().trim();
-
-      if (rawLoc) {
-        if (/^https?:\/\//i.test(rawLoc)) {
-          return { url: rawLoc, isExact: true, label: "📍 Map Link အတိအကျ" };
-        }
-        const coordMatch = rawLoc.match(/(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/);
-        if (coordMatch) {
-          return {
-            url: `https://www.google.com/maps/search/?api=1&query=${coordMatch[1]},${coordMatch[2]}`,
-            isExact: true,
-            label: "📍 GPS အတိအကျ"
-          };
-        }
-      }
-
-      if (rawQuery) {
-        return {
-          url: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(rawQuery)}`,
-          isExact: false,
-          label: "🔍 လမ်းနှင့်မြို့နယ်"
-        };
-      }
-
-      return {
-        url: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((order.address || '') + ' Yangon')}`,
-        isExact: false,
-        label: "🔍 စာသားလိပ်စာ"
-      };
-    }
-
-    // ================= EXIT GUARD & MODAL HISTORY =================
-    function showExitToast() {
-      const toast = document.getElementById('exit-toast');
-      toast.classList.remove('opacity-0'); toast.classList.add('opacity-100');
-      if (toastTimer) clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => { toast.classList.remove('opacity-100'); toast.classList.add('opacity-0'); }, 2000);
-    }
-
-    function setupExitGuard() {
-      history.replaceState({ page: 'delivery_base' }, "", "");
-      history.pushState({ page: 'delivery_guard' }, "", "");
-    }
-
-    function pushModalHistory(modalName) {
-      if (!history.state || history.state.modal !== modalName) history.pushState({ modal: modalName }, "", "");
-    }
-
-    window.addEventListener('popstate', function () {
-      const guideModal = document.getElementById('pwa-guide-modal');
-      if (guideModal && !guideModal.classList.contains('hidden')) {
-        guideModal.classList.add('hidden');
-        return;
-      }
-      const now = Date.now();
-      if (now - lastBackPressTime < 2000) history.back();
-      else { lastBackPressTime = now; showExitToast(); history.pushState({ page: 'delivery_guard' }, "", ""); }
-    });
-
-    // ================= PWA INSTALL (ANDROID & iOS) =================
-    function copyDeliveryLinkForInstall() {
-      const url = window.location.origin + window.location.pathname;
-      silentCopy(url);
-      const btn = document.getElementById('btn-copy-install-link');
-      if (btn) {
-        btn.innerText = "✅ Link Copy ကူးပြီးပါပြီ";
-        setTimeout(() => { btn.innerText = "📋 Delivery Link Copy ကူးမည်"; }, 2500);
-      }
-    }
-
-    function openPwaGuideModal(mode) {
-      const titleEl = document.getElementById('pwa-guide-title');
-      const subEl = document.getElementById('pwa-guide-subtitle');
-      const bodyEl = document.getElementById('pwa-guide-body');
-      const copyWrap = document.getElementById('pwa-guide-copy-wrap');
-      const modal = document.getElementById('pwa-guide-modal');
-      if (!modal || !bodyEl) return;
-
-      if (mode === 'ios_inapp') {
-        titleEl.innerText = "🍎 iPhone တွင် MT Delivery သွင်းနည်း";
-        subEl.innerText = "Safari ဖြင့် အရင်ဖွင့်ပေးရန် လိုအပ်ပါသည်";
-        copyWrap.classList.remove('hidden');
-        bodyEl.innerHTML = `
-          <div class="bg-amber-50 border border-amber-300 rounded-xl p-2.5 text-amber-900 font-bold text-xs">
-            ⚠️ Viber / Facebook အတွင်းမှ တိုက်ရိုက် App သွင်း၍ မရပါ။ Safari ဖြင့် အရင်ဖွင့်ပေးပါ။
-          </div>
-          <div class="space-y-2">
-            <div class="flex items-start gap-2.5 bg-gray-50 p-2.5 rounded-xl border">
-              <span class="bg-blue-600 text-white w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-extrabold shrink-0 mt-0.5">၁</span>
-              <p>အောက်ပါ <b>"📋 Delivery Link Copy ကူးမည်"</b> ကို နှိပ်ပြီး <b>Safari</b> Browser တွင် Paste ချဖွင့်ပါ။</p>
-            </div>
-            <div class="flex items-start gap-2.5 bg-gray-50 p-2.5 rounded-xl border">
-              <span class="bg-blue-600 text-white w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-extrabold shrink-0 mt-0.5">၂</span>
-              <p>Safari ၏ <b>Share (⬆️)</b> ကို နှိပ်ပြီး ညာဘက်အောက်ရှိ <b>View More</b> ကို နှိပ်ပါ (သို့) အောက်သို့ ဆွဲချပါ။</p>
-            </div>
-            <div class="flex items-start gap-2.5 bg-gray-50 p-2.5 rounded-xl border">
-              <span class="bg-blue-600 text-white w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-extrabold shrink-0 mt-0.5">၃</span>
-              <p><b>Add to Home Screen (➕)</b> → <b>Add</b> ကို နှိပ်လိုက်ပါက ဖုန်းမျက်နှာပြင်ပေါ်တွင် <b>MT Delivery App</b> ရောက်ရှိသွားပါမည်။</p>
-            </div>
-          </div>
-        `;
-      } else if (mode === 'ios_browser') {
-        const shareLocationText = isIOSChrome()
-          ? 'အပေါ်ညာဘက်ထောင့် (Link ဘေး) ရှိ <b>Share ခလုတ် (⬆️)</b> ကို နှိပ်ပါ။'
-          : 'Safari ၏ <b>Share ခလုတ် (⬆️)</b> ကို နှိပ်ပါ (အောက်ခြေအလယ် သို့မဟုတ် <b>•••</b> မီနူးထဲတွင် ရှိပါသည်)။';
-        titleEl.innerText = "🍎 iPhone တွင် MT Delivery သွင်းနည်း";
-        subEl.innerText = "Delivery App သီးသန့်အဖြစ် ထည့်သွင်းနိုင်ပါသည်";
-        copyWrap.classList.add('hidden');
-        bodyEl.innerHTML = `
-          <div class="space-y-2">
-            <div class="flex items-start gap-2.5 bg-blue-50/70 p-2.5 rounded-xl border border-blue-200">
-              <span class="bg-blue-600 text-white w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-extrabold shrink-0 mt-0.5">၁</span>
-              <p>${shareLocationText}</p>
-            </div>
-            <div class="flex items-start gap-2.5 bg-blue-50/70 p-2.5 rounded-xl border border-blue-200">
-              <span class="bg-blue-600 text-white w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-extrabold shrink-0 mt-0.5">၂</span>
-              <p>ညာဘက်အောက်ရှိ <b>View More</b> ကို နှိပ်ပြီး (သို့မဟုတ် အောက်သို့ ဆွဲချပြီး) <b>Add to Home Screen (➕)</b> ကို နှိပ်ပါ။</p>
-            </div>
-            <div class="flex items-start gap-2.5 bg-blue-50/70 p-2.5 rounded-xl border border-blue-200">
-              <span class="bg-blue-600 text-white w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-extrabold shrink-0 mt-0.5">၃</span>
-              <p>ညာဘက်အပေါ်ထောင့်ရှိ <b>Add</b> ကို နှိပ်လိုက်ပါက ဖုန်းမျက်နှာပြင်ပေါ်တွင် <b>MT Delivery</b> App ပေါ်လာပါမည်။</p>
-            </div>
-          </div>
-        `;
-      } else {
-        titleEl.innerText = "🤖 Android တွင် MT Delivery သွင်းနည်း";
-        subEl.innerText = "Chrome Browser မှတစ်ဆင့် သွင်းနိုင်ပါသည်";
-        copyWrap.classList.remove('hidden');
-        bodyEl.innerHTML = `
-          <div class="space-y-2">
-            <div class="flex items-start gap-2.5 bg-emerald-50/70 p-2.5 rounded-xl border border-emerald-200">
-              <span class="bg-emerald-600 text-white w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-extrabold shrink-0 mt-0.5">၁</span>
-              <p>Chrome Browser ညာဘက်အပေါ်ထောင့်ရှိ <b>အစက် ၃ စက် (⋮)</b> ကို နှိပ်ပါ။</p>
-            </div>
-            <div class="flex items-start gap-2.5 bg-emerald-50/70 p-2.5 rounded-xl border border-emerald-200">
-              <span class="bg-emerald-600 text-white w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-extrabold shrink-0 mt-0.5">၂</span>
-              <p><b>Add to Home screen</b> (သို့မဟုတ် <b>Install app</b>) ကို နှိပ်ပါ။</p>
-            </div>
-            <div class="flex items-start gap-2.5 bg-emerald-50/70 p-2.5 rounded-xl border border-emerald-200">
-              <span class="bg-emerald-600 text-white w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-extrabold shrink-0 mt-0.5">၃</span>
-              <p><b>Install</b> ကို နှိပ်လိုက်ပါက ဖုန်းမျက်နှာပြင်ပေါ်တွင် <b>MT Delivery</b> App အဖြစ် ရောက်ရှိသွားပါမည်။</p>
-            </div>
-          </div>
-        `;
-      }
-
-      modal.classList.remove('hidden');
-      pushModalHistory('pwa_guide');
-    }
-
-    function closePwaGuideModal() {
-      const modal = document.getElementById('pwa-guide-modal');
-      if (modal) modal.classList.add('hidden');
-      if (history.state && history.state.modal === 'pwa_guide') history.back();
-    }
-
-    async function runNativeInstallPrompt() {
-      const btn = document.getElementById('pwa-install-btn');
-      if (btn) btn.innerText = '📲 App ဒေါင်းမည်';
-      if (!window.__deferredInstallPrompt) return;
-      try {
-        window.__deferredInstallPrompt.prompt();
-        const choice = await window.__deferredInstallPrompt.userChoice;
-        if (choice && choice.outcome === 'accepted') {
-          window.__deferredInstallPrompt = null;
-          localStorage.setItem('mt_delivery_pwa_installed_v2', '1');
-          const wrap = document.getElementById('pwa-install-wrapper');
-          if (wrap) wrap.classList.add('hidden');
-        }
-      } catch (e) {}
-    }
-
-    async function triggerPWAInstall() {
-      if (window.__deferredInstallPrompt) {
-        await runNativeInstallPrompt();
-        return;
-      }
-
-      if (isIOSDevice()) {
-        if (isIOSInAppBrowser()) openPwaGuideModal('ios_inapp');
-        else openPwaGuideModal('ios_browser');
-        return;
-      }
-
-      if (isAndroidInAppBrowser()) {
-        window.location.href = "intent://kflowcreated-stack.github.io/minitrend-kids/delivery/#Intent;scheme=https;package=com.android.chrome;end";
-        return;
-      }
-
-      const btn = document.getElementById('pwa-install-btn');
-      if (btn) btn.innerText = '⏳ ပြင်ဆင်နေပါသည်...';
-      window.__pendingAutoInstall = true;
-
-      setTimeout(() => {
-        if (window.__pendingAutoInstall) {
-          window.__pendingAutoInstall = false;
-          if (btn) btn.innerText = '📲 App ဒေါင်းမည်';
-          openPwaGuideModal('android_manual');
-        }
-      }, 2500);
-    }
-
-    // ================= NOTIFICATIONS & FIREBASE PUSH =================
-    function playNotiChime() {
-      try {
-        const AudioCtx = window.AudioContext || window.webkitAudioContext;
-        if (!AudioCtx) return;
-        const ctx = new AudioCtx();
-        const osc1 = ctx.createOscillator();
-        const osc2 = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc1.type = 'sine'; osc2.type = 'triangle';
-        osc1.frequency.setValueAtTime(880, ctx.currentTime);
-        osc1.frequency.setValueAtTime(1174.66, ctx.currentTime + 0.12);
-        osc2.frequency.setValueAtTime(440, ctx.currentTime);
-        osc2.frequency.setValueAtTime(587.33, ctx.currentTime + 0.12);
-        gain.gain.setValueAtTime(0.25, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.55);
-        osc1.connect(gain); osc2.connect(gain); gain.connect(ctx.destination);
-        osc1.start(); osc2.start();
-        osc1.stop(ctx.currentTime + 0.55); osc2.stop(ctx.currentTime + 0.55);
-      } catch (e) {}
-    }
-
-    async function sendPhoneNotification(title, bodyText, tagId) {
-      const popup = document.getElementById('push-noti-popup');
-      document.getElementById('push-noti-title').innerText = "🔔 " + (title || "MT Delivery");
-      document.getElementById('push-noti-body').innerText = bodyText || "";
-      popup.classList.remove('hidden');
-      playNotiChime();
-      if (navigator.vibrate) navigator.vibrate([250, 120, 250]);
-      if (pushPopupTimer) clearTimeout(pushPopupTimer);
-      pushPopupTimer = setTimeout(() => { popup.classList.add('hidden'); }, 10000);
-
-      if (!('Notification' in window) || Notification.permission !== 'granted') return;
-      try {
-        if ('serviceWorker' in navigator) {
-          const reg = await navigator.serviceWorker.ready;
-          if (reg && reg.showNotification) {
-            await reg.showNotification(title || 'MT Delivery 🚚', {
-              body: bodyText || '', icon: '../icon.png?v=3', badge: '../badge.png?v=1',
-              tag: tagId || ('mt-del-' + Date.now()), renotify: true, vibrate: [250, 120, 250],
-              data: { url: window.location.href }
-            });
-            return;
-          }
-        }
-        new Notification(title || 'MT Delivery 🚚', { body: bodyText || '', icon: '../icon.png?v=3' });
-      } catch (e) {}
-    }
-
-    function closePushPopup() {
-      document.getElementById('push-noti-popup').classList.add('hidden');
-    }
-
-    async function initFirebasePush(roleTag, allowPrompt = false) {
-      try {
-        if (!('Notification' in window) || !('serviceWorker' in navigator) || typeof firebase === 'undefined') return null;
-        if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
-
-        const messaging = firebase.messaging();
-        if (!window.__fcmForegroundBound) {
-          window.__fcmForegroundBound = true;
-          messaging.onMessage((payload) => {
-            const title = (payload.notification && payload.notification.title) || (payload.data && payload.data.title) || "MT Delivery 🚚";
-            const body = (payload.notification && payload.notification.body) || (payload.data && payload.data.body) || "";
-            sendPhoneNotification(title, body, "fcm-fg-" + Date.now());
-            loadDeliveryDashboard(true);
-          });
-        }
-
-        if (Notification.permission === 'default' && allowPrompt) await Notification.requestPermission();
-        if (Notification.permission !== 'granted') return null;
-
-        const reg = (await window.__swRegistrationPromise) || (await navigator.serviceWorker.ready);
-        const currentToken = await messaging.getToken({ vapidKey: FIREBASE_VAPID_KEY, serviceWorkerRegistration: reg });
-
-        if (currentToken) {
-          window.__currentFcmToken = currentToken;
-          const sessionSyncKey = "mt_fcm_synced_" + roleTag;
-          if (!sessionStorage.getItem(sessionSyncKey)) {
-            await fetch(APPS_SCRIPT_ORDER_URL, {
-              method: "POST", mode: "no-cors",
-              headers: { "Content-Type": "text/plain;charset=utf-8" },
-              body: JSON.stringify({ action: "saveFcmToken", token: currentToken, role: roleTag, device: navigator.userAgent.substring(0, 80) })
-            });
-            sessionStorage.setItem(sessionSyncKey, "1");
-          }
-          const riderBtn = document.getElementById('btn-rider-fcm');
-          if (riderBtn) riderBtn.innerText = "✅ Noti ချိတ်ပြီး";
-          return currentToken;
-        }
-      } catch (e) {}
-      return null;
-    }
-
-    // ================= DELIVERY RIDER SESSION & LOGIC =================
     function getSavedRiderSession() {
       try { return JSON.parse(localStorage.getItem('mt_rider_session') || 'null'); } catch (e) { return null; }
     }
@@ -642,20 +333,166 @@
       try { localStorage.setItem('mt_rider_session', JSON.stringify(obj)); } catch (e) {}
     }
 
-    function showAppropriateView() {
-      const saved = getSavedRiderSession();
-      if (saved && saved.id && saved.pin) {
-        document.getElementById('delivery-login-card').classList.add('hidden');
-        document.getElementById('delivery-dashboard').classList.remove('hidden');
-        document.getElementById('rider-header-name').innerText = `${saved.name} (${saved.id})`;
-        if ('Notification' in window && Notification.permission === 'granted') {
-          initFirebasePush('rider:' + saved.id, false);
-        }
-        loadDeliveryDashboard(false);
+    function getPickupChecks() {
+      try { return JSON.parse(localStorage.getItem('mt_rider_pickup_checks') || '{}'); } catch (e) { return {}; }
+    }
+
+    function togglePickupCheck(key) {
+      const checks = getPickupChecks();
+      if (checks[key]) delete checks[key];
+      else checks[key] = true;
+      try { localStorage.setItem('mt_rider_pickup_checks', JSON.stringify(checks)); } catch (e) {}
+      if (lastLoadedData) renderRiderDashboardData(lastLoadedData, true);
+    }
+
+    function closeInstallGuide() { document.getElementById('install-guide-modal').classList.add('hidden'); }
+
+    async function triggerInstall() {
+      if (window.__deferredInstallPrompt) {
+        try {
+          window.__deferredInstallPrompt.prompt();
+          await window.__deferredInstallPrompt.userChoice;
+          window.__deferredInstallPrompt = null;
+        } catch (e) {}
+        return;
+      }
+      document.getElementById('install-guide-modal').classList.remove('hidden');
+    }
+
+    function playNotiChime() {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, ctx.currentTime);
+        osc.frequency.setValueAtTime(1174.66, ctx.currentTime + 0.14);
+        gain.gain.setValueAtTime(0.25, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.start(); osc.stop(ctx.currentTime + 0.5);
+      } catch (e) {}
+    }
+
+    function showRiderBannerNoti(title, bodyText) {
+      const popup = document.getElementById('push-noti-popup');
+      document.getElementById('push-noti-title').innerText = "🔔 " + (title || "MiniTrend Delivery");
+      document.getElementById('push-noti-body').innerText = bodyText || "";
+      popup.classList.remove('hidden');
+      playNotiChime();
+      if (navigator.vibrate) navigator.vibrate([250, 100, 250]);
+      if (pushPopupTimer) clearTimeout(pushPopupTimer);
+      pushPopupTimer = setTimeout(() => { popup.classList.add('hidden'); }, 9000);
+    }
+
+    function closePushPopup() { document.getElementById('push-noti-popup').classList.add('hidden'); }
+
+    function buildSmartMapsInfo(order) {
+      const rawLoc = (order.mapLocation || "").toString().trim();
+      const rawQuery = (order.mapQuery || "").toString().trim();
+      if (rawLoc) {
+        if (/^https?:\/\//i.test(rawLoc)) return { url: rawLoc, isExact: true, label: "📍 Map Link အတိအကျ" };
+        const m = rawLoc.match(/(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/);
+        if (m) return { url: `https://www.google.com/maps/search/?api=1&query=${m[1]},${m[2]}`, isExact: true, label: "📍 GPS အတိအကျ" };
+      }
+      if (rawQuery) return { url: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(rawQuery)}`, isExact: false, label: "🔍 လမ်းနှင့်မြို့နယ်" };
+      return { url: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((order.address || '') + ' Yangon')}`, isExact: false, label: "🔍 စာသားလိပ်စာ" };
+    }
+
+    function buildShopMapUrl(mapLoc, address, shopName) {
+      const raw = (mapLoc || "").toString().trim();
+      if (raw) {
+        if (/^https?:\/\//i.test(raw)) return raw;
+        const m = raw.match(/(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/);
+        if (m) return `https://www.google.com/maps/search/?api=1&query=${m[1]},${m[2]}`;
+      }
+      const q = (address || shopName || 'Yangon') + ' Yangon';
+      return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
+    }
+
+    function openImageLightbox(imgKey) {
+      const info = window.__pickupImgMap[imgKey];
+      if (!info) return;
+      document.getElementById('lightbox-img').src = info.image || '../icon.png?v=3';
+      document.getElementById('lightbox-title').innerText = info.name || '';
+      document.getElementById('lightbox-meta').innerText = `🧾 ${info.orderId} | 🎨 ${info.colorName || '-'} | 📏 ${info.size || '-'} | 📦 x ${info.qty || 1} ခု`;
+      document.getElementById('image-lightbox-modal').classList.remove('hidden');
+    }
+
+    function closeImageLightbox() {
+      document.getElementById('image-lightbox-modal').classList.add('hidden');
+    }
+
+    function switchRiderTab(tabName) {
+      currentRiderTab = tabName;
+      document.getElementById('tab-panel-pickup').classList.toggle('hidden', tabName !== 'pickup');
+      document.getElementById('tab-panel-delivery').classList.toggle('hidden', tabName !== 'delivery');
+
+      const btnP = document.getElementById('tab-btn-pickup');
+      const btnD = document.getElementById('tab-btn-delivery');
+      if (tabName === 'pickup') {
+        btnP.className = 'py-2.5 px-3 rounded-xl text-xs sm:text-sm font-extrabold bg-purple-600 text-white shadow-sm transition';
+        btnD.className = 'py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold text-gray-700 hover:bg-gray-100 transition';
       } else {
-        document.getElementById('delivery-dashboard').classList.add('hidden');
-        document.getElementById('delivery-login-card').classList.remove('hidden');
-        loadRiderLoginDropdown();
+        btnD.className = 'py-2.5 px-3 rounded-xl text-xs sm:text-sm font-extrabold bg-blue-600 text-white shadow-sm transition';
+        btnP.className = 'py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold text-gray-700 hover:bg-gray-100 transition';
+      }
+    }
+
+    async function initRiderFirebasePush(riderId, allowPrompt = false) {
+      try {
+        if (!('Notification' in window) || !('serviceWorker' in navigator) || typeof firebase === 'undefined') return null;
+        if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+
+        const messaging = firebase.messaging();
+        if (!window.__riderFcmBound) {
+          window.__riderFcmBound = true;
+          messaging.onMessage((payload) => {
+            const d = payload.data || {};
+            const n = payload.notification || {};
+            showRiderBannerNoti(d.title || n.title || "MiniTrend Delivery", d.body || n.body || "");
+            loadDeliveryDashboard(true);
+          });
+        }
+
+        if (Notification.permission === 'default' && allowPrompt) await Notification.requestPermission();
+        if (Notification.permission !== 'granted') return null;
+
+        const reg = (await window.__swRegistrationPromise) || (await navigator.serviceWorker.ready);
+        const token = await messaging.getToken({ vapidKey: FIREBASE_VAPID_KEY, serviceWorkerRegistration: reg });
+        if (token) {
+          window.__currentFcmToken = token;
+          const roleKey = "rider:" + riderId;
+          if (!sessionStorage.getItem("mt_fcm_synced_" + roleKey)) {
+            await fetch(APPS_SCRIPT_URL, {
+              method: "POST", mode: "no-cors",
+              headers: { "Content-Type": "text/plain;charset=utf-8" },
+              body: JSON.stringify({ action: "saveFcmToken", token, role: roleKey, device: navigator.userAgent.substring(0, 80) })
+            });
+            sessionStorage.setItem("mt_fcm_synced_" + roleKey, "1");
+          }
+          const btn = document.getElementById('btn-rider-fcm');
+          if (btn) btn.innerText = "✅ Noti ချိတ်ပြီး";
+          return token;
+        }
+      } catch (e) {}
+      return null;
+    }
+
+    async function connectRiderFirebase() {
+      const saved = getSavedRiderSession();
+      if (!saved || !saved.id) return;
+      const btn = document.getElementById('btn-rider-fcm');
+      if (btn) btn.innerText = "⏳ ချိတ်ဆက်နေ...";
+      sessionStorage.removeItem("mt_fcm_synced_rider:" + saved.id);
+      const tk = await initRiderFirebasePush(saved.id, true);
+      if (tk) {
+        alert(`✅ ${saved.name} ဖုန်းကို Notification စနစ်နှင့် အောင်မြင်စွာ ချိတ်ဆက်ပြီးပါပြီ!`);
+      } else {
+        if (btn) btn.innerText = "🔔 Noti ချိတ်မည်";
+        alert("⚠️ Browser Settings တွင် Notification ကို Allow ပေးထားကြောင်း စစ်ဆေးပါ။");
       }
     }
 
@@ -663,11 +500,11 @@
       const sel = document.getElementById('rider-login-select');
       if (!sel) return;
       try {
-        const res = await fetch(`${APPS_SCRIPT_ORDER_URL}?action=getDeliveryData&t=${Date.now()}`, { cache: "no-store" });
+        const res = await fetch(`${APPS_SCRIPT_URL}?action=getDeliveryData&t=${Date.now()}`, { cache: "no-store" });
         const data = await res.json();
         if (data && Array.isArray(data.riders) && data.riders.length > 0) {
           sel.innerHTML = `<option value="">-- ဝန်ထမ်းအမည် ရွေးချယ်ပါ --</option>` +
-            data.riders.map(r => `<option value="${r.id}">${r.id} — ${r.name}</option>`).join('');
+            data.riders.map(r => `<option value="${escapeHtml(r.id)}">${escapeHtml(r.id)} — ${escapeHtml(r.name)}</option>`).join('');
         } else {
           sel.innerHTML = `<option value="">ဝန်ထမ်းစာရင်း မရှိသေးပါ</option>`;
         }
@@ -688,15 +525,15 @@
       errEl.classList.add('hidden');
 
       try {
-        const res = await fetch(`${APPS_SCRIPT_ORDER_URL}?action=getDeliveryData&riderId=${encodeURIComponent(riderId)}&pin=${encodeURIComponent(pin)}&t=${Date.now()}`, { cache: "no-store" });
+        const res = await fetch(`${APPS_SCRIPT_URL}?action=getDeliveryData&riderId=${encodeURIComponent(riderId)}&pin=${encodeURIComponent(pin)}&t=${Date.now()}`, { cache: "no-store" });
         const data = await res.json();
         if (data && data.status === 'ok' && data.rider) {
           saveRiderSession({ id: data.rider.id, name: data.rider.name, pin: pin });
           document.getElementById('rider-login-pin').value = '';
-          showAppropriateView();
-          renderRiderDashboardData(data);
+          hasAutoSelectedTab = false;
+          showDashboardScreen();
+          renderRiderDashboardData(data, false);
         } else {
-          errEl.innerText = "❌ PIN နံပါတ် မှားယွင်းနေပါသည်၊ ပြန်လည်စစ်ဆေးပါ။";
           errEl.classList.remove('hidden');
         }
       } catch (err) {
@@ -704,31 +541,24 @@
         errEl.classList.remove('hidden');
       }
 
-      btn.disabled = false; btn.innerText = "🔓 Delivery App သို့ ဝင်မည်";
+      btn.disabled = false; btn.innerText = "🔓 ဝန်ထမ်း App သို့ ဝင်ရောက်မည်";
     }
 
     function logoutRider() {
-      if (!confirm("Delivery အကောင့်မှ ထွက်မှာ သေချာပါသလား?")) return;
       try { localStorage.removeItem('mt_rider_session'); } catch (e) {}
       document.getElementById('delivery-dashboard').classList.add('hidden');
       document.getElementById('delivery-login-card').classList.remove('hidden');
       loadRiderLoginDropdown();
     }
 
-    async function connectRiderFirebase() {
+    function showDashboardScreen() {
       const saved = getSavedRiderSession();
-      if (!saved || !saved.id) return;
-      const btn = document.getElementById('btn-rider-fcm');
-      if (btn) btn.innerText = "⏳ ချိတ်ဆက်နေသည်...";
-      const roleKey = "rider:" + saved.id;
-      sessionStorage.removeItem("mt_fcm_synced_" + roleKey);
-      const tk = await initFirebasePush(roleKey, true);
-      if (tk) {
-        if (btn) btn.innerText = "✅ Noti ချိတ်ပြီး";
-        alert(`✅ ${saved.name} ၏ ဖုန်းကို Notification စနစ်နှင့် ချိတ်ဆက်ပြီးပါပြီ!`);
-      } else {
-        if (btn) btn.innerText = "🔔 ဤဖုန်း Noti ချိတ်မည်";
-        alert("⚠️ Browser/App Settings တွင် Notification ကို Allow ပေးထားကြောင်း စစ်ဆေးပါ။ (iPhone ဖြစ်ပါက Home Screen App အဖြစ် သွင်းပြီးမှ ဖွင့်၍ ချိတ်ဆက်ပေးပါ။)");
+      if (!saved) return;
+      document.getElementById('delivery-login-card').classList.add('hidden');
+      document.getElementById('delivery-dashboard').classList.remove('hidden');
+      document.getElementById('rider-header-name').innerText = `${saved.name} (${saved.id})`;
+      if ('Notification' in window && Notification.permission === 'granted') {
+        initRiderFirebasePush(saved.id, false);
       }
     }
 
@@ -736,78 +566,284 @@
       const saved = getSavedRiderSession();
       if (!saved || !saved.id || !saved.pin) return;
       const btn = document.getElementById('btn-rider-refresh');
-      if (btn && !silent) btn.innerText = "⏳ စစ်နေသည်...";
+      if (btn && !silent) btn.innerText = "⏳...";
 
       try {
-        const res = await fetch(`${APPS_SCRIPT_ORDER_URL}?action=getDeliveryData&riderId=${encodeURIComponent(saved.id)}&pin=${encodeURIComponent(saved.pin)}&t=${Date.now()}`, { cache: "no-store" });
+        const res = await fetch(`${APPS_SCRIPT_URL}?action=getDeliveryData&riderId=${encodeURIComponent(saved.id)}&pin=${encodeURIComponent(saved.pin)}&t=${Date.now()}`, { cache: "no-store" });
         const data = await res.json();
-        if (data && data.status === 'unauthorized') {
-          try { localStorage.removeItem('mt_rider_session'); } catch (e) {}
-          showAppropriateView();
-          return;
-        }
-        if (data && data.status === 'ok') renderRiderDashboardData(data);
+        if (data && data.status === 'unauthorized') { logoutRider(); return; }
+        if (data && data.status === 'ok') renderRiderDashboardData(data, silent);
       } catch (e) {}
 
-      if (btn && !silent) btn.innerText = "🔄 ပြန်စစ်မည်";
+      if (btn && !silent) btn.innerText = "🔄 ပြန်စစ်";
     }
 
-    function renderRiderDashboardData(data) {
+    function renderRiderDashboardData(data, silent) {
+      lastLoadedData = data;
+      const pickupTasks = data.pickupTasks || [];
+      const returnToShopTasks = data.returnToShopTasks || [];
       const pending = data.pendingOrders || [];
       const done = data.todayDelivered || [];
+      const todayReturns = data.todayReturns || [];
       const codTotal = Number(data.todayCodTotal || 0);
 
+      const totalPickupWork = pickupTasks.length + returnToShopTasks.length;
+
+      document.getElementById('rider-stat-pickup').innerText = totalPickupWork;
       document.getElementById('rider-stat-pending').innerText = pending.length;
       document.getElementById('rider-stat-done').innerText = done.length;
       document.getElementById('rider-stat-cod').innerText = codTotal.toLocaleString() + " Ks";
+      document.getElementById('tab-badge-pickup').innerText = totalPickupWork;
+      document.getElementById('tab-badge-delivery').innerText = pending.length;
 
-      if (pending.length > 0) {
-        const newestId = pending[0].orderId;
-        const lastKey = 'mt_rider_last_order_' + (data.rider ? data.rider.id : '');
-        const prevId = localStorage.getItem(lastKey);
-        if (newestId && prevId && prevId !== newestId) {
-          sendPhoneNotification(`📦 ပို့ဆောင်ရန် အော်ဒါအသစ်! (${newestId})`, `${pending[0].name} — 📍 ${pending[0].address}`, 'rider-ord-' + newestId);
-        }
-        localStorage.setItem(lastKey, newestId);
+      if (!hasAutoSelectedTab) {
+        hasAutoSelectedTab = true;
+        if (totalPickupWork > 0 && pending.length === 0) switchRiderTab('pickup');
+        else switchRiderTab('delivery');
       }
 
+      // New task notification check
+      const rId = data.rider ? data.rider.id : '';
+      if (pending.length > 0 && rId) {
+        const newestDel = pending[0].orderId;
+        const delKey = 'mt_rider_last_del_' + rId;
+        const prevDel = localStorage.getItem(delKey);
+        if (prevDel && prevDel !== newestDel && silent) {
+          showRiderBannerNoti(`🚚 ပို့ဆောင်ရန် အော်ဒါအသစ် (${newestDel})`, `${pending[0].name} — 📍 ${pending[0].address}`);
+        }
+        localStorage.setItem(delKey, newestDel);
+      }
+      if (pickupTasks.length > 0 && rId) {
+        const newestPick = pickupTasks[0].orderId;
+        const pickKey = 'mt_rider_last_pick_' + rId;
+        const prevPick = localStorage.getItem(pickKey);
+        if (prevPick && prevPick !== newestPick && silent) {
+          showRiderBannerNoti(`📦 ဆိုင်မှ ပစ္စည်းသွားကောက်ရန် (${newestPick})`, "Pickup Tab တွင် ပစ္စည်းပုံတိုက်စစ်ပြီး သွားကောက်ပေးပါ။");
+        }
+        localStorage.setItem(pickKey, newestPick);
+      }
+
+      window.__pickupImgMap = {};
+      const checks = getPickupChecks();
+
+      // ==================== RENDER PICKUP TAB (GROUPED BY SHOP + PRODUCT PHOTOS) ====================
+      const pickupEl = document.getElementById('rider-pickup-list');
+      if (pickupTasks.length === 0) {
+        pickupEl.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs sm:text-sm">🎉 လက်ရှိ ဆိုင်မှသွားကောက်ရန် ပစ္စည်း မရှိသေးပါ</div>`;
+      } else {
+        // Group tasks by shop so rider sees all items to collect at each shop together
+        const shopGroups = {};
+        pickupTasks.forEach(task => {
+          const shopsInTask = (task.pickupShops && task.pickupShops.length > 0)
+            ? task.pickupShops
+            : [{ shopId: 'PARTNER', name: 'ချိတ်ဆက်ဆိုင်', phone: '', address: '', mapLocation: '' }];
+
+          shopsInTask.forEach(sh => {
+            const sid = sh.shopId;
+            if (!shopGroups[sid]) {
+              shopGroups[sid] = { shop: sh, orders: [] };
+            }
+            const itemsForThisShop = (task.items || []).filter(it => (it.shopId || '').toUpperCase() === sid.toUpperCase());
+            shopGroups[sid].orders.push({
+              orderId: task.orderId,
+              dateTime: task.dateTime,
+              pickupStatus: task.pickupStatus,
+              multiShopCount: shopsInTask.length,
+              items: itemsForThisShop.length > 0 ? itemsForThisShop : task.items
+            });
+          });
+        });
+
+        pickupEl.innerHTML = Object.keys(shopGroups).map(sid => {
+          const grp = shopGroups[sid];
+          const sh = grp.shop;
+          const shopMapUrl = buildShopMapUrl(sh.mapLocation, sh.address, sh.name);
+
+          const ordersCardsHtml = grp.orders.map(ord => {
+            const isGoing = ord.pickupStatus === 'ဆိုင်သို့ သွားနေပါသည်';
+            let statusBadge = `<span class="bg-purple-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">📋 ဆိုင်မှ ပစ္စည်းသွားကောက်ရန်</span>`;
+            if (isGoing) {
+              statusBadge = `<span class="bg-amber-500 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full animate-pulse">🛵 ဆိုင်သို့ သွားနေပါသည်</span>`;
+            }
+
+            const itemsHtml = (ord.items || []).map((it, idx) => {
+              const chkKey = `pu_${ord.orderId}_${sid}_${idx}`;
+              const isChecked = !!checks[chkKey];
+              window.__pickupImgMap[chkKey] = {
+                orderId: ord.orderId,
+                name: it.name,
+                colorName: it.colorName,
+                size: it.size,
+                qty: it.qty,
+                image: it.image
+              };
+              const thumbHtml = it.image
+                ? `<button type="button" onclick="openImageLightbox('${chkKey}')" class="relative w-16 h-16 rounded-xl overflow-hidden border-2 ${isChecked ? 'border-emerald-400' : 'border-purple-200'} shrink-0 bg-gray-100 cursor-zoom-in">
+                     <img src="${escapeHtml(it.image)}" alt="" class="w-full h-full object-cover object-top">
+                     <span class="absolute bottom-0.5 right-0.5 bg-black/70 text-white text-[9px] px-1 rounded">🔍</span>
+                   </button>`
+                : `<div class="w-16 h-16 rounded-xl border border-dashed border-gray-300 bg-gray-100 flex items-center justify-center text-[10px] text-gray-400 shrink-0">ပုံမရှိ</div>`;
+
+              return `
+                <div class="flex items-center gap-2.5 p-2 rounded-xl border ${isChecked ? 'bg-emerald-50 border-emerald-300' : 'bg-white border-gray-200'}">
+                  <label class="p-1 cursor-pointer shrink-0">
+                    <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="togglePickupCheck('${chkKey}')" class="w-5 h-5 accent-emerald-600 rounded cursor-pointer">
+                  </label>
+                  ${thumbHtml}
+                  <div class="flex-1 min-w-0 space-y-1">
+                    <p class="font-extrabold text-xs sm:text-sm ${isChecked ? 'line-through text-gray-400' : 'text-gray-900'} leading-snug">${idx + 1}. ${escapeHtml(it.name)}</p>
+                    <div class="flex flex-wrap gap-1">
+                      <span class="bg-purple-100 text-purple-800 px-1.5 py-0.5 rounded-md text-[10px] font-extrabold">🎨 ${escapeHtml(it.colorName || 'မူရင်း')}</span>
+                      <span class="bg-pink-100 text-pink-800 px-1.5 py-0.5 rounded-md text-[10px] font-extrabold">📏 ${escapeHtml(it.size || '-')}</span>
+                      <span class="bg-gray-900 text-white px-2 py-0.5 rounded-md text-[10px] font-extrabold">x ${it.qty} ခု</span>
+                    </div>
+                  </div>
+                </div>
+              `;
+            }).join('');
+
+            const multiShopNote = ord.multiShopCount > 1
+              ? `<p class="text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-2 py-1">⚠️ ဤအော်ဒါတွင် ဆိုင် (${ord.multiShopCount}) ဆိုင် တွဲပါနေပါသည် — ဆိုင်အားလုံးကောက်ပြီးမှ "✅ ကောက်ပြီးပြီ" နှိပ်ပါ။</p>`
+              : '';
+
+            return `
+              <div class="bg-gray-50/90 border border-purple-200 rounded-xl p-3 space-y-2.5">
+                <div class="flex flex-wrap justify-between items-center gap-1.5">
+                  <span class="font-extrabold text-xs sm:text-sm text-gray-900">🧾 ${escapeHtml(ord.orderId)}</span>
+                  ${statusBadge}
+                </div>
+                ${multiShopNote}
+                <div class="space-y-1.5">${itemsHtml}</div>
+                <div class="grid grid-cols-2 gap-2 pt-1">
+                  <button type="button" onclick="riderUpdatePickup('${ord.orderId}', 'ဆိုင်သို့ သွားနေပါသည်', this)" ${isGoing ? 'disabled' : ''} class="${isGoing ? 'bg-amber-200 text-amber-900 cursor-not-allowed' : 'bg-amber-500 hover:bg-amber-600 text-white'} font-extrabold py-2.5 rounded-xl text-xs shadow-sm">
+                    ${isGoing ? '🛵 သွားနေပါသည်' : '🛵 ဆိုင်သို့ သွားနေပါသည်'}
+                  </button>
+                  <button type="button" onclick="riderUpdatePickup('${ord.orderId}', 'ဆိုင်မှ ပစ္စည်းကောက်ပြီးပြီ', this)" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-2.5 rounded-xl text-xs shadow-sm">
+                    ✅ ဆိုင်မှ ပစ္စည်းကောက်ပြီးပြီ
+                  </button>
+                </div>
+              </div>
+            `;
+          }).join('');
+
+          return `
+            <div class="border-2 border-purple-300 rounded-2xl overflow-hidden shadow-sm">
+              <div class="bg-purple-700 text-white p-3.5 space-y-2">
+                <div class="flex justify-between items-start gap-2">
+                  <div>
+                    <p class="text-[10px] text-purple-200 font-bold">🏪 ပစ္စည်းသွားကောက်ရမည့် ဆိုင် (${grp.orders.length} အော်ဒါ)</p>
+                    <h4 class="font-extrabold text-sm sm:text-base">${escapeHtml(sh.shopId)} — ${escapeHtml(sh.name)}</h4>
+                  </div>
+                </div>
+                ${sh.address ? `<p class="text-xs text-purple-100">📍 ${escapeHtml(sh.address)}</p>` : ''}
+                <div class="grid grid-cols-2 gap-2 pt-0.5">
+                  ${sh.phone ? `<a href="tel:${escapeHtml(sh.phone)}" class="bg-white/20 hover:bg-white/30 text-white font-extrabold py-1.5 rounded-xl text-xs text-center">📞 ဆိုင်ဖုန်းခေါ် (${escapeHtml(sh.phone)})</a>` : `<span class="bg-white/10 text-purple-200 py-1.5 rounded-xl text-xs text-center">📞 ဖုန်းမထည့်ရသေး</span>`}
+                  <a href="${shopMapUrl}" target="_blank" class="bg-amber-400 hover:bg-amber-300 text-gray-900 font-extrabold py-1.5 rounded-xl text-xs text-center shadow-sm">🗺️ ဆိုင် Google Maps</a>
+                </div>
+              </div>
+              <div class="p-3 space-y-3 bg-white">${ordersCardsHtml}</div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // ==================== RENDER RETURN-TO-SHOP TASKS (IN PICKUP TAB) ====================
+      const rtsBox = document.getElementById('rider-return-to-shop-box');
+      const rtsList = document.getElementById('rider-return-to-shop-list');
+      if (returnToShopTasks.length === 0) {
+        rtsBox.classList.add('hidden');
+      } else {
+        rtsBox.classList.remove('hidden');
+        rtsList.innerHTML = returnToShopTasks.map(t => {
+          const shopMapUrl = buildShopMapUrl(t.shopMap, t.shopAddress, t.shopName);
+          const itemsHtml = (t.items || []).map((it, idx) => {
+            const imgKey = `rts_${t.orderId}_${t.shopId}_${idx}`;
+            window.__pickupImgMap[imgKey] = {
+              orderId: t.orderId, name: it.name, colorName: it.colorName, size: it.size, qty: it.qty, image: it.image
+            };
+            const thumb = it.image
+              ? `<button type="button" onclick="openImageLightbox('${imgKey}')" class="w-14 h-14 rounded-xl overflow-hidden border border-orange-200 shrink-0 bg-gray-100 cursor-zoom-in"><img src="${escapeHtml(it.image)}" class="w-full h-full object-cover object-top"></button>`
+              : `<div class="w-14 h-14 rounded-xl border bg-gray-100 flex items-center justify-center text-[10px] text-gray-400 shrink-0">ပုံမရှိ</div>`;
+            return `
+              <div class="flex items-center gap-2 bg-white border border-orange-200 rounded-xl p-2">
+                ${thumb}
+                <div class="min-w-0 flex-1">
+                  <p class="font-extrabold text-xs text-gray-900 truncate">${escapeHtml(it.name)}</p>
+                  <p class="text-[11px] font-bold text-gray-600">🎨 ${escapeHtml(it.colorName || '-')} | 📏 ${escapeHtml(it.size || '-')} | <b>x ${it.qty} ခု</b></p>
+                </div>
+              </div>
+            `;
+          }).join('');
+
+          return `
+            <div class="bg-orange-50/70 border-2 border-orange-300 rounded-2xl p-3.5 space-y-2.5">
+              <div class="flex flex-wrap justify-between items-center gap-1.5">
+                <span class="font-extrabold text-sm text-gray-900">↩️ ${escapeHtml(t.orderId)} → ${escapeHtml(t.shopId)} (${escapeHtml(t.shopName)})</span>
+                <span class="bg-orange-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">Return ပြန်အပ်ရန်</span>
+              </div>
+              <p class="text-xs text-gray-700">📍 <b>ဆိုင်လိပ်စာ:</b> ${escapeHtml(t.shopAddress || '-')}</p>
+              <p class="text-[11px] font-bold text-red-700">❌ အကြောင်းရင်း: ${escapeHtml(t.reason || 'ဝယ်သူ COD ငြင်း')}</p>
+              <div class="space-y-1.5">${itemsHtml}</div>
+              <div class="grid grid-cols-2 gap-2">
+                ${t.shopPhone ? `<a href="tel:${escapeHtml(t.shopPhone)}" class="bg-white border border-orange-300 text-orange-800 font-extrabold py-2 rounded-xl text-xs text-center">📞 ဆိုင်ဖုန်းခေါ်</a>` : `<span></span>`}
+                <a href="${shopMapUrl}" target="_blank" class="bg-white border border-orange-300 text-emerald-700 font-extrabold py-2 rounded-xl text-xs text-center">🗺️ ဆိုင် Map</a>
+              </div>
+              <button type="button" onclick="markReturnedToShop('${t.orderId}', '${t.shopId}', this)" class="w-full bg-orange-600 hover:bg-orange-700 text-white font-extrabold py-2.5 rounded-xl text-xs shadow-sm">
+                ✅ ဆိုင်သို့ ပြန်အပ်ပြီးပြီ
+              </button>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // ==================== RENDER DELIVERY TAB (NO PRODUCT PHOTOS — FAST & CLEAN) ====================
       const pendingEl = document.getElementById('rider-pending-list');
       if (pending.length === 0) {
-        pendingEl.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs sm:text-sm">🎉 လက်ရှိ ပို့ဆောင်ရန် ကျန်ရှိသော အော်ဒါ မရှိပါ</div>`;
+        pendingEl.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs sm:text-sm">🎉 လက်ရှိ ဝယ်သူထံ ပို့ဆောင်ရန် အော်ဒါ မရှိသေးပါ</div>`;
       } else {
         pendingEl.innerHTML = pending.map(o => {
           const isOnWay = o.status === 'ပို့ဆောင်နေပြီ';
+          const isNoAnswer = o.status === 'ဖုန်းမကိုင် (နောက်နေ့ပြန်ပို့)';
           const mapInfo = buildSmartMapsInfo(o);
           const detailBlock = o.addressDetail
-            ? `<p class="text-gray-800 bg-amber-50 border border-amber-200 rounded-lg px-2.5 py-1.5">🏠 <b>အိမ်နံပါတ်/မှတ်ချက်:</b> ${o.addressDetail}</p>`
+            ? `<p class="text-gray-800 bg-amber-50 border border-amber-200 rounded-lg px-2.5 py-1.5">🏠 <b>အိမ်နံပါတ်/မှတ်ချက်:</b> ${escapeHtml(o.addressDetail)}</p>`
             : '';
+
+          let statusPill = `<span class="bg-blue-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">📌 တာဝန်ပေးထားသည်</span>`;
+          let borderCls = 'border-blue-100 bg-gray-50/50';
+          if (isOnWay) {
+            statusPill = `<span class="bg-amber-500 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">🚚 ပို့ဆောင်နေပြီ</span>`;
+            borderCls = 'border-amber-400 bg-amber-50/40';
+          } else if (isNoAnswer) {
+            statusPill = `<span class="bg-orange-500 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">📞 ဖုန်းမကိုင် (ပြန်ပို့ရန်)</span>`;
+            borderCls = 'border-orange-300 bg-orange-50/40';
+          }
+
           return `
-            <div class="border-2 ${isOnWay ? 'border-amber-400 bg-amber-50/40' : 'border-blue-100 bg-gray-50/50'} rounded-2xl p-3.5 space-y-2.5">
+            <div class="border-2 ${borderCls} rounded-2xl p-3.5 space-y-2.5">
               <div class="flex flex-wrap justify-between items-center gap-1.5">
-                <span class="font-extrabold text-gray-900 text-sm">🧾 ${o.orderId}</span>
+                <span class="font-extrabold text-gray-900 text-sm">🧾 ${escapeHtml(o.orderId)}</span>
                 <div class="flex items-center gap-1">
                   <span class="${mapInfo.isExact ? 'bg-emerald-100 text-emerald-800 border-emerald-300' : 'bg-gray-100 text-gray-600 border-gray-300'} border text-[10px] font-extrabold px-2 py-0.5 rounded-full">
                     ${mapInfo.label}
                   </span>
-                  <span class="${isOnWay ? 'bg-amber-500 text-white' : 'bg-blue-600 text-white'} text-[11px] font-extrabold px-2.5 py-0.5 rounded-full">
-                    ${isOnWay ? '🚚 ပို့ဆောင်နေပြီ' : '📌 တာဝန်ပေးထားသည်'}
-                  </span>
+                  ${statusPill}
                 </div>
               </div>
               <div class="text-xs space-y-1.5">
-                <p class="font-extrabold text-gray-900 text-sm">👤 ${o.name} — <span class="text-blue-700">${o.phone}</span></p>
-                <p class="text-gray-700 leading-relaxed">📍 <b>လိပ်စာ:</b> ${o.address}</p>
+                <p class="font-extrabold text-gray-900 text-sm">👤 ${escapeHtml(o.name)} — <span class="text-blue-700">${escapeHtml(o.phone)}</span></p>
+                <p class="text-gray-700 leading-relaxed">📍 <b>လိပ်စာ:</b> ${escapeHtml(o.address)}</p>
                 ${detailBlock}
-                <p class="text-pink-700 font-bold whitespace-pre-line bg-white p-2 rounded-xl border border-pink-100">${o.itemsText}</p>
+                <p class="text-pink-700 font-bold whitespace-pre-line bg-white p-2 rounded-xl border border-pink-100">${escapeHtml(o.itemsText)}</p>
                 <div class="flex justify-between items-center pt-1">
-                  <span class="text-[11px] text-gray-500">${formatOrderDateTime(o.dateTime)}</span>
+                  <span class="text-[11px] text-gray-500">⏰ ${escapeHtml(o.dateTime)}</span>
                   <span class="text-sm font-extrabold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-lg">💰 COD: ${Number(o.grandTotal).toLocaleString()} ကျပ်</span>
                 </div>
               </div>
               <div class="grid grid-cols-2 gap-2 pt-1">
-                <a href="tel:${o.phone}" class="bg-white border-2 border-blue-200 text-blue-700 font-extrabold py-2 rounded-xl text-xs text-center">📞 ဖုန်းခေါ်မည်</a>
+                <a href="tel:${escapeHtml(o.phone)}" class="bg-white border-2 border-blue-200 text-blue-700 font-extrabold py-2 rounded-xl text-xs text-center">📞 ဖုန်းခေါ်မည်</a>
                 <a href="${mapInfo.url}" target="_blank" class="${mapInfo.isExact ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-emerald-700 border-emerald-300'} border-2 font-extrabold py-2 rounded-xl text-xs text-center shadow-sm">
-                  ${mapInfo.isExact ? '📍 Google Maps (GPS အတိအကျ)' : '🗺️ Google Maps ရှာမည်'}
+                  ${mapInfo.isExact ? '📍 Google Maps (GPS)' : '🗺️ Google Maps ရှာမည်'}
                 </a>
               </div>
               <div class="grid grid-cols-2 gap-2">
@@ -818,11 +854,43 @@
                   💰 COD ငွေပေးချေပြီးပြီ
                 </button>
               </div>
+              <div class="grid grid-cols-2 gap-2">
+                <button type="button" onclick="riderUpdateOrder('${o.orderId}', 'ဖုန်းမကိုင် (နောက်နေ့ပြန်ပို့)', this)" class="bg-orange-50 hover:bg-orange-100 text-orange-800 border border-orange-300 font-extrabold py-2 rounded-xl text-[11px]">
+                  📞 ဖုန်းမကိုင် (နောက်နေ့ပို့)
+                </button>
+                <button type="button" onclick="openReturnModal('${o.orderId}', '${escapeHtml(o.name)}')" class="bg-red-50 hover:bg-red-100 text-red-700 border border-red-300 font-extrabold py-2 rounded-xl text-[11px]">
+                  ❌ ဝယ်သူငြင်း (Return)
+                </button>
+              </div>
             </div>
           `;
         }).join('');
       }
 
+      // Today's Returns (Hand back to Hub)
+      const retBox = document.getElementById('rider-today-returns-box');
+      const retList = document.getElementById('rider-today-returns-list');
+      if (todayReturns.length === 0) {
+        retBox.classList.add('hidden');
+      } else {
+        retBox.classList.remove('hidden');
+        retList.innerHTML = todayReturns.map(r => {
+          const isHubGot = r.returnStatus && r.returnStatus !== 'rider_returning_to_hub';
+          return `
+            <div class="py-2.5 flex justify-between items-center gap-2">
+              <div>
+                <p class="font-extrabold text-gray-900">🔄 ${escapeHtml(r.orderId)} — ${escapeHtml(r.name)}</p>
+                <p class="text-[11px] text-red-700 font-bold">❌ ${escapeHtml(r.returnReason || 'ဝယ်သူ COD ငြင်း')}</p>
+              </div>
+              <span class="${isHubGot ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'} text-[10px] font-extrabold px-2 py-0.5 rounded-full shrink-0">
+                ${isHubGot ? '✅ Hub အပ်ပြီး' : '📦 Hub ပြန်အပ်ရန်'}
+              </span>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Today's Delivered Log
       const doneEl = document.getElementById('rider-done-list');
       if (done.length === 0) {
         doneEl.innerHTML = `<p class="text-gray-400 py-3">ယနေ့ COD ငွေပေးချေပြီးသော အော်ဒါ မရှိသေးပါ။</p>`;
@@ -832,12 +900,12 @@
           return `
             <div class="py-2.5 flex justify-between items-center gap-2">
               <div>
-                <p class="font-bold text-gray-800">${isAdminConfirmed ? '✅' : '💰'} ${o.orderId} — ${o.name}</p>
+                <p class="font-bold text-gray-800">${isAdminConfirmed ? '✅' : '💰'} ${escapeHtml(o.orderId)} — ${escapeHtml(o.name)}</p>
                 <div class="flex flex-wrap items-center gap-1.5 mt-0.5">
                   <span class="${isAdminConfirmed ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'} text-[10px] font-extrabold px-2 py-0.5 rounded-full">
-                    ${isAdminConfirmed ? '✅ Admin (COD Finished) အတည်ပြုပြီး' : '⏳ Admin (COD Finished) အတည်ပြုရန် စောင့်ဆိုင်းဆဲ'}
+                    ${isAdminConfirmed ? '✅ Admin (COD Finished) အတည်ပြုပြီး' : '⏳ Admin အတည်ပြုရန် စောင့်ဆိုင်းဆဲ'}
                   </span>
-                  <span class="text-[11px] text-gray-500">⏰ ${o.deliveredAt || o.dateTime}</span>
+                  <span class="text-[11px] text-gray-500">⏰ ${escapeHtml(o.deliveredAt || o.dateTime)}</span>
                 </div>
               </div>
               <span class="font-extrabold text-emerald-700 shrink-0">${Number(o.grandTotal).toLocaleString()} Ks</span>
@@ -847,44 +915,140 @@
       }
     }
 
-    async function riderUpdateOrder(orderId, newStatus, btnEl) {
+    // ==================== API ACTIONS ====================
+    async function riderUpdatePickup(orderId, pickupStatus, btnEl) {
       const saved = getSavedRiderSession();
       if (!saved || !saved.id) return;
-      if (newStatus === 'COD ငွေပေးချေပြီး') {
-        if (!confirm(`အော်ဒါ #${orderId} အတွက် ဝယ်သူထံမှ COD ငွေပေးချေပြီး (ငွေကောက်ခံပြီး) ဖြစ်ကြောင်း Admin ထံ အကြောင်းကြားပါမည်လား?`)) return;
+      if (pickupStatus === 'ဆိုင်မှ ပစ္စည်းကောက်ပြီးပြီ') {
+        if (!confirm(`အော်ဒါ #${orderId} ၏ ပစ္စည်းများကို ပုံနှင့်တိုက်စစ်ပြီး ဆိုင်မှကောက်ယူပြီးကြောင်း အတည်ပြုပါသလား?`)) return;
       }
-      if (btnEl) {
-        btnEl.disabled = true;
-        btnEl.innerText = "⏳ ပို့နေသည်...";
-      }
+      if (btnEl) { btnEl.disabled = true; btnEl.innerText = "⏳..."; }
       try {
-        await fetch(APPS_SCRIPT_ORDER_URL, {
+        await fetch(APPS_SCRIPT_URL, {
           method: "POST", mode: "no-cors",
           headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({
-            action: "updateOrderStatus", orderId, status: newStatus,
-            riderId: saved.id, riderName: saved.name, byRider: true
+            action: "updatePickupStatus",
+            orderId: orderId,
+            pickupStatus: pickupStatus,
+            riderId: saved.id,
+            riderName: saved.name
           })
         });
         setTimeout(() => loadDeliveryDashboard(false), 900);
       } catch (e) {
         alert("အခြေအနေ ပြောင်းလဲရာတွင် အမှားရှိနေပါသည်။");
-        if (btnEl) btnEl.disabled = false;
       }
     }
 
+    async function markReturnedToShop(orderId, shopId, btnEl) {
+      const saved = getSavedRiderSession();
+      if (!saved || !saved.id) return;
+      if (!confirm(`Return အော်ဒါ #${orderId} ကို ဆိုင် (${shopId}) သို့ ပြန်အပ်ပြီးကြောင်း အတည်ပြုပါသလား?`)) return;
+      if (btnEl) { btnEl.disabled = true; btnEl.innerText = "⏳ ပို့နေသည်..."; }
+      try {
+        await fetch(APPS_SCRIPT_URL, {
+          method: "POST", mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "markReturnDeliveredToShop",
+            orderId: orderId,
+            shopId: shopId,
+            riderName: saved.name
+          })
+        });
+        setTimeout(() => loadDeliveryDashboard(false), 900);
+      } catch (e) {
+        if (btnEl) { btnEl.disabled = false; btnEl.innerText = "✅ ဆိုင်သို့ ပြန်အပ်ပြီးပြီ"; }
+      }
+    }
+
+    async function riderUpdateOrder(orderId, newStatus, btnEl) {
+      const saved = getSavedRiderSession();
+      if (!saved || !saved.id) return;
+      if (newStatus === 'COD ငွေပေးချေပြီး') {
+        if (!confirm(`အော်ဒါ #${orderId} အတွက် ဝယ်သူထံမှ COD ငွေကောက်ခံပြီးဖြစ်ကြောင်း Admin ထံ အကြောင်းကြားပါမည်လား?`)) return;
+      } else if (newStatus === 'ဖုန်းမကိုင် (နောက်နေ့ပြန်ပို့)') {
+        if (!confirm(`အော်ဒါ #${orderId} ဝယ်သူ ဖုန်းမကိုင်သဖြင့် နောက်နေ့ပြန်ပို့ရန် မှတ်သားပါမည်လား?`)) return;
+      }
+      if (btnEl) { btnEl.disabled = true; btnEl.innerText = "⏳..."; }
+      try {
+        await fetch(APPS_SCRIPT_URL, {
+          method: "POST", mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "updateOrderStatus",
+            orderId: orderId,
+            status: newStatus,
+            riderId: saved.id,
+            riderName: saved.name,
+            byRider: true
+          })
+        });
+        setTimeout(() => loadDeliveryDashboard(false), 900);
+      } catch (e) {
+        alert("အခြေအနေ ပြောင်းလဲရာတွင် အမှားရှိနေပါသည်။");
+      }
+    }
+
+    function openReturnModal(orderId, custName) {
+      returnTargetOrderId = orderId;
+      document.getElementById('return-modal-order-label').innerText = `🧾 ${orderId} — ${custName}`;
+      document.getElementById('return-extra-note').value = '';
+      document.getElementById('return-modal').classList.remove('hidden');
+    }
+
+    function closeReturnModal() {
+      document.getElementById('return-modal').classList.add('hidden');
+      returnTargetOrderId = "";
+    }
+
+    async function submitCodReturn() {
+      const saved = getSavedRiderSession();
+      if (!saved || !returnTargetOrderId) return;
+      const checkedRadio = document.querySelector('input[name="ret_reason"]:checked');
+      let reason = checkedRadio ? checkedRadio.value : 'ဝယ်သူ COD ငြင်း';
+      const extra = document.getElementById('return-extra-note').value.trim();
+      if (extra) reason += " — " + extra;
+
+      const btn = document.getElementById('btn-submit-return');
+      btn.disabled = true; btn.innerText = "⏳ ပို့နေသည်...";
+
+      try {
+        await fetch(APPS_SCRIPT_URL, {
+          method: "POST", mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "reportCodReturn",
+            orderId: returnTargetOrderId,
+            reason: reason,
+            riderName: saved.name
+          })
+        });
+        closeReturnModal();
+        setTimeout(() => loadDeliveryDashboard(false), 900);
+      } catch (e) {
+        alert("မှတ်တမ်းတင်ရာတွင် အမှားရှိနေပါသည်။");
+      }
+      btn.disabled = false; btn.innerText = "🔄 Return အတည်ပြုမည်";
+    }
+
     function initDeliveryApp() {
-      setupExitGuard();
-      if (isStandaloneApp() || localStorage.getItem('mt_delivery_pwa_installed_v2') === '1') {
-        const wrap = document.getElementById('pwa-install-wrapper');
-        if (wrap) wrap.classList.add('hidden');
+      if (!isStandaloneApp() && isIOSDevice()) {
+        document.getElementById('btn-del-install').classList.remove('hidden');
+        document.getElementById('btn-del-install-login').classList.remove('hidden');
       }
 
-      showAppropriateView();
+      const saved = getSavedRiderSession();
+      if (saved && saved.id && saved.pin) {
+        showDashboardScreen();
+        loadDeliveryDashboard(false);
+      } else {
+        loadRiderLoginDropdown();
+      }
 
       setInterval(() => {
-        const saved = getSavedRiderSession();
-        if (saved && saved.id && saved.pin) {
+        if (!document.getElementById('delivery-dashboard').classList.contains('hidden')) {
           loadDeliveryDashboard(true);
         }
       }, 20000);
