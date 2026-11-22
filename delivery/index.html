@@ -93,7 +93,6 @@
     }
   </script>
 
-  <!-- TOP NOTIFICATION BANNER -->
   <div id="push-noti-popup" class="fixed noti-safe-top left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-md hidden noti-slide-in">
     <div class="bg-gray-900/95 text-white rounded-2xl p-3.5 shadow-2xl border-2 border-blue-400 flex items-start gap-3 backdrop-blur-md">
       <img src="../icon.png?v=3" class="w-11 h-11 rounded-xl object-cover shrink-0 border border-white/20" />
@@ -110,7 +109,6 @@
 
   <div class="max-w-3xl mx-auto px-3.5 py-4 sm:py-6">
 
-    <!-- ================= LOGIN SCREEN ================= -->
     <div id="delivery-login-card" class="bg-white rounded-2xl shadow-lg border-2 border-blue-200 max-w-md mx-auto p-6 mt-6">
       <div class="text-center mb-5">
         <div class="w-16 h-16 bg-blue-100 text-blue-700 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-2.5 border border-blue-200 shadow-sm">🚚</div>
@@ -138,10 +136,8 @@
       </div>
     </div>
 
-    <!-- ================= RIDER DASHBOARD ================= -->
     <div id="delivery-dashboard" class="hidden space-y-4">
 
-      <!-- Header -->
       <div class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-4 sm:p-5 rounded-2xl shadow-md flex flex-wrap justify-between items-center gap-3">
         <div>
           <p class="text-[11px] text-blue-100 font-bold">🚚 MiniTrend Kids — Pickup & Delivery</p>
@@ -155,7 +151,6 @@
         </div>
       </div>
 
-      <!-- 4 Stat Cards -->
       <div class="grid grid-cols-4 gap-2 sm:gap-3">
         <button type="button" onclick="switchRiderTab('pickup')" class="bg-white border-2 border-purple-200 p-2.5 sm:p-3 rounded-2xl shadow-sm text-center hover:border-purple-400 transition">
           <p class="text-[10px] sm:text-[11px] font-bold text-gray-500">📦 ကောက်ရန်</p>
@@ -175,7 +170,6 @@
         </div>
       </div>
 
-      <!-- MAIN ROLE TABS: PICKUP vs DELIVERY -->
       <div class="grid grid-cols-2 gap-2 bg-white p-1.5 rounded-2xl border border-blue-200 shadow-sm">
         <button type="button" onclick="switchRiderTab('pickup')" id="tab-btn-pickup" class="py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold text-gray-700 hover:bg-gray-100 transition">
           📦 ဆိုင်မှကောက်ရန် <span id="tab-badge-pickup" class="ml-1 bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full text-[11px] font-extrabold">0</span>
@@ -185,10 +179,7 @@
         </button>
       </div>
 
-      <!-- ================= TAB 1: PICKUP (WITH PRODUCT PHOTOS + SHOP GROUPING + RETURN-TO-SHOP) ================= -->
       <div id="tab-panel-pickup" class="hidden space-y-4">
-
-        <!-- Pickup from Shops -->
         <div class="bg-white rounded-2xl shadow-sm border-2 border-purple-200 p-4">
           <div class="mb-3">
             <h3 class="font-extrabold text-sm sm:text-base text-gray-900">📦 ဆိုင်များမှ ပစ္စည်းသွားကောက်ရန် (ပုံတိုက်စစ်ကောက်ယူပါ)</h3>
@@ -199,7 +190,6 @@
           </div>
         </div>
 
-        <!-- Return Parcels Back to Shops -->
         <div id="rider-return-to-shop-box" class="hidden bg-white rounded-2xl shadow-sm border-2 border-orange-300 p-4">
           <div class="mb-3">
             <h3 class="font-extrabold text-sm sm:text-base text-orange-800">↩️ ဆိုင်သို့ Return ပစ္စည်း ပြန်အပ်ရန်</h3>
@@ -207,13 +197,9 @@
           </div>
           <div id="rider-return-to-shop-list" class="space-y-3"></div>
         </div>
-
       </div>
 
-      <!-- ================= TAB 2: DELIVERY (NO PRODUCT PHOTOS — FAST & CLEAN) ================= -->
       <div id="tab-panel-delivery" class="space-y-4">
-
-        <!-- Pending Delivery Orders -->
         <div class="bg-white rounded-2xl shadow-sm border border-blue-200 p-4">
           <h3 class="font-extrabold text-sm sm:text-base text-gray-900 mb-3">🚚 ဝယ်သူထံ ပို့ဆောင်ရန် အော်ဒါများ</h3>
           <div id="rider-pending-list" class="space-y-3.5">
@@ -221,25 +207,21 @@
           </div>
         </div>
 
-        <!-- Today's COD Rejections (Need to return to Hub) -->
         <div id="rider-today-returns-box" class="hidden bg-white rounded-2xl shadow-sm border-2 border-red-200 p-4">
           <h3 class="font-extrabold text-sm sm:text-base text-red-700 mb-2">🔄 ယနေ့ COD ငြင်းခံရသော အထုပ်များ (Hub သို့ ပြန်အပ်ရန်)</h3>
           <div id="rider-today-returns-list" class="divide-y text-xs"></div>
         </div>
 
-        <!-- Today's Delivered Log -->
         <div class="bg-white rounded-2xl shadow-sm border border-emerald-200 p-4">
           <h3 class="font-extrabold text-sm sm:text-base text-gray-900 mb-2.5">🧾 ယနေ့ COD ငွေပေးချေပြီး မှတ်တမ်း</h3>
           <div id="rider-done-list" class="divide-y text-xs">
             <p class="text-gray-400 py-3">ယနေ့ COD ငွေပေးချေပြီးသော အော်ဒါ မရှိသေးပါ။</p>
           </div>
         </div>
-
       </div>
     </div>
   </div>
 
-  <!-- ================= COD REJECTION / RETURN MODAL ================= -->
   <div id="return-modal" onclick="closeReturnModal()" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
     <div onclick="event.stopPropagation()" class="bg-white rounded-2xl max-w-md w-full p-5 shadow-2xl border-2 border-red-300 space-y-3.5">
       <div class="flex justify-between items-center border-b pb-2.5">
@@ -279,7 +261,6 @@
     </div>
   </div>
 
-  <!-- ================= PICKUP IMAGE LIGHTBOX ================= -->
   <div id="image-lightbox-modal" onclick="closeImageLightbox()" class="fixed inset-0 bg-black/90 z-50 hidden flex flex-col items-center justify-center p-4 backdrop-blur-sm">
     <button type="button" onclick="closeImageLightbox()" class="fixed noti-safe-top right-3 z-50 bg-white/20 hover:bg-white/35 text-white w-10 h-10 rounded-full flex items-center justify-center text-xl font-bold shadow-lg">✕</button>
     <div onclick="event.stopPropagation()" class="max-w-md w-full flex flex-col items-center">
@@ -291,7 +272,6 @@
     </div>
   </div>
 
-  <!-- ================= INSTALL GUIDE MODAL ================= -->
   <div id="install-guide-modal" onclick="closeInstallGuide()" class="fixed inset-0 bg-black/75 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
     <div onclick="event.stopPropagation()" class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl border-2 border-blue-300 space-y-3">
       <div class="flex justify-between items-center border-b pb-2.5">
@@ -492,7 +472,7 @@
         alert(`✅ ${saved.name} ဖုန်းကို Notification စနစ်နှင့် အောင်မြင်စွာ ချိတ်ဆက်ပြီးပါပြီ!`);
       } else {
         if (btn) btn.innerText = "🔔 Noti ချိတ်မည်";
-        alert("⚠️ Browser Settings တွင် Notification ကို Allow ပေးထားကြောင်း စစ်ဆေးပါ။");
+        alert("⚠️ Browser Settings တွင် Notification ကို Allow ပေးထားကြောင်း စစ်ဆေးပေးပါ။");
       }
     }
 
@@ -602,7 +582,6 @@
         else switchRiderTab('delivery');
       }
 
-      // New task notification check
       const rId = data.rider ? data.rider.id : '';
       if (pending.length > 0 && rId) {
         const newestDel = pending[0].orderId;
@@ -626,12 +605,10 @@
       window.__pickupImgMap = {};
       const checks = getPickupChecks();
 
-      // ==================== RENDER PICKUP TAB (GROUPED BY SHOP + PRODUCT PHOTOS) ====================
       const pickupEl = document.getElementById('rider-pickup-list');
       if (pickupTasks.length === 0) {
         pickupEl.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs sm:text-sm">🎉 လက်ရှိ ဆိုင်မှသွားကောက်ရန် ပစ္စည်း မရှိသေးပါ</div>`;
       } else {
-        // Group tasks by shop so rider sees all items to collect at each shop together
         const shopGroups = {};
         pickupTasks.forEach(task => {
           const shopsInTask = (task.pickupShops && task.pickupShops.length > 0)
@@ -640,9 +617,7 @@
 
           shopsInTask.forEach(sh => {
             const sid = sh.shopId;
-            if (!shopGroups[sid]) {
-              shopGroups[sid] = { shop: sh, orders: [] };
-            }
+            if (!shopGroups[sid]) shopGroups[sid] = { shop: sh, orders: [] };
             const itemsForThisShop = (task.items || []).filter(it => (it.shopId || '').toUpperCase() === sid.toUpperCase());
             shopGroups[sid].orders.push({
               orderId: task.orderId,
@@ -662,20 +637,13 @@
           const ordersCardsHtml = grp.orders.map(ord => {
             const isGoing = ord.pickupStatus === 'ဆိုင်သို့ သွားနေပါသည်';
             let statusBadge = `<span class="bg-purple-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">📋 ဆိုင်မှ ပစ္စည်းသွားကောက်ရန်</span>`;
-            if (isGoing) {
-              statusBadge = `<span class="bg-amber-500 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full animate-pulse">🛵 ဆိုင်သို့ သွားနေပါသည်</span>`;
-            }
+            if (isGoing) statusBadge = `<span class="bg-amber-500 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full animate-pulse">🛵 ဆိုင်သို့ သွားနေပါသည်</span>`;
 
             const itemsHtml = (ord.items || []).map((it, idx) => {
               const chkKey = `pu_${ord.orderId}_${sid}_${idx}`;
               const isChecked = !!checks[chkKey];
               window.__pickupImgMap[chkKey] = {
-                orderId: ord.orderId,
-                name: it.name,
-                colorName: it.colorName,
-                size: it.size,
-                qty: it.qty,
-                image: it.image
+                orderId: ord.orderId, name: it.name, colorName: it.colorName, size: it.size, qty: it.qty, image: it.image
               };
               const thumbHtml = it.image
                 ? `<button type="button" onclick="openImageLightbox('${chkKey}')" class="relative w-16 h-16 rounded-xl overflow-hidden border-2 ${isChecked ? 'border-emerald-400' : 'border-purple-200'} shrink-0 bg-gray-100 cursor-zoom-in">
@@ -729,11 +697,9 @@
           return `
             <div class="border-2 border-purple-300 rounded-2xl overflow-hidden shadow-sm">
               <div class="bg-purple-700 text-white p-3.5 space-y-2">
-                <div class="flex justify-between items-start gap-2">
-                  <div>
-                    <p class="text-[10px] text-purple-200 font-bold">🏪 ပစ္စည်းသွားကောက်ရမည့် ဆိုင် (${grp.orders.length} အော်ဒါ)</p>
-                    <h4 class="font-extrabold text-sm sm:text-base">${escapeHtml(sh.shopId)} — ${escapeHtml(sh.name)}</h4>
-                  </div>
+                <div>
+                  <p class="text-[10px] text-purple-200 font-bold">🏪 ပစ္စည်းသွားကောက်ရမည့် ဆိုင် (${grp.orders.length} အော်ဒါ)</p>
+                  <h4 class="font-extrabold text-sm sm:text-base">${escapeHtml(sh.shopId)} — ${escapeHtml(sh.name)}</h4>
                 </div>
                 ${sh.address ? `<p class="text-xs text-purple-100">📍 ${escapeHtml(sh.address)}</p>` : ''}
                 <div class="grid grid-cols-2 gap-2 pt-0.5">
@@ -747,7 +713,6 @@
         }).join('');
       }
 
-      // ==================== RENDER RETURN-TO-SHOP TASKS (IN PICKUP TAB) ====================
       const rtsBox = document.getElementById('rider-return-to-shop-box');
       const rtsList = document.getElementById('rider-return-to-shop-list');
       if (returnToShopTasks.length === 0) {
@@ -796,7 +761,6 @@
         }).join('');
       }
 
-      // ==================== RENDER DELIVERY TAB (NO PRODUCT PHOTOS — FAST & CLEAN) ====================
       const pendingEl = document.getElementById('rider-pending-list');
       if (pending.length === 0) {
         pendingEl.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs sm:text-sm">🎉 လက်ရှိ ဝယ်သူထံ ပို့ဆောင်ရန် အော်ဒါ မရှိသေးပါ</div>`;
@@ -867,7 +831,6 @@
         }).join('');
       }
 
-      // Today's Returns (Hand back to Hub)
       const retBox = document.getElementById('rider-today-returns-box');
       const retList = document.getElementById('rider-today-returns-list');
       if (todayReturns.length === 0) {
@@ -890,7 +853,6 @@
         }).join('');
       }
 
-      // Today's Delivered Log
       const doneEl = document.getElementById('rider-done-list');
       if (done.length === 0) {
         doneEl.innerHTML = `<p class="text-gray-400 py-3">ယနေ့ COD ငွေပေးချေပြီးသော အော်ဒါ မရှိသေးပါ။</p>`;
@@ -915,7 +877,6 @@
       }
     }
 
-    // ==================== API ACTIONS ====================
     async function riderUpdatePickup(orderId, pickupStatus, btnEl) {
       const saved = getSavedRiderSession();
       if (!saved || !saved.id) return;
@@ -928,11 +889,7 @@
           method: "POST", mode: "no-cors",
           headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({
-            action: "updatePickupStatus",
-            orderId: orderId,
-            pickupStatus: pickupStatus,
-            riderId: saved.id,
-            riderName: saved.name
+            action: "updatePickupStatus", orderId: orderId, pickupStatus: pickupStatus, riderId: saved.id, riderName: saved.name
           })
         });
         setTimeout(() => loadDeliveryDashboard(false), 900);
@@ -951,10 +908,7 @@
           method: "POST", mode: "no-cors",
           headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({
-            action: "markReturnDeliveredToShop",
-            orderId: orderId,
-            shopId: shopId,
-            riderName: saved.name
+            action: "markReturnDeliveredToShop", orderId: orderId, shopId: shopId, riderName: saved.name
           })
         });
         setTimeout(() => loadDeliveryDashboard(false), 900);
@@ -977,12 +931,7 @@
           method: "POST", mode: "no-cors",
           headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({
-            action: "updateOrderStatus",
-            orderId: orderId,
-            status: newStatus,
-            riderId: saved.id,
-            riderName: saved.name,
-            byRider: true
+            action: "updateOrderStatus", orderId: orderId, status: newStatus, riderId: saved.id, riderName: saved.name, byRider: true
           })
         });
         setTimeout(() => loadDeliveryDashboard(false), 900);
@@ -1019,10 +968,7 @@
           method: "POST", mode: "no-cors",
           headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({
-            action: "reportCodReturn",
-            orderId: returnTargetOrderId,
-            reason: reason,
-            riderName: saved.name
+            action: "reportCodReturn", orderId: returnTargetOrderId, reason: reason, riderName: saved.name
           })
         });
         closeReturnModal();
