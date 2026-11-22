@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>MiniTrend Shop — ချိတ်ဆက်ဆိုင် App</title>
+  <meta name="theme-color" content="#d97706" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="MiniTrend Shop" />
+  <link rel="manifest" href="./manifest.json?v=1" />
+  <link rel="icon" type="image/png" href="../icon.png?v=3" />
+  <link rel="apple-touch-icon" href="../icon.png?v=3" />
+
+  <script>
+    window.__deferredInstallPrompt = null;
+    window.__currentFcmToken = "";
+
+    document.addEventListener('gesturestart', function(e) { e.preventDefault(); });
+
+    function isStandaloneApp() {
+      return (
+        window.matchMedia('(display-mode: standalone)').matches ||
+        window.matchMedia('(display-mode: minimal-ui)').matches ||
+        window.matchMedia('(display-mode: fullscreen)').matches ||
+        window.navigator.standalone === true
+      );
+    }
+
+    window.addEventListener('beforeinstallprompt', function(e) {
+      e.preventDefault();
+      window.__deferredInstallPrompt = e;
+      var btn = document.getElementById('btn-shop-install');
+      if (btn && !isStandaloneApp()) btn.classList.remove('hidden');
+    });
+
+    window.addEventListener('appinstalled', function() {
+      window.__deferredInstallPrompt = null;
+      var btn = document.getElementById('btn-shop-install');
+      if (btn) btn.classList.add('hidden');
+    });
+  </script>
+
+  <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-messaging-compat.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    html, body {
+      touch-action: manipulation;
+      -webkit-text-size-adjust: 100%;
+      overflow-x: hidden;
+    }
+    body {
+      font-family: 'Pyidaungsu', 'Myanmar Text', 'Noto Sans Myanmar', system-ui, -apple-system, sans-serif;
+      padding-top: env(safe-area-inset-top, 0px);
+    }
+    .noti-safe-top { top: calc(0.75rem + env(safe-area-inset-top, 0px)); }
+    button, a { touch-action: manipulation; }
+    input, select, textarea {
+      font-size: 16px !important;
+      touch-action: manipulation;
+    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    @keyframes slideDownNoti {
+      0% { transform: translate(-50%, -120%); opacity: 0; }
+      100% { transform: translate(-50%, 0); opacity: 1; }
+    }
+    .noti-slide-in { animation: slideDownNoti 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+  </style>
+</head>
+<body class="bg-amber-50/40 text-gray-800 min-h-screen">
+
+  <script>
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzjiat7rNkOGkQYjf3RT6rC4g5AdXiVtraecqUTG8wXcu4l6Dm1mmtnXpVhaxjAzsrd/exec";
+
+    const FIREBASE_CONFIG = {
+      apiKey: "AIzaSyDyb--Qc9tic7g8GOzVWYi8vpLMSfTaI5U",
+      authDomain: "minitrend-kids.firebaseapp.com",
+      projectId: "minitrend-kids",
+      storageBucket: "minitrend-kids.firebasestorage.app",
+      messagingSenderId: "523213115439",
+      appId: "1:523213115439:web:0e97b742e7d067943f36da"
+    };
+    const FIREBASE_VAPID_KEY = "BEDkISmwDq6ytVzt2e-eWRndSXKxPttzdfxnKXETfJGhdnn_Se4b778DZ9YEi6NQDdy6gHuNz4twCZuKtzItqSI";
+
+    window.__swRegistrationPromise = null;
+    if ('serviceWorker' in navigator) {
+      window.__swRegistrationPromise = navigator.serviceWorker.register('../sw.js', { scope: '../' }).catch(() => null);
+    }
+  </script>
+
+  <!-- TOP NOTIFICATION BANNER -->
+  <div id="push-noti-popup" class="fixed noti-safe-top left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-md hidden noti-slide-in">
+    <div class="bg-gray-900/95 text-white rounded-2xl p-3.5 shadow-2xl border-2 border-amber-400 flex items-start gap-3 backdrop-blur-md">
+      <img src="../icon.png?v=3" class="w-11 h-11 rounded-xl object-cover shrink-0 border border-white/20" />
+      <div class="flex-1 min-w-0">
+        <div class="flex justify-between items-center gap-1">
+          <p id="push-noti-title" class="text-xs sm:text-sm font-extrabold text-amber-300 truncate">🔔 MiniTrend Shop</p>
+          <span class="text-[10px] text-gray-300 shrink-0">ယခုလေးတင်</span>
+        </div>
+        <p id="push-noti-body" class="text-xs sm:text-sm text-white font-bold mt-1 leading-relaxed"></p>
+      </div>
+      <button type="button" onclick="closePushPopup()" class="text-gray-400 hover:text-white font-bold text-lg leading-none px-1">✕</button>
+    </div>
+  </div>
+
+  <div class="max-w-3xl mx-auto px-3.5 py-4 sm:py-6">
+
+    <!-- ================= LOGIN SCREEN ================= -->
+    <div id="shop-login-card" class="bg-white rounded-2xl shadow-lg border-2 border-amber-200 max-w-md mx-auto p-6 mt-6">
+      <div class="text-center mb-5">
+        <div class="w-16 h-16 bg-amber-100 text-amber-700 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-2.5 border border-amber-200 shadow-sm">🏪</div>
+        <h1 class="text-xl font-extrabold text-gray-900">MiniTrend Partner Shop</h1>
+        <p class="text-xs text-gray-500 mt-1">ချိတ်ဆက်ဆိုင်အမည် ရွေးချယ်ပြီး PIN နံပါတ် ရိုက်ထည့်ပါ</p>
+      </div>
+
+      <form onsubmit="handleShopLogin(event)" class="space-y-3.5">
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1">🏪 ဆိုင်အမည် ရွေးချယ်ပါ</label>
+          <select id="shop-login-select" required class="w-full border-2 border-amber-200 rounded-xl px-3 py-2.5 text-base font-bold bg-gray-50 focus:outline-none focus:border-amber-500">
+            <option value="">⏳ ဆိုင်စာရင်း ရယူနေပါသည်...</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1">🔑 ဆိုင် PIN နံပါတ်</label>
+          <input type="password" inputmode="numeric" id="shop-login-pin" required placeholder="ဥပမာ - 2001" class="w-full border-2 border-amber-200 rounded-xl px-3.5 py-2.5 text-base font-bold focus:outline-none focus:border-amber-500">
+        </div>
+        <p id="shop-login-error" class="hidden text-xs font-bold text-red-600 bg-red-50 border border-red-200 rounded-xl p-2.5">❌ PIN နံပါတ် မှားယွင်းနေပါသည်၊ ပြန်လည်စစ်ဆေးပါ။</p>
+        <button type="submit" id="btn-shop-login" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-extrabold py-3 rounded-xl shadow text-sm">🔓 Shop App သို့ ဝင်ရောက်မည်</button>
+      </form>
+
+      <div class="mt-4 pt-3 border-t border-gray-100 text-center">
+        <button type="button" id="btn-shop-install-login" onclick="triggerShopInstall()" class="hidden text-xs font-extrabold text-amber-700 bg-amber-50 border border-amber-200 px-3.5 py-2 rounded-xl">
+          📲 ဤဖုန်းတွင် Shop App ထည့်သွင်းမည်
+        </button>
+      </div>
+    </div>
+
+    <!-- ================= SHOP DASHBOARD ================= -->
+    <div id="shop-dashboard" class="hidden space-y-4">
+
+      <!-- Header -->
+      <div class="bg-gradient-to-r from-amber-600 via-orange-600 to-rose-600 text-white p-4 sm:p-5 rounded-2xl shadow-md flex flex-wrap justify-between items-center gap-3">
+        <div>
+          <p class="text-[11px] text-amber-100 font-bold">🏪 MiniTrend Kids — Partner Shop</p>
+          <h2 id="shop-header-name" class="text-lg sm:text-xl font-extrabold mt-0.5">ဆိုင်အမည်</h2>
+          <p id="shop-header-meta" class="text-[11px] text-amber-100 font-bold mt-0.5">ကော်မရှင်: 5% | ဆိုင်ရငွေ: 95%</p>
+        </div>
+        <div class="flex flex-wrap gap-1.5">
+          <button type="button" id="btn-shop-install" onclick="triggerShopInstall()" class="hidden bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-extrabold px-3 py-2 rounded-xl shadow-sm">📲 App သွင်း</button>
+          <button type="button" onclick="connectShopFirebase()" id="btn-shop-fcm" class="bg-amber-300 hover:bg-amber-200 text-gray-900 text-xs font-extrabold px-3 py-2 rounded-xl shadow-sm">🔔 Noti ချိတ်မည်</button>
+          <button type="button" onclick="loadShopDashboard(false)" id="btn-shop-refresh" class="bg-white/20 hover:bg-white/30 text-white text-xs font-bold px-3 py-2 rounded-xl">🔄 ပြန်စစ်</button>
+          <button type="button" onclick="logoutShop()" class="bg-red-600/90 hover:bg-red-700 text-white text-xs font-bold px-3 py-2 rounded-xl">🔒 ထွက်</button>
+        </div>
+      </div>
+
+      <!-- 3 Stat Cards -->
+      <div class="grid grid-cols-3 gap-2.5 sm:gap-3.5">
+        <button type="button" onclick="switchShopTab('orders')" class="bg-white border-2 border-amber-200 p-3 rounded-2xl shadow-sm text-center hover:border-amber-400 transition">
+          <p class="text-[11px] font-bold text-gray-500">📦 အော်ဒါများ</p>
+          <p id="stat-active-orders" class="text-2xl font-extrabold text-amber-600 mt-1">0</p>
+          <p id="stat-need-confirm" class="text-[10px] font-bold text-rose-600 mt-0.5"></p>
+        </button>
+        <button type="button" onclick="switchShopTab('returns')" class="bg-white border-2 border-red-200 p-3 rounded-2xl shadow-sm text-center hover:border-red-400 transition">
+          <p class="text-[11px] font-bold text-gray-500">🔄 COD ငြင်း</p>
+          <p id="stat-returns-count" class="text-2xl font-extrabold text-red-600 mt-1">0</p>
+          <p id="stat-returns-pending" class="text-[10px] font-bold text-red-500 mt-0.5"></p>
+        </button>
+        <button type="button" onclick="switchShopTab('payouts')" class="bg-emerald-600 text-white p-3 rounded-2xl shadow-sm text-center hover:bg-emerald-700 transition">
+          <p class="text-[11px] font-bold text-emerald-100">💰 ရရန်ကျန် (95%)</p>
+          <p id="stat-unpaid-total" class="text-base sm:text-xl font-extrabold mt-1.5">0 Ks</p>
+          <p class="text-[10px] text-emerald-100 mt-0.5">ငွေစာရင်းကြည့်ရန်</p>
+        </button>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <div class="grid grid-cols-3 gap-1.5 bg-white p-1.5 rounded-2xl border border-amber-200 shadow-sm">
+        <button type="button" onclick="switchShopTab('orders')" id="tab-btn-orders" class="py-2.5 px-2 rounded-xl text-xs font-extrabold bg-amber-600 text-white shadow-sm transition">
+          📦 အော်ဒါများ <span id="tab-badge-orders" class="ml-0.5 bg-white/25 px-1.5 py-0.5 rounded-full text-[10px]">0</span>
+        </button>
+        <button type="button" onclick="switchShopTab('returns')" id="tab-btn-returns" class="py-2.5 px-2 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 transition">
+          🔄 COD ငြင်း <span id="tab-badge-returns" class="ml-0.5 bg-red-100 text-red-700 px-1.5 py-0.5 rounded-full text-[10px]">0</span>
+        </button>
+        <button type="button" onclick="switchShopTab('payouts')" id="tab-btn-payouts" class="py-2.5 px-2 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 transition">
+          💰 95% စာရင်း
+        </button>
+      </div>
+
+      <!-- TAB 1: ACTIVE ORDERS (1-TAP CONFIRM / OUT-OF-STOCK) -->
+      <div id="tab-panel-orders" class="space-y-3">
+        <div class="bg-amber-50 border border-amber-200 rounded-xl px-3.5 py-2.5 text-[11px] text-amber-950 font-bold leading-relaxed">
+          💡 ဝယ်သူအော်ဒါဝင်လာပါက ပစ္စည်းပုံ (နှိပ်၍ အကြီးချဲ့ကြည့်နိုင်သည်)၊ အရောင်နှင့် Size တိုက်စစ်ပြီး <b>"✅ ပစ္စည်းရှိသည်"</b> သို့မဟုတ် <b>"❌ Stock ပြတ်ပြီ"</b> ကို ၁ ချက်နှိပ် အကြောင်းကြားပေးပါခင်ဗျာ။
+        </div>
+        <div id="shop-orders-list" class="space-y-3.5">
+          <p class="text-xs text-gray-400 py-8 text-center bg-white rounded-2xl border">⏳ အော်ဒါစာရင်း ရယူနေပါသည်...</p>
+        </div>
+      </div>
+
+      <!-- TAB 2: LIVE COD REJECTION / RETURN TRACKING -->
+      <div id="tab-panel-returns" class="hidden space-y-3">
+        <div class="bg-red-50 border border-red-200 rounded-xl px-3.5 py-2.5 text-[11px] text-red-900 font-bold leading-relaxed">
+          🔄 ဝယ်သူဘက်မှ အိမ်ရောက် COD ငြင်းလိုက်သော ပစ္စည်းများကို ဤနေရာတွင် Live မြင်ရပါမည်။ 95% ငွေစာရင်းမှ အလိုအလျောက် 0 ကျပ် ပြောင်းပေးပြီး MiniTrend ဝန်ထမ်းမှ ပစ္စည်းပြန်လာအပ်ချိန် <b>"✅ ပြန်အပ်ပစ္စည်း လက်ခံပြီး"</b> ကို နှိပ်အတည်ပြုပေးပါ။
+        </div>
+        <div id="shop-returns-list" class="space-y-3.5">
+          <p class="text-xs text-gray-400 py-8 text-center bg-white rounded-2xl border">COD ငြင်း (Return) ပစ္စည်း မရှိပါ။</p>
+        </div>
+      </div>
+
+      <!-- TAB 3: 95% PAYOUTS & SETTLEMENT HISTORY -->
+      <div id="tab-panel-payouts" class="hidden space-y-4">
+        <div class="grid grid-cols-2 gap-3">
+          <div class="bg-white border-2 border-emerald-200 rounded-2xl p-3.5 shadow-sm">
+            <p class="text-[11px] font-bold text-gray-500">⏳ MiniTrend မှ ရှင်းရန်ကျန် (95%)</p>
+            <p id="payout-unpaid-sum" class="text-xl font-extrabold text-emerald-700 mt-1">0 ကျပ်</p>
+          </div>
+          <div class="bg-white border border-gray-200 rounded-2xl p-3.5 shadow-sm">
+            <p class="text-[11px] font-bold text-gray-500">💸 လွှဲရှင်းပြီး စုစုပေါင်း</p>
+            <p id="payout-settled-sum" class="text-xl font-extrabold text-gray-800 mt-1">0 ကျပ်</p>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-emerald-200 p-4">
+          <h3 class="font-extrabold text-sm text-gray-900 mb-3">⏳ ပို့ပြီး — ငွေလွှဲရှင်းရန် ကျန်ရှိသော အော်ဒါများ</h3>
+          <div id="shop-unpaid-list" class="divide-y text-xs">
+            <p class="text-gray-400 py-4 text-center">ငွေရှင်းရန် ကျန်ရှိသော အော်ဒါ မရှိသေးပါ။</p>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4">
+          <h3 class="font-extrabold text-sm text-gray-900 mb-3">✅ ငွေလွှဲရှင်းပြီး မှတ်တမ်း (နောက်ဆုံး ၃၀)</h3>
+          <div id="shop-settled-list" class="divide-y text-xs">
+            <p class="text-gray-400 py-4 text-center">ငွေလွှဲရှင်းပြီး မှတ်တမ်း မရှိသေးပါ။</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= OUT-OF-STOCK REPORT MODAL ================= -->
+  <div id="oos-modal" onclick="closeOosModal()" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+    <div onclick="event.stopPropagation()" class="bg-white rounded-2xl max-w-md w-full p-5 shadow-2xl border-2 border-red-300 space-y-3.5">
+      <div class="flex justify-between items-center border-b pb-2.5">
+        <h3 class="text-sm sm:text-base font-extrabold text-red-700">🚨 Stock ပြတ်ကြောင်း အကြောင်းကြားရန်</h3>
+        <button type="button" onclick="closeOosModal()" class="text-gray-400 hover:text-gray-800 font-bold text-xl px-1">✕</button>
+      </div>
+      <p id="oos-modal-order-label" class="text-xs font-extrabold text-gray-800"></p>
+      <div class="space-y-2">
+        <p class="text-xs font-bold text-gray-600">ကုန်နေသော ပစ္စည်းကို အမှန်ခြစ် ရွေးချယ်ပါ:</p>
+        <div id="oos-items-checkboxes" class="space-y-1.5 max-h-48 overflow-y-auto"></div>
+      </div>
+      <div>
+        <label class="block text-xs font-bold text-gray-700 mb-1">📝 Admin ထံ မှတ်ချက်တို (ရွေးချယ်ရေးသားနိုင်သည်)</label>
+        <textarea id="oos-note-input" rows="2" placeholder="ဥပမာ - ပန်းရောင်ကုန်ပြီ၊ အဝါနဲ့ အပြာ ရှိပါတယ်" class="w-full border-2 border-red-200 rounded-xl px-3 py-2 text-base focus:outline-none focus:border-red-500"></textarea>
+      </div>
+      <div class="grid grid-cols-2 gap-2 pt-1">
+        <button type="button" onclick="closeOosModal()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2.5 rounded-xl text-xs">မပို့တော့ပါ</button>
+        <button type="button" id="btn-submit-oos" onclick="submitOosReport()" class="bg-red-600 hover:bg-red-700 text-white font-extrabold py-2.5 rounded-xl text-xs shadow">🚨 Admin ထံ ချက်ချင်းပို့မည်</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= FULL-SCREEN IMAGE LIGHTBOX ================= -->
+  <div id="image-lightbox-modal" onclick="closeImageLightbox()" class="fixed inset-0 bg-black/90 z-50 hidden flex flex-col items-center justify-center p-4 backdrop-blur-sm">
+    <button type="button" onclick="closeImageLightbox()" class="fixed noti-safe-top right-3 z-50 bg-white/20 hover:bg-white/35 text-white w-10 h-10 rounded-full flex items-center justify-center text-xl font-bold shadow-lg">✕</button>
+    <div onclick="event.stopPropagation()" class="max-w-md w-full flex flex-col items-center">
+      <img id="lightbox-img" src="" alt="" class="max-h-[65vh] w-auto max-w-full object-contain rounded-2xl shadow-2xl border border-white/15 bg-black/40">
+      <div class="mt-3 w-full bg-white rounded-2xl p-3.5 shadow-xl text-left">
+        <p id="lightbox-title" class="text-sm font-extrabold text-gray-900"></p>
+        <p id="lightbox-meta" class="text-xs font-bold text-amber-700 mt-1"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= IOS INSTALL GUIDE MODAL ================= -->
+  <div id="ios-guide-modal" onclick="closeIosGuide()" class="fixed inset-0 bg-black/75 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+    <div onclick="event.stopPropagation()" class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl border-2 border-amber-300 space-y-3">
+      <div class="flex justify-between items-center border-b pb-2.5">
+        <h3 class="text-sm font-extrabold text-gray-900">📲 Shop App ထည့်သွင်းနည်း</h3>
+        <button type="button" onclick="closeIosGuide()" class="text-gray-400 font-bold text-xl px-1">✕</button>
+      </div>
+      <div class="space-y-2 text-xs text-gray-700 leading-relaxed">
+        <p><b>🍎 iPhone (Safari):</b> အောက်ခြေ <b>Share (⬆️)</b> → <b>Add to Home Screen (➕)</b> → <b>Add</b> နှိပ်ပါ။</p>
+        <p><b>🤖 Android (Chrome):</b> အပေါ်ညာဘက် <b>အစက် ၃ စက် (⋮)</b> → <b>Add to Home screen / Install app</b> နှိပ်ပါ။</p>
+      </div>
+      <button type="button" onclick="closeIosGuide()" class="w-full bg-gray-900 text-white font-extrabold py-2.5 rounded-xl text-xs">နားလည်ပါပြီ</button>
+    </div>
+  </div>
+
+  <script>
+    let currentShopTab = 'orders';
+    let shopActiveOrdersCache = [];
+    let shopReturnOrdersCache = [];
+    let oosTargetOrderId = "";
+    let pushPopupTimer = null;
+    window.__shopImgMap = {};
+
+    function escapeHtml(str) {
+      return (str || '').toString()
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
+    function isIOSDevice() {
+      const ua = navigator.userAgent || '';
+      return /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    }
+
+    function getSavedShopSession() {
+      try { return JSON.parse(localStorage.getItem('mt_shop_session') || 'null'); } catch (e) { return null; }
+    }
+
+    function saveShopSession(obj) {
+      try { localStorage.setItem('mt_shop_session', JSON.stringify(obj)); } catch (e) {}
+    }
+
+    function closeIosGuide() { document.getElementById('ios-guide-modal').classList.add('hidden'); }
+
+    async function triggerShopInstall() {
+      if (window.__deferredInstallPrompt) {
+        try {
+          window.__deferredInstallPrompt.prompt();
+          await window.__deferredInstallPrompt.userChoice;
+          window.__deferredInstallPrompt = null;
+        } catch (e) {}
+        return;
+      }
+      document.getElementById('ios-guide-modal').classList.remove('hidden');
+    }
+
+    function playNotiChime() {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, ctx.currentTime);
+        osc.frequency.setValueAtTime(1174.66, ctx.currentTime + 0.14);
+        gain.gain.setValueAtTime(0.25, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.start(); osc.stop(ctx.currentTime + 0.5);
+      } catch (e) {}
+    }
+
+    function showShopBannerNoti(title, bodyText) {
+      const popup = document.getElementById('push-noti-popup');
+      document.getElementById('push-noti-title').innerText = "🔔 " + (title || "MiniTrend Shop");
+      document.getElementById('push-noti-body').innerText = bodyText || "";
+      popup.classList.remove('hidden');
+      playNotiChime();
+      if (navigator.vibrate) navigator.vibrate([250, 100, 250]);
+      if (pushPopupTimer) clearTimeout(pushPopupTimer);
+      pushPopupTimer = setTimeout(() => { popup.classList.add('hidden'); }, 9000);
+    }
+
+    function closePushPopup() { document.getElementById('push-noti-popup').classList.add('hidden'); }
+
+    async function initShopFirebasePush(shopId, allowPrompt = false) {
+      try {
+        if (!('Notification' in window) || !('serviceWorker' in navigator) || typeof firebase === 'undefined') return null;
+        if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+
+        const messaging = firebase.messaging();
+        if (!window.__shopFcmBound) {
+          window.__shopFcmBound = true;
+          messaging.onMessage((payload) => {
+            const d = payload.data || {};
+            const n = payload.notification || {};
+            showShopBannerNoti(d.title || n.title || "MiniTrend Shop", d.body || n.body || "");
+            loadShopDashboard(true);
+          });
+        }
+
+        if (Notification.permission === 'default' && allowPrompt) await Notification.requestPermission();
+        if (Notification.permission !== 'granted') return null;
+
+        const reg = (await window.__swRegistrationPromise) || (await navigator.serviceWorker.ready);
+        const token = await messaging.getToken({ vapidKey: FIREBASE_VAPID_KEY, serviceWorkerRegistration: reg });
+        if (token) {
+          window.__currentFcmToken = token;
+          const roleKey = "shop:" + shopId;
+          if (!sessionStorage.getItem("mt_fcm_synced_" + roleKey)) {
+            await fetch(APPS_SCRIPT_URL, {
+              method: "POST", mode: "no-cors",
+              headers: { "Content-Type": "text/plain;charset=utf-8" },
+              body: JSON.stringify({ action: "saveFcmToken", token, role: roleKey, device: navigator.userAgent.substring(0, 80) })
+            });
+            sessionStorage.setItem("mt_fcm_synced_" + roleKey, "1");
+          }
+          const btn = document.getElementById('btn-shop-fcm');
+          if (btn) btn.innerText = "✅ Noti ချိတ်ပြီး";
+          return token;
+        }
+      } catch (e) {}
+      return null;
+    }
+
+    async function connectShopFirebase() {
+      const saved = getSavedShopSession();
+      if (!saved || !saved.id) return;
+      const btn = document.getElementById('btn-shop-fcm');
+      if (btn) btn.innerText = "⏳ ချိတ်ဆက်နေ...";
+      sessionStorage.removeItem("mt_fcm_synced_shop:" + saved.id);
+      const tk = await initShopFirebasePush(saved.id, true);
+      if (tk) {
+        alert(`✅ ${saved.name} ဖုန်းကို Notification စနစ်နှင့် အောင်မြင်စွာ ချိတ်ဆက်ပြီးပါပြီ!`);
+      } else {
+        if (btn) btn.innerText = "🔔 Noti ချိတ်မည်";
+        alert("⚠️ ဖုန်း Browser Settings တွင် Notification ကို Allow ပေးထားကြောင်း စစ်ဆေးပေးပါ။");
+      }
+    }
+
+    function openImageLightbox(imgKey) {
+      const info = window.__shopImgMap[imgKey];
+      if (!info) return;
+      document.getElementById('lightbox-img').src = info.image || '../icon.png?v=3';
+      document.getElementById('lightbox-title').innerText = info.name || '';
+      document.getElementById('lightbox-meta').innerText = `🎨 ${info.colorName || '-'} | 📏 ${info.size || '-'} | 📦 x ${info.qty || 1} ခု`;
+      document.getElementById('image-lightbox-modal').classList.remove('hidden');
+    }
+
+    function closeImageLightbox() {
+      document.getElementById('image-lightbox-modal').classList.add('hidden');
+    }
+
+    function switchShopTab(tabName) {
+      currentShopTab = tabName;
+      ['orders', 'returns', 'payouts'].forEach(t => {
+        const panel = document.getElementById('tab-panel-' + t);
+        const btn = document.getElementById('tab-btn-' + t);
+        if (panel) panel.classList.toggle('hidden', t !== tabName);
+        if (btn) {
+          if (t === tabName) {
+            btn.className = t === 'returns'
+              ? 'py-2.5 px-2 rounded-xl text-xs font-extrabold bg-red-600 text-white shadow-sm transition'
+              : (t === 'payouts'
+                ? 'py-2.5 px-2 rounded-xl text-xs font-extrabold bg-emerald-600 text-white shadow-sm transition'
+                : 'py-2.5 px-2 rounded-xl text-xs font-extrabold bg-amber-600 text-white shadow-sm transition');
+          } else {
+            btn.className = 'py-2.5 px-2 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 transition';
+          }
+        }
+      });
+    }
+
+    async function loadShopDropdown() {
+      const sel = document.getElementById('shop-login-select');
+      if (!sel) return;
+      try {
+        const res = await fetch(`${APPS_SCRIPT_URL}?action=getShopData&t=${Date.now()}`, { cache: "no-store" });
+        const data = await res.json();
+        if (data && Array.isArray(data.shops) && data.shops.length > 0) {
+          sel.innerHTML = `<option value="">-- ဆိုင်အမည် ရွေးချယ်ပါ --</option>` +
+            data.shops.map(s => `<option value="${escapeHtml(s.id)}">${escapeHtml(s.id)} — ${escapeHtml(s.name)}</option>`).join('');
+        } else {
+          sel.innerHTML = `<option value="">ဆိုင်စာရင်း မထည့်ရသေးပါ (Admin ထံ ဆက်သွယ်ပါ)</option>`;
+        }
+      } catch (e) {
+        sel.innerHTML = `<option value="">⚠️ အင်တာနက် ချိတ်ဆက်မှု စစ်ဆေးပါ</option>`;
+      }
+    }
+
+    async function handleShopLogin(e) {
+      e.preventDefault();
+      const shopId = document.getElementById('shop-login-select').value.trim();
+      const pin = document.getElementById('shop-login-pin').value.trim();
+      const errEl = document.getElementById('shop-login-error');
+      const btn = document.getElementById('btn-shop-login');
+      if (!shopId || !pin) return;
+
+      btn.disabled = true; btn.innerText = "⏳ စစ်ဆေးနေပါသည်...";
+      errEl.classList.add('hidden');
+
+      try {
+        const res = await fetch(`${APPS_SCRIPT_URL}?action=getShopData&shopId=${encodeURIComponent(shopId)}&pin=${encodeURIComponent(pin)}&t=${Date.now()}`, { cache: "no-store" });
+        const data = await res.json();
+        if (data && data.status === 'ok' && data.shop) {
+          saveShopSession({ id: data.shop.id, name: data.shop.name, pin: pin, commissionRate: data.shop.commissionRate });
+          document.getElementById('shop-login-pin').value = '';
+          showDashboardScreen();
+          renderShopData(data, false);
+        } else {
+          errEl.classList.remove('hidden');
+        }
+      } catch (err) {
+        errEl.innerText = "⚠️ အင်တာနက်ချိတ်ဆက်မှု စစ်ဆေးပေးပါ။";
+        errEl.classList.remove('hidden');
+      }
+
+      btn.disabled = false; btn.innerText = "🔓 Shop App သို့ ဝင်ရောက်မည်";
+    }
+
+    function logoutShop() {
+      try { localStorage.removeItem('mt_shop_session'); } catch (e) {}
+      document.getElementById('shop-dashboard').classList.add('hidden');
+      document.getElementById('shop-login-card').classList.remove('hidden');
+      loadShopDropdown();
+    }
+
+    function showDashboardScreen() {
+      const saved = getSavedShopSession();
+      if (!saved) return;
+      document.getElementById('shop-login-card').classList.add('hidden');
+      document.getElementById('shop-dashboard').classList.remove('hidden');
+      document.getElementById('shop-header-name').innerText = `${saved.name} (${saved.id})`;
+      const comm = Number(saved.commissionRate !== undefined ? saved.commissionRate : 5);
+      document.getElementById('shop-header-meta').innerText = `ကော်မရှင်: ${comm}% | ဆိုင်ရငွေ: ${100 - comm}%`;
+      if ('Notification' in window && Notification.permission === 'granted') {
+        initShopFirebasePush(saved.id, false);
+      }
+    }
+
+    async function loadShopDashboard(silent = false) {
+      const saved = getSavedShopSession();
+      if (!saved || !saved.id || !saved.pin) return;
+      const btn = document.getElementById('btn-shop-refresh');
+      if (btn && !silent) btn.innerText = "⏳...";
+
+      try {
+        const res = await fetch(`${APPS_SCRIPT_URL}?action=getShopData&shopId=${encodeURIComponent(saved.id)}&pin=${encodeURIComponent(saved.pin)}&t=${Date.now()}`, { cache: "no-store" });
+        const data = await res.json();
+        if (data && data.status === 'unauthorized') { logoutShop(); return; }
+        if (data && data.status === 'ok') renderShopData(data, silent);
+      } catch (e) {}
+
+      if (btn && !silent) btn.innerText = "🔄 ပြန်စစ်";
+    }
+
+    function renderShopData(data, silent) {
+      const activeOrders = data.activeOrders || [];
+      const returnOrders = data.returnOrders || [];
+      const unpaidOrders = data.unpaidPayoutOrders || [];
+      const settledOrders = data.settledPayoutOrders || [];
+      const unpaidTotal = Number(data.unpaidPayoutTotal || 0);
+      const settledTotal = Number(data.settledPayoutTotal || 0);
+
+      shopActiveOrdersCache = activeOrders;
+      shopReturnOrdersCache = returnOrders;
+      window.__shopImgMap = {};
+
+      if (data.shop) {
+        const comm = Number(data.shop.commissionRate !== undefined ? data.shop.commissionRate : 5);
+        document.getElementById('shop-header-name').innerText = `${data.shop.name} (${data.shop.id})`;
+        document.getElementById('shop-header-meta').innerText = `ကော်မရှင်: ${comm}% | ဆိုင်ရငွေ: ${100 - comm}%`;
+      }
+
+      const needConfirmCount = activeOrders.filter(o => o.shopStatus === 'pending').length;
+      const unconfirmedRetCount = returnOrders.filter(o => o.returnInfo && o.returnInfo.myReturnStatus !== 'shop_confirmed').length;
+
+      document.getElementById('stat-active-orders').innerText = activeOrders.length;
+      document.getElementById('stat-need-confirm').innerText = needConfirmCount > 0 ? `⚠️ အတည်ပြုရန် ${needConfirmCount}` : '✅ စုံလင်ပြီး';
+      document.getElementById('stat-returns-count').innerText = returnOrders.length;
+      document.getElementById('stat-returns-pending').innerText = unconfirmedRetCount > 0 ? `↩️ လက်ခံရန် ${unconfirmedRetCount}` : '✅ ရှင်းလင်းပြီး';
+      document.getElementById('stat-unpaid-total').innerText = unpaidTotal.toLocaleString() + " Ks";
+      document.getElementById('tab-badge-orders').innerText = activeOrders.length;
+      document.getElementById('tab-badge-returns').innerText = unconfirmedRetCount > 0 ? unconfirmedRetCount : returnOrders.length;
+      document.getElementById('payout-unpaid-sum').innerText = unpaidTotal.toLocaleString() + " ကျပ်";
+      document.getElementById('payout-settled-sum').innerText = settledTotal.toLocaleString() + " ကျပ်";
+
+      // Check for new order or new COD rejection for sound alert
+      const shopId = data.shop ? data.shop.id : '';
+      if (activeOrders.length > 0 && shopId) {
+        const newestOrdId = activeOrders[0].orderId;
+        const lastKey = 'mt_shop_last_ord_' + shopId;
+        const prevOrdId = localStorage.getItem(lastKey);
+        if (prevOrdId && prevOrdId !== newestOrdId && silent) {
+          showShopBannerNoti(`📦 အော်ဒါအသစ်ဝင်ပါပြီ! (${newestOrdId})`, "ပစ္စည်းရှိ/မရှိ ၁ ချက်နှိပ် အတည်ပြုပေးပါခင်ဗျာ။");
+        }
+        localStorage.setItem(lastKey, newestOrdId);
+      }
+      if (returnOrders.length > 0 && shopId) {
+        const newestRetId = returnOrders[0].orderId;
+        const lastRetKey = 'mt_shop_last_ret_' + shopId;
+        const prevRetId = localStorage.getItem(lastRetKey);
+        if (prevRetId && prevRetId !== newestRetId && silent) {
+          showShopBannerNoti(`🔄 ဝယ်သူ COD ငြင်း (${newestRetId})`, "Return စာရင်းထဲတွင် ပစ္စည်းပြန်အပ်အခြေအနေ ကြည့်ရှုနိုင်ပါသည်။");
+        }
+        localStorage.setItem(lastRetKey, newestRetId);
+      }
+
+      // ---- Render TAB 1: Active Orders ----
+      const ordersEl = document.getElementById('shop-orders-list');
+      if (activeOrders.length === 0) {
+        ordersEl.innerHTML = `<div class="bg-white rounded-2xl border p-8 text-center text-xs sm:text-sm text-gray-400">🎉 လက်ရှိ လုပ်ဆောင်ရန် အော်ဒါ မရှိသေးပါ</div>`;
+      } else {
+        ordersEl.innerHTML = activeOrders.map(o => {
+          let shopBadge = `<span class="bg-amber-500 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full animate-pulse">⏳ ပစ္စည်းရှိ/မရှိ အတည်ပြုရန်</span>`;
+          let borderCls = "border-amber-300 bg-white";
+          if (o.shopStatus === 'confirmed') {
+            shopBadge = `<span class="bg-emerald-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">✅ ပစ္စည်းအသင့်ရှိကြောင်း အတည်ပြုပြီး</span>`;
+            borderCls = "border-emerald-200 bg-emerald-50/20";
+          } else if (o.shopStatus === 'out_of_stock') {
+            shopBadge = `<span class="bg-red-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">🚨 Stock ပြတ်ကြောင်း အကြောင်းကြားပြီး</span>`;
+            borderCls = "border-red-300 bg-red-50/40";
+          }
+
+          let pickupInfoBadge = "";
+          if (o.pickupStatus === 'ဆိုင်မှ ပစ္စည်းကောက်ပြီးပြီ') {
+            pickupInfoBadge = `<span class="bg-emerald-100 text-emerald-800 border border-emerald-300 text-[10px] font-extrabold px-2 py-0.5 rounded-full">📦 ဝန်ထမ်း ကောက်ယူပြီး</span>`;
+          } else if (o.pickupStatus === 'ဆိုင်သို့ သွားနေပါသည်') {
+            pickupInfoBadge = `<span class="bg-blue-100 text-blue-800 border border-blue-300 text-[10px] font-extrabold px-2 py-0.5 rounded-full">🛵 ${escapeHtml(o.pickupRiderName || 'ဝန်ထမ်း')} လာကောက်နေပြီ</span>`;
+          } else if (o.pickupStatus === 'ဆိုင်မှ ပစ္စည်းသွားကောက်ရန်') {
+            pickupInfoBadge = `<span class="bg-indigo-100 text-indigo-800 border border-indigo-300 text-[10px] font-extrabold px-2 py-0.5 rounded-full">📋 ${escapeHtml(o.pickupRiderName || 'ဝန်ထမ်း')} လာကောက်ရန် တာဝန်ကျ</span>`;
+          }
+
+          let extraStatusNotice = "";
+          if (o.orderStatus === 'ဖုန်းမကိုင် (နောက်နေ့ပြန်ပို့)') {
+            extraStatusNotice = `<div class="bg-amber-50 border border-amber-300 text-amber-900 rounded-xl px-3 py-1.5 text-[11px] font-bold">⏳ ဝယ်သူ ဖုန်းမကိုင်သဖြင့် ပို့ဆောင်ရန် ရက်ရွှေ့ထားပါသည် (Return မဟုတ်သေးပါ)</div>`;
+          } else if (o.orderStatus === 'ပို့ဆောင်နေပြီ') {
+            extraStatusNotice = `<div class="bg-blue-50 border border-blue-200 text-blue-800 rounded-xl px-3 py-1.5 text-[11px] font-bold">🚚 Delivery ဝန်ထမ်းမှ ဝယ်သူထံ ပို့ဆောင်နေပါပြီ</div>`;
+          } else if (o.orderStatus === 'COD ငွေပေးချေပြီး') {
+            extraStatusNotice = `<div class="bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl px-3 py-1.5 text-[11px] font-bold">💰 ဝယ်သူ COD ပေးချေပြီး (Admin အတည်ပြုရန် စောင့်ဆိုင်းဆဲ)</div>`;
+          }
+
+          const itemsHtml = (o.items || []).map((it, idx) => {
+            const imgKey = `ord_${o.orderId}_${idx}`;
+            window.__shopImgMap[imgKey] = it;
+            const thumb = it.image
+              ? `<button type="button" onclick="openImageLightbox('${imgKey}')" class="relative w-16 h-16 rounded-xl overflow-hidden border-2 border-amber-200 shrink-0 bg-gray-100 cursor-zoom-in">
+                   <img src="${escapeHtml(it.image)}" alt="" class="w-full h-full object-cover object-top">
+                   <span class="absolute bottom-0.5 right-0.5 bg-black/70 text-white text-[9px] px-1 rounded">🔍</span>
+                 </button>`
+              : `<div class="w-16 h-16 rounded-xl border border-dashed border-gray-300 bg-gray-100 flex items-center justify-center text-[10px] text-gray-400 shrink-0">ပုံမရှိ</div>`;
+            return `
+              <div class="flex items-center gap-2.5 bg-gray-50/90 border border-gray-200 rounded-xl p-2">
+                ${thumb}
+                <div class="flex-1 min-w-0 space-y-1">
+                  <p class="font-extrabold text-xs sm:text-sm text-gray-900 leading-snug">${idx + 1}. ${escapeHtml(it.name)}</p>
+                  <div class="flex flex-wrap gap-1">
+                    <span class="bg-purple-100 text-purple-800 px-1.5 py-0.5 rounded-md text-[10px] font-extrabold">🎨 ${escapeHtml(it.colorName || 'မူရင်း')}</span>
+                    <span class="bg-pink-100 text-pink-800 px-1.5 py-0.5 rounded-md text-[10px] font-extrabold">📏 ${escapeHtml(it.size || '-')}</span>
+                    <span class="bg-gray-900 text-white px-2 py-0.5 rounded-md text-[10px] font-extrabold">x ${it.qty} ခု</span>
+                  </div>
+                  <p class="text-[11px] font-bold text-gray-600">${(Number(it.price || 0) * Number(it.qty || 1)).toLocaleString()} ကျပ်</p>
+                </div>
+              </div>
+            `;
+          }).join('');
+
+          const isAlreadyPickedUp = o.pickupStatus === 'ဆိုင်မှ ပစ္စည်းကောက်ပြီးပြီ';
+          const actionBtnsHtml = isAlreadyPickedUp ? '' : `
+            <div class="grid grid-cols-2 gap-2 pt-1">
+              <button type="button" onclick="confirmShopOrder('${o.orderId}', this)" ${o.shopStatus === 'confirmed' ? 'disabled' : ''} class="${o.shopStatus === 'confirmed' ? 'bg-emerald-200 text-emerald-900 cursor-not-allowed' : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm'} font-extrabold py-2.5 rounded-xl text-xs">
+                ${o.shopStatus === 'confirmed' ? '✅ အတည်ပြုပြီးပြီ' : '✅ ပစ္စည်းရှိသည် (ထုပ်ထားမည်)'}
+              </button>
+              <button type="button" onclick="openOosModal('${o.orderId}')" class="bg-red-600 hover:bg-red-700 text-white font-extrabold py-2.5 rounded-xl text-xs shadow-sm">
+                ❌ Stock ပြတ်ပြီ
+              </button>
+            </div>
+          `;
+
+          return `
+            <div class="rounded-2xl border-2 ${borderCls} p-3.5 shadow-sm space-y-2.5">
+              <div class="flex flex-wrap justify-between items-center gap-1.5">
+                <div>
+                  <span class="font-extrabold text-sm text-gray-900">🧾 ${escapeHtml(o.orderId)}</span>
+                  <span class="text-[11px] text-gray-500 ml-1.5">⏰ ${escapeHtml(o.dateTime)}</span>
+                </div>
+                <div class="flex flex-wrap gap-1">${shopBadge} ${pickupInfoBadge}</div>
+              </div>
+
+              ${o.shopNote ? `<p class="text-[11px] font-bold text-red-700 bg-red-50 border border-red-200 rounded-lg px-2.5 py-1.5">📝 မှတ်ချက်: ${escapeHtml(o.shopNote)}</p>` : ''}
+              ${extraStatusNotice}
+
+              <div class="space-y-2">${itemsHtml}</div>
+
+              <div class="bg-amber-50/70 border border-amber-200 rounded-xl px-3 py-2 flex flex-wrap justify-between items-center gap-2 text-xs">
+                <span class="text-gray-700 font-bold">ပစ္စည်းတန်ဖိုး: ${Number(o.gross || 0).toLocaleString()} Ks <span class="text-gray-500">(-${o.commissionRate}%: ${Number(o.commission || 0).toLocaleString()})</span></span>
+                <span class="font-extrabold text-emerald-700">💰 ဆိုင်ရမည့်ငွေ (${100 - Number(o.commissionRate || 5)}%): ${Number(o.payout || 0).toLocaleString()} Ks</span>
+              </div>
+
+              ${actionBtnsHtml}
+            </div>
+          `;
+        }).join('');
+      }
+
+      // ---- Render TAB 2: Live COD Rejections / Returns ----
+      const returnsEl = document.getElementById('shop-returns-list');
+      if (returnOrders.length === 0) {
+        returnsEl.innerHTML = `<div class="bg-white rounded-2xl border p-8 text-center text-xs sm:text-sm text-gray-400">✅ လက်ရှိ COD ငြင်း (Return) ပစ္စည်း မရှိပါ</div>`;
+      } else {
+        returnsEl.innerHTML = returnOrders.map(o => {
+          const ri = o.returnInfo || {};
+          const st = ri.myReturnStatus || 'rider_returning_to_hub';
+          let stepBadge = `<span class="bg-red-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">❌ ဝယ်သူ COD ငြင်း — Hub ပြန်သယ်နေသည်</span>`;
+          let stepDesc = "Delivery ဝန်ထမ်းမှ ပစ္စည်းကို Hub သို့ ပြန်အပ်ပြီးနောက် ဆိုင်သို့ ပြန်လာအပ်ပေးပါမည်။";
+          let cardBorder = "border-red-300 bg-red-50/30";
+
+          if (st === 'waiting_pickup_return') {
+            stepBadge = `<span class="bg-amber-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">📦 Hub ပြန်ရောက်ပြီး — ဆိုင်သို့ပြန်အပ်ရန် စီစဉ်နေသည်</span>`;
+            stepDesc = "MiniTrend Hub တွင် ပစ္စည်းလက်ခံပြီးပါပြီ။ နောက်တစ်ခေါက် ဝန်ထမ်းလာချိန် ပြန်အပ်ပေးပါမည်။";
+          } else if (st === 'returning_to_shop') {
+            stepBadge = `<span class="bg-blue-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full animate-pulse">🛵 ${escapeHtml(ri.returnRiderName || 'ဝန်ထမ်း')} ဆိုင်သို့ ပြန်လာအပ်နေပြီ</span>`;
+            stepDesc = "ဝန်ထမ်း ပစ္စည်းပြန်လာအပ်နေပါပြီ။ ပစ္စည်းလက်ခံရရှိပြီးပါက အောက်ပါခလုတ်ကို နှိပ်အတည်ပြုပေးပါ။";
+            cardBorder = "border-blue-300 bg-blue-50/30";
+          } else if (st === 'delivered_to_shop') {
+            stepBadge = `<span class="bg-emerald-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full animate-pulse">📦 ဆိုင်သို့ ပြန်အပ်ပြီး — လက်ခံအတည်ပြုရန်</span>`;
+            stepDesc = `ဝန်ထမ်းမှ ဆိုင်သို့ ပြန်အပ်ပြီးပါပြီ (${ri.deliveredToShopAt || ''})။ ကျေးဇူးပြု၍ လက်ခံအတည်ပြုခလုတ် နှိပ်ပေးပါ။`;
+            cardBorder = "border-emerald-400 bg-emerald-50/40";
+          } else if (st === 'shop_confirmed') {
+            stepBadge = `<span class="bg-gray-700 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">✅ ပြန်အပ်ပစ္စည်း လက်ခံပြီး (Closed)</span>`;
+            stepDesc = `လက်ခံအတည်ပြုပြီးချိန်: ${ri.shopConfirmedAt || ''}`;
+            cardBorder = "border-gray-200 bg-white opacity-85";
+          }
+
+          const retItemsHtml = (o.items || []).map((it, idx) => {
+            const imgKey = `ret_${o.orderId}_${idx}`;
+            window.__shopImgMap[imgKey] = it;
+            const thumb = it.image
+              ? `<button type="button" onclick="openImageLightbox('${imgKey}')" class="w-14 h-14 rounded-xl overflow-hidden border border-red-200 shrink-0 bg-gray-100 cursor-zoom-in"><img src="${escapeHtml(it.image)}" class="w-full h-full object-cover object-top"></button>`
+              : `<div class="w-14 h-14 rounded-xl border bg-gray-100 flex items-center justify-center text-[10px] text-gray-400 shrink-0">ပုံမရှိ</div>`;
+            return `
+              <div class="flex items-center gap-2.5 bg-white border border-gray-200 rounded-xl p-2">
+                ${thumb}
+                <div class="flex-1 min-w-0">
+                  <p class="font-extrabold text-xs text-gray-900 truncate">${escapeHtml(it.name)}</p>
+                  <p class="text-[11px] font-bold text-gray-600">🎨 ${escapeHtml(it.colorName || '-')} | 📏 ${escapeHtml(it.size || '-')} | <b>x ${it.qty} ခု</b></p>
+                </div>
+              </div>
+            `;
+          }).join('');
+
+          const confirmBtnHtml = st !== 'shop_confirmed'
+            ? `<button type="button" onclick="confirmReturnReceived('${o.orderId}', this)" class="w-full ${st === 'delivered_to_shop' ? 'bg-emerald-600 hover:bg-emerald-700 ring-4 ring-emerald-200' : 'bg-gray-900 hover:bg-emerald-700'} text-white font-extrabold py-2.5 rounded-xl text-xs shadow-sm">✅ ပြန်အပ်ပစ္စည်း လက်ခံရရှိပြီးကြောင်း အတည်ပြုမည်</button>`
+            : '';
+
+          return `
+            <div class="rounded-2xl border-2 ${cardBorder} p-3.5 shadow-sm space-y-2.5">
+              <div class="flex flex-wrap justify-between items-center gap-1.5">
+                <span class="font-extrabold text-sm text-gray-900">🔄 ${escapeHtml(o.orderId)}</span>
+                ${stepBadge}
+              </div>
+              <div class="bg-white/90 border border-red-200 rounded-xl px-3 py-2 text-xs space-y-1">
+                <p class="font-extrabold text-red-700">❌ အကြောင်းရင်း: ${escapeHtml(ri.reason || 'ဝယ်သူ COD ငြင်း')} <span class="text-gray-500 font-normal">(${escapeHtml(ri.reportedAt || '')})</span></p>
+                <p class="text-[11px] text-gray-700 font-bold">💸 95% ငွေစာရင်း: <span class="line-through text-gray-400">${Number(o.gross || 0).toLocaleString()} Ks</span> → <span class="text-red-600 font-extrabold">0 ကျပ် (Return)</span></p>
+                <p class="text-[11px] text-gray-600">${stepDesc}</p>
+              </div>
+              <div class="space-y-1.5">${retItemsHtml}</div>
+              ${confirmBtnHtml}
+            </div>
+          `;
+        }).join('');
+      }
+
+      // ---- Render TAB 3: Payouts ----
+      const unpaidEl = document.getElementById('shop-unpaid-list');
+      if (unpaidOrders.length === 0) {
+        unpaidEl.innerHTML = `<p class="text-gray-400 py-4 text-center">ငွေရှင်းရန် ကျန်ရှိသော အော်ဒါ မရှိသေးပါ။</p>`;
+      } else {
+        unpaidEl.innerHTML = unpaidOrders.map(o => `
+          <div class="py-2.5 flex justify-between items-start gap-2">
+            <div class="min-w-0">
+              <p class="font-extrabold text-gray-900">🧾 ${escapeHtml(o.orderId)} <span class="bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded text-[10px] font-bold">⏳ ရှင်းရန်ကျန်</span></p>
+              <p class="text-[11px] text-gray-500 mt-0.5">ပို့ပြီးချိန်: ${escapeHtml(o.deliveredAt || o.dateTime)}</p>
+              <p class="text-[11px] text-gray-600 mt-0.5">${(o.items || []).map(i => `${escapeHtml(i.name)} (${escapeHtml(i.size)}) x${i.qty}`).join(', ')}</p>
+              <p class="text-[10px] text-gray-500">တန်ဖိုး ${Number(o.gross).toLocaleString()} Ks − ${o.commissionRate}% (${Number(o.commission).toLocaleString()} Ks)</p>
+            </div>
+            <span class="font-extrabold text-emerald-700 text-sm shrink-0">${Number(o.payout).toLocaleString()} Ks</span>
+          </div>
+        `).join('');
+      }
+
+      const settledEl = document.getElementById('shop-settled-list');
+      if (settledOrders.length === 0) {
+        settledEl.innerHTML = `<p class="text-gray-400 py-4 text-center">ငွေလွှဲရှင်းပြီး မှတ်တမ်း မရှိသေးပါ။</p>`;
+      } else {
+        settledEl.innerHTML = settledOrders.map(o => `
+          <div class="py-2.5 flex justify-between items-start gap-2">
+            <div class="min-w-0">
+              <p class="font-bold text-gray-800">✅ ${escapeHtml(o.orderId)} <span class="bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded text-[10px] font-bold">💸 ရှင်းပြီး</span></p>
+              <p class="text-[11px] text-gray-500">လွှဲရှင်းချိန်: ${escapeHtml(o.settledAt || o.deliveredAt)}</p>
+            </div>
+            <span class="font-extrabold text-gray-800 shrink-0">${Number(o.payout).toLocaleString()} Ks</span>
+          </div>
+        `).join('');
+      }
+    }
+
+    async function confirmShopOrder(orderId, btnEl) {
+      const saved = getSavedShopSession();
+      if (!saved) return;
+      if (btnEl) { btnEl.disabled = true; btnEl.innerText = "⏳ ပို့နေ..."; }
+      try {
+        await fetch(APPS_SCRIPT_URL, {
+          method: "POST", mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "shopRespondOrder",
+            shopId: saved.id,
+            pin: saved.pin,
+            orderId: orderId,
+            response: "confirmed",
+            note: ""
+          })
+        });
+        setTimeout(() => loadShopDashboard(false), 900);
+      } catch (e) {
+        if (btnEl) { btnEl.disabled = false; btnEl.innerText = "✅ ပစ္စည်းရှိသည် (ထုပ်ထားမည်)"; }
+      }
+    }
+
+    function openOosModal(orderId) {
+      const ord = shopActiveOrdersCache.find(x => x.orderId === orderId);
+      if (!ord) return;
+      oosTargetOrderId = orderId;
+      document.getElementById('oos-modal-order-label').innerText = `🧾 အော်ဒါနံပါတ်: ${orderId}`;
+      document.getElementById('oos-note-input').value = '';
+      const box = document.getElementById('oos-items-checkboxes');
+      box.innerHTML = (ord.items || []).map((it, idx) => `
+        <label class="flex items-center gap-2.5 p-2 rounded-xl border border-red-200 bg-red-50/40 cursor-pointer text-xs">
+          <input type="checkbox" checked class="oos-item-chk w-4 h-4 accent-red-600" data-idx="${idx}">
+          <span class="font-bold text-gray-900">${escapeHtml(it.name)} [${escapeHtml(it.colorName || '')} | ${escapeHtml(it.size || '')}] x${it.qty}</span>
+        </label>
+      `).join('');
+      document.getElementById('oos-modal').classList.remove('hidden');
+    }
+
+    function closeOosModal() {
+      document.getElementById('oos-modal').classList.add('hidden');
+      oosTargetOrderId = "";
+    }
+
+    async function submitOosReport() {
+      const saved = getSavedShopSession();
+      if (!saved || !oosTargetOrderId) return;
+      const ord = shopActiveOrdersCache.find(x => x.orderId === oosTargetOrderId);
+      if (!ord) return;
+
+      const selectedItems = [];
+      document.querySelectorAll('.oos-item-chk:checked').forEach(chk => {
+        const idx = parseInt(chk.dataset.idx, 10);
+        if (ord.items && ord.items[idx]) {
+          selectedItems.push({
+            name: ord.items[idx].name,
+            colorName: ord.items[idx].colorName,
+            size: ord.items[idx].size,
+            qty: ord.items[idx].qty
+          });
+        }
+      });
+
+      const note = document.getElementById('oos-note-input').value.trim();
+      const btn = document.getElementById('btn-submit-oos');
+      btn.disabled = true; btn.innerText = "⏳ ပို့နေသည်...";
+
+      try {
+        await fetch(APPS_SCRIPT_URL, {
+          method: "POST", mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "shopRespondOrder",
+            shopId: saved.id,
+            pin: saved.pin,
+            orderId: oosTargetOrderId,
+            response: "out_of_stock",
+            note: note,
+            outOfStockItems: selectedItems
+          })
+        });
+        closeOosModal();
+        setTimeout(() => loadShopDashboard(false), 900);
+      } catch (e) {
+        alert("ပေးပို့ရာတွင် အမှားရှိနေပါသည်။");
+      }
+      btn.disabled = false; btn.innerText = "🚨 Admin ထံ ချက်ချင်းပို့မည်";
+    }
+
+    async function confirmReturnReceived(orderId, btnEl) {
+      const saved = getSavedShopSession();
+      if (!saved) return;
+      if (!confirm(`အော်ဒါ #${orderId} ၏ ပြန်အပ်ပစ္စည်းကို လက်ခံရရှိပြီးကြောင်း အတည်ပြုပါသလား?`)) return;
+      if (btnEl) { btnEl.disabled = true; btnEl.innerText = "⏳ အတည်ပြုနေသည်..."; }
+      try {
+        await fetch(APPS_SCRIPT_URL, {
+          method: "POST", mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "shopConfirmReturnReceived",
+            shopId: saved.id,
+            pin: saved.pin,
+            orderId: orderId
+          })
+        });
+        setTimeout(() => loadShopDashboard(false), 900);
+      } catch (e) {
+        if (btnEl) { btnEl.disabled = false; btnEl.innerText = "✅ ပြန်အပ်ပစ္စည်း လက်ခံရရှိပြီးကြောင်း အတည်ပြုမည်"; }
+      }
+    }
+
+    function initShopApp() {
+      if (!isStandaloneApp() && isIOSDevice()) {
+        document.getElementById('btn-shop-install').classList.remove('hidden');
+        document.getElementById('btn-shop-install-login').classList.remove('hidden');
+      }
+
+      const saved = getSavedShopSession();
+      if (saved && saved.id && saved.pin) {
+        showDashboardScreen();
+        loadShopDashboard(false);
+      } else {
+        loadShopDropdown();
+      }
+
+      setInterval(() => {
+        if (!document.getElementById('shop-dashboard').classList.contains('hidden')) {
+          loadShopDashboard(true);
+        }
+      }, 20000);
+    }
+
+    initShopApp();
+  </script>
+</body>
+</html>
