@@ -9,12 +9,15 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="MiniTrend Shop" />
-  <link rel="manifest" href="./manifest.json?v=8" />
+  <link rel="manifest" href="/shop/manifest.json?v=9" />
   <link rel="icon" type="image/png" href="../icon.png?v=3" />
   <link rel="apple-touch-icon" href="../icon.png?v=3" />
 
   <script>
     // Auto-open in Google Chrome if opened from Viber / Messenger / Facebook / Telegram on Android
+    if (window.location.pathname.endsWith('/shop')) {
+      window.location.replace(window.location.pathname + '/' + window.location.search + window.location.hash);
+    }
     (function() {
       var ua = navigator.userAgent || "";
       var isAndroid = /Android/i.test(ua);
@@ -102,7 +105,7 @@
 
     window.__swRegistrationPromise = null;
     if ('serviceWorker' in navigator) {
-      window.__swRegistrationPromise = navigator.serviceWorker.register('../sw.js', { scope: '../' }).catch(() => null);
+      window.__swRegistrationPromise = navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(() => null);
     }
   </script>
 
@@ -147,7 +150,7 @@
       </form>
 
       <div class="mt-4 pt-3 border-t border-gray-100 text-center">
-        <button type="button" id="btn-shop-install-login" onclick="triggerShopInstall()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold px-4 py-2.5 rounded-xl shadow-sm">
+        <button type="button" id="btn-shop-install-login" onclick="triggerShopInstall()" class="hidden bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold px-4 py-2.5 rounded-xl shadow-sm">
           📲 ဤဖုန်းတွင် Shop App သွင်းမည်
         </button>
       </div>
@@ -164,7 +167,7 @@
           <p id="shop-header-meta" class="text-[11px] text-amber-100 font-bold mt-0.5">ကော်မရှင်: 5% | ဆိုင်ရငွေ: 95%</p>
         </div>
         <div class="flex flex-wrap gap-1.5">
-          <button type="button" id="btn-shop-install" onclick="triggerShopInstall()" class="bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-extrabold px-3 py-2 rounded-xl shadow-sm">📲 App သွင်း</button>
+          <button type="button" id="btn-shop-install" onclick="triggerShopInstall()" class="hidden bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-extrabold px-3 py-2 rounded-xl shadow-sm">📲 App သွင်း</button>
           <button type="button" onclick="connectShopFirebase()" id="btn-shop-fcm" class="bg-amber-300 hover:bg-amber-200 text-gray-900 text-xs font-extrabold px-3 py-2 rounded-xl shadow-sm">🔔 Noti ချိတ်မည်</button>
           <button type="button" onclick="loadShopDashboard(false)" id="btn-shop-refresh" class="bg-white/20 hover:bg-white/30 text-white text-xs font-bold px-3 py-2 rounded-xl">🔄 ပြန်စစ်</button>
           <button type="button" onclick="logoutShop()" class="bg-red-600/90 hover:bg-red-700 text-white text-xs font-bold px-3 py-2 rounded-xl">🔒 ထွက်</button>
@@ -218,14 +221,14 @@
         </button>
       </div>
 
-      <!-- TAB 1: ACTIVE ORDERS (CLEAN — NO DELIVERY INTERNAL STATUSES, NO STOCK CHECK BUTTONS) -->
+      <!-- TAB 1: ACTIVE ORDERS -->
       <div id="tab-panel-orders" class="space-y-3">
         <div id="shop-orders-list" class="space-y-3.5">
           <p class="text-xs text-gray-400 py-8 text-center bg-white rounded-2xl border">⏳ အော်ဒါစာရင်း ရယူနေပါသည်...</p>
         </div>
       </div>
 
-      <!-- TAB 2: MY STOCK HISTORY & DIRECT +/- ADJUSTMENT FOR WALK-IN SALES -->
+      <!-- TAB 2: MY STOCK HISTORY & DIRECT +/- ADJUSTMENT -->
       <div id="tab-panel-mystock" class="hidden space-y-3">
         <div class="bg-blue-50 border border-blue-200 rounded-xl px-3.5 py-2.5 text-[11px] text-blue-950 font-bold leading-relaxed">
           📊 Admin ထံ ပို့ထားသော မိမိဆိုင်ပစ္စည်းများ၏ လက်ရှိ Stock မှတ်တမ်း ဖြစ်ပါသည်။ ဆိုင်တွင် လာဝယ်သူအား ရောင်းမိလိုက်ပါက <b>"−"</b> နှိပ်၍ ချက်ချင်းလျှော့ထားနိုင်သလို ပစ္စည်းထပ်ရောက်ပါက <b>"+"</b> နှိပ်၍ တိုးနိုင်ပါသည်။
@@ -934,7 +937,6 @@
     }
 
     function showShopBannerNoti(title, bodyText) {
-      // Strictly muted during 6:00 PM - 8:00 AM MMT
       if (isShopQuietHoursMMT()) return;
       const popup = document.getElementById('push-noti-popup');
       document.getElementById('push-noti-title').innerText = "🔔 " + (title || "MiniTrend Shop");
@@ -1173,7 +1175,7 @@
         localStorage.setItem(lastKey, newestOrdId);
       }
 
-      // ---- TAB 1: Active Orders (Clean, no stock-check buttons, no delivery internal statuses) ----
+      // ---- TAB 1: Active Orders ----
       const ordersEl = document.getElementById('shop-orders-list');
       if (activeOrders.length === 0) {
         ordersEl.innerHTML = `<div class="bg-white rounded-2xl border p-8 text-center text-xs sm:text-sm text-gray-400">🎉 လက်ရှိ အော်ဒါ မရှိသေးပါ</div>`;
