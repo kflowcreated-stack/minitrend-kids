@@ -1,0 +1,26 @@
+{
+  "id": "/minitrend-kids/shop/",
+  "name": "MiniTrend Kids — Partner Shop",
+  "short_name": "MiniTrend Shop",
+  "description": "MiniTrend Kids ချိတ်ဆက်ဆိုင်များအတွက် အော်ဒါအတည်ပြုခြင်း၊ Return နှင့် ငွေစာရင်း App",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fffbeb",
+  "theme_color": "#d97706",
+  "icons": [
+    {
+      "src": "../icon.png?v=3",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "../icon.png?v=3",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
