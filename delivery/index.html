@@ -9,7 +9,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="MiniTrend Delivery" />
-  <link rel="manifest" href="./manifest.json?v=3" />
+  <link rel="manifest" href="./manifest.json?v=4" />
   <link rel="icon" type="image/png" href="../icon.png?v=3" />
   <link rel="apple-touch-icon" href="../icon.png?v=3" />
 
@@ -292,7 +292,42 @@
     let returnTargetOrderId = "";
     let pushPopupTimer = null;
     let lastLoadedData = null;
+    let isHandlingPopState = false;
     window.__pickupImgMap = {};
+
+    // ==================== BACK BUTTON GUARD (STAYS INSIDE DELIVERY APP) ====================
+    function pushRiderHistoryState(name) {
+      if (isHandlingPopState) return;
+      try { history.pushState({ riderOverlay: name, ts: Date.now() }, ''); } catch (e) {}
+    }
+
+    window.addEventListener('popstate', function() {
+      isHandlingPopState = true;
+      try {
+        const lb = document.getElementById('image-lightbox-modal');
+        if (lb && !lb.classList.contains('hidden')) {
+          lb.classList.add('hidden');
+          return;
+        }
+        const retM = document.getElementById('return-modal');
+        if (retM && !retM.classList.contains('hidden')) {
+          retM.classList.add('hidden');
+          returnTargetOrderId = "";
+          return;
+        }
+        const instM = document.getElementById('install-guide-modal');
+        if (instM && !instM.classList.contains('hidden')) {
+          instM.classList.add('hidden');
+          return;
+        }
+        if (currentRiderTab === 'pickup') {
+          switchRiderTab('delivery', true);
+          return;
+        }
+      } finally {
+        isHandlingPopState = false;
+      }
+    });
 
     function escapeHtml(str) {
       return (str || '').toString()
@@ -337,6 +372,7 @@
         return;
       }
       document.getElementById('install-guide-modal').classList.remove('hidden');
+      pushRiderHistoryState('install_guide');
     }
 
     function playNotiChime() {
@@ -399,13 +435,15 @@
       document.getElementById('lightbox-title').innerText = info.name || '';
       document.getElementById('lightbox-meta').innerText = `🧾 ${info.orderId} | 🎨 ${info.colorName || '-'} | 📏 ${info.size || '-'} | 📦 x ${info.qty || 1} ခု`;
       document.getElementById('image-lightbox-modal').classList.remove('hidden');
+      pushRiderHistoryState('lightbox');
     }
 
     function closeImageLightbox() {
       document.getElementById('image-lightbox-modal').classList.add('hidden');
     }
 
-    function switchRiderTab(tabName) {
+    function switchRiderTab(tabName, fromBack = false) {
+      const prevTab = currentRiderTab;
       currentRiderTab = tabName;
       document.getElementById('tab-panel-pickup').classList.toggle('hidden', tabName !== 'pickup');
       document.getElementById('tab-panel-delivery').classList.toggle('hidden', tabName !== 'delivery');
@@ -418,6 +456,9 @@
       } else {
         btnD.className = 'py-2.5 px-3 rounded-xl text-xs sm:text-sm font-extrabold bg-blue-600 text-white shadow-sm transition';
         btnP.className = 'py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold text-gray-700 hover:bg-gray-100 transition';
+      }
+      if (!fromBack && prevTab !== tabName && tabName === 'pickup') {
+        pushRiderHistoryState('tab_pickup');
       }
     }
 
@@ -468,11 +509,10 @@
       if (btn) btn.innerText = "⏳ ချိတ်ဆက်နေ...";
       sessionStorage.removeItem("mt_fcm_synced_rider:" + saved.id);
       const tk = await initRiderFirebasePush(saved.id, true);
-      if (tk) {
-        alert(`✅ ${saved.name} ဖုန်းကို Notification စနစ်နှင့် အောင်မြင်စွာ ချိတ်ဆက်ပြီးပါပြီ!`);
-      } else {
+      if (tk) alert(`✅ ${saved.name} ဖုန်းကို Notification စနစ်နှင့် ချိတ်ဆက်ပြီးပါပြီ!`);
+      else {
         if (btn) btn.innerText = "🔔 Noti ချိတ်မည်";
-        alert("⚠️ Browser Settings တွင် Notification ကို Allow ပေးထားကြောင်း စစ်ဆေးပေးပါ။");
+        alert("⚠️ Browser Settings တွင် Notification ကို Allow ပေးထားကြောင်း စစ်ဆေးပါ။");
       }
     }
 
@@ -578,8 +618,8 @@
 
       if (!hasAutoSelectedTab) {
         hasAutoSelectedTab = true;
-        if (totalPickupWork > 0 && pending.length === 0) switchRiderTab('pickup');
-        else switchRiderTab('delivery');
+        if (totalPickupWork > 0 && pending.length === 0) switchRiderTab('pickup', true);
+        else switchRiderTab('delivery', true);
       }
 
       const rId = data.rider ? data.rider.id : '';
@@ -637,7 +677,7 @@
           const ordersCardsHtml = grp.orders.map(ord => {
             const isGoing = ord.pickupStatus === 'ဆိုင်သို့ သွားနေပါသည်';
             let statusBadge = `<span class="bg-purple-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">📋 ဆိုင်မှ ပစ္စည်းသွားကောက်ရန်</span>`;
-            if (isGoing) statusBadge = `<span class="bg-amber-500 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full animate-pulse">🛵 ဆိုင်သို့ သွားနေပါသည်</span>`;
+            if (isGoing) statusBadge = `<span class="bg-amber-500 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full animate-pulse">🛵 သွားနေပါပြီ</span>`;
 
             const itemsHtml = (ord.items || []).map((it, idx) => {
               const chkKey = `pu_${ord.orderId}_${sid}_${idx}`;
@@ -662,7 +702,7 @@
                     <p class="font-extrabold text-xs sm:text-sm ${isChecked ? 'line-through text-gray-400' : 'text-gray-900'} leading-snug">${idx + 1}. ${escapeHtml(it.name)}</p>
                     <div class="flex flex-wrap gap-1">
                       <span class="bg-purple-100 text-purple-800 px-1.5 py-0.5 rounded-md text-[10px] font-extrabold">🎨 ${escapeHtml(it.colorName || 'မူရင်း')}</span>
-                      <span class="bg-pink-100 text-pink-800 px-1.5 py-0.5 rounded-md text-[10px] font-extrabold">📏 ${escapeHtml(it.size || '-')}</span>
+                      ${it.size && it.size !== 'အသက်မလို' ? `<span class="bg-pink-100 text-pink-800 px-1.5 py-0.5 rounded-md text-[10px] font-extrabold">📏 ${escapeHtml(it.size)}</span>` : ''}
                       <span class="bg-gray-900 text-white px-2 py-0.5 rounded-md text-[10px] font-extrabold">x ${it.qty} ခု</span>
                     </div>
                   </div>
@@ -675,7 +715,7 @@
               : '';
 
             return `
-              <div class="bg-gray-50/90 border border-purple-200 rounded-xl p-3 space-y-2.5">
+              <div class="bg-gray-50/90 border-2 ${isGoing ? 'border-amber-400 bg-amber-50/40' : 'border-purple-200'} rounded-xl p-3 space-y-2.5 transition">
                 <div class="flex flex-wrap justify-between items-center gap-1.5">
                   <span class="font-extrabold text-xs sm:text-sm text-gray-900">🧾 ${escapeHtml(ord.orderId)}</span>
                   ${statusBadge}
@@ -683,10 +723,10 @@
                 ${multiShopNote}
                 <div class="space-y-1.5">${itemsHtml}</div>
                 <div class="grid grid-cols-2 gap-2 pt-1">
-                  <button type="button" onclick="riderUpdatePickup('${ord.orderId}', 'ဆိုင်သို့ သွားနေပါသည်', this)" ${isGoing ? 'disabled' : ''} class="${isGoing ? 'bg-amber-200 text-amber-900 cursor-not-allowed' : 'bg-amber-500 hover:bg-amber-600 text-white'} font-extrabold py-2.5 rounded-xl text-xs shadow-sm">
-                    ${isGoing ? '🛵 သွားနေပါသည်' : '🛵 ဆိုင်သို့ သွားနေပါသည်'}
+                  <button type="button" onclick="riderUpdatePickup('${ord.orderId}', 'ဆိုင်သို့ သွားနေပါသည်', this)" ${isGoing ? 'disabled' : ''} class="${isGoing ? 'bg-emerald-100 text-emerald-800 border-2 border-emerald-400 cursor-not-allowed' : 'bg-amber-500 hover:bg-amber-600 text-white active:scale-95'} font-extrabold py-2.5 rounded-xl text-xs shadow-sm transition">
+                    ${isGoing ? '✅ သွားနေပါပြီ (နှိပ်ပြီး)' : '🛵 သွားနေပါပြီ'}
                   </button>
-                  <button type="button" onclick="riderUpdatePickup('${ord.orderId}', 'ဆိုင်မှ ပစ္စည်းကောက်ပြီးပြီ', this)" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-2.5 rounded-xl text-xs shadow-sm">
+                  <button type="button" onclick="riderUpdatePickup('${ord.orderId}', 'ဆိုင်မှ ပစ္စည်းကောက်ပြီးပြီ', this)" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-extrabold py-2.5 rounded-xl text-xs shadow-sm transition">
                     ✅ ဆိုင်မှ ပစ္စည်းကောက်ပြီးပြီ
                   </button>
                 </div>
@@ -776,7 +816,7 @@
           let statusPill = `<span class="bg-blue-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">📌 တာဝန်ပေးထားသည်</span>`;
           let borderCls = 'border-blue-100 bg-gray-50/50';
           if (isOnWay) {
-            statusPill = `<span class="bg-amber-500 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">🚚 ပို့ဆောင်နေပြီ</span>`;
+            statusPill = `<span class="bg-amber-500 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full animate-pulse">🚚 သွားနေပါပြီ</span>`;
             borderCls = 'border-amber-400 bg-amber-50/40';
           } else if (isNoAnswer) {
             statusPill = `<span class="bg-orange-500 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">📞 ဖုန်းမကိုင် (ပြန်ပို့ရန်)</span>`;
@@ -784,7 +824,7 @@
           }
 
           return `
-            <div class="border-2 ${borderCls} rounded-2xl p-3.5 space-y-2.5">
+            <div class="border-2 ${borderCls} rounded-2xl p-3.5 space-y-2.5 transition">
               <div class="flex flex-wrap justify-between items-center gap-1.5">
                 <span class="font-extrabold text-gray-900 text-sm">🧾 ${escapeHtml(o.orderId)}</span>
                 <div class="flex items-center gap-1">
@@ -811,11 +851,11 @@
                 </a>
               </div>
               <div class="grid grid-cols-2 gap-2">
-                <button type="button" onclick="riderUpdateOrder('${o.orderId}', 'ပို့ဆောင်နေပြီ', this)" ${isOnWay ? 'disabled' : ''} class="${isOnWay ? 'bg-amber-200 text-amber-800 cursor-not-allowed' : 'bg-amber-500 hover:bg-amber-600 text-white'} font-extrabold py-2.5 rounded-xl text-xs shadow-sm">
-                  ${isOnWay ? '🚚 လမ်းပေါ်ရောက်နေပြီ' : '🚚 စတင်ပို့ဆောင်မည်'}
+                <button type="button" onclick="riderUpdateOrder('${o.orderId}', 'ပို့ဆောင်နေပြီ', this)" ${isOnWay ? 'disabled' : ''} class="${isOnWay ? 'bg-emerald-100 text-emerald-800 border-2 border-emerald-400 cursor-not-allowed' : 'bg-amber-500 hover:bg-amber-600 active:scale-95 text-white'} font-extrabold py-2.5 rounded-xl text-xs shadow-sm transition">
+                  ${isOnWay ? '✅ သွားနေပါပြီ (နှိပ်ပြီး)' : '🚚 သွားနေပါပြီ'}
                 </button>
-                <button type="button" onclick="riderUpdateOrder('${o.orderId}', 'COD ငွေပေးချေပြီး', this)" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-2.5 rounded-xl text-xs shadow-sm">
-                  💰 COD ငွေပေးချေပြီးပြီ
+                <button type="button" onclick="riderUpdateOrder('${o.orderId}', 'COD ငွေပေးချေပြီး', this)" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-extrabold py-2.5 rounded-xl text-xs shadow-sm transition">
+                  💰 COD ပြီး
                 </button>
               </div>
               <div class="grid grid-cols-2 gap-2">
@@ -865,7 +905,7 @@
                 <p class="font-bold text-gray-800">${isAdminConfirmed ? '✅' : '💰'} ${escapeHtml(o.orderId)} — ${escapeHtml(o.name)}</p>
                 <div class="flex flex-wrap items-center gap-1.5 mt-0.5">
                   <span class="${isAdminConfirmed ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'} text-[10px] font-extrabold px-2 py-0.5 rounded-full">
-                    ${isAdminConfirmed ? '✅ Admin (COD Finished) အတည်ပြုပြီး' : '⏳ Admin အတည်ပြုရန် စောင့်ဆိုင်းဆဲ'}
+                    ${isAdminConfirmed ? '✅ Admin (COD Confirm) ပြီး' : '⏳ Admin COD Confirm စောင့်ဆိုင်းဆဲ'}
                   </span>
                   <span class="text-[11px] text-gray-500">⏰ ${escapeHtml(o.deliveredAt || o.dateTime)}</span>
                 </div>
@@ -883,7 +923,16 @@
       if (pickupStatus === 'ဆိုင်မှ ပစ္စည်းကောက်ပြီးပြီ') {
         if (!confirm(`အော်ဒါ #${orderId} ၏ ပစ္စည်းများကို ပုံနှင့်တိုက်စစ်ပြီး ဆိုင်မှကောက်ယူပြီးကြောင်း အတည်ပြုပါသလား?`)) return;
       }
-      if (btnEl) { btnEl.disabled = true; btnEl.innerText = "⏳..."; }
+      if (btnEl) {
+        btnEl.disabled = true;
+        if (pickupStatus === 'ဆိုင်သို့ သွားနေပါသည်') {
+          btnEl.className = 'bg-emerald-100 text-emerald-800 border-2 border-emerald-400 font-extrabold py-2.5 rounded-xl text-xs shadow-sm';
+          btnEl.innerText = '✅ သွားနေပါပြီ (နှိပ်ပြီး)';
+          if (navigator.vibrate) navigator.vibrate(100);
+        } else {
+          btnEl.innerText = '⏳...';
+        }
+      }
       try {
         await fetch(APPS_SCRIPT_URL, {
           method: "POST", mode: "no-cors",
@@ -925,7 +974,16 @@
       } else if (newStatus === 'ဖုန်းမကိုင် (နောက်နေ့ပြန်ပို့)') {
         if (!confirm(`အော်ဒါ #${orderId} ဝယ်သူ ဖုန်းမကိုင်သဖြင့် နောက်နေ့ပြန်ပို့ရန် မှတ်သားပါမည်လား?`)) return;
       }
-      if (btnEl) { btnEl.disabled = true; btnEl.innerText = "⏳..."; }
+      if (btnEl) {
+        btnEl.disabled = true;
+        if (newStatus === 'ပို့ဆောင်နေပြီ') {
+          btnEl.className = 'bg-emerald-100 text-emerald-800 border-2 border-emerald-400 font-extrabold py-2.5 rounded-xl text-xs shadow-sm';
+          btnEl.innerText = '✅ သွားနေပါပြီ (နှိပ်ပြီး)';
+          if (navigator.vibrate) navigator.vibrate(100);
+        } else {
+          btnEl.innerText = '⏳...';
+        }
+      }
       try {
         await fetch(APPS_SCRIPT_URL, {
           method: "POST", mode: "no-cors",
@@ -945,6 +1003,7 @@
       document.getElementById('return-modal-order-label').innerText = `🧾 ${orderId} — ${custName}`;
       document.getElementById('return-extra-note').value = '';
       document.getElementById('return-modal').classList.remove('hidden');
+      pushRiderHistoryState('return_modal');
     }
 
     function closeReturnModal() {
@@ -980,6 +1039,8 @@
     }
 
     function initDeliveryApp() {
+      try { history.replaceState({ riderHome: true }, ''); } catch (e) {}
+
       if (!isStandaloneApp() && isIOSDevice()) {
         document.getElementById('btn-del-install').classList.remove('hidden');
         document.getElementById('btn-del-install-login').classList.remove('hidden');
