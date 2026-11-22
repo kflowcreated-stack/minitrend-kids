@@ -9,7 +9,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="MiniTrend Delivery" />
-  <link rel="manifest" href="./manifest.json?v=4" />
+  <link rel="manifest" href="./manifest.json?v=5" />
   <link rel="icon" type="image/png" href="../icon.png?v=3" />
   <link rel="apple-touch-icon" href="../icon.png?v=3" />
 
@@ -208,7 +208,7 @@
         </div>
 
         <div id="rider-today-returns-box" class="hidden bg-white rounded-2xl shadow-sm border-2 border-red-200 p-4">
-          <h3 class="font-extrabold text-sm sm:text-base text-red-700 mb-2">🔄 ယနေ့ COD ငြင်းခံရသော အထုပ်များ (Hub သို့ ပြန်အပ်ရန်)</h3>
+          <h3 class="font-extrabold text-sm sm:text-base text-red-700 mb-2">🔄 ယနေ့ Cancel / Return အထုပ်များ (Hub သို့ ပြန်အပ်ရန်)</h3>
           <div id="rider-today-returns-list" class="divide-y text-xs"></div>
         </div>
 
@@ -222,18 +222,19 @@
     </div>
   </div>
 
+  <!-- CANCEL / RETURN MODAL (REPORTS TO ADMIN ONLY) -->
   <div id="return-modal" onclick="closeReturnModal()" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
     <div onclick="event.stopPropagation()" class="bg-white rounded-2xl max-w-md w-full p-5 shadow-2xl border-2 border-red-300 space-y-3.5">
       <div class="flex justify-between items-center border-b pb-2.5">
-        <h3 class="text-sm sm:text-base font-extrabold text-red-700">❌ ဝယ်သူ COD ငြင်း (Return) မှတ်တမ်းတင်ရန်</h3>
+        <h3 class="text-sm sm:text-base font-extrabold text-red-700">❌ Cancel / Return မှတ်တမ်းတင်ရန် (Admin ထံပို့မည်)</h3>
         <button type="button" onclick="closeReturnModal()" class="text-gray-400 hover:text-gray-800 font-bold text-xl px-1">✕</button>
       </div>
       <p id="return-modal-order-label" class="text-xs font-extrabold text-gray-800"></p>
       <div class="space-y-1.5 text-xs">
         <p class="font-bold text-gray-600">အကြောင်းရင်း ရွေးချယ်ပါ:</p>
         <label class="flex items-center gap-2 p-2.5 rounded-xl border border-gray-200 bg-gray-50 cursor-pointer">
-          <input type="radio" name="ret_reason" value="ဝယ်သူမယူတော့ (COD ငြင်း)" checked class="w-4 h-4 accent-red-600">
-          <span class="font-bold text-gray-800">❌ ဝယ်သူမယူတော့ / စိတ်ပြောင်းသွား (COD ငြင်း)</span>
+          <input type="radio" name="ret_reason" value="ဝယ်သူမယူတော့ (COD ငြင်း / Cancel)" checked class="w-4 h-4 accent-red-600">
+          <span class="font-bold text-gray-800">❌ ဝယ်သူမယူတော့ / စိတ်ပြောင်းသွား (Cancel / COD ငြင်း)</span>
         </label>
         <label class="flex items-center gap-2 p-2.5 rounded-xl border border-gray-200 bg-gray-50 cursor-pointer">
           <input type="radio" name="ret_reason" value="ဖုန်းလုံးဝမကိုင် / ဖုန်းပိတ်ထား" class="w-4 h-4 accent-red-600">
@@ -251,12 +252,12 @@
       <div>
         <input type="text" id="return-extra-note" placeholder="📝 အခြားမှတ်ချက် (ရှိပါက ထည့်ရေးနိုင်သည်)" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-base">
       </div>
-      <div class="bg-red-50 border border-red-200 rounded-xl p-2.5 text-[11px] font-bold text-red-800">
-        ⚠️ ဤခလုတ်နှိပ်ပါက Admin နှင့် သက်ဆိုင်ရာဆိုင်ထံ COD ငြင်းကြောင်း ချက်ချင်း အကြောင်းကြားသွားမည်ဖြစ်ပြီး အထုပ်ကို Hub သို့ ပြန်အပ်ပေးရပါမည်။
+      <div class="bg-amber-50 border border-amber-200 rounded-xl p-2.5 text-[11px] font-bold text-amber-900">
+        📌 ဤခလုတ်နှိပ်ပါက <b>Admin Panel ဆီသို့သာ</b> ချက်ချင်း အကြောင်းကြားသွားမည်ဖြစ်ပြီး Admin မှ စစ်ဆေးအတည်ပြုပေးပါမည်။ အထုပ်ကို Hub သို့ ပြန်အပ်ပေးပါ။
       </div>
       <div class="grid grid-cols-2 gap-2">
         <button type="button" onclick="closeReturnModal()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2.5 rounded-xl text-xs">မလုပ်တော့ပါ</button>
-        <button type="button" id="btn-submit-return" onclick="submitCodReturn()" class="bg-red-600 hover:bg-red-700 text-white font-extrabold py-2.5 rounded-xl text-xs shadow">🔄 Return အတည်ပြုမည်</button>
+        <button type="button" id="btn-submit-return" onclick="submitCodReturn()" class="bg-red-600 hover:bg-red-700 text-white font-extrabold py-2.5 rounded-xl text-xs shadow">📤 Admin ထံ ပို့မည်</button>
       </div>
     </div>
   </div>
@@ -433,7 +434,8 @@
       if (!info) return;
       document.getElementById('lightbox-img').src = info.image || '../icon.png?v=3';
       document.getElementById('lightbox-title').innerText = info.name || '';
-      document.getElementById('lightbox-meta').innerText = `🧾 ${info.orderId} | 🎨 ${info.colorName || '-'} | 📏 ${info.size || '-'} | 📦 x ${info.qty || 1} ခု`;
+      const szPart = info.size && info.size !== 'အသက်မလို' ? ` | 📏 ${info.size}` : '';
+      document.getElementById('lightbox-meta').innerText = `🧾 ${info.orderId} | 🎨 ${info.colorName || '-'}${szPart} | 📦 x ${info.qty || 1} ခု`;
       document.getElementById('image-lightbox-modal').classList.remove('hidden');
       pushRiderHistoryState('lightbox');
     }
@@ -769,12 +771,13 @@
             const thumb = it.image
               ? `<button type="button" onclick="openImageLightbox('${imgKey}')" class="w-14 h-14 rounded-xl overflow-hidden border border-orange-200 shrink-0 bg-gray-100 cursor-zoom-in"><img src="${escapeHtml(it.image)}" class="w-full h-full object-cover object-top"></button>`
               : `<div class="w-14 h-14 rounded-xl border bg-gray-100 flex items-center justify-center text-[10px] text-gray-400 shrink-0">ပုံမရှိ</div>`;
+            const szHtml = it.size && it.size !== 'အသက်မလို' ? ` | 📏 ${escapeHtml(it.size)}` : '';
             return `
               <div class="flex items-center gap-2 bg-white border border-orange-200 rounded-xl p-2">
                 ${thumb}
                 <div class="min-w-0 flex-1">
                   <p class="font-extrabold text-xs text-gray-900 truncate">${escapeHtml(it.name)}</p>
-                  <p class="text-[11px] font-bold text-gray-600">🎨 ${escapeHtml(it.colorName || '-')} | 📏 ${escapeHtml(it.size || '-')} | <b>x ${it.qty} ခု</b></p>
+                  <p class="text-[11px] font-bold text-gray-600">🎨 ${escapeHtml(it.colorName || '-')}${szHtml} | <b>x ${it.qty} ခု</b></p>
                 </div>
               </div>
             `;
@@ -808,6 +811,7 @@
         pendingEl.innerHTML = pending.map(o => {
           const isOnWay = o.status === 'ပို့ဆောင်နေပြီ';
           const isNoAnswer = o.status === 'ဖုန်းမကိုင် (နောက်နေ့ပြန်ပို့)';
+          const isCustCancelReq = o.status === 'ဝယ်သူ Cancel တောင်းဆိုထားသည်';
           const mapInfo = buildSmartMapsInfo(o);
           const detailBlock = o.addressDetail
             ? `<p class="text-gray-800 bg-amber-50 border border-amber-200 rounded-lg px-2.5 py-1.5">🏠 <b>အိမ်နံပါတ်/မှတ်ချက်:</b> ${escapeHtml(o.addressDetail)}</p>`
@@ -815,11 +819,14 @@
 
           let statusPill = `<span class="bg-blue-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">📌 တာဝန်ပေးထားသည်</span>`;
           let borderCls = 'border-blue-100 bg-gray-50/50';
-          if (isOnWay) {
+          if (isCustCancelReq) {
+            statusPill = `<span class="bg-red-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full animate-pulse">⚠️ Cancel တောင်းဆိုထား (Admin စစ်နေ)</span>`;
+            borderCls = 'border-red-300 bg-red-50/40';
+          } else if (isOnWay) {
             statusPill = `<span class="bg-amber-500 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full animate-pulse">🚚 သွားနေပါပြီ</span>`;
             borderCls = 'border-amber-400 bg-amber-50/40';
           } else if (isNoAnswer) {
-            statusPill = `<span class="bg-orange-500 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">📞 ဖုန်းမကိုင် (ပြန်ပို့ရန်)</span>`;
+            statusPill = `<span class="bg-orange-500 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">📞 ဖုန်းမကိုင် (Admin ထံပို့ပြီး)</span>`;
             borderCls = 'border-orange-300 bg-orange-50/40';
           }
 
@@ -860,10 +867,10 @@
               </div>
               <div class="grid grid-cols-2 gap-2">
                 <button type="button" onclick="riderUpdateOrder('${o.orderId}', 'ဖုန်းမကိုင် (နောက်နေ့ပြန်ပို့)', this)" class="bg-orange-50 hover:bg-orange-100 text-orange-800 border border-orange-300 font-extrabold py-2 rounded-xl text-[11px]">
-                  📞 ဖုန်းမကိုင် (နောက်နေ့ပို့)
+                  📞 ဖုန်းမကိုင် (Admin ပို့)
                 </button>
                 <button type="button" onclick="openReturnModal('${o.orderId}', '${escapeHtml(o.name)}')" class="bg-red-50 hover:bg-red-100 text-red-700 border border-red-300 font-extrabold py-2 rounded-xl text-[11px]">
-                  ❌ ဝယ်သူငြင်း (Return)
+                  ❌ Cancel / Return
                 </button>
               </div>
             </div>
@@ -883,7 +890,7 @@
             <div class="py-2.5 flex justify-between items-center gap-2">
               <div>
                 <p class="font-extrabold text-gray-900">🔄 ${escapeHtml(r.orderId)} — ${escapeHtml(r.name)}</p>
-                <p class="text-[11px] text-red-700 font-bold">❌ ${escapeHtml(r.returnReason || 'ဝယ်သူ COD ငြင်း')}</p>
+                <p class="text-[11px] text-red-700 font-bold">❌ ${escapeHtml(r.returnReason || 'Cancel / Return')}</p>
               </div>
               <span class="${isHubGot ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'} text-[10px] font-extrabold px-2 py-0.5 rounded-full shrink-0">
                 ${isHubGot ? '✅ Hub အပ်ပြီး' : '📦 Hub ပြန်အပ်ရန်'}
@@ -921,7 +928,7 @@
       const saved = getSavedRiderSession();
       if (!saved || !saved.id) return;
       if (pickupStatus === 'ဆိုင်မှ ပစ္စည်းကောက်ပြီးပြီ') {
-        if (!confirm(`အော်ဒါ #${orderId} ၏ ပစ္စည်းများကို ပုံနှင့်တိုက်စစ်ပြီး ဆိုင်မှကောက်ယူပြီးကြောင်း အတည်ပြုပါသလား?`)) return;
+        if (!confirm(`အော်ဒါ #${orderId} ၏ ပစ္စည်းများကို ပုံနှင့်တိုက်စစ်ပြီး ဆိုင်မှကောက်ယူပြီးကြောင်း Admin ထံ အကြောင်းကြားပါမည်လား?`)) return;
       }
       if (btnEl) {
         btnEl.disabled = true;
@@ -950,7 +957,7 @@
     async function markReturnedToShop(orderId, shopId, btnEl) {
       const saved = getSavedRiderSession();
       if (!saved || !saved.id) return;
-      if (!confirm(`Return အော်ဒါ #${orderId} ကို ဆိုင် (${shopId}) သို့ ပြန်အပ်ပြီးကြောင်း အတည်ပြုပါသလား?`)) return;
+      if (!confirm(`Return အော်ဒါ #${orderId} ကို ဆိုင် (${shopId}) သို့ ပြန်အပ်ပြီးကြောင်း Admin ထံ အကြောင်းကြားပါမည်လား?`)) return;
       if (btnEl) { btnEl.disabled = true; btnEl.innerText = "⏳ ပို့နေသည်..."; }
       try {
         await fetch(APPS_SCRIPT_URL, {
@@ -972,7 +979,7 @@
       if (newStatus === 'COD ငွေပေးချေပြီး') {
         if (!confirm(`အော်ဒါ #${orderId} အတွက် ဝယ်သူထံမှ COD ငွေကောက်ခံပြီးဖြစ်ကြောင်း Admin ထံ အကြောင်းကြားပါမည်လား?`)) return;
       } else if (newStatus === 'ဖုန်းမကိုင် (နောက်နေ့ပြန်ပို့)') {
-        if (!confirm(`အော်ဒါ #${orderId} ဝယ်သူ ဖုန်းမကိုင်သဖြင့် နောက်နေ့ပြန်ပို့ရန် မှတ်သားပါမည်လား?`)) return;
+        if (!confirm(`အော်ဒါ #${orderId} ဝယ်သူ ဖုန်းမကိုင်ကြောင်း Admin ထံ အကြောင်းကြားပါမည်လား?`)) return;
       }
       if (btnEl) {
         btnEl.disabled = true;
@@ -1015,7 +1022,7 @@
       const saved = getSavedRiderSession();
       if (!saved || !returnTargetOrderId) return;
       const checkedRadio = document.querySelector('input[name="ret_reason"]:checked');
-      let reason = checkedRadio ? checkedRadio.value : 'ဝယ်သူ COD ငြင်း';
+      let reason = checkedRadio ? checkedRadio.value : 'ဝယ်သူ COD ငြင်း / Cancel';
       const extra = document.getElementById('return-extra-note').value.trim();
       if (extra) reason += " — " + extra;
 
@@ -1035,7 +1042,7 @@
       } catch (e) {
         alert("မှတ်တမ်းတင်ရာတွင် အမှားရှိနေပါသည်။");
       }
-      btn.disabled = false; btn.innerText = "🔄 Return အတည်ပြုမည်";
+      btn.disabled = false; btn.innerText = "📤 Admin ထံ ပို့မည်";
     }
 
     function initDeliveryApp() {
