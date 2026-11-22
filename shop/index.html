@@ -9,7 +9,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="MiniTrend Shop" />
-  <link rel="manifest" href="./manifest.json?v=6" />
+  <link rel="manifest" href="./manifest.json?v=7" />
   <link rel="icon" type="image/png" href="../icon.png?v=3" />
   <link rel="apple-touch-icon" href="../icon.png?v=3" />
 
@@ -190,30 +190,47 @@
         </button>
       </div>
 
-      <!-- Navigation Tabs -->
+      <!-- 5 Navigation Tabs -->
       <div class="flex gap-1.5 overflow-x-auto no-scrollbar bg-white p-1.5 rounded-2xl border border-amber-200 shadow-sm">
-        <button type="button" onclick="switchShopTab('orders')" id="tab-btn-orders" class="flex-1 py-2.5 px-2.5 rounded-xl text-xs font-extrabold bg-amber-600 text-white shadow-sm transition shrink-0">
+        <button type="button" onclick="switchShopTab('orders')" id="tab-btn-orders" class="py-2.5 px-3 rounded-xl text-xs font-extrabold bg-amber-600 text-white shadow-sm transition shrink-0">
           📦 အော်ဒါ <span id="tab-badge-orders" class="ml-0.5 bg-white/25 px-1.5 py-0.5 rounded-full text-[10px]">0</span>
         </button>
-        <button type="button" onclick="switchShopTab('restock')" id="tab-btn-restock" class="flex-1 py-2.5 px-2.5 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 transition shrink-0">
+        <button type="button" onclick="switchShopTab('mystock')" id="tab-btn-mystock" class="py-2.5 px-3 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 transition shrink-0">
+          📊 မိမိ Stock (+/-) <span id="tab-badge-mystock" class="ml-0.5 bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded-full text-[10px]">0</span>
+        </button>
+        <button type="button" onclick="switchShopTab('restock')" id="tab-btn-restock" class="py-2.5 px-3 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 transition shrink-0">
           📥 Stock ပို့ရန်
         </button>
-        <button type="button" onclick="switchShopTab('returns')" id="tab-btn-returns" class="flex-1 py-2.5 px-2.5 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 transition shrink-0">
+        <button type="button" onclick="switchShopTab('returns')" id="tab-btn-returns" class="py-2.5 px-3 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 transition shrink-0">
           🔄 Cancel/Return <span id="tab-badge-returns" class="ml-0.5 bg-red-100 text-red-700 px-1.5 py-0.5 rounded-full text-[10px]">0</span>
         </button>
-        <button type="button" onclick="switchShopTab('payouts')" id="tab-btn-payouts" class="flex-1 py-2.5 px-2.5 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 transition shrink-0">
+        <button type="button" onclick="switchShopTab('payouts')" id="tab-btn-payouts" class="py-2.5 px-3 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 transition shrink-0">
           💰 95% စာရင်း
         </button>
       </div>
 
-      <!-- TAB 1: ACTIVE ORDERS (CLEAN — NO DELIVERY INTERNAL STATUSES) -->
+      <!-- TAB 1: ACTIVE ORDERS WITH STOCK AVAILABLE / OUT OF STOCK QUICK BUTTONS -->
       <div id="tab-panel-orders" class="space-y-3">
         <div id="shop-orders-list" class="space-y-3.5">
           <p class="text-xs text-gray-400 py-8 text-center bg-white rounded-2xl border">⏳ အော်ဒါစာရင်း ရယူနေပါသည်...</p>
         </div>
       </div>
 
-      <!-- TAB 2: RESTOCK / NEW PRODUCT WITH EXISTING PRODUCT SEARCH + PRICE + COLOR -->
+      <!-- TAB 2 (NEW): MY STOCK HISTORY & DIRECT +/- ADJUSTMENT FOR WALK-IN SALES -->
+      <div id="tab-panel-mystock" class="hidden space-y-3">
+        <div class="bg-blue-50 border border-blue-200 rounded-xl px-3.5 py-2.5 text-[11px] text-blue-950 font-bold leading-relaxed">
+          📊 Admin ထံ ပို့ထားသော မိမိဆိုင်ပစ္စည်းများ၏ လက်ရှိ Stock မှတ်တမ်း ဖြစ်ပါသည်။ ဆိုင်တွင် လာဝယ်သူအား ရောင်းမိလိုက်ပါက <b>"−"</b> နှိပ်၍ ချက်ချင်းလျှော့ထားနိုင်သလို ပစ္စည်းထပ်ရောက်ပါက <b>"+"</b> နှိပ်၍ တိုးနိုင်ပါသည်။
+        </div>
+        <div class="bg-white rounded-2xl border border-amber-200 p-3 shadow-sm flex gap-2 items-center">
+          <input type="text" id="mystock-search" oninput="renderMyStockHistory()" placeholder="🔍 မိမိပစ္စည်းအမည် သို့မဟုတ် အမျိုးအစား ရှာရန်..." class="flex-1 border border-gray-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500">
+          <button type="button" onclick="loadShopDashboard(false)" class="bg-amber-600 text-white font-extrabold px-3 py-2 rounded-xl text-xs shrink-0">🔄 စစ်မည်</button>
+        </div>
+        <div id="shop-mystock-list" class="space-y-3">
+          <p class="text-xs text-gray-400 py-8 text-center bg-white rounded-2xl border">⏳ ပစ္စည်းစာရင်း ရယူနေပါသည်...</p>
+        </div>
+      </div>
+
+      <!-- TAB 3: RESTOCK / NEW PRODUCT SUBMISSION -->
       <div id="tab-panel-restock" class="hidden space-y-4">
         <div class="bg-white rounded-2xl border-2 border-amber-300 p-4 shadow-sm space-y-3.5">
           <div>
@@ -221,7 +238,6 @@
             <p class="text-[11px] text-gray-500 mt-0.5">ပစ္စည်းအသစ်ထည့်ရန် သို့မဟုတ် ယခင်ပို့ထားသော ပစ္စည်းကို ရှာဖွေ၍ Stock ထပ်တိုးနိုင်ပါသည်။</p>
           </div>
 
-          <!-- MODE SWITCHER: NEW vs EXISTING PRODUCT RESTOCK -->
           <div class="grid grid-cols-2 gap-1.5 bg-amber-50 p-1.5 rounded-xl border border-amber-200">
             <button type="button" id="rs-mode-new" onclick="setRestockMode('new')" class="py-2 px-2 rounded-lg text-xs font-extrabold bg-amber-600 text-white shadow-sm transition">
               🆕 ပစ္စည်းအသစ် ထည့်ရန်
@@ -231,7 +247,6 @@
             </button>
           </div>
 
-          <!-- EXISTING PRODUCT SEARCH & PICKER PANEL -->
           <div id="rs-existing-picker" class="hidden bg-blue-50/70 border-2 border-blue-200 rounded-2xl p-3 space-y-2.5">
             <div class="flex justify-between items-center gap-2">
               <p class="text-xs font-extrabold text-blue-900">🔍 ယခင်ပို့ထားသော မိမိဆိုင်ပစ္စည်း ရှာဖွေရန်</p>
@@ -243,7 +258,6 @@
             </div>
           </div>
 
-          <!-- SELECTED EXISTING PRODUCT INFO SUMMARY -->
           <div id="rs-selected-summary" class="hidden bg-emerald-50 border-2 border-emerald-300 rounded-2xl p-3 space-y-2">
             <div class="flex justify-between items-start gap-2">
               <div class="flex items-center gap-2.5 min-w-0">
@@ -263,7 +277,6 @@
             </div>
           </div>
 
-          <!-- RESTOCK FORM -->
           <form onsubmit="submitShopRestock(event)" class="space-y-3">
             <div>
               <label class="block text-xs font-extrabold text-gray-700 mb-1">🧸 ပစ္စည်းအမည်</label>
@@ -339,24 +352,24 @@
         </div>
 
         <div class="bg-white rounded-2xl border border-gray-200 p-4 shadow-sm space-y-2.5">
-          <h4 class="font-extrabold text-xs sm:text-sm text-gray-900">📋 ပို့ထားသော Stock ထပ်တိုး မှတ်တမ်းများ</h4>
+          <h4 class="font-extrabold text-xs sm:text-sm text-gray-900">📋 ပို့ထားသော Stock ထပ်တိုး Request မှတ်တမ်း</h4>
           <div id="shop-restock-history" class="divide-y text-xs">
             <p class="text-gray-400 py-3 text-center">ပို့ထားသော မှတ်တမ်း မရှိသေးပါ။</p>
           </div>
         </div>
       </div>
 
-      <!-- TAB 3: ADMIN-CONFIRMED CANCELLATIONS & RETURNS ONLY -->
+      <!-- TAB 4: CANCEL / RETURN HISTORY -->
       <div id="tab-panel-returns" class="hidden space-y-3">
         <div class="bg-red-50 border border-red-200 rounded-xl px-3.5 py-2.5 text-[11px] text-red-900 font-bold leading-relaxed">
-          🔄 MiniTrend Kids (Admin) မှ အတည်ပြုအကြောင်းကြားထားသော Cancel / Return အော်ဒါများကိုသာ ဤနေရာတွင် ပြသပေးပါသည်။ Return ပစ္စည်းပြန်လက်ခံရရှိပါက <b>"✅ ပြန်အပ်ပစ္စည်း လက်ခံပြီး"</b> ကို နှိပ်အတည်ပြုပေးပါ။
+          🔄 Cancel ဖြစ်သော အော်ဒါများနှင့် ဆိုင်သို့ Return ပြန်အပ်ပြီးသော ပစ္စည်းများကို History အဖြစ် ဤနေရာတွင် သိမ်းဆည်းပြသပေးပါသည်။ ပစ္စည်းပြန်လက်ခံရရှိပါက <b>"✅ ပြန်အပ်ပစ္စည်း လက်ခံပြီး"</b> ကို နှိပ်အတည်ပြုပေးပါ။
         </div>
         <div id="shop-returns-list" class="space-y-3.5">
-          <p class="text-xs text-gray-400 py-8 text-center bg-white rounded-2xl border">Cancel / Return စာရင်း မရှိပါ။</p>
+          <p class="text-xs text-gray-400 py-8 text-center bg-white rounded-2xl border">Cancel / Return History မရှိသေးပါ။</p>
         </div>
       </div>
 
-      <!-- TAB 4: 95% PAYOUTS -->
+      <!-- TAB 5: 95% PAYOUTS -->
       <div id="tab-panel-payouts" class="hidden space-y-4">
         <div class="grid grid-cols-2 gap-3">
           <div class="bg-white border-2 border-emerald-200 rounded-2xl p-3.5 shadow-sm">
@@ -384,6 +397,28 @@
         </div>
       </div>
 
+    </div>
+  </div>
+
+  <!-- OUT-OF-STOCK QUICK REPORT MODAL (REQ 3) -->
+  <div id="oos-modal" onclick="closeOosModal()" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+    <div onclick="event.stopPropagation()" class="bg-white rounded-2xl max-w-md w-full p-5 shadow-2xl border-2 border-red-300 space-y-3.5">
+      <div class="flex justify-between items-center border-b pb-2.5">
+        <h3 class="text-sm sm:text-base font-extrabold text-red-700">❌ Stock မရှိကြောင်း Admin ထံ ပြန်ကြားရန်</h3>
+        <button type="button" onclick="closeOosModal()" class="text-gray-400 hover:text-gray-800 font-bold text-xl px-1">✕</button>
+      </div>
+      <p id="oos-order-label" class="text-xs font-extrabold text-gray-800"></p>
+      <div class="space-y-1.5">
+        <p class="text-xs font-bold text-gray-600">Stock ကုန်နေသော ပစ္စည်းကို အမှန်ခြစ် ရွေးချယ်ပါ:</p>
+        <div id="oos-items-checklist" class="space-y-1.5 max-h-48 overflow-y-auto"></div>
+      </div>
+      <div>
+        <input type="text" id="oos-extra-note" placeholder="📝 မှတ်ချက် (ဥပမာ - အခြားအရောင်တော့ရှိသည်)" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-xs">
+      </div>
+      <div class="grid grid-cols-2 gap-2">
+        <button type="button" onclick="closeOosModal()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2.5 rounded-xl text-xs">မလုပ်တော့ပါ</button>
+        <button type="button" id="btn-submit-oos" onclick="submitOutOfStockReport()" class="bg-red-600 hover:bg-red-700 text-white font-extrabold py-2.5 rounded-xl text-xs shadow">📤 Admin ထံ ပို့မည်</button>
+      </div>
     </div>
   </div>
 
@@ -424,14 +459,15 @@
     let currentShopTab = 'orders';
     let restockMode = 'new';
     let shopProductsCache = [];
+    let shopActiveOrdersCache = [];
     let selectedExistingProduct = null;
     let existingImageUrl = "";
     let restockImageBase64 = "";
+    let oosTargetOrderId = "";
     let pushPopupTimer = null;
     let isHandlingPopState = false;
     window.__shopImgMap = {};
 
-    // Age/Size ONLY for these 6 categories
     const AGE_REQUIRED_CATS = ["ဝမ်းဆက်", "နွေရာသီဝတ်", "အင်္ကျီ", "ဘောင်းဘီ", "ဦးထုတ်", "ဖိနပ်"];
     const STANDARD_AGES = [
       "၆ လ - ၁ နှစ်", "၁ နှစ် - ၂ နှစ်", "၂ - ၃ နှစ်",
@@ -453,6 +489,12 @@
     window.addEventListener('popstate', function() {
       isHandlingPopState = true;
       try {
+        const oosM = document.getElementById('oos-modal');
+        if (oosM && !oosM.classList.contains('hidden')) {
+          oosM.classList.add('hidden');
+          oosTargetOrderId = "";
+          return;
+        }
         const lb = document.getElementById('image-lightbox-modal');
         if (lb && !lb.classList.contains('hidden')) {
           lb.classList.add('hidden');
@@ -487,6 +529,227 @@
 
     function saveShopSession(obj) {
       try { localStorage.setItem('mt_shop_session', JSON.stringify(obj)); } catch (e) {}
+    }
+
+    // ==================== REQ 3: ORDER STOCK AVAILABLE / OUT OF STOCK ====================
+    async function shopReportStockAvailable(orderId, btnEl) {
+      const saved = getSavedShopSession();
+      if (!saved) return;
+      if (btnEl) {
+        btnEl.disabled = true;
+        btnEl.className = 'flex-1 bg-emerald-100 text-emerald-800 border-2 border-emerald-400 font-extrabold py-2.5 rounded-xl text-xs';
+        btnEl.innerText = '✅ Stock ရှိ (ပို့ပြီး)';
+      }
+      try {
+        await fetch(APPS_SCRIPT_URL, {
+          method: "POST", mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "shopConfirmStock",
+            shopId: saved.id,
+            pin: saved.pin,
+            orderId: orderId,
+            stockStatus: "available"
+          })
+        });
+        showShopBannerNoti(`✅ Admin ထံ ပြန်ကြားပြီး (${orderId})`, "ပစ္စည်း Stock ရှိကြောင်း Admin Panel သို့ အကြောင်းကြားပြီးပါပြီ။");
+        setTimeout(() => loadShopDashboard(false), 900);
+      } catch (e) {
+        alert("⚠️ အင်တာနက်ချိတ်ဆက်မှု စစ်ဆေးပြီး ပြန်နှိပ်ပေးပါ။");
+      }
+    }
+
+    function openOosModal(orderId) {
+      const ord = shopActiveOrdersCache.find(o => o.orderId === orderId);
+      if (!ord) return;
+      oosTargetOrderId = orderId;
+      document.getElementById('oos-order-label').innerText = `🧾 ${orderId} — ⏰ ${ord.dateTime || ''}`;
+      document.getElementById('oos-extra-note').value = '';
+
+      const listEl = document.getElementById('oos-items-checklist');
+      const items = ord.items || [];
+      listEl.innerHTML = items.map((it, idx) => {
+        const szPart = it.size && it.size !== 'အသက်မလို' ? ` (${it.size})` : '';
+        const itemLabel = `${it.name} [${it.colorName || 'မူရင်း'}${szPart}]`;
+        return `
+          <label class="flex items-center gap-2 p-2.5 rounded-xl border border-red-200 bg-red-50/40 cursor-pointer text-xs">
+            <input type="checkbox" class="oos-item-chk w-4 h-4 accent-red-600 shrink-0" value="${escapeHtml(itemLabel)}" checked>
+            <span class="font-extrabold text-gray-900 leading-snug">${escapeHtml(itemLabel)} x${it.qty}</span>
+          </label>
+        `;
+      }).join('');
+
+      document.getElementById('oos-modal').classList.remove('hidden');
+      pushShopHistoryState('oos_modal');
+    }
+
+    function closeOosModal() {
+      document.getElementById('oos-modal').classList.add('hidden');
+      oosTargetOrderId = "";
+    }
+
+    async function submitOutOfStockReport() {
+      const saved = getSavedShopSession();
+      if (!saved || !oosTargetOrderId) return;
+      const checked = [...document.querySelectorAll('.oos-item-chk:checked')].map(el => el.value);
+      if (checked.length === 0) {
+        alert("Stock မရှိသော ပစ္စည်းကို အနည်းဆုံး ၁ ခု ရွေးချယ်ပေးပါ။");
+        return;
+      }
+      const note = document.getElementById('oos-extra-note').value.trim();
+      const btn = document.getElementById('btn-submit-oos');
+      btn.disabled = true; btn.innerText = "⏳ ပို့နေသည်...";
+
+      try {
+        await fetch(APPS_SCRIPT_URL, {
+          method: "POST", mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "shopConfirmStock",
+            shopId: saved.id,
+            pin: saved.pin,
+            orderId: oosTargetOrderId,
+            stockStatus: "out_of_stock",
+            outItems: checked.join(", "),
+            note: note
+          })
+        });
+        const sentId = oosTargetOrderId;
+        closeOosModal();
+        showShopBannerNoti(`❌ Stock မရှိကြောင်း ပို့ပြီး (${sentId})`, "Admin မှ ဝယ်သူထံ အခြားပစ္စည်းပြန်ရွေးရန် အကြောင်းကြားပေးပါမည်။");
+        setTimeout(() => loadShopDashboard(false), 900);
+      } catch (e) {
+        alert("⚠️ အင်တာနက်ချိတ်ဆက်မှု စစ်ဆေးပေးပါ။");
+      }
+
+      btn.disabled = false; btn.innerText = "📤 Admin ထံ ပို့မည်";
+    }
+
+    // ==================== REQ 4: MY STOCK HISTORY WITH DIRECT +/- ADJUSTMENT ====================
+    function renderMyStockHistory() {
+      const box = document.getElementById('shop-mystock-list');
+      const badge = document.getElementById('tab-badge-mystock');
+      if (badge) badge.innerText = shopProductsCache.length;
+      if (!box) return;
+
+      const q = (document.getElementById('mystock-search')?.value || '').trim().toLowerCase();
+      const filtered = shopProductsCache.filter(p => {
+        if (!q) return true;
+        return (p.name || '').toLowerCase().includes(q) || (p.category || '').toLowerCase().includes(q);
+      });
+
+      if (shopProductsCache.length === 0) {
+        box.innerHTML = `<div class="bg-white rounded-2xl border p-8 text-center text-xs text-gray-400">Admin ထံ ပို့ထားသော မိမိဆိုင်ပစ္စည်း မရှိသေးပါ — "📥 Stock ပို့ရန်" မှ ထည့်သွင်းနိုင်ပါသည်။</div>`;
+        return;
+      }
+      if (filtered.length === 0) {
+        box.innerHTML = `<div class="bg-white rounded-2xl border p-8 text-center text-xs text-gray-400">ရှာဖွေထားသော ပစ္စည်း မတွေ့ရှိပါ။</div>`;
+        return;
+      }
+
+      box.innerHTML = filtered.map(p => {
+        const origIdx = shopProductsCache.indexOf(p);
+        const firstImg = (p.colors && p.colors[0] && p.colors[0].image) ? p.colors[0].image : '../icon.png?v=3';
+        const needsAge = AGE_REQUIRED_CATS.includes(p.category);
+        const validPrices = (p.prices || []).filter(v => v > 0);
+        const showPrice = validPrices.length > 0 ? Math.min(...validPrices) : 0;
+        const colorNames = (p.colors || []).map(c => c.name).filter(Boolean).join(', ');
+
+        let stockRowsHtml = '';
+        if (!needsAge) {
+          const stk = (p.stocks && p.stocks[0]) || 0;
+          stockRowsHtml = `
+            <div class="flex items-center justify-between gap-2 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs">
+              <div>
+                <span class="font-extrabold text-gray-800">လက်ရှိ Stock</span>
+                ${showPrice > 0 ? `<span class="text-[11px] text-emerald-700 font-bold ml-1.5">(${showPrice.toLocaleString()} Ks)</span>` : ''}
+              </div>
+              <div class="flex items-center gap-1.5">
+                <button type="button" onclick="shopAdjustProductStock(${origIdx}, 0, -1)" class="w-8 h-8 rounded-lg bg-red-100 hover:bg-red-200 active:scale-95 text-red-700 font-extrabold text-base">−</button>
+                <span class="w-9 text-center font-extrabold text-sm ${stk <= 0 ? 'text-red-600' : 'text-gray-900'}">${stk}</span>
+                <button type="button" onclick="shopAdjustProductStock(${origIdx}, 0, 1)" class="w-8 h-8 rounded-lg bg-emerald-100 hover:bg-emerald-200 active:scale-95 text-emerald-800 font-extrabold text-base">+</button>
+              </div>
+            </div>
+          `;
+        } else {
+          stockRowsHtml = STANDARD_AGES.map((sz, i) => {
+            const stk = (p.stocks && p.stocks[i]) || 0;
+            const pr = (p.prices && p.prices[i]) || 0;
+            if (pr <= 0 && stk <= 0) return '';
+            return `
+              <div class="flex items-center justify-between gap-2 bg-gray-50 border border-gray-200 rounded-xl px-3 py-1.5 text-xs">
+                <div class="min-w-0">
+                  <span class="font-extrabold text-gray-800">${escapeHtml(sz)}</span>
+                  ${pr > 0 ? `<span class="text-[10px] text-emerald-700 font-bold ml-1">(${pr.toLocaleString()} Ks)</span>` : ''}
+                </div>
+                <div class="flex items-center gap-1.5 shrink-0">
+                  <button type="button" onclick="shopAdjustProductStock(${origIdx}, ${i}, -1)" class="w-8 h-8 rounded-lg bg-red-100 hover:bg-red-200 active:scale-95 text-red-700 font-extrabold text-base">−</button>
+                  <span class="w-9 text-center font-extrabold text-sm ${stk <= 0 ? 'text-red-600' : 'text-gray-900'}">${stk}</span>
+                  <button type="button" onclick="shopAdjustProductStock(${origIdx}, ${i}, 1)" class="w-8 h-8 rounded-lg bg-emerald-100 hover:bg-emerald-200 active:scale-95 text-emerald-800 font-extrabold text-base">+</button>
+                </div>
+              </div>
+            `;
+          }).join('') || `
+            <div class="flex items-center justify-between gap-2 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs">
+              <span class="font-extrabold text-gray-800">${STANDARD_AGES[0]}</span>
+              <div class="flex items-center gap-1.5">
+                <button type="button" onclick="shopAdjustProductStock(${origIdx}, 0, -1)" class="w-8 h-8 rounded-lg bg-red-100 text-red-700 font-extrabold text-base">−</button>
+                <span class="w-9 text-center font-extrabold text-sm">0</span>
+                <button type="button" onclick="shopAdjustProductStock(${origIdx}, 0, 1)" class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 font-extrabold text-base">+</button>
+              </div>
+            </div>
+          `;
+        }
+
+        return `
+          <div class="bg-white rounded-2xl border-2 border-amber-200 p-3.5 shadow-sm space-y-2.5">
+            <div class="flex items-center gap-2.5">
+              <img src="${escapeHtml(firstImg)}" class="w-14 h-14 rounded-xl object-cover border bg-gray-50 shrink-0">
+              <div class="flex-1 min-w-0">
+                <div class="flex flex-wrap items-center gap-1">
+                  <span class="bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full text-[10px] font-extrabold">${escapeHtml(p.category)}</span>
+                  <span class="${p.totalStock <= 0 ? 'bg-red-100 text-red-700' : 'bg-emerald-100 text-emerald-800'} px-2 py-0.5 rounded-full text-[10px] font-extrabold">စုစုပေါင်း: ${p.totalStock} ခု</span>
+                </div>
+                <p class="font-extrabold text-xs sm:text-sm text-gray-900 truncate mt-1">${escapeHtml(p.name)}</p>
+                ${colorNames ? `<p class="text-[10px] font-bold text-purple-700 truncate">🎨 ${escapeHtml(colorNames)}</p>` : ''}
+              </div>
+            </div>
+            <div class="space-y-1.5">${stockRowsHtml}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function shopAdjustProductStock(prodIdx, sizeIdx, delta) {
+      const saved = getSavedShopSession();
+      const p = shopProductsCache[prodIdx];
+      if (!saved || !p) return;
+
+      const needsAge = AGE_REQUIRED_CATS.includes(p.category);
+      const sizeLabel = needsAge ? STANDARD_AGES[sizeIdx] : 'အသက်မလို';
+      const cur = (p.stocks && p.stocks[sizeIdx]) || 0;
+      const nextVal = Math.max(0, cur + delta);
+      if (nextVal === cur) return;
+
+      p.stocks[sizeIdx] = nextVal;
+      p.totalStock = p.stocks.reduce((a, b) => a + (parseInt(b, 10) || 0), 0);
+      renderMyStockHistory();
+      if (navigator.vibrate) navigator.vibrate(40);
+
+      try {
+        await fetch(APPS_SCRIPT_URL, {
+          method: "POST", mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "shopAdjustStock",
+            shopId: saved.id,
+            pin: saved.pin,
+            productName: p.name,
+            size: sizeLabel,
+            newStock: nextVal
+          })
+        });
+      } catch (e) {}
     }
 
     // ==================== EXISTING PRODUCT RESTOCK SEARCH & AUTO-FILL ====================
@@ -853,25 +1116,24 @@
     function switchShopTab(tabName, fromBack = false) {
       const prevTab = currentShopTab;
       currentShopTab = tabName;
-      ['orders', 'restock', 'returns', 'payouts'].forEach(t => {
+      ['orders', 'mystock', 'restock', 'returns', 'payouts'].forEach(t => {
         const panel = document.getElementById('tab-panel-' + t);
         const btn = document.getElementById('tab-btn-' + t);
         if (panel) panel.classList.toggle('hidden', t !== tabName);
         if (btn) {
           if (t === tabName) {
-            btn.className = t === 'returns'
-              ? 'flex-1 py-2.5 px-2.5 rounded-xl text-xs font-extrabold bg-red-600 text-white shadow-sm transition shrink-0'
-              : (t === 'payouts'
-                ? 'flex-1 py-2.5 px-2.5 rounded-xl text-xs font-extrabold bg-emerald-600 text-white shadow-sm transition shrink-0'
-                : 'flex-1 py-2.5 px-2.5 rounded-xl text-xs font-extrabold bg-amber-600 text-white shadow-sm transition shrink-0');
+            let activeCls = 'py-2.5 px-3 rounded-xl text-xs font-extrabold bg-amber-600 text-white shadow-sm transition shrink-0';
+            if (t === 'returns') activeCls = 'py-2.5 px-3 rounded-xl text-xs font-extrabold bg-red-600 text-white shadow-sm transition shrink-0';
+            else if (t === 'payouts') activeCls = 'py-2.5 px-3 rounded-xl text-xs font-extrabold bg-emerald-600 text-white shadow-sm transition shrink-0';
+            else if (t === 'mystock') activeCls = 'py-2.5 px-3 rounded-xl text-xs font-extrabold bg-blue-600 text-white shadow-sm transition shrink-0';
+            btn.className = activeCls;
           } else {
-            btn.className = 'flex-1 py-2.5 px-2.5 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 transition shrink-0';
+            btn.className = 'py-2.5 px-3 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 transition shrink-0';
           }
         }
       });
-      if (tabName === 'restock' && restockMode === 'existing') {
-        renderExistingProductsList();
-      }
+      if (tabName === 'mystock') renderMyStockHistory();
+      if (tabName === 'restock' && restockMode === 'existing') renderExistingProductsList();
       if (!fromBack && prevTab === 'orders' && tabName !== 'orders') {
         pushShopHistoryState('tab_' + tabName);
       }
@@ -970,7 +1232,9 @@
       const unpaidTotal = Number(data.unpaidPayoutTotal || 0);
       const settledTotal = Number(data.settledPayoutTotal || 0);
 
+      shopActiveOrdersCache = activeOrders;
       shopProductsCache = Array.isArray(data.shopProducts) ? data.shopProducts : [];
+      renderMyStockHistory();
       if (restockMode === 'existing') renderExistingProductsList();
 
       window.__shopImgMap = {};
@@ -1000,22 +1264,62 @@
         const lastKey = 'mt_shop_last_ord_' + shopId;
         const prevOrdId = localStorage.getItem(lastKey);
         if (prevOrdId && prevOrdId !== newestOrdId && silent) {
-          showShopBannerNoti(`📦 အော်ဒါအသစ်ဝင်ပါပြီ! (${newestOrdId})`, "ပစ္စည်းထုပ်ပိုးအသင့်ပြင်ထားပေးပါခင်ဗျာ။");
+          showShopBannerNoti(`📦 အော်ဒါအသစ်ဝင်ပါပြီ! (${newestOrdId})`, "Stock ရှိ/မရှိ ချက်ချင်းနှိပ်အကြောင်းပြန်ပေးပါခင်ဗျာ။");
         }
         localStorage.setItem(lastKey, newestOrdId);
       }
 
-      // ---- TAB 1: Active Orders (STRICTLY NO DELIVERY INTERNAL STATUSES) ----
+      // ---- TAB 1: Active Orders (WITH IMMEDIATE STOCK AVAILABLE / OUT OF STOCK BUTTONS) ----
       const ordersEl = document.getElementById('shop-orders-list');
       if (activeOrders.length === 0) {
         ordersEl.innerHTML = `<div class="bg-white rounded-2xl border p-8 text-center text-xs sm:text-sm text-gray-400">🎉 လက်ရှိ အော်ဒါ မရှိသေးပါ</div>`;
       } else {
         ordersEl.innerHTML = activeOrders.map(o => {
           const isPicked = !!o.adminPickupConfirmed;
+          const stkChk = o.myStockCheck || null;
+
           const statusBadge = isPicked
             ? `<span class="bg-emerald-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">✅ ပစ္စည်းကောက်ပြီး</span>`
             : `<span class="bg-amber-100 text-amber-900 border border-amber-300 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">📦 ပစ္စည်းပြင်ဆင်ထားရန်</span>`;
-          const borderCls = isPicked ? "border-emerald-300 bg-emerald-50/25" : "border-amber-200 bg-white";
+          const borderCls = isPicked
+            ? "border-emerald-300 bg-emerald-50/25"
+            : (stkChk && stkChk.status === 'out_of_stock' ? "border-red-400 bg-red-50/30" : "border-amber-200 bg-white");
+
+          let stockReplyBlock = '';
+          if (!isPicked) {
+            if (!stkChk) {
+              stockReplyBlock = `
+                <div class="bg-amber-50 border border-amber-300 rounded-xl p-2.5 space-y-1.5">
+                  <p class="text-[11px] font-extrabold text-amber-950">⚡ Stock ရှိ / မရှိ Admin ထံ ချက်ချင်းပြန်ကြားပေးပါ:</p>
+                  <div class="grid grid-cols-2 gap-2">
+                    <button type="button" onclick="shopReportStockAvailable('${escapeHtml(o.orderId)}', this)" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-extrabold py-2.5 rounded-xl text-xs shadow-sm transition">
+                      ✅ Stock ရှိ
+                    </button>
+                    <button type="button" onclick="openOosModal('${escapeHtml(o.orderId)}')" class="bg-red-600 hover:bg-red-700 active:scale-95 text-white font-extrabold py-2.5 rounded-xl text-xs shadow-sm transition">
+                      ❌ Stock မရှိ
+                    </button>
+                  </div>
+                </div>
+              `;
+            } else if (stkChk.status === 'available') {
+              stockReplyBlock = `
+                <div class="bg-emerald-50 border border-emerald-300 rounded-xl px-3 py-2 flex flex-wrap justify-between items-center gap-2 text-xs">
+                  <span class="font-extrabold text-emerald-800">✅ Stock ရှိကြောင်း Admin ထံ ပြန်ကြားပြီး (${escapeHtml(stkChk.updatedAt || '')})</span>
+                  <button type="button" onclick="openOosModal('${escapeHtml(o.orderId)}')" class="text-[10px] font-bold text-red-600 underline">❌ Stock မရှိပြောင်းရန်</button>
+                </div>
+              `;
+            } else {
+              stockReplyBlock = `
+                <div class="bg-red-50 border border-red-300 rounded-xl px-3 py-2 space-y-1 text-xs">
+                  <div class="flex flex-wrap justify-between items-center gap-1">
+                    <span class="font-extrabold text-red-700">❌ Stock မရှိကြောင်း Admin ထံ ပို့ပြီး (${escapeHtml(stkChk.updatedAt || '')})</span>
+                    <button type="button" onclick="shopReportStockAvailable('${escapeHtml(o.orderId)}', this)" class="text-[10px] font-extrabold text-emerald-700 bg-white border border-emerald-300 px-2 py-0.5 rounded-lg">✅ Stock ပြန်ရှိ</button>
+                  </div>
+                  ${stkChk.outItems ? `<p class="text-[11px] font-bold text-red-800">မရှိသည့်ပစ္စည်း: ${escapeHtml(stkChk.outItems)}</p>` : ''}
+                </div>
+              `;
+            }
+          }
 
           const itemsHtml = (o.items || []).map((it, idx) => {
             const imgKey = `ord_${o.orderId}_${idx}`;
@@ -1052,6 +1356,7 @@
                 ${statusBadge}
               </div>
               <div class="space-y-2">${itemsHtml}</div>
+              ${stockReplyBlock}
               <div class="bg-amber-50/70 border border-amber-200 rounded-xl px-3 py-2 flex flex-wrap justify-between items-center gap-2 text-xs">
                 <span class="text-gray-700 font-bold">ပစ္စည်းတန်ဖိုး: ${Number(o.gross || 0).toLocaleString()} Ks <span class="text-gray-500">(-${o.commissionRate}%: ${Number(o.commission || 0).toLocaleString()})</span></span>
                 <span class="font-extrabold text-emerald-700">💰 ဆိုင်ရမည့်ငွေ (${100 - Number(o.commissionRate || 5)}%): ${Number(o.payout || 0).toLocaleString()} Ks</span>
@@ -1061,7 +1366,7 @@
         }).join('');
       }
 
-      // ---- TAB 2: Restock History ----
+      // ---- TAB 3: Restock Request History ----
       const rsHistEl = document.getElementById('shop-restock-history');
       if (restockHistory.length === 0) {
         rsHistEl.innerHTML = `<p class="text-gray-400 py-3 text-center">ပို့ထားသော မှတ်တမ်း မရှိသေးပါ။</p>`;
@@ -1084,17 +1389,17 @@
                   ${badge}
                 </div>
                 <p class="text-[11px] font-bold text-gray-600">${escapeHtml(r.category)}${szShow} | <b>+${r.qty} ခု</b>${Number(r.price || 0) > 0 ? ` | 💰 <span class="text-emerald-700">${Number(r.price).toLocaleString()} Ks</span>` : ''}${r.color ? ` | 🎨 ${escapeHtml(r.color)}` : ''}</p>
-                ${r.description ? `<p class="text-[10px] text-gray-500 truncate">${escapeHtml(r.description)}</p>` : ''}
+                <p class="text-[10px] text-gray-400">⏰ ${escapeHtml(r.dateTime)}</p>
               </div>
             </div>
           `;
         }).join('');
       }
 
-      // ---- TAB 3: ADMIN-CONFIRMED CANCELLED & RETURN ORDERS ----
+      // ---- TAB 4: CANCEL / RETURN HISTORY ----
       const returnsEl = document.getElementById('shop-returns-list');
       if (returnOrders.length === 0) {
-        returnsEl.innerHTML = `<div class="bg-white rounded-2xl border p-8 text-center text-xs sm:text-sm text-gray-400">✅ လက်ရှိ Cancel / Return စာရင်း မရှိပါ</div>`;
+        returnsEl.innerHTML = `<div class="bg-white rounded-2xl border p-8 text-center text-xs sm:text-sm text-gray-400">✅ လက်ရှိ Cancel / Return History မရှိသေးပါ</div>`;
       } else {
         returnsEl.innerHTML = returnOrders.map(o => {
           const retItemsHtml = (o.items || []).map((it, idx) => {
@@ -1115,7 +1420,6 @@
             `;
           }).join('');
 
-          // Case A: Admin-Confirmed Cancelled Order
           if (o.type === 'cancelled') {
             const ci = o.cancelInfo || {};
             const cancelNote = ci.wasPickedUp
@@ -1137,10 +1441,10 @@
             `;
           }
 
-          // Case B: Admin-Confirmed Return Order (NO rider internal names exposed)
           const ri = o.returnInfo || {};
           const st = ri.myReturnStatus || 'waiting_pickup_return';
-          let stepBadge = `<span class="bg-red-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">🔄 Return ဖြစ်သည် — ပြန်အပ်ရန် စီစဉ်နေသည်</span>`;
+          const tagPrefix = ri.isCancelReturn ? 'Cancel Return' : 'Return';
+          let stepBadge = `<span class="bg-red-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">🔄 ${tagPrefix} — ပြန်အပ်ရန် စီစဉ်နေသည်</span>`;
           let stepDesc = "MiniTrend Kids မှ ပြန်အပ်ပစ္စည်းကို ဆိုင်သို့ ပြန်လည်ပို့ဆောင်အပ်နှံပေးပါမည်။";
           let cardBorder = "border-red-300 bg-red-50/30";
 
@@ -1149,7 +1453,7 @@
             stepDesc = `ပစ္စည်းပြန်အပ်ပြီးပါပြီ (${ri.deliveredToShopAt || ''})။ လက်ခံရရှိပြီးကြောင်း အောက်ပါခလုတ် နှိပ်အတည်ပြုပေးပါ။`;
             cardBorder = "border-emerald-400 bg-emerald-50/40";
           } else if (st === 'shop_confirmed') {
-            stepBadge = `<span class="bg-gray-700 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">✅ ပြန်အပ်ပစ္စည်း လက်ခံပြီး</span>`;
+            stepBadge = `<span class="bg-gray-700 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">✅ ပြန်အပ်ပစ္စည်း လက်ခံပြီး (History)</span>`;
             stepDesc = `လက်ခံအတည်ပြုပြီးချိန်: ${ri.shopConfirmedAt || ''}`;
             cardBorder = "border-gray-200 bg-white opacity-85";
           }
@@ -1176,7 +1480,7 @@
         }).join('');
       }
 
-      // ---- TAB 4: Payouts ----
+      // ---- TAB 5: Payouts ----
       const unpaidEl = document.getElementById('shop-unpaid-list');
       if (unpaidOrders.length === 0) {
         unpaidEl.innerHTML = `<p class="text-gray-400 py-4 text-center">ငွေရှင်းရန် ကျန်ရှိသော အော်ဒါ မရှိသေးပါ။</p>`;
