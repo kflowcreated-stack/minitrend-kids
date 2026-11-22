@@ -9,7 +9,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="MiniTrend Shop" />
-  <link rel="manifest" href="./manifest.json?v=3" />
+  <link rel="manifest" href="./manifest.json?v=4" />
   <link rel="icon" type="image/png" href="../icon.png?v=3" />
   <link rel="apple-touch-icon" href="../icon.png?v=3" />
 
@@ -206,7 +206,7 @@
         </button>
       </div>
 
-      <!-- TAB 1: ACTIVE ORDERS (CLEAN — SHOWS "ပစ္စည်းကောက်ပြီး" WHEN ADMIN MARKS PICKED UP) -->
+      <!-- TAB 1: ACTIVE ORDERS -->
       <div id="tab-panel-orders" class="space-y-3">
         <div id="shop-orders-list" class="space-y-3.5">
           <p class="text-xs text-gray-400 py-8 text-center bg-white rounded-2xl border">⏳ အော်ဒါစာရင်း ရယူနေပါသည်...</p>
@@ -218,7 +218,7 @@
         <div class="bg-white rounded-2xl border-2 border-amber-300 p-4 shadow-sm space-y-3.5">
           <div>
             <h3 class="font-extrabold text-sm sm:text-base text-gray-900">📥 ပစ္စည်း Stock အသစ်ရောက် / ထပ်တိုး ပို့ရန်</h3>
-            <p class="text-[11px] text-gray-500 mt-0.5">Gallery မှ ပစ္စည်းပုံတိုက်ရိုက်ရွေးပြီး အရေအတွက်၊ Size/အသက် နှင့် Description ရေး၍ Admin ဘက်သို့ ပို့ပေးပါ။</p>
+            <p class="text-[11px] text-gray-500 mt-0.5">Gallery မှ ပစ္စည်းပုံတိုက်ရိုက်ရွေးပြီး အရေအတွက်၊ Size/အသက် နှင့် Description ရေး၍ ပို့ပေးပါ။</p>
           </div>
 
           <form onsubmit="submitShopRestock(event)" class="space-y-3">
@@ -230,7 +230,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
               <div>
                 <label class="block text-xs font-extrabold text-gray-700 mb-1">📂 အမျိုးအစား</label>
-                <select id="rs-category" class="w-full border-2 border-amber-200 rounded-xl px-3 py-2.5 bg-gray-50 font-bold">
+                <select id="rs-category" onchange="updateRestockSizeOptions()" class="w-full border-2 border-amber-200 rounded-xl px-3 py-2.5 bg-gray-50 font-bold">
                   <option value="အင်္ကျီ">အင်္ကျီ</option>
                   <option value="ဝမ်းဆက်">ဝမ်းဆက်</option>
                   <option value="နွေရာသီဝတ်">နွေရာသီဝတ်</option>
@@ -244,14 +244,7 @@
               </div>
               <div>
                 <label class="block text-xs font-extrabold text-gray-700 mb-1">📏 Size / အသက်</label>
-                <select id="rs-size" class="w-full border-2 border-amber-200 rounded-xl px-3 py-2.5 bg-gray-50 font-bold">
-                  <option value="၆ လ - ၁ နှစ်">၆ လ - ၁ နှစ်</option>
-                  <option value="၁ နှစ် - ၂ နှစ်" selected>၁ နှစ် - ၂ နှစ်</option>
-                  <option value="၂ - ၃ နှစ်">၂ - ၃ နှစ်</option>
-                  <option value="၄ - ၅ နှစ်">၄ - ၅ နှစ်</option>
-                  <option value="၆ - ၇ နှစ်">၆ - ၇ နှစ်</option>
-                  <option value="၈ - ၉ နှစ်">၈ - ၉ နှစ်</option>
-                </select>
+                <select id="rs-size" class="w-full border-2 border-amber-200 rounded-xl px-3 py-2.5 bg-gray-50 font-bold"></select>
               </div>
               <div>
                 <label class="block text-xs font-extrabold text-gray-700 mb-1">📦 အရေအတွက် (Qty)</label>
@@ -259,7 +252,6 @@
               </div>
             </div>
 
-            <!-- GALLERY IMAGE PICKER -->
             <div>
               <label class="block text-xs font-extrabold text-gray-700 mb-1">📷 Product ပုံ (Gallery မှ တန်းရွေးရန်)</label>
               <input type="file" id="rs-image-file" accept="image/*" onchange="handleRestockGalleryFile(event)" class="hidden">
@@ -346,7 +338,7 @@
     </div>
   </div>
 
-  <!-- FALLBACK INSTALL GUIDE (FOR IPHONE ONLY OR IF ALREADY INSTALLED) -->
+  <!-- FALLBACK INSTALL GUIDE -->
   <div id="ios-guide-modal" onclick="closeIosGuide()" class="fixed inset-0 bg-black/75 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
     <div onclick="event.stopPropagation()" class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl border-2 border-amber-300 space-y-3">
       <div class="flex justify-between items-center border-b pb-2.5">
@@ -371,7 +363,42 @@
     let currentShopTab = 'orders';
     let restockImageBase64 = "";
     let pushPopupTimer = null;
+    let isHandlingPopState = false;
     window.__shopImgMap = {};
+
+    const AGE_REQUIRED_CATS = ["အင်္ကျီ", "ဝမ်းဆက်", "ဖိနပ်", "ဦးထုတ်", "နွေရာသီဝတ်", "ဘောင်းဘီ"];
+    const STANDARD_AGES = [
+      "၆ လ - ၁ နှစ်", "၁ နှစ် - ၂ နှစ်", "၂ - ၃ နှစ်",
+      "၄ - ၅ နှစ်", "၆ - ၇ နှစ်", "၈ - ၉ နှစ်"
+    ];
+
+    // ==================== BACK BUTTON GUARD (STAYS INSIDE SHOP APP) ====================
+    function pushShopHistoryState(name) {
+      if (isHandlingPopState) return;
+      try { history.pushState({ shopOverlay: name, ts: Date.now() }, ''); } catch (e) {}
+    }
+
+    window.addEventListener('popstate', function() {
+      isHandlingPopState = true;
+      try {
+        const lb = document.getElementById('image-lightbox-modal');
+        if (lb && !lb.classList.contains('hidden')) {
+          lb.classList.add('hidden');
+          return;
+        }
+        const guide = document.getElementById('ios-guide-modal');
+        if (guide && !guide.classList.contains('hidden')) {
+          guide.classList.add('hidden');
+          return;
+        }
+        if (currentShopTab !== 'orders') {
+          switchShopTab('orders', true);
+          return;
+        }
+      } finally {
+        isHandlingPopState = false;
+      }
+    });
 
     function escapeHtml(str) {
       return (str || '').toString()
@@ -390,9 +417,22 @@
       try { localStorage.setItem('mt_shop_session', JSON.stringify(obj)); } catch (e) {}
     }
 
+    function updateRestockSizeOptions() {
+      const cat = document.getElementById('rs-category')?.value || 'အင်္ကျီ';
+      const sizeSel = document.getElementById('rs-size');
+      if (!sizeSel) return;
+
+      if (cat === 'မွေးကင်းစလေးများ') {
+        sizeSel.innerHTML = `<option value="မွေးကင်းစ - ၆ လ">မွေးကင်းစ - ၆ လ</option>`;
+      } else if (AGE_REQUIRED_CATS.includes(cat)) {
+        sizeSel.innerHTML = STANDARD_AGES.map(sz => `<option value="${sz}">${sz}</option>`).join('');
+      } else {
+        sizeSel.innerHTML = `<option value="အသက်မလို">အသက်မလို</option>`;
+      }
+    }
+
     function closeIosGuide() { document.getElementById('ios-guide-modal').classList.add('hidden'); }
 
-    // Direct 1-tap Install in Chrome; if stuck in Android In-App browser, force-open Chrome immediately
     async function triggerShopInstall() {
       if (window.__deferredInstallPrompt) {
         try {
@@ -412,6 +452,7 @@
         return;
       }
       document.getElementById('ios-guide-modal').classList.remove('hidden');
+      pushShopHistoryState('install_guide');
     }
 
     function handleRestockGalleryFile(event) {
@@ -540,11 +581,13 @@
       document.getElementById('lightbox-title').innerText = info.name || '';
       document.getElementById('lightbox-meta').innerText = `🎨 ${info.colorName || '-'} | 📏 ${info.size || '-'} | 📦 x ${info.qty || 1} ခု`;
       document.getElementById('image-lightbox-modal').classList.remove('hidden');
+      pushShopHistoryState('lightbox');
     }
 
     function closeImageLightbox() { document.getElementById('image-lightbox-modal').classList.add('hidden'); }
 
-    function switchShopTab(tabName) {
+    function switchShopTab(tabName, fromBack = false) {
+      const prevTab = currentShopTab;
       currentShopTab = tabName;
       ['orders', 'restock', 'returns', 'payouts'].forEach(t => {
         const panel = document.getElementById('tab-panel-' + t);
@@ -562,6 +605,9 @@
           }
         }
       });
+      if (!fromBack && prevTab === 'orders' && tabName !== 'orders') {
+        pushShopHistoryState('tab_' + tabName);
+      }
     }
 
     async function loadShopDropdown() {
@@ -689,7 +735,7 @@
         localStorage.setItem(lastKey, newestOrdId);
       }
 
-      // ---- TAB 1: Active Orders (NO confirm/OOS buttons; shows "ပစ္စည်းကောက်ပြီး" when Admin marks picked) ----
+      // ---- TAB 1: Active Orders ----
       const ordersEl = document.getElementById('shop-orders-list');
       if (activeOrders.length === 0) {
         ordersEl.innerHTML = `<div class="bg-white rounded-2xl border p-8 text-center text-xs sm:text-sm text-gray-400">🎉 လက်ရှိ အော်ဒါ မရှိသေးပါ</div>`;
@@ -734,7 +780,7 @@
                   <p class="font-extrabold text-xs sm:text-sm text-gray-900 leading-snug">${idx + 1}. ${escapeHtml(it.name)}</p>
                   <div class="flex flex-wrap gap-1">
                     <span class="bg-purple-100 text-purple-800 px-1.5 py-0.5 rounded-md text-[10px] font-extrabold">🎨 ${escapeHtml(it.colorName || 'မူရင်း')}</span>
-                    <span class="bg-pink-100 text-pink-800 px-1.5 py-0.5 rounded-md text-[10px] font-extrabold">📏 ${escapeHtml(it.size || '-')}</span>
+                    ${it.size && it.size !== 'အသက်မလို' ? `<span class="bg-pink-100 text-pink-800 px-1.5 py-0.5 rounded-md text-[10px] font-extrabold">📏 ${escapeHtml(it.size)}</span>` : ''}
                     <span class="bg-gray-900 text-white px-2 py-0.5 rounded-md text-[10px] font-extrabold">x ${it.qty} ခု</span>
                   </div>
                   <p class="text-[11px] font-bold text-gray-600">${(Number(it.price || 0) * Number(it.qty || 1)).toLocaleString()} ကျပ်</p>
@@ -772,7 +818,7 @@
           const isApp = r.status === 'Approved';
           const isRej = r.status === 'Rejected';
           const badge = isApp
-            ? `<span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full text-[10px] font-extrabold">✅ Admin အတည်ပြုပြီး</span>`
+            ? `<span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full text-[10px] font-extrabold">✅ Approved</span>`
             : (isRej
               ? `<span class="bg-red-100 text-red-800 px-2 py-0.5 rounded-full text-[10px] font-extrabold">❌ ပယ်ချထား</span>`
               : `<span class="bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full text-[10px] font-extrabold">⏳ Admin စစ်ဆေးဆဲ</span>`);
@@ -898,7 +944,7 @@
       const saved = getSavedShopSession();
       if (!saved) return;
       const btn = document.getElementById('btn-submit-restock');
-      btn.disabled = true; btn.innerText = "⏳ ပုံနှင့်စာရင်း ပို့နေပါသည်...";
+      btn.disabled = true; btn.innerText = "⏳ ပို့နေပါသည်...";
 
       try {
         await fetch(APPS_SCRIPT_URL, {
@@ -924,7 +970,7 @@
         const statusEl = document.getElementById('rs-img-status');
         statusEl.innerText = 'ပုံမရွေးရသေးပါ (Gallery မှ ရွေးထည့်နိုင်သည်)';
         statusEl.className = 'text-[11px] font-bold text-gray-500';
-        alert('✅ Admin ဘက်သို့ Stock ထပ်တိုး ပို့ပြီးပါပြီ! Admin အတည်ပြုသည်နှင့် Sheet နှင့် App တွင် Update ဖြစ်သွားပါမည်။');
+        alert("MiniTrend kids သို့ Stock ထပ်တိုးပို့ပြီးပါပြီ၊ Admin မှ စစ်ဆေးပြီး approve လုပ်ပါမည်");
         setTimeout(() => loadShopDashboard(false), 1200);
       } catch (err) {
         alert("⚠️ ပေးပို့ရာတွင် အမှားရှိနေပါသည်။");
@@ -956,6 +1002,9 @@
     }
 
     function initShopApp() {
+      try { history.replaceState({ shopHome: true }, ''); } catch (e) {}
+      updateRestockSizeOptions();
+
       if (isStandaloneApp()) {
         document.getElementById('btn-shop-install')?.classList.add('hidden');
         document.getElementById('btn-shop-install-login')?.classList.add('hidden');
