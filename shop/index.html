@@ -9,7 +9,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="MiniTrend Shop" />
-  <link rel="manifest" href="./manifest.json?v=1" />
+  <link rel="manifest" href="./manifest.json?v=2" />
   <link rel="icon" type="image/png" href="../icon.png?v=3" />
   <link rel="apple-touch-icon" href="../icon.png?v=3" />
 
@@ -33,12 +33,16 @@
       window.__deferredInstallPrompt = e;
       var btn = document.getElementById('btn-shop-install');
       if (btn && !isStandaloneApp()) btn.classList.remove('hidden');
+      var btnLogin = document.getElementById('btn-shop-install-login');
+      if (btnLogin && !isStandaloneApp()) btnLogin.classList.remove('hidden');
     });
 
     window.addEventListener('appinstalled', function() {
       window.__deferredInstallPrompt = null;
       var btn = document.getElementById('btn-shop-install');
       if (btn) btn.classList.add('hidden');
+      var btnLogin = document.getElementById('btn-shop-install-login');
+      if (btnLogin) btnLogin.classList.add('hidden');
     });
   </script>
 
@@ -74,6 +78,15 @@
 
   <script>
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzjiat7rNkOGkQYjf3RT6rC4g5AdXiVtraecqUTG8wXcu4l6Dm1mmtnXpVhaxjAzsrd/exec";
+
+    const SHOP_CATEGORIES = [
+      "ဝမ်းဆက်", "နွေရာသီဝတ်", "အင်္ကျီ", "ဘောင်းဘီ", "ဦးထုတ်",
+      "ဖိနပ်", "မွေးကင်းစလေးများ", "သင်ကြားရေး", "ကစားစရာ"
+    ];
+    const SHOP_SIZES = [
+      "၆ လ - ၁ နှစ်", "၁ နှစ် - ၂ နှစ်", "၂ - ၃ နှစ်",
+      "၄ - ၅ နှစ်", "၆ - ၇ နှစ်", "၈ - ၉ နှစ်"
+    ];
 
     const FIREBASE_CONFIG = {
       apiKey: "AIzaSyDyb--Qc9tic7g8GOzVWYi8vpLMSfTaI5U",
@@ -132,8 +145,8 @@
       </form>
 
       <div class="mt-4 pt-3 border-t border-gray-100 text-center">
-        <button type="button" id="btn-shop-install-login" onclick="triggerShopInstall()" class="hidden text-xs font-extrabold text-amber-700 bg-amber-50 border border-amber-200 px-3.5 py-2 rounded-xl">
-          📲 ဤဖုန်းတွင် Shop App ထည့်သွင်းမည်
+        <button type="button" id="btn-shop-install-login" onclick="triggerShopInstall()" class="bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-extrabold px-3.5 py-2 rounded-xl">
+          📲 ဤဖုန်းတွင် Shop App ဒေါင်းလုဒ်ဆွဲမည်
         </button>
       </div>
     </div>
@@ -149,7 +162,7 @@
           <p id="shop-header-meta" class="text-[11px] text-amber-100 font-bold mt-0.5">ကော်မရှင်: 5% | ဆိုင်ရငွေ: 95%</p>
         </div>
         <div class="flex flex-wrap gap-1.5">
-          <button type="button" id="btn-shop-install" onclick="triggerShopInstall()" class="hidden bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-extrabold px-3 py-2 rounded-xl shadow-sm">📲 App သွင်း</button>
+          <button type="button" id="btn-shop-install" onclick="triggerShopInstall()" class="bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-extrabold px-3 py-2 rounded-xl shadow-sm">📲 App သွင်း</button>
           <button type="button" onclick="connectShopFirebase()" id="btn-shop-fcm" class="bg-amber-300 hover:bg-amber-200 text-gray-900 text-xs font-extrabold px-3 py-2 rounded-xl shadow-sm">🔔 Noti ချိတ်မည်</button>
           <button type="button" onclick="loadShopDashboard(false)" id="btn-shop-refresh" class="bg-white/20 hover:bg-white/30 text-white text-xs font-bold px-3 py-2 rounded-xl">🔄 ပြန်စစ်</button>
           <button type="button" onclick="logoutShop()" class="bg-red-600/90 hover:bg-red-700 text-white text-xs font-bold px-3 py-2 rounded-xl">🔒 ထွက်</button>
@@ -175,15 +188,18 @@
         </button>
       </div>
 
-      <!-- Navigation Tabs -->
-      <div class="grid grid-cols-3 gap-1.5 bg-white p-1.5 rounded-2xl border border-amber-200 shadow-sm">
-        <button type="button" onclick="switchShopTab('orders')" id="tab-btn-orders" class="py-2.5 px-2 rounded-xl text-xs font-extrabold bg-amber-600 text-white shadow-sm transition">
-          📦 အော်ဒါများ <span id="tab-badge-orders" class="ml-0.5 bg-white/25 px-1.5 py-0.5 rounded-full text-[10px]">0</span>
+      <!-- Navigation Tabs (4 Tabs) -->
+      <div class="flex gap-1.5 overflow-x-auto no-scrollbar bg-white p-1.5 rounded-2xl border border-amber-200 shadow-sm">
+        <button type="button" onclick="switchShopTab('orders')" id="tab-btn-orders" class="flex-1 py-2.5 px-2.5 rounded-xl text-xs font-extrabold bg-amber-600 text-white shadow-sm transition shrink-0">
+          📦 အော်ဒါ <span id="tab-badge-orders" class="ml-0.5 bg-white/25 px-1.5 py-0.5 rounded-full text-[10px]">0</span>
         </button>
-        <button type="button" onclick="switchShopTab('returns')" id="tab-btn-returns" class="py-2.5 px-2 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 transition">
+        <button type="button" onclick="switchShopTab('restock')" id="tab-btn-restock" class="flex-1 py-2.5 px-2.5 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 transition shrink-0">
+          📥 Stock ပို့ရန်
+        </button>
+        <button type="button" onclick="switchShopTab('returns')" id="tab-btn-returns" class="flex-1 py-2.5 px-2.5 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 transition shrink-0">
           🔄 COD ငြင်း <span id="tab-badge-returns" class="ml-0.5 bg-red-100 text-red-700 px-1.5 py-0.5 rounded-full text-[10px]">0</span>
         </button>
-        <button type="button" onclick="switchShopTab('payouts')" id="tab-btn-payouts" class="py-2.5 px-2 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 transition">
+        <button type="button" onclick="switchShopTab('payouts')" id="tab-btn-payouts" class="flex-1 py-2.5 px-2.5 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 transition shrink-0">
           💰 95% စာရင်း
         </button>
       </div>
@@ -198,17 +214,90 @@
         </div>
       </div>
 
-      <!-- TAB 2: LIVE COD REJECTION / RETURN TRACKING -->
+      <!-- TAB 2: NEW ARRIVAL / RESTOCK SUBMISSION TO ADMIN -->
+      <div id="tab-panel-restock" class="hidden space-y-4">
+        <div class="bg-white rounded-2xl border-2 border-amber-300 p-4 shadow-sm space-y-3.5">
+          <div>
+            <h3 class="font-extrabold text-sm sm:text-base text-gray-900">📥 ပစ္စည်း Stock အသစ်ရောက် / ထပ်တိုး ပို့ရန်</h3>
+            <p class="text-[11px] text-gray-500 mt-0.5">ပစ္စည်းအသစ်ရောက်ခြင်း သို့မဟုတ် Stock ထပ်တိုးခြင်းကို ရေးသားပို့ပေးပါ — Admin မှ အတည်ပြုသည်နှင့် Sheet နှင့် App တွင် အလိုအလျောက် Update ဖြစ်သွားပါမည်။</p>
+          </div>
+
+          <form onsubmit="submitShopRestock(event)" class="space-y-3">
+            <div>
+              <label class="block text-xs font-extrabold text-gray-700 mb-1">🧸 ပစ္စည်းအမည်</label>
+              <input type="text" id="rs-name" required placeholder="ဥပမာ - ကလေးဝတ် ချည်သားအင်္ကျီလက်တို" class="w-full border-2 border-amber-200 rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-amber-500">
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+              <div>
+                <label class="block text-xs font-extrabold text-gray-700 mb-1">📂 အမျိုးအစား</label>
+                <select id="rs-category" class="w-full border-2 border-amber-200 rounded-xl px-3 py-2.5 bg-gray-50 font-bold">
+                  <option value="အင်္ကျီ">အင်္ကျီ</option>
+                  <option value="ဝမ်းဆက်">ဝမ်းဆက်</option>
+                  <option value="နွေရာသီဝတ်">နွေရာသီဝတ်</option>
+                  <option value="ဘောင်းဘီ">ဘောင်းဘီ</option>
+                  <option value="ဦးထုတ်">ဦးထုတ်</option>
+                  <option value="ဖိနပ်">ဖိနပ်</option>
+                  <option value="မွေးကင်းစလေးများ">မွေးကင်းစလေးများ</option>
+                  <option value="သင်ကြားရေး">သင်ကြားရေး</option>
+                  <option value="ကစားစရာ">ကစားစရာ</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-extrabold text-gray-700 mb-1">📏 Size / အသက်</label>
+                <select id="rs-size" class="w-full border-2 border-amber-200 rounded-xl px-3 py-2.5 bg-gray-50 font-bold">
+                  <option value="၆ လ - ၁ နှစ်">၆ လ - ၁ နှစ်</option>
+                  <option value="၁ နှစ် - ၂ နှစ်" selected>၁ နှစ် - ၂ နှစ်</option>
+                  <option value="၂ - ၃ နှစ်">၂ - ၃ နှစ်</option>
+                  <option value="၄ - ၅ နှစ်">၄ - ၅ နှစ်</option>
+                  <option value="၆ - ၇ နှစ်">၆ - ၇ နှစ်</option>
+                  <option value="၈ - ၉ နှစ်">၈ - ၉ နှစ်</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-extrabold text-gray-700 mb-1">📦 အရေအတွက် (Qty)</label>
+                <input type="number" id="rs-qty" required min="1" value="10" class="w-full border-2 border-amber-200 rounded-xl px-3 py-2.5 font-extrabold">
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-extrabold text-gray-700 mb-1">🖼️ Product ပုံ Link (ရှိပါက ထည့်ပါ)</label>
+              <div class="flex gap-2 items-center">
+                <input type="url" id="rs-image" oninput="previewRestockImg()" placeholder="https://... ပုံ Link ထည့်ပါ" class="flex-1 border-2 border-amber-200 rounded-xl px-3 py-2.5">
+                <img id="rs-img-preview" src="../icon.png?v=3" class="w-12 h-12 rounded-xl object-cover border bg-gray-50 shrink-0">
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-extrabold text-gray-700 mb-1">📝 ပစ္စည်းအကြောင်းအရာ (Description)</label>
+              <textarea id="rs-desc" rows="2" placeholder="အထည်သား၊ အရောင်၊ အသုံးပြုပုံ သို့မဟုတ် အသေးစိတ်အချက်အလက်..." class="w-full border-2 border-amber-200 rounded-xl px-3.5 py-2 focus:outline-none focus:border-amber-500"></textarea>
+            </div>
+
+            <button type="submit" id="btn-submit-restock" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-extrabold py-3 rounded-xl shadow text-sm">
+              📤 Admin ဘက်သို့ Stock ထပ်တိုး ပို့မည်
+            </button>
+          </form>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-gray-200 p-4 shadow-sm space-y-2.5">
+          <h4 class="font-extrabold text-xs sm:text-sm text-gray-900">📋 ပို့ထားသော Stock ထပ်တိုး မှတ်တမ်းများ</h4>
+          <div id="shop-restock-history" class="divide-y text-xs">
+            <p class="text-gray-400 py-3 text-center">ပို့ထားသော မှတ်တမ်း မရှိသေးပါ။</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: LIVE COD REJECTION / RETURN TRACKING -->
       <div id="tab-panel-returns" class="hidden space-y-3">
         <div class="bg-red-50 border border-red-200 rounded-xl px-3.5 py-2.5 text-[11px] text-red-900 font-bold leading-relaxed">
-          🔄 ဝယ်သူဘက်မှ အိမ်ရောက် COD ငြင်းလိုက်သော ပစ္စည်းများကို ဤနေရာတွင် Live မြင်ရပါမည်။ 95% ငွေစာရင်းမှ အလိုအလျောက် 0 ကျပ် ပြောင်းပေးပြီး MiniTrend ဝန်ထမ်းမှ ပစ္စည်းပြန်လာအပ်ချိန် <b>"✅ ပြန်အပ်ပစ္စည်း လက်ခံပြီး"</b> ကို နှိပ်အတည်ပြုပေးပါ။
+          🔄 ဝယ်သူဘက်မှ အိမ်ရောက် COD ငြင်းလိုက်သော ပစ္စည်းများကို ဤနေရာတွင် Live မြင်ရပါမည်။ 95% ငွေစာရင်းမှ အလိုအလျောက် 0 ကျပ် ပြောင်းပေးပြီး ဝန်ထမ်းမှ ပစ္စည်းပြန်လာအပ်ချိန် <b>"✅ ပြန်အပ်ပစ္စည်း လက်ခံပြီး"</b> ကို နှိပ်အတည်ပြုပေးပါ။
         </div>
         <div id="shop-returns-list" class="space-y-3.5">
           <p class="text-xs text-gray-400 py-8 text-center bg-white rounded-2xl border">COD ငြင်း (Return) ပစ္စည်း မရှိပါ။</p>
         </div>
       </div>
 
-      <!-- TAB 3: 95% PAYOUTS & SETTLEMENT HISTORY -->
+      <!-- TAB 4: 95% PAYOUTS & SETTLEMENT HISTORY -->
       <div id="tab-panel-payouts" class="hidden space-y-4">
         <div class="grid grid-cols-2 gap-3">
           <div class="bg-white border-2 border-emerald-200 rounded-2xl p-3.5 shadow-sm">
@@ -274,16 +363,22 @@
     </div>
   </div>
 
-  <!-- ================= IOS INSTALL GUIDE MODAL ================= -->
+  <!-- ================= STANDALONE APP INSTALL GUIDE MODAL ================= -->
   <div id="ios-guide-modal" onclick="closeIosGuide()" class="fixed inset-0 bg-black/75 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
     <div onclick="event.stopPropagation()" class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl border-2 border-amber-300 space-y-3">
       <div class="flex justify-between items-center border-b pb-2.5">
         <h3 class="text-sm font-extrabold text-gray-900">📲 Shop App ထည့်သွင်းနည်း</h3>
         <button type="button" onclick="closeIosGuide()" class="text-gray-400 font-bold text-xl px-1">✕</button>
       </div>
-      <div class="space-y-2 text-xs text-gray-700 leading-relaxed">
-        <p><b>🍎 iPhone (Safari):</b> အောက်ခြေ <b>Share (⬆️)</b> → <b>Add to Home Screen (➕)</b> → <b>Add</b> နှိပ်ပါ။</p>
-        <p><b>🤖 Android (Chrome):</b> အပေါ်ညာဘက် <b>အစက် ၃ စက် (⋮)</b> → <b>Add to Home screen / Install app</b> နှိပ်ပါ။</p>
+      <div class="space-y-2.5 text-xs text-gray-700 leading-relaxed">
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 space-y-1">
+          <p class="font-extrabold text-gray-900">🤖 Android (Chrome):</p>
+          <p>အပေါ်ညာဘက် <b>အစက် ၃ စက် (⋮)</b> → <b>Install app / Add to Home screen</b> နှိပ်ပါ။</p>
+        </div>
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 space-y-1">
+          <p class="font-extrabold text-gray-900">🍎 iPhone (Safari):</p>
+          <p>အောက်ခြေ <b>Share (⬆️)</b> → <b>Add to Home Screen (➕)</b> → <b>Add</b> နှိပ်ပါ။</p>
+        </div>
       </div>
       <button type="button" onclick="closeIosGuide()" class="w-full bg-gray-900 text-white font-extrabold py-2.5 rounded-xl text-xs">နားလည်ပါပြီ</button>
     </div>
@@ -428,21 +523,27 @@
       document.getElementById('image-lightbox-modal').classList.add('hidden');
     }
 
+    function previewRestockImg() {
+      const url = (document.getElementById('rs-image').value || '').trim();
+      const img = document.getElementById('rs-img-preview');
+      img.src = /^https?:\/\//i.test(url) ? url : '../icon.png?v=3';
+    }
+
     function switchShopTab(tabName) {
       currentShopTab = tabName;
-      ['orders', 'returns', 'payouts'].forEach(t => {
+      ['orders', 'restock', 'returns', 'payouts'].forEach(t => {
         const panel = document.getElementById('tab-panel-' + t);
         const btn = document.getElementById('tab-btn-' + t);
         if (panel) panel.classList.toggle('hidden', t !== tabName);
         if (btn) {
           if (t === tabName) {
             btn.className = t === 'returns'
-              ? 'py-2.5 px-2 rounded-xl text-xs font-extrabold bg-red-600 text-white shadow-sm transition'
+              ? 'flex-1 py-2.5 px-2.5 rounded-xl text-xs font-extrabold bg-red-600 text-white shadow-sm transition shrink-0'
               : (t === 'payouts'
-                ? 'py-2.5 px-2 rounded-xl text-xs font-extrabold bg-emerald-600 text-white shadow-sm transition'
-                : 'py-2.5 px-2 rounded-xl text-xs font-extrabold bg-amber-600 text-white shadow-sm transition');
+                ? 'flex-1 py-2.5 px-2.5 rounded-xl text-xs font-extrabold bg-emerald-600 text-white shadow-sm transition shrink-0'
+                : 'flex-1 py-2.5 px-2.5 rounded-xl text-xs font-extrabold bg-amber-600 text-white shadow-sm transition shrink-0');
           } else {
-            btn.className = 'py-2.5 px-2 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 transition';
+            btn.className = 'flex-1 py-2.5 px-2.5 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 transition shrink-0';
           }
         }
       });
@@ -458,7 +559,7 @@
           sel.innerHTML = `<option value="">-- ဆိုင်အမည် ရွေးချယ်ပါ --</option>` +
             data.shops.map(s => `<option value="${escapeHtml(s.id)}">${escapeHtml(s.id)} — ${escapeHtml(s.name)}</option>`).join('');
         } else {
-          sel.innerHTML = `<option value="">ဆိုင်စာရင်း မထည့်ရသေးပါ (Admin ထံ ဆက်သွယ်ပါ)</option>`;
+          sel.innerHTML = `<option value="">ဆိုင်စာရင်း မထည့်ရသေးပါ</option>`;
         }
       } catch (e) {
         sel.innerHTML = `<option value="">⚠️ အင်တာနက် ချိတ်ဆက်မှု စစ်ဆေးပါ</option>`;
@@ -536,6 +637,7 @@
       const returnOrders = data.returnOrders || [];
       const unpaidOrders = data.unpaidPayoutOrders || [];
       const settledOrders = data.settledPayoutOrders || [];
+      const restockHistory = data.restockHistory || [];
       const unpaidTotal = Number(data.unpaidPayoutTotal || 0);
       const settledTotal = Number(data.settledPayoutTotal || 0);
 
@@ -562,7 +664,6 @@
       document.getElementById('payout-unpaid-sum').innerText = unpaidTotal.toLocaleString() + " ကျပ်";
       document.getElementById('payout-settled-sum').innerText = settledTotal.toLocaleString() + " ကျပ်";
 
-      // Check for new order or new COD rejection for sound alert
       const shopId = data.shop ? data.shop.id : '';
       if (activeOrders.length > 0 && shopId) {
         const newestOrdId = activeOrders[0].orderId;
@@ -583,7 +684,7 @@
         localStorage.setItem(lastRetKey, newestRetId);
       }
 
-      // ---- Render TAB 1: Active Orders ----
+      // ---- TAB 1: Active Orders ----
       const ordersEl = document.getElementById('shop-orders-list');
       if (activeOrders.length === 0) {
         ordersEl.innerHTML = `<div class="bg-white rounded-2xl border p-8 text-center text-xs sm:text-sm text-gray-400">🎉 လက်ရှိ လုပ်ဆောင်ရန် အော်ဒါ မရှိသေးပါ</div>`;
@@ -663,24 +764,49 @@
                 </div>
                 <div class="flex flex-wrap gap-1">${shopBadge} ${pickupInfoBadge}</div>
               </div>
-
               ${o.shopNote ? `<p class="text-[11px] font-bold text-red-700 bg-red-50 border border-red-200 rounded-lg px-2.5 py-1.5">📝 မှတ်ချက်: ${escapeHtml(o.shopNote)}</p>` : ''}
               ${extraStatusNotice}
-
               <div class="space-y-2">${itemsHtml}</div>
-
               <div class="bg-amber-50/70 border border-amber-200 rounded-xl px-3 py-2 flex flex-wrap justify-between items-center gap-2 text-xs">
                 <span class="text-gray-700 font-bold">ပစ္စည်းတန်ဖိုး: ${Number(o.gross || 0).toLocaleString()} Ks <span class="text-gray-500">(-${o.commissionRate}%: ${Number(o.commission || 0).toLocaleString()})</span></span>
                 <span class="font-extrabold text-emerald-700">💰 ဆိုင်ရမည့်ငွေ (${100 - Number(o.commissionRate || 5)}%): ${Number(o.payout || 0).toLocaleString()} Ks</span>
               </div>
-
               ${actionBtnsHtml}
             </div>
           `;
         }).join('');
       }
 
-      // ---- Render TAB 2: Live COD Rejections / Returns ----
+      // ---- TAB 2: Restock History ----
+      const rsHistEl = document.getElementById('shop-restock-history');
+      if (restockHistory.length === 0) {
+        rsHistEl.innerHTML = `<p class="text-gray-400 py-3 text-center">ပို့ထားသော မှတ်တမ်း မရှိသေးပါ။</p>`;
+      } else {
+        rsHistEl.innerHTML = restockHistory.map(r => {
+          const isApp = r.status === 'Approved';
+          const isRej = r.status === 'Rejected';
+          const badge = isApp
+            ? `<span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full text-[10px] font-extrabold">✅ Admin အတည်ပြုပြီး</span>`
+            : (isRej
+              ? `<span class="bg-red-100 text-red-800 px-2 py-0.5 rounded-full text-[10px] font-extrabold">❌ ပယ်ချထား</span>`
+              : `<span class="bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full text-[10px] font-extrabold">⏳ Admin စစ်ဆေးဆဲ</span>`);
+          return `
+            <div class="py-2.5 flex items-center gap-2.5">
+              ${r.image ? `<img src="${escapeHtml(r.image)}" class="w-12 h-12 rounded-xl object-cover border shrink-0">` : ''}
+              <div class="flex-1 min-w-0">
+                <div class="flex justify-between items-center gap-1">
+                  <p class="font-extrabold text-gray-900 truncate">${escapeHtml(r.productName)}</p>
+                  ${badge}
+                </div>
+                <p class="text-[11px] font-bold text-gray-600">${escapeHtml(r.category)} | 📏 ${escapeHtml(r.size)} | <b>+${r.qty} ခု</b></p>
+                ${r.description ? `<p class="text-[10px] text-gray-500 truncate">${escapeHtml(r.description)}</p>` : ''}
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // ---- TAB 3: Live COD Rejections / Returns ----
       const returnsEl = document.getElementById('shop-returns-list');
       if (returnOrders.length === 0) {
         returnsEl.innerHTML = `<div class="bg-white rounded-2xl border p-8 text-center text-xs sm:text-sm text-gray-400">✅ လက်ရှိ COD ငြင်း (Return) ပစ္စည်း မရှိပါ</div>`;
@@ -748,7 +874,7 @@
         }).join('');
       }
 
-      // ---- Render TAB 3: Payouts ----
+      // ---- TAB 4: Payouts ----
       const unpaidEl = document.getElementById('shop-unpaid-list');
       if (unpaidOrders.length === 0) {
         unpaidEl.innerHTML = `<p class="text-gray-400 py-4 text-center">ငွေရှင်းရန် ကျန်ရှိသော အော်ဒါ မရှိသေးပါ။</p>`;
@@ -780,6 +906,41 @@
           </div>
         `).join('');
       }
+    }
+
+    async function submitShopRestock(e) {
+      e.preventDefault();
+      const saved = getSavedShopSession();
+      if (!saved) return;
+      const btn = document.getElementById('btn-submit-restock');
+      btn.disabled = true; btn.innerText = "⏳ ပို့နေပါသည်...";
+
+      try {
+        await fetch(APPS_SCRIPT_URL, {
+          method: "POST", mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "shopSubmitRestock",
+            shopId: saved.id,
+            pin: saved.pin,
+            productName: document.getElementById('rs-name').value.trim(),
+            category: document.getElementById('rs-category').value,
+            size: document.getElementById('rs-size').value,
+            qty: parseInt(document.getElementById('rs-qty').value, 10) || 1,
+            image: document.getElementById('rs-image').value.trim(),
+            description: document.getElementById('rs-desc').value.trim()
+          })
+        });
+        ['rs-name', 'rs-image', 'rs-desc'].forEach(id => { document.getElementById(id).value = ''; });
+        document.getElementById('rs-qty').value = '10';
+        document.getElementById('rs-img-preview').src = '../icon.png?v=3';
+        alert('✅ Admin ဘက်သို့ Stock ထပ်တိုး စာရင်းပို့ပြီးပါပြီ! Admin အတည်ပြုသည်နှင့် Sheet နှင့် App တွင် Update ဖြစ်သွားပါမည်။');
+        setTimeout(() => loadShopDashboard(false), 1000);
+      } catch (err) {
+        alert("⚠️ ပေးပို့ရာတွင် အမှားရှိနေပါသည်။");
+      }
+
+      btn.disabled = false; btn.innerText = "📤 Admin ဘက်သို့ Stock ထပ်တိုး ပို့မည်";
     }
 
     async function confirmShopOrder(orderId, btnEl) {
@@ -894,11 +1055,6 @@
     }
 
     function initShopApp() {
-      if (!isStandaloneApp() && isIOSDevice()) {
-        document.getElementById('btn-shop-install').classList.remove('hidden');
-        document.getElementById('btn-shop-install-login').classList.remove('hidden');
-      }
-
       const saved = getSavedShopSession();
       if (saved && saved.id && saved.pin) {
         showDashboardScreen();
