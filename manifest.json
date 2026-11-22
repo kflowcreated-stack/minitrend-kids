@@ -1,27 +1,24 @@
 {
-  "id": "./?role=customer",
+  "id": "./",
   "name": "MiniTrend Kids",
-  "short_name": "MiniTrend",
-  "description": "ကလေးဖက်ရှင်နှင့် အသုံးအဆောင်များ",
-  "start_url": "./?role=customer",
+  "short_name": "MiniTrend Kids",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#fff1f2",
-  "theme_color": "#db2777",
-  "orientation": "portrait",
-  "gcm_sender_id": "103953800507",
+  "background_color": "#ffffff",
+  "theme_color": "#ec4899",
   "icons": [
     {
       "src": "./icon.png?v=3",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
       "src": "./icon.png?v=3",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     }
   ]
 }
