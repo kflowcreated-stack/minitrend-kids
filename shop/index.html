@@ -9,7 +9,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="MiniTrend Shop" />
-  <link rel="manifest" href="./manifest.json?v=7" />
+  <link rel="manifest" href="./manifest.json?v=8" />
   <link rel="icon" type="image/png" href="../icon.png?v=3" />
   <link rel="apple-touch-icon" href="../icon.png?v=3" />
 
@@ -171,6 +171,15 @@
         </div>
       </div>
 
+      <!-- AUTO MUTE QUIET HOURS BANNER (6:00 PM - 8:00 AM MMT) -->
+      <div id="shop-quiet-banner" class="hidden bg-slate-900 text-amber-200 border-2 border-slate-700 rounded-2xl px-3.5 py-2.5 text-xs font-bold flex items-center gap-2.5 shadow-sm">
+        <span class="text-lg shrink-0">🌙</span>
+        <div class="leading-relaxed">
+          <p class="font-extrabold text-white">ညဘက် Auto Mute ဖွင့်ထားပါသည် (ညနေ ၆:၀၀ မှ နံနက် ၈:၀၀)</p>
+          <p class="text-[11px] text-slate-300">ယခုအချိန်အတွင်း Notification အသံပိတ်ထားမည်ဖြစ်ပြီး ညကဝင်ထားသော အော်ဒါများကို နံနက် ၈:၀၀ နာရီတွင် စုပေါင်းအကြောင်းကြားပေးပါမည်။</p>
+        </div>
+      </div>
+
       <!-- 3 Stat Cards -->
       <div class="grid grid-cols-3 gap-2.5 sm:gap-3.5">
         <button type="button" onclick="switchShopTab('orders')" class="bg-white border-2 border-amber-200 p-3 rounded-2xl shadow-sm text-center hover:border-amber-400 transition">
@@ -209,14 +218,14 @@
         </button>
       </div>
 
-      <!-- TAB 1: ACTIVE ORDERS WITH STOCK AVAILABLE / OUT OF STOCK QUICK BUTTONS -->
+      <!-- TAB 1: ACTIVE ORDERS (CLEAN — NO DELIVERY INTERNAL STATUSES, NO STOCK CHECK BUTTONS) -->
       <div id="tab-panel-orders" class="space-y-3">
         <div id="shop-orders-list" class="space-y-3.5">
           <p class="text-xs text-gray-400 py-8 text-center bg-white rounded-2xl border">⏳ အော်ဒါစာရင်း ရယူနေပါသည်...</p>
         </div>
       </div>
 
-      <!-- TAB 2 (NEW): MY STOCK HISTORY & DIRECT +/- ADJUSTMENT FOR WALK-IN SALES -->
+      <!-- TAB 2: MY STOCK HISTORY & DIRECT +/- ADJUSTMENT FOR WALK-IN SALES -->
       <div id="tab-panel-mystock" class="hidden space-y-3">
         <div class="bg-blue-50 border border-blue-200 rounded-xl px-3.5 py-2.5 text-[11px] text-blue-950 font-bold leading-relaxed">
           📊 Admin ထံ ပို့ထားသော မိမိဆိုင်ပစ္စည်းများ၏ လက်ရှိ Stock မှတ်တမ်း ဖြစ်ပါသည်။ ဆိုင်တွင် လာဝယ်သူအား ရောင်းမိလိုက်ပါက <b>"−"</b> နှိပ်၍ ချက်ချင်းလျှော့ထားနိုင်သလို ပစ္စည်းထပ်ရောက်ပါက <b>"+"</b> နှိပ်၍ တိုးနိုင်ပါသည်။
@@ -400,28 +409,6 @@
     </div>
   </div>
 
-  <!-- OUT-OF-STOCK QUICK REPORT MODAL (REQ 3) -->
-  <div id="oos-modal" onclick="closeOosModal()" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
-    <div onclick="event.stopPropagation()" class="bg-white rounded-2xl max-w-md w-full p-5 shadow-2xl border-2 border-red-300 space-y-3.5">
-      <div class="flex justify-between items-center border-b pb-2.5">
-        <h3 class="text-sm sm:text-base font-extrabold text-red-700">❌ Stock မရှိကြောင်း Admin ထံ ပြန်ကြားရန်</h3>
-        <button type="button" onclick="closeOosModal()" class="text-gray-400 hover:text-gray-800 font-bold text-xl px-1">✕</button>
-      </div>
-      <p id="oos-order-label" class="text-xs font-extrabold text-gray-800"></p>
-      <div class="space-y-1.5">
-        <p class="text-xs font-bold text-gray-600">Stock ကုန်နေသော ပစ္စည်းကို အမှန်ခြစ် ရွေးချယ်ပါ:</p>
-        <div id="oos-items-checklist" class="space-y-1.5 max-h-48 overflow-y-auto"></div>
-      </div>
-      <div>
-        <input type="text" id="oos-extra-note" placeholder="📝 မှတ်ချက် (ဥပမာ - အခြားအရောင်တော့ရှိသည်)" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-xs">
-      </div>
-      <div class="grid grid-cols-2 gap-2">
-        <button type="button" onclick="closeOosModal()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2.5 rounded-xl text-xs">မလုပ်တော့ပါ</button>
-        <button type="button" id="btn-submit-oos" onclick="submitOutOfStockReport()" class="bg-red-600 hover:bg-red-700 text-white font-extrabold py-2.5 rounded-xl text-xs shadow">📤 Admin ထံ ပို့မည်</button>
-      </div>
-    </div>
-  </div>
-
   <!-- FULL-SCREEN IMAGE LIGHTBOX -->
   <div id="image-lightbox-modal" onclick="closeImageLightbox()" class="fixed inset-0 bg-black/90 z-50 hidden flex flex-col items-center justify-center p-4 backdrop-blur-sm">
     <button type="button" onclick="closeImageLightbox()" class="fixed noti-safe-top right-3 z-50 bg-white/20 hover:bg-white/35 text-white w-10 h-10 rounded-full flex items-center justify-center text-xl font-bold shadow-lg">✕</button>
@@ -459,11 +446,9 @@
     let currentShopTab = 'orders';
     let restockMode = 'new';
     let shopProductsCache = [];
-    let shopActiveOrdersCache = [];
     let selectedExistingProduct = null;
     let existingImageUrl = "";
     let restockImageBase64 = "";
-    let oosTargetOrderId = "";
     let pushPopupTimer = null;
     let isHandlingPopState = false;
     window.__shopImgMap = {};
@@ -473,6 +458,20 @@
       "၆ လ - ၁ နှစ်", "၁ နှစ် - ၂ နှစ်", "၂ - ၃ နှစ်",
       "၄ - ၅ နှစ်", "၆ - ၇ နှစ်", "၈ - ၉ နှစ်"
     ];
+
+    // ==================== MYANMAR TIME AUTO MUTE (6:00 PM - 8:00 AM MMT) ====================
+    function isShopQuietHoursMMT() {
+      const mmDate = new Date(Date.now() + (6.5 * 60 * 60 * 1000));
+      const hr = mmDate.getUTCHours();
+      return (hr >= 18 || hr < 8);
+    }
+
+    function updateQuietHoursBanner(serverFlag) {
+      const banner = document.getElementById('shop-quiet-banner');
+      if (!banner) return;
+      const isQuiet = (typeof serverFlag === 'boolean') ? serverFlag : isShopQuietHoursMMT();
+      banner.classList.toggle('hidden', !isQuiet);
+    }
 
     function sizeLabelToIndex(sz) {
       if (!sz || sz === 'အသက်မလို') return 0;
@@ -489,12 +488,6 @@
     window.addEventListener('popstate', function() {
       isHandlingPopState = true;
       try {
-        const oosM = document.getElementById('oos-modal');
-        if (oosM && !oosM.classList.contains('hidden')) {
-          oosM.classList.add('hidden');
-          oosTargetOrderId = "";
-          return;
-        }
         const lb = document.getElementById('image-lightbox-modal');
         if (lb && !lb.classList.contains('hidden')) {
           lb.classList.add('hidden');
@@ -531,101 +524,7 @@
       try { localStorage.setItem('mt_shop_session', JSON.stringify(obj)); } catch (e) {}
     }
 
-    // ==================== REQ 3: ORDER STOCK AVAILABLE / OUT OF STOCK ====================
-    async function shopReportStockAvailable(orderId, btnEl) {
-      const saved = getSavedShopSession();
-      if (!saved) return;
-      if (btnEl) {
-        btnEl.disabled = true;
-        btnEl.className = 'flex-1 bg-emerald-100 text-emerald-800 border-2 border-emerald-400 font-extrabold py-2.5 rounded-xl text-xs';
-        btnEl.innerText = '✅ Stock ရှိ (ပို့ပြီး)';
-      }
-      try {
-        await fetch(APPS_SCRIPT_URL, {
-          method: "POST", mode: "no-cors",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({
-            action: "shopConfirmStock",
-            shopId: saved.id,
-            pin: saved.pin,
-            orderId: orderId,
-            stockStatus: "available"
-          })
-        });
-        showShopBannerNoti(`✅ Admin ထံ ပြန်ကြားပြီး (${orderId})`, "ပစ္စည်း Stock ရှိကြောင်း Admin Panel သို့ အကြောင်းကြားပြီးပါပြီ။");
-        setTimeout(() => loadShopDashboard(false), 900);
-      } catch (e) {
-        alert("⚠️ အင်တာနက်ချိတ်ဆက်မှု စစ်ဆေးပြီး ပြန်နှိပ်ပေးပါ။");
-      }
-    }
-
-    function openOosModal(orderId) {
-      const ord = shopActiveOrdersCache.find(o => o.orderId === orderId);
-      if (!ord) return;
-      oosTargetOrderId = orderId;
-      document.getElementById('oos-order-label').innerText = `🧾 ${orderId} — ⏰ ${ord.dateTime || ''}`;
-      document.getElementById('oos-extra-note').value = '';
-
-      const listEl = document.getElementById('oos-items-checklist');
-      const items = ord.items || [];
-      listEl.innerHTML = items.map((it, idx) => {
-        const szPart = it.size && it.size !== 'အသက်မလို' ? ` (${it.size})` : '';
-        const itemLabel = `${it.name} [${it.colorName || 'မူရင်း'}${szPart}]`;
-        return `
-          <label class="flex items-center gap-2 p-2.5 rounded-xl border border-red-200 bg-red-50/40 cursor-pointer text-xs">
-            <input type="checkbox" class="oos-item-chk w-4 h-4 accent-red-600 shrink-0" value="${escapeHtml(itemLabel)}" checked>
-            <span class="font-extrabold text-gray-900 leading-snug">${escapeHtml(itemLabel)} x${it.qty}</span>
-          </label>
-        `;
-      }).join('');
-
-      document.getElementById('oos-modal').classList.remove('hidden');
-      pushShopHistoryState('oos_modal');
-    }
-
-    function closeOosModal() {
-      document.getElementById('oos-modal').classList.add('hidden');
-      oosTargetOrderId = "";
-    }
-
-    async function submitOutOfStockReport() {
-      const saved = getSavedShopSession();
-      if (!saved || !oosTargetOrderId) return;
-      const checked = [...document.querySelectorAll('.oos-item-chk:checked')].map(el => el.value);
-      if (checked.length === 0) {
-        alert("Stock မရှိသော ပစ္စည်းကို အနည်းဆုံး ၁ ခု ရွေးချယ်ပေးပါ။");
-        return;
-      }
-      const note = document.getElementById('oos-extra-note').value.trim();
-      const btn = document.getElementById('btn-submit-oos');
-      btn.disabled = true; btn.innerText = "⏳ ပို့နေသည်...";
-
-      try {
-        await fetch(APPS_SCRIPT_URL, {
-          method: "POST", mode: "no-cors",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({
-            action: "shopConfirmStock",
-            shopId: saved.id,
-            pin: saved.pin,
-            orderId: oosTargetOrderId,
-            stockStatus: "out_of_stock",
-            outItems: checked.join(", "),
-            note: note
-          })
-        });
-        const sentId = oosTargetOrderId;
-        closeOosModal();
-        showShopBannerNoti(`❌ Stock မရှိကြောင်း ပို့ပြီး (${sentId})`, "Admin မှ ဝယ်သူထံ အခြားပစ္စည်းပြန်ရွေးရန် အကြောင်းကြားပေးပါမည်။");
-        setTimeout(() => loadShopDashboard(false), 900);
-      } catch (e) {
-        alert("⚠️ အင်တာနက်ချိတ်ဆက်မှု စစ်ဆေးပေးပါ။");
-      }
-
-      btn.disabled = false; btn.innerText = "📤 Admin ထံ ပို့မည်";
-    }
-
-    // ==================== REQ 4: MY STOCK HISTORY WITH DIRECT +/- ADJUSTMENT ====================
+    // ==================== MY STOCK HISTORY WITH DIRECT +/- ADJUSTMENT ====================
     function renderMyStockHistory() {
       const box = document.getElementById('shop-mystock-list');
       const badge = document.getElementById('tab-badge-mystock');
@@ -734,7 +633,7 @@
       p.stocks[sizeIdx] = nextVal;
       p.totalStock = p.stocks.reduce((a, b) => a + (parseInt(b, 10) || 0), 0);
       renderMyStockHistory();
-      if (navigator.vibrate) navigator.vibrate(40);
+      if (navigator.vibrate && !isShopQuietHoursMMT()) navigator.vibrate(40);
 
       try {
         await fetch(APPS_SCRIPT_URL, {
@@ -1017,6 +916,7 @@
     }
 
     function playNotiChime() {
+      if (isShopQuietHoursMMT()) return;
       try {
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
         if (!AudioCtx) return;
@@ -1034,6 +934,8 @@
     }
 
     function showShopBannerNoti(title, bodyText) {
+      // Strictly muted during 6:00 PM - 8:00 AM MMT
+      if (isShopQuietHoursMMT()) return;
       const popup = document.getElementById('push-noti-popup');
       document.getElementById('push-noti-title').innerText = "🔔 " + (title || "MiniTrend Shop");
       document.getElementById('push-noti-body').innerText = bodyText || "";
@@ -1093,7 +995,7 @@
       if (btn) btn.innerText = "⏳ ချိတ်ဆက်နေ...";
       sessionStorage.removeItem("mt_fcm_synced_shop:" + saved.id);
       const tk = await initShopFirebasePush(saved.id, true);
-      if (tk) alert(`✅ ${saved.name} ဖုန်းကို Notification စနစ်နှင့် ချိတ်ဆက်ပြီးပါပြီ!`);
+      if (tk) alert(`✅ ${saved.name} ဖုန်းကို Notification စနစ်နှင့် ချိတ်ဆက်ပြီးပါပြီ! (ညနေ ၆:၀၀ မှ နံနက် ၈:၀၀ အထိ Auto Mute ဖြစ်ပါမည်)`);
       else {
         if (btn) btn.innerText = "🔔 Noti ချိတ်မည်";
         alert("⚠️ Browser Settings တွင် Notification ကို Allow ပေးထားကြောင်း စစ်ဆေးပါ။");
@@ -1201,6 +1103,7 @@
       document.getElementById('shop-header-name').innerText = `${saved.name} (${saved.id})`;
       const comm = Number(saved.commissionRate !== undefined ? saved.commissionRate : 5);
       document.getElementById('shop-header-meta').innerText = `ကော်မရှင်: ${comm}% | ဆိုင်ရငွေ: ${100 - comm}%`;
+      updateQuietHoursBanner();
       if (isStandaloneApp()) document.getElementById('btn-shop-install')?.classList.add('hidden');
       if ('Notification' in window && Notification.permission === 'granted') {
         initShopFirebasePush(saved.id, false);
@@ -1224,6 +1127,8 @@
     }
 
     function renderShopData(data, silent) {
+      updateQuietHoursBanner(data.isQuietHours);
+
       const activeOrders = data.activeOrders || [];
       const returnOrders = data.returnOrders || [];
       const unpaidOrders = data.unpaidPayoutOrders || [];
@@ -1232,7 +1137,6 @@
       const unpaidTotal = Number(data.unpaidPayoutTotal || 0);
       const settledTotal = Number(data.settledPayoutTotal || 0);
 
-      shopActiveOrdersCache = activeOrders;
       shopProductsCache = Array.isArray(data.shopProducts) ? data.shopProducts : [];
       renderMyStockHistory();
       if (restockMode === 'existing') renderExistingProductsList();
@@ -1263,63 +1167,23 @@
         const newestOrdId = activeOrders[0].orderId;
         const lastKey = 'mt_shop_last_ord_' + shopId;
         const prevOrdId = localStorage.getItem(lastKey);
-        if (prevOrdId && prevOrdId !== newestOrdId && silent) {
-          showShopBannerNoti(`📦 အော်ဒါအသစ်ဝင်ပါပြီ! (${newestOrdId})`, "Stock ရှိ/မရှိ ချက်ချင်းနှိပ်အကြောင်းပြန်ပေးပါခင်ဗျာ။");
+        if (prevOrdId && prevOrdId !== newestOrdId && silent && !isShopQuietHoursMMT()) {
+          showShopBannerNoti(`📦 အော်ဒါအသစ်ဝင်ပါပြီ! (${newestOrdId})`, "ပစ္စည်းထုပ်ပိုးအသင့်ပြင်ထားပေးပါခင်ဗျာ။");
         }
         localStorage.setItem(lastKey, newestOrdId);
       }
 
-      // ---- TAB 1: Active Orders (WITH IMMEDIATE STOCK AVAILABLE / OUT OF STOCK BUTTONS) ----
+      // ---- TAB 1: Active Orders (Clean, no stock-check buttons, no delivery internal statuses) ----
       const ordersEl = document.getElementById('shop-orders-list');
       if (activeOrders.length === 0) {
         ordersEl.innerHTML = `<div class="bg-white rounded-2xl border p-8 text-center text-xs sm:text-sm text-gray-400">🎉 လက်ရှိ အော်ဒါ မရှိသေးပါ</div>`;
       } else {
         ordersEl.innerHTML = activeOrders.map(o => {
           const isPicked = !!o.adminPickupConfirmed;
-          const stkChk = o.myStockCheck || null;
-
           const statusBadge = isPicked
             ? `<span class="bg-emerald-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">✅ ပစ္စည်းကောက်ပြီး</span>`
             : `<span class="bg-amber-100 text-amber-900 border border-amber-300 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">📦 ပစ္စည်းပြင်ဆင်ထားရန်</span>`;
-          const borderCls = isPicked
-            ? "border-emerald-300 bg-emerald-50/25"
-            : (stkChk && stkChk.status === 'out_of_stock' ? "border-red-400 bg-red-50/30" : "border-amber-200 bg-white");
-
-          let stockReplyBlock = '';
-          if (!isPicked) {
-            if (!stkChk) {
-              stockReplyBlock = `
-                <div class="bg-amber-50 border border-amber-300 rounded-xl p-2.5 space-y-1.5">
-                  <p class="text-[11px] font-extrabold text-amber-950">⚡ Stock ရှိ / မရှိ Admin ထံ ချက်ချင်းပြန်ကြားပေးပါ:</p>
-                  <div class="grid grid-cols-2 gap-2">
-                    <button type="button" onclick="shopReportStockAvailable('${escapeHtml(o.orderId)}', this)" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-extrabold py-2.5 rounded-xl text-xs shadow-sm transition">
-                      ✅ Stock ရှိ
-                    </button>
-                    <button type="button" onclick="openOosModal('${escapeHtml(o.orderId)}')" class="bg-red-600 hover:bg-red-700 active:scale-95 text-white font-extrabold py-2.5 rounded-xl text-xs shadow-sm transition">
-                      ❌ Stock မရှိ
-                    </button>
-                  </div>
-                </div>
-              `;
-            } else if (stkChk.status === 'available') {
-              stockReplyBlock = `
-                <div class="bg-emerald-50 border border-emerald-300 rounded-xl px-3 py-2 flex flex-wrap justify-between items-center gap-2 text-xs">
-                  <span class="font-extrabold text-emerald-800">✅ Stock ရှိကြောင်း Admin ထံ ပြန်ကြားပြီး (${escapeHtml(stkChk.updatedAt || '')})</span>
-                  <button type="button" onclick="openOosModal('${escapeHtml(o.orderId)}')" class="text-[10px] font-bold text-red-600 underline">❌ Stock မရှိပြောင်းရန်</button>
-                </div>
-              `;
-            } else {
-              stockReplyBlock = `
-                <div class="bg-red-50 border border-red-300 rounded-xl px-3 py-2 space-y-1 text-xs">
-                  <div class="flex flex-wrap justify-between items-center gap-1">
-                    <span class="font-extrabold text-red-700">❌ Stock မရှိကြောင်း Admin ထံ ပို့ပြီး (${escapeHtml(stkChk.updatedAt || '')})</span>
-                    <button type="button" onclick="shopReportStockAvailable('${escapeHtml(o.orderId)}', this)" class="text-[10px] font-extrabold text-emerald-700 bg-white border border-emerald-300 px-2 py-0.5 rounded-lg">✅ Stock ပြန်ရှိ</button>
-                  </div>
-                  ${stkChk.outItems ? `<p class="text-[11px] font-bold text-red-800">မရှိသည့်ပစ္စည်း: ${escapeHtml(stkChk.outItems)}</p>` : ''}
-                </div>
-              `;
-            }
-          }
+          const borderCls = isPicked ? "border-emerald-300 bg-emerald-50/25" : "border-amber-200 bg-white";
 
           const itemsHtml = (o.items || []).map((it, idx) => {
             const imgKey = `ord_${o.orderId}_${idx}`;
@@ -1356,7 +1220,6 @@
                 ${statusBadge}
               </div>
               <div class="space-y-2">${itemsHtml}</div>
-              ${stockReplyBlock}
               <div class="bg-amber-50/70 border border-amber-200 rounded-xl px-3 py-2 flex flex-wrap justify-between items-center gap-2 text-xs">
                 <span class="text-gray-700 font-bold">ပစ္စည်းတန်ဖိုး: ${Number(o.gross || 0).toLocaleString()} Ks <span class="text-gray-500">(-${o.commissionRate}%: ${Number(o.commission || 0).toLocaleString()})</span></span>
                 <span class="font-extrabold text-emerald-700">💰 ဆိုင်ရမည့်ငွေ (${100 - Number(o.commissionRate || 5)}%): ${Number(o.payout || 0).toLocaleString()} Ks</span>
@@ -1574,6 +1437,7 @@
     function initShopApp() {
       try { history.replaceState({ shopHome: true }, ''); } catch (e) {}
       updateRestockSizeOptions();
+      updateQuietHoursBanner();
 
       if (isStandaloneApp()) {
         document.getElementById('btn-shop-install')?.classList.add('hidden');
@@ -1588,6 +1452,7 @@
       }
 
       setInterval(() => {
+        updateQuietHoursBanner();
         if (!document.getElementById('shop-dashboard').classList.contains('hidden')) {
           loadShopDashboard(true);
         }
