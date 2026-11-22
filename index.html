@@ -9,7 +9,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="MiniTrend Kids" />
-  <link rel="manifest" href="./manifest.json?v=10" />
+  <link rel="manifest" href="./manifest.json?v=11" />
   <link rel="icon" type="image/png" href="./icon.png?v=3" />
   <link rel="apple-touch-icon" href="./icon.png?v=3" />
 
@@ -387,7 +387,9 @@
       <div class="bg-gradient-to-r from-gray-900 via-pink-900 to-rose-900 text-white p-4 sm:p-5 rounded-2xl shadow-md flex flex-wrap justify-between items-center gap-3">
         <div>
           <h1 class="text-lg sm:text-xl font-extrabold">🔐 ဆိုင်ပိုင်ရှင် စီမံခန့်ခွဲမှု (Admin Panel)</h1>
-          <p class="text-[11px] sm:text-xs text-pink-200 mt-0.5 font-bold">Admin မှ စစ်ဆေး Confirm နှိပ်မှသာ ဆိုင်ရှင် App ထံ Cancel / Return နှင့် ပစ္စည်းကောက်ပြီး အကြောင်းကြားပေးမည်</p>
+          <p class="text-[11px] sm:text-xs text-pink-200 mt-0.5 font-bold">
+            🕒 မြန်မာအချိန် (MMT): <span id="adm-mm-clock" class="text-amber-300 font-extrabold">--</span>
+          </p>
         </div>
         <div class="flex flex-wrap gap-1.5">
           <button type="button" id="btn-admin-fcm" onclick="connectAdminFirebase()" class="bg-amber-400 hover:bg-amber-300 text-gray-900 text-xs font-extrabold px-3 py-2 rounded-xl shadow-sm">🔔 Admin Noti</button>
@@ -441,6 +443,7 @@
       <div id="adm-panel-orders" class="space-y-3">
         <div id="adm-order-filters" class="flex gap-1.5 overflow-x-auto no-scrollbar pb-1">
           <button type="button" onclick="setAdminOrderFilter('all')" data-f="all" class="adm-f-btn bg-gray-900 text-white px-3 py-1.5 rounded-full text-xs font-extrabold shrink-0">အားလုံး</button>
+          <button type="button" onclick="setAdminOrderFilter('oos')" data-f="oos" class="adm-f-btn bg-white border border-rose-500 text-rose-700 px-3 py-1.5 rounded-full text-xs font-extrabold shrink-0">❌ Stock မရှိ</button>
           <button type="button" onclick="setAdminOrderFilter('cancel_req')" data-f="cancel_req" class="adm-f-btn bg-white border border-red-400 text-red-700 px-3 py-1.5 rounded-full text-xs font-extrabold shrink-0">⚠️ Cancel / ဖုန်းမကိုင်</button>
           <button type="button" onclick="setAdminOrderFilter('cod_wait')" data-f="cod_wait" class="adm-f-btn bg-white border border-emerald-400 text-emerald-800 px-3 py-1.5 rounded-full text-xs font-extrabold shrink-0">🔔 COD Confirm စောင့်</button>
           <button type="button" onclick="setAdminOrderFilter('need_pickup')" data-f="need_pickup" class="adm-f-btn bg-white border border-purple-300 text-purple-700 px-3 py-1.5 rounded-full text-xs font-bold shrink-0">📋 ဆိုင်မှကောက်ရန်</button>
@@ -464,17 +467,43 @@
       <!-- TAB 3: RETURNS -->
       <div id="adm-panel-returns" class="hidden space-y-3">
         <div class="bg-red-50 border border-red-200 rounded-xl p-3 text-xs font-bold text-red-900">
-          🔄 Delivery မှ Cancel / COD ငြင်း (Return) တင်ထားသော အထုပ်များကို ဤနေရာတွင် စစ်ဆေးနိုင်ပါသည်။ Admin မှ <b>"🔔 Return Confirm (ဆိုင်ထံအကြောင်းကြားမည်)"</b> နှိပ်မှသာ သက်ဆိုင်ရာဆိုင် App ထံ အကြောင်းကြားစာ ရောက်ရှိပါမည်။
+          🔄 Delivery မှ Cancel / COD ငြင်း (Return) တင်ထားသော အထုပ်များနှင့် ဆိုင်သို့ပြန်အပ်ပြီးမှတ်တမ်းများကို ဤနေရာတွင် စစ်ဆေးနိုင်ပါသည်။
         </div>
         <div id="adm-returns-list" class="space-y-3.5"></div>
       </div>
 
-      <!-- TAB 4: 95% SHOP PAYOUTS -->
-      <div id="adm-panel-payouts" class="hidden space-y-3">
-        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-xs font-bold text-emerald-900">
-          💰 COD Confirm ပြီးစီးထားသော အော်ဒါများအတွက် ဆိုင်အလိုက် ရှင်းပေးရမည့် (95%) ငွေစာရင်းဖြစ်ပါသည်။ ငွေလွှဲပြီးပါက <b>"💸 ဆိုင်သို့ ရှင်းပြီး"</b> ကို နှိပ်ပါ။
+      <!-- TAB 4: 95% SHOP PAYOUTS + 7-DAY SETTLED HISTORY BY SHOP & ORDER ID (REQ 2) -->
+      <div id="adm-panel-payouts" class="hidden space-y-3.5">
+        <div class="grid grid-cols-2 gap-2 bg-white p-1.5 rounded-2xl border border-emerald-200 shadow-sm">
+          <button type="button" id="pay-sub-unpaid" onclick="switchPayoutSubTab('unpaid')" class="py-2.5 px-3 rounded-xl text-xs font-extrabold bg-emerald-600 text-white shadow-sm transition">
+            ⏳ ရှင်းရန်ကျန် (95%) <span id="pay-badge-unpaid" class="ml-1 bg-white/25 px-1.5 py-0.5 rounded-full text-[10px]">0</span>
+          </button>
+          <button type="button" id="pay-sub-history" onclick="switchPayoutSubTab('history')" class="py-2.5 px-3 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 transition">
+            ✅ ငွေရှင်းပြီး History (၇ ရက်) <span id="pay-badge-history" class="ml-1 bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded-full text-[10px]">0</span>
+          </button>
         </div>
-        <div id="adm-payouts-list" class="space-y-3.5"></div>
+
+        <!-- Sub-panel A: Unpaid 95% -->
+        <div id="adm-payouts-unpaid-wrap" class="space-y-3">
+          <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-xs font-bold text-emerald-900">
+            💰 COD Confirm ပြီးစီးထားသော အော်ဒါများအတွက် ဆိုင်အလိုက် ရှင်းပေးရမည့် (95%) ငွေစာရင်းဖြစ်ပါသည်။ ငွေလွှဲပြီးပါက <b>"💸 ရှင်းပြီး"</b> ကို နှိပ်ပါ။
+          </div>
+          <div id="adm-payouts-list" class="space-y-3.5"></div>
+        </div>
+
+        <!-- Sub-panel B: 7-Day Settled Payout History (Grouped by Shop & Order ID) -->
+        <div id="adm-payouts-history-wrap" class="hidden space-y-3">
+          <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 text-xs font-bold text-blue-950">
+            🧾 ဆိုင်အလိုက် / Order ID အလိုက် ငွေရှင်းပြီး History ဖြစ်ပါသည်။ Admin Panel တွင် <b>၇ ရက် (၁ ပတ်)</b> အထိ ပြသပေးပြီး ၁ ပတ်ပြည့်သည်နှင့် အလိုအလျောက် ပျောက်သွားပါမည် *(Google Sheet ထဲတွင်မူ မဖျက်သရွေ့ အမြဲကျန်ရှိနေပါမည်)*။
+          </div>
+          <div class="bg-white rounded-2xl border border-blue-200 p-3 flex flex-wrap gap-2 items-center shadow-sm">
+            <select id="adm-pay-hist-shop" onchange="renderAdminPayoutHistory()" class="border-2 border-blue-200 rounded-xl px-3 py-2 text-xs font-extrabold bg-gray-50">
+              <option value="ALL">🏪 ဆိုင်အားလုံး</option>
+            </select>
+            <input type="text" id="adm-pay-hist-search" oninput="renderAdminPayoutHistory()" placeholder="🔍 Order ID သို့မဟုတ် ဝယ်သူအမည် ရှာရန်..." class="flex-1 min-w-[160px] border border-gray-200 rounded-xl px-3 py-2 text-xs">
+          </div>
+          <div id="adm-payouts-history-list" class="space-y-3.5"></div>
+        </div>
       </div>
 
       <!-- TAB 5: 100% ADMIN STOCK CONTROL -->
@@ -495,7 +524,7 @@
         <div class="bg-white rounded-2xl shadow-sm border-2 border-amber-200 p-4 space-y-3">
           <div class="flex flex-wrap justify-between items-center gap-2">
             <h3 class="font-extrabold text-sm sm:text-base text-gray-900">🏪 ချိတ်ဆက်ဆိုင်များ စီမံခန့်ခွဲမှု (Partner Shops)</h3>
-            <button type="button" onclick="setupCategorySheetsAdmin()" class="bg-amber-100 hover:bg-amber-200 text-amber-900 text-[11px] font-extrabold px-3 py-1.5 rounded-xl">🛠️ Sheet အသစ်များနှင့် Dropdown တည်ဆောက်</button>
+            <button type="button" onclick="setupCategorySheetsAdmin()" class="bg-amber-100 hover:bg-amber-200 text-amber-900 text-[11px] font-extrabold px-3 py-1.5 rounded-xl">🛠️ Sheet အသစ်များ၊ မြန်မာအချိန်နှင့် Dropdown တည်ဆောက်</button>
           </div>
           <form id="shop-form" onsubmit="saveShopAdmin(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 bg-amber-50/60 p-3 rounded-xl border border-amber-200">
             <input type="hidden" id="sf-id">
@@ -546,7 +575,6 @@
             </div>
           </div>
 
-          <!-- 3-Way Audience Switcher -->
           <div class="grid grid-cols-3 gap-1.5 bg-gray-100 p-1.5 rounded-xl">
             <button type="button" id="noti-aud-customer" onclick="switchNotiAudience('customer')" class="py-2.5 px-2 rounded-lg text-xs font-extrabold bg-pink-600 text-white shadow-sm transition">
               🛍️ ဝယ်သူများ
@@ -559,7 +587,6 @@
             </button>
           </div>
 
-          <!-- Specific Rider Selector -->
           <div id="noti-rider-select-wrap" class="hidden bg-blue-50 border border-blue-200 rounded-xl p-2.5 space-y-1">
             <label class="block text-[11px] font-extrabold text-blue-900">🚚 ပေးပို့မည့် Delivery ဝန်ထမ်း ရွေးချယ်ပါ:</label>
             <select id="bc-rider-target" class="w-full border border-blue-300 rounded-xl px-3 py-2 text-xs font-bold bg-white">
@@ -567,7 +594,6 @@
             </select>
           </div>
 
-          <!-- Specific Shop Selector -->
           <div id="noti-shop-select-wrap" class="hidden bg-amber-50 border border-amber-200 rounded-xl p-2.5 space-y-1">
             <label class="block text-[11px] font-extrabold text-amber-900">🏪 ပေးပို့မည့် ချိတ်ဆက်ဆိုင် ရွေးချယ်ပါ:</label>
             <select id="bc-shop-target" class="w-full border border-amber-300 rounded-xl px-3 py-2 text-xs font-bold bg-white">
@@ -621,12 +647,34 @@
     let adminDataCache = null;
     let currentAdminTab = 'orders';
     let currentAdminOrderFilter = 'all';
+    let currentPayoutSubTab = 'unpaid';
     let currentNotiAudience = 'customer';
     let pushPopupTimer = null;
     let activePreviewInfo = null;
     window.__adminPreviewMap = {};
     window.__custOrderImgMap = {};
     window.__b64ImgCache = {};
+
+    // ==================== MYANMAR LIVE CLOCK HELPER ====================
+    function getClientMyanmarTimeStr() {
+      try {
+        const nowMm = new Date(Date.now() + (6.5 * 60 * 60 * 1000));
+        const yr = nowMm.getUTCFullYear();
+        const mo = String(nowMm.getUTCMonth() + 1).padStart(2, '0');
+        const dy = String(nowMm.getUTCDate()).padStart(2, '0');
+        let hr = nowMm.getUTCHours();
+        const ampm = hr >= 12 ? 'PM' : 'AM';
+        hr = hr % 12 || 12;
+        const mn = String(nowMm.getUTCMinutes()).padStart(2, '0');
+        const sc = String(nowMm.getUTCSeconds()).padStart(2, '0');
+        return `${yr}-${mo}-${dy} ${String(hr).padStart(2, '0')}:${mn}:${sc} ${ampm}`;
+      } catch (e) { return ''; }
+    }
+
+    function updateAdminClock() {
+      const el = document.getElementById('adm-mm-clock');
+      if (el) el.innerText = getClientMyanmarTimeStr();
+    }
 
     // ==================== BACK BUTTON NAVIGATION GUARD ====================
     let isHandlingPopState = false;
@@ -1404,7 +1452,7 @@
       btn.disabled = false; btn.innerText = '✅ အော်ဒါတင်မည် (အိမ်ရောက်ငွေချေ)';
     }
 
-    // ==================== CUSTOMER ORDER HISTORY + 1-HOUR CANCEL COUNTDOWN ====================
+    // ==================== CUSTOMER ORDER HISTORY + 1-HOUR CANCEL + OUT-OF-STOCK ALERT ====================
     function openCustOrderImgLightbox(key) {
       const info = window.__custOrderImgMap[key];
       if (!info) return;
@@ -1553,14 +1601,18 @@
         bannerEl.classList.add('hidden');
       } else {
         const topOrd = activeOnly[0];
+        const oosBannerNote = topOrd.outOfStockAlert
+          ? `<div class="mt-2 bg-rose-50 border border-rose-300 text-rose-800 rounded-xl px-2.5 py-1.5 text-[11px] font-extrabold">⚠️ ${escapeHtml(topOrd.outOfStockAlert.msg || 'ပစ္စည်း Stock ကုန်နေပါသဖြင့် အခြားပစ္စည်း ပြန်ရွေးပေးပါ')}</div>`
+          : '';
         bannerEl.classList.remove('hidden');
         bannerEl.innerHTML = `
-          <div onclick="openCartModal('orders')" class="bg-white border-2 border-pink-200 rounded-2xl p-3 shadow-sm cursor-pointer">
+          <div onclick="openCartModal('orders')" class="bg-white border-2 ${topOrd.outOfStockAlert ? 'border-rose-400' : 'border-pink-200'} rounded-2xl p-3 shadow-sm cursor-pointer">
             <div class="flex justify-between items-center text-xs">
               <span class="font-extrabold text-gray-900">📦 လက်ရှိအော်ဒါ: ${escapeHtml(topOrd.orderId)}</span>
               <span class="text-pink-600 font-extrabold">${Number(topOrd.grandTotal).toLocaleString()} Ks ▸</span>
             </div>
             ${buildThreeStageProgressHtml(topOrd.status, topOrd.riderName)}
+            ${oosBannerNote}
           </div>
         `;
       }
@@ -1596,6 +1648,13 @@
             }).join('')
           : `<p class="text-[11px] text-gray-700 whitespace-pre-line bg-white border rounded-xl p-2">${escapeHtml(o.itemsText)}</p>`;
 
+        const oosAlertHtml = o.outOfStockAlert
+          ? `<div class="bg-rose-50 border-2 border-rose-300 rounded-xl p-2.5 space-y-2 text-xs">
+               <p class="font-extrabold text-rose-800 leading-relaxed">⚠️ ${escapeHtml(o.outOfStockAlert.msg || 'ပစ္စည်း Stock ကုန်နေပါသည်')}</p>
+               <button type="button" onclick="closeCartModal(true)" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-extrabold py-2 rounded-lg text-xs shadow-sm">🛍️ အခြားပစ္စည်း ပြန်ရွေးမည်</button>
+             </div>`
+          : '';
+
         const remainMs = o.cancelDeadlineMs ? (Number(o.cancelDeadlineMs) - estServerNow) : 0;
         const showCancelBtn = !!o.canCancel && remainMs > 0;
         const cancelBtnHtml = showCancelBtn
@@ -1606,17 +1665,18 @@
              </div>`
           : '';
 
-        const cardBorder = o.status === 'ပို့ပြီး'
-          ? 'border-emerald-200'
-          : (o.status === 'ပယ်ဖျက်ပြီး' ? 'border-gray-300 opacity-80' : 'border-pink-100');
+        const cardBorder = o.outOfStockAlert
+          ? 'border-rose-400'
+          : (o.status === 'ပို့ပြီး' ? 'border-emerald-200' : (o.status === 'ပယ်ဖျက်ပြီး' ? 'border-gray-300 opacity-80' : 'border-pink-100'));
 
         return `
           <div class="bg-gray-50 border-2 ${cardBorder} rounded-2xl p-3.5 space-y-2.5">
             <div class="flex justify-between items-center text-xs">
               <span class="font-extrabold text-gray-900">🧾 ${escapeHtml(o.orderId)}</span>
-              <span class="text-[11px] text-gray-500">${escapeHtml(o.dateTime)}</span>
+              <span class="text-[11px] text-gray-500">⏰ ${escapeHtml(o.dateTime)}</span>
             </div>
             ${buildThreeStageProgressHtml(o.status, o.riderName)}
+            ${oosAlertHtml}
             <div class="space-y-1.5">${itemsCardsHtml}</div>
             <p class="text-xs font-extrabold text-emerald-700 text-right">💰 စုစုပေါင်း (COD): ${Number(o.grandTotal).toLocaleString()} ကျပ်</p>
             ${cancelBtnHtml}
@@ -1672,6 +1732,7 @@
     function showAdminDashboard() {
       document.getElementById('admin-login-box').classList.add('hidden');
       document.getElementById('admin-dashboard').classList.remove('hidden');
+      updateAdminClock();
       loadAdminDashboard(false);
       loadProducts(false);
       if ('Notification' in window && Notification.permission === 'granted') initFirebasePush('admin', false);
@@ -1697,6 +1758,24 @@
         }
       });
       if (tab === 'stock') renderAdminStockPanel();
+      if (tab === 'payouts' && currentPayoutSubTab === 'history') renderAdminPayoutHistory();
+    }
+
+    function switchPayoutSubTab(sub) {
+      currentPayoutSubTab = sub;
+      document.getElementById('adm-payouts-unpaid-wrap').classList.toggle('hidden', sub !== 'unpaid');
+      document.getElementById('adm-payouts-history-wrap').classList.toggle('hidden', sub !== 'history');
+
+      const btnU = document.getElementById('pay-sub-unpaid');
+      const btnH = document.getElementById('pay-sub-history');
+      if (sub === 'unpaid') {
+        btnU.className = 'py-2.5 px-3 rounded-xl text-xs font-extrabold bg-emerald-600 text-white shadow-sm transition';
+        btnH.className = 'py-2.5 px-3 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 transition';
+      } else {
+        btnH.className = 'py-2.5 px-3 rounded-xl text-xs font-extrabold bg-blue-600 text-white shadow-sm transition';
+        btnU.className = 'py-2.5 px-3 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 transition';
+        renderAdminPayoutHistory();
+      }
     }
 
     function setAdminOrderFilter(f) {
@@ -1898,6 +1977,66 @@
       `;
     }
 
+    // ==================== REQ 2: RENDER 7-DAY SETTLED PAYOUT HISTORY ====================
+    function renderAdminPayoutHistory() {
+      const box = document.getElementById('adm-payouts-history-list');
+      if (!box || !adminDataCache) return;
+      const allSettled = adminDataCache.settledShopPayouts || [];
+      const shopF = document.getElementById('adm-pay-hist-shop')?.value || 'ALL';
+      const q = (document.getElementById('adm-pay-hist-search')?.value || '').trim().toLowerCase();
+
+      const filtered = allSettled.filter(p => {
+        if (shopF !== 'ALL' && p.shopId !== shopF) return false;
+        if (q && !(p.orderId || '').toLowerCase().includes(q) && !(p.customerName || '').toLowerCase().includes(q) && !(p.shopName || '').toLowerCase().includes(q)) return false;
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        box.innerHTML = `<div class="bg-white rounded-2xl border p-8 text-center text-xs text-gray-400">လွန်ခဲ့သော ၇ ရက်အတွင်း ငွေရှင်းပြီး History မရှိသေးပါ။</div>`;
+        return;
+      }
+
+      const grouped = {};
+      filtered.forEach(p => {
+        if (!grouped[p.shopId]) {
+          grouped[p.shopId] = { shopId: p.shopId, shopName: p.shopName, paymentAccount: p.paymentAccount, totalSettled: 0, list: [] };
+        }
+        grouped[p.shopId].totalSettled += Number(p.payout || 0);
+        grouped[p.shopId].list.push(p);
+      });
+
+      box.innerHTML = Object.values(grouped).map(g => `
+        <div class="bg-white rounded-2xl border-2 border-blue-200 overflow-hidden shadow-sm">
+          <div class="bg-blue-700 text-white p-3.5 flex flex-wrap justify-between items-center gap-2">
+            <div>
+              <h4 class="font-extrabold text-sm">🏪 ${escapeHtml(g.shopId)} — ${escapeHtml(g.shopName)}</h4>
+              <p class="text-[11px] text-blue-100 font-bold mt-0.5">✅ ၇ ရက်အတွင်း ရှင်းပြီးအော်ဒါ: ${g.list.length} ခု ${g.paymentAccount ? `• 💳 ${escapeHtml(g.paymentAccount)}` : ''}</p>
+            </div>
+            <div class="text-right">
+              <p class="text-[10px] text-blue-200 font-bold">၇ ရက်အတွင်း ရှင်းပြီးစုစုပေါင်း</p>
+              <p class="text-lg font-extrabold">${g.totalSettled.toLocaleString()} Ks</p>
+            </div>
+          </div>
+          <div class="divide-y p-3 text-xs">
+            ${g.list.map(item => `
+              <div class="py-2.5 flex flex-wrap justify-between items-center gap-2">
+                <div class="min-w-0">
+                  <div class="flex flex-wrap items-center gap-1.5">
+                    <span class="font-extrabold text-gray-900">🧾 ${escapeHtml(item.orderId)}</span>
+                    <span class="text-gray-600 font-bold">— ${escapeHtml(item.customerName)}</span>
+                    <span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full text-[10px] font-extrabold">✅ ရှင်းပြီး</span>
+                    <span class="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-[10px] font-bold">⏳ ကျန် ${item.daysLeft || 1} ရက်</span>
+                  </div>
+                  <p class="text-[11px] text-gray-500 mt-0.5">💸 ရှင်းချိန်: ${escapeHtml(item.settledAt)} | တန်ဖိုး ${Number(item.gross).toLocaleString()} − ${item.commissionRate}% (${Number(item.commission).toLocaleString()})</p>
+                </div>
+                <span class="font-extrabold text-blue-700 text-sm shrink-0">${Number(item.payout).toLocaleString()} Ks</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `).join('');
+    }
+
     function renderAdminOrdersAndRiders() {
       if (!adminDataCache) return;
       const d = adminDataCache;
@@ -1905,6 +2044,7 @@
       const restocks = d.pendingRestocks || [];
       const returns = d.returnOrders || [];
       const payouts = d.unsettledShopPayouts || [];
+      const settledPayouts = d.settledShopPayouts || [];
       const riders = d.riders || [];
       const shops = d.shops || [];
       const shopsById = {};
@@ -1923,15 +2063,14 @@
       document.getElementById('adm-badge-restocks').innerText = restocks.length;
       document.getElementById('adm-badge-returns').innerText = openReturnsCount;
       document.getElementById('adm-badge-payouts').innerText = payouts.length;
+      document.getElementById('pay-badge-unpaid').innerText = payouts.length;
+      document.getElementById('pay-badge-history').innerText = settledPayouts.length;
 
-      // Update per-role FCM counts & Notification Rider/Shop dropdowns
+      // Update per-role FCM counts & dropdowns
       const fc = d.fcmCounts || { customers: d.fcmSubscribers || 0, riders: 0, shops: 0 };
-      const fCustEl = document.getElementById('adm-fcm-cust');
-      const fRiderEl = document.getElementById('adm-fcm-rider');
-      const fShopEl = document.getElementById('adm-fcm-shop');
-      if (fCustEl) fCustEl.innerText = `🛍️ ဝယ်သူ: ${fc.customers || 0}`;
-      if (fRiderEl) fRiderEl.innerText = `🚚 Delivery: ${fc.riders || 0}`;
-      if (fShopEl) fShopEl.innerText = `🏪 ဆိုင်: ${fc.shops || 0}`;
+      document.getElementById('adm-fcm-cust').innerText = `🛍️ ဝယ်သူ: ${fc.customers || 0}`;
+      document.getElementById('adm-fcm-rider').innerText = `🚚 Delivery: ${fc.riders || 0}`;
+      document.getElementById('adm-fcm-shop').innerText = `🏪 ဆိုင်: ${fc.shops || 0}`;
 
       const bcRiderSel = document.getElementById('bc-rider-target');
       if (bcRiderSel) {
@@ -1949,6 +2088,14 @@
         if ([...bcShopSel.options].some(o => o.value === prevS)) bcShopSel.value = prevS;
       }
 
+      const payHistShopSel = document.getElementById('adm-pay-hist-shop');
+      if (payHistShopSel) {
+        const prevPH = payHistShopSel.value;
+        payHistShopSel.innerHTML = `<option value="ALL">🏪 ဆိုင်အားလုံး</option>` +
+          shops.map(s => `<option value="${escapeHtml(s.id)}">🏪 ${escapeHtml(s.id)} — ${escapeHtml(s.name)}</option>`).join('');
+        if ([...payHistShopSel.options].some(o => o.value === prevPH)) payHistShopSel.value = prevPH;
+      }
+
       const stkSel = document.getElementById('adm-stock-shop-filter');
       if (stkSel) {
         const prevVal = stkSel.value;
@@ -1962,6 +2109,10 @@
         const hasPartner = o.shopIds && o.shopIds !== 'OWN';
         const isCancelReq = o.status === 'ဝယ်သူ Cancel တောင်းဆိုထားသည်' || (o.shopMeta && o.shopMeta.cancelRequested);
         const isNoAns = o.status === 'ဖုန်းမကိုင် (နောက်နေ့ပြန်ပို့)';
+        const stkChecks = (o.shopMeta && o.shopMeta.stockChecks) ? Object.values(o.shopMeta.stockChecks) : [];
+        const hasOutOfStock = stkChecks.some(c => c && c.status === 'out_of_stock');
+
+        if (currentAdminOrderFilter === 'oos') return hasOutOfStock;
         if (currentAdminOrderFilter === 'cancel_req') return isCancelReq || isNoAns;
         if (currentAdminOrderFilter === 'need_pickup') return hasPartner && (o.pickupStatus === 'မသတ်မှတ်ရသေး' || o.pickupStatus === 'ဆိုင်မှ ပစ္စည်းသွားကောက်ရန်');
         if (currentAdminOrderFilter === 'picking') return hasPartner && o.pickupStatus === 'ဆိုင်သို့ သွားနေပါသည်';
@@ -1980,16 +2131,57 @@
       } else {
         ordersEl.innerHTML = filteredOrders.map(o => {
           const items = parseOrderItemsForAdmin(o);
-          const hasPartner = items.some(it => it.shopId !== 'OWN');
+          const partnerShopIds = [...new Set(items.filter(it => it.shopId !== 'OWN').map(it => it.shopId))];
+          const hasPartner = partnerShopIds.length > 0;
           const isCodWait = o.status === 'COD ငွေပေးချေပြီး';
           const isCancelReq = o.status === 'ဝယ်သူ Cancel တောင်းဆိုထားသည်' || (o.shopMeta && o.shopMeta.cancelRequested);
           const isNoAns = o.status === 'ဖုန်းမကိုင် (နောက်နေ့ပြန်ပို့)';
           const adminPickupConfirmed = !!(o.shopMeta && o.shopMeta.adminPickupConfirmed);
+          const stockChecksMap = (o.shopMeta && o.shopMeta.stockChecks) ? o.shopMeta.stockChecks : {};
+          const oosEntries = Object.values(stockChecksMap).filter(c => c && c.status === 'out_of_stock');
 
-          const cardBorder = isCancelReq
+          const cardBorder = (isCancelReq || oosEntries.length > 0)
             ? 'border-red-500 bg-red-50/40 ring-2 ring-red-200'
             : (isCodWait ? 'border-emerald-500 bg-emerald-50/40 ring-2 ring-emerald-200' : 'border-pink-200 bg-white');
           const processBarHtml = buildAdminOrderProcessSteps(o, hasPartner);
+
+          // REQ 3: Shop Stock Confirmation Badges & Out-of-Stock Customer Notify Action
+          let shopStockStatusHtml = '';
+          if (hasPartner) {
+            const oosBannerHtml = oosEntries.map(entry => {
+              const outItemStr = entry.outItems || items.filter(it => it.shopId === entry.shopId).map(it => it.name).join(', ');
+              const alreadyNotified = !!(o.shopMeta && o.shopMeta.outOfStockNotified);
+              return `
+                <div class="bg-rose-600 text-white rounded-xl p-2.5 space-y-2 shadow-sm">
+                  <div class="text-xs font-extrabold">❌ ${escapeHtml(entry.shopId)} (${escapeHtml(entry.shopName || '')}) မှ Stock မရှိကြောင်း ပြန်ကြားထားသည်!</div>
+                  <p class="text-[11px] bg-white/15 rounded-lg px-2.5 py-1.5 font-bold">
+                    မရှိသည့်ပစ္စည်း: ${escapeHtml(outItemStr)} ${entry.note ? `| မှတ်ချက်: ${escapeHtml(entry.note)}` : ''}
+                  </p>
+                  <div class="flex flex-wrap items-center justify-between gap-2">
+                    ${alreadyNotified ? `<span class="text-[10px] bg-emerald-500 text-white px-2 py-0.5 rounded-full font-extrabold">✅ ဝယ်သူထံ Noti ပို့ပြီး (${escapeHtml(o.shopMeta.outOfStockNotifiedAt || '')})</span>` : `<span class="text-[10px] text-rose-100 font-bold">ဝယ်သူထံ အခြားပစ္စည်းပြန်ရွေးရန် အကြောင်းကြားပေးပါ</span>`}
+                    <button type="button" onclick="adminSendOosNotiToCustomer('${escapeHtml(o.orderId)}', '${escapeHtml(outItemStr)}', this)" class="bg-white text-rose-700 hover:bg-rose-50 font-extrabold px-3 py-1.5 rounded-lg text-xs shadow">
+                      📢 ${alreadyNotified ? 'ဝယ်သူထံ ထပ်ပို့မည်' : 'ဝယ်သူထံ Stock ကုန်ကြောင်း Noti ပို့မည်'}
+                    </button>
+                  </div>
+                </div>
+              `;
+            }).join('');
+
+            const shopPillsHtml = partnerShopIds.map(sid => {
+              const chk = stockChecksMap[sid];
+              if (chk && chk.status === 'available') {
+                return `<span class="bg-emerald-100 text-emerald-800 border border-emerald-300 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">✅ ${escapeHtml(sid)} Stock ရှိ (${escapeHtml(chk.updatedAt || '')})</span>`;
+              } else if (chk && chk.status === 'out_of_stock') {
+                return `<span class="bg-rose-100 text-rose-800 border border-rose-300 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">❌ ${escapeHtml(sid)} Stock မရှိ</span>`;
+              }
+              return `<span class="bg-amber-50 text-amber-800 border border-amber-200 text-[10px] font-bold px-2.5 py-0.5 rounded-full">⏳ ${escapeHtml(sid)} Stock အဖြေစောင့်နေ</span>`;
+            }).join('');
+
+            shopStockStatusHtml = `
+              ${oosBannerHtml}
+              <div class="flex flex-wrap gap-1.5">${shopPillsHtml}</div>
+            `;
+          }
 
           const cancelReqBanner = isCancelReq
             ? `<div class="bg-red-600 text-white rounded-xl p-2.5 flex flex-wrap justify-between items-center gap-2 shadow-sm">
@@ -2099,6 +2291,7 @@
           return `
             <div class="rounded-2xl border-2 ${cardBorder} p-3.5 sm:p-4 shadow-sm space-y-2.5">
               ${processBarHtml}
+              ${shopStockStatusHtml}
               ${cancelReqBanner}
               ${rejectBadge}
               ${codConfirmBanner}
@@ -2203,10 +2396,10 @@
         }).join('');
       }
 
-      // ---- TAB 3: RETURNS ----
+      // ---- TAB 3: RETURNS (INCLUDES CANCEL RETURNS & HANDED-BACK STATUS) ----
       const retEl = document.getElementById('adm-returns-list');
       if (returns.length === 0) {
-        retEl.innerHTML = `<div class="bg-white rounded-2xl border p-8 text-center text-xs text-gray-400">✅ လက်ရှိ Return / COD ငြင်း စာရင်း မရှိပါ</div>`;
+        retEl.innerHTML = `<div class="bg-white rounded-2xl border p-8 text-center text-xs text-gray-400">✅ လက်ရှိ Return / Cancel Return စာရင်း မရှိပါ</div>`;
       } else {
         retEl.innerHTML = returns.map(r => {
           const ri = r.returnInfo || {};
@@ -2215,8 +2408,9 @@
           const isHubGot = ri.status !== 'rider_returning_to_hub';
           const isClosed = ri.status === 'closed';
           const isConfirmedToShop = !!ri.adminConfirmedToShop;
+          const isCancelRet = !!ri.isCancelReturn || r.orderStatus === 'ပယ်ဖျက်ပြီး (Cancelled)';
 
-          const retRiderOpts = `<option value="">-- ဆိုင်သို့ပြန်အပ်မည့် Pickup ဝန်ထမ်း --</option>` +
+          const retRiderOpts = `<option value="">-- ဆိုင်သို့ပြန်အပ်မည့် Delivery/Pickup ဝန်ထမ်း --</option>` +
             riders.map(rd => `<option value="${escapeHtml(rd.id)}" ${ri.returnRiderId === rd.id ? 'selected' : ''}>${escapeHtml(rd.id)} — ${escapeHtml(rd.name)}</option>`).join('');
 
           const shopRetStatusHtml = shopRetKeys.map(sid => {
@@ -2225,14 +2419,14 @@
             let cls = 'bg-red-100 text-red-800';
             if (sr.status === 'waiting_pickup_return') { lbl = '📦 Hub ရောက်ပြီး (ဆိုင်ပြန်အပ်ရန်)'; cls = 'bg-amber-100 text-amber-900'; }
             else if (sr.status === 'returning_to_shop') { lbl = '🛵 ဝန်ထမ်း ပြန်လာအပ်နေ'; cls = 'bg-blue-100 text-blue-800'; }
-            else if (sr.status === 'delivered_to_shop') { lbl = '📦 ဆိုင်သို့အပ်ပြီး (ဆိုင်အတည်ပြုရန်)'; cls = 'bg-purple-100 text-purple-800'; }
-            else if (sr.status === 'shop_confirmed') { lbl = `✅ ဆိုင်လက်ခံပြီး (${sr.shopConfirmedAt || ''})`; cls = 'bg-emerald-100 text-emerald-800'; }
-            return `<div class="flex justify-between items-center text-xs bg-white border rounded-lg px-2.5 py-1.5"><span class="font-extrabold">🏪 ${escapeHtml(sid)} (${escapeHtml(sr.shopName || '')})</span><span class="${cls} px-2 py-0.5 rounded-full text-[10px] font-extrabold">${lbl}</span></div>`;
+            else if (sr.status === 'delivered_to_shop') { lbl = `📦 ဆိုင်သို့ပြန်အပ်ပြီး (${sr.returnedByRider || 'ဝန်ထမ်း'} • ${sr.deliveredToShopAt || ''})`; cls = 'bg-emerald-100 text-emerald-800'; }
+            else if (sr.status === 'shop_confirmed') { lbl = `✅ ဆိုင်လက်ခံပြီး (${sr.shopConfirmedAt || ''})`; cls = 'bg-emerald-600 text-white'; }
+            return `<div class="flex flex-wrap justify-between items-center gap-1 text-xs bg-white border rounded-lg px-2.5 py-1.5"><span class="font-extrabold">🏪 ${escapeHtml(sid)} (${escapeHtml(sr.shopName || '')})</span><span class="${cls} px-2 py-0.5 rounded-full text-[10px] font-extrabold">${lbl}</span></div>`;
           }).join('');
 
           const shopConfirmBanner = (shopRetKeys.length > 0 && !isClosed)
             ? (isConfirmedToShop
-                ? `<div class="bg-emerald-50 border border-emerald-300 text-emerald-800 rounded-xl px-3 py-1.5 text-[11px] font-extrabold">✅ သက်ဆိုင်ရာဆိုင် App ထံ Return အကြောင်းကြားပြီး (${escapeHtml(ri.confirmedToShopAt || '')})</div>`
+                ? `<div class="bg-emerald-50 border border-emerald-300 text-emerald-800 rounded-xl px-3 py-1.5 text-[11px] font-extrabold">✅ ဆိုင် App တွင် Cancel/Return History ထဲ ပြောင်းထားပြီး (${escapeHtml(ri.confirmedToShopAt || '')})</div>`
                 : `<div class="bg-amber-100 border-2 border-amber-400 rounded-xl p-2.5 flex flex-wrap justify-between items-center gap-2">
                      <span class="text-xs font-extrabold text-amber-950">🔒 ဆိုင်ရှင် App ထံ မပို့ရသေးပါ — စစ်ဆေးပြီးမှ Confirm နှိပ်ပါ</span>
                      <button type="button" onclick="adminConfirmReturnNotifyShop('${r.orderId}', this)" class="bg-red-600 hover:bg-red-700 text-white font-extrabold px-3.5 py-1.5 rounded-lg text-xs shadow animate-pulse">🔔 Return Confirm (ဆိုင်ထံပို့မည်)</button>
@@ -2244,7 +2438,7 @@
               ${shopConfirmBanner}
               <div class="flex flex-wrap justify-between items-center gap-1.5">
                 <span class="font-extrabold text-sm text-gray-900">🔄 ${escapeHtml(r.orderId)} — ${escapeHtml(r.name)} (${escapeHtml(r.phone)})</span>
-                <span class="${isClosed ? 'bg-gray-700' : 'bg-red-600'} text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">${isClosed ? '✅ Closed' : '🔄 Return Active'}</span>
+                <span class="${isClosed ? 'bg-gray-700' : (isCancelRet ? 'bg-orange-600' : 'bg-red-600')} text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">${isClosed ? '✅ Closed' : (isCancelRet ? '❌ Cancel Return' : '🔄 COD Return')}</span>
               </div>
               <p class="text-xs font-extrabold text-red-700">❌ အကြောင်းရင်း: ${escapeHtml(ri.reason || 'ဝယ်သူ COD ငြင်း')} <span class="text-gray-500 font-normal">(${escapeHtml(ri.reportedBy || '')} • ${escapeHtml(ri.reportedAt || '')})</span></p>
               <p class="text-[11px] text-gray-700 whitespace-pre-line bg-white border rounded-xl p-2">${escapeHtml(r.itemsText)}</p>
@@ -2267,7 +2461,7 @@
         }).join('');
       }
 
-      // ---- TAB 4: 95% PAYOUTS ----
+      // ---- TAB 4: 95% UNPAID PAYOUTS + 7-DAY HISTORY ----
       const payEl = document.getElementById('adm-payouts-list');
       if (payouts.length === 0) {
         payEl.innerHTML = `<div class="bg-white rounded-2xl border p-8 text-center text-xs text-gray-400">✅ ရှင်းပေးရန်ကျန်သော 95% ဆိုင်ငွေစာရင်း မရှိသေးပါ</div>`;
@@ -2307,6 +2501,7 @@
           </div>
         `).join('');
       }
+      renderAdminPayoutHistory();
 
       // ---- TAB 6: SHOPS LIST ----
       document.getElementById('adm-shops-list').innerHTML = shops.length === 0
@@ -2345,6 +2540,32 @@
           </div>
         </div>
       `).join('');
+    }
+
+    // ==================== REQ 3: ADMIN NOTIFY CUSTOMER OUT-OF-STOCK ====================
+    async function adminSendOosNotiToCustomer(orderId, outItemsStr, btnEl) {
+      const defaultMsg = `မေမေရေ မှာယူထားသော [${outItemsStr}] လေး လက်ရှိ Stock ကုန်နေပါသဖြင့် MiniTrend Kids App တွင် အခြားဒီဇိုင်း/အရောင်လေး ပြန်ရွေးပေးပါဦးရှင် 💝`;
+      const customMsg = prompt(`အော်ဒါ #${orderId} ဝယ်သူထံ ပေးပို့မည့် Stock ကုန်ကြောင်း Noti စာသား (လိုအပ်ပါက ပြင်ဆင်နိုင်သည်):`, defaultMsg);
+      if (customMsg === null) return;
+      if (btnEl) { btnEl.disabled = true; btnEl.innerText = '⏳ ပို့နေ...'; }
+
+      try {
+        await fetch(APPS_SCRIPT_URL, {
+          method: 'POST', mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({
+            action: 'adminNotifyCustomerOutOfStock',
+            orderId: orderId,
+            itemText: outItemsStr,
+            message: customMsg.trim() || defaultMsg
+          })
+        });
+        alert(`✅ ဝယ်သူထံ [${outItemsStr}] Stock ကုန်ကြောင်း Notification ပေးပို့ပြီးပါပြီ!`);
+        setTimeout(() => loadAdminDashboard(false), 900);
+      } catch (e) {
+        alert('⚠️ ပေးပို့ရာတွင် အမှားရှိနေပါသည်။');
+        if (btnEl) { btnEl.disabled = false; btnEl.innerText = '📢 ဝယ်သူထံ Stock ကုန်ကြောင်း Noti ပို့မည်'; }
+      }
     }
 
     async function adminConfirmCancel(orderId, hasPartner, btnEl) {
@@ -2726,13 +2947,13 @@
     }
 
     async function setupCategorySheetsAdmin() {
-      if (!confirm('Google Sheet တွင် "မွေးကင်းစလေးများ" ကို "Baby Kits" ပြောင်းပြီး "ဒိုင်ဘာ", "အနှီး", "လက်အိတ်၊ ခြေအိတ်", "ကုတင်၊ ပုခက်" Sheet အသစ်များနှင့် Dropdown တည်ဆောက်မည်လား?')) return;
+      if (!confirm('Google Sheet Timezone ကို မြန်မာအချိန် (Asia/Yangon) ပြောင်းပြီး Sheet အသစ်များနှင့် Dropdown တည်ဆောက်မည်လား?')) return;
       await fetch(APPS_SCRIPT_URL, {
         method: 'POST', mode: 'no-cors',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify({ action: 'setupCategorySheets' })
       });
-      alert('✅ Sheet အသစ်များ (Baby Kits, ဒိုင်ဘာ, အနှီး, လက်အိတ်၊ ခြေအိတ်, ကုတင်၊ ပုခက်) နှင့် Dropdown တည်ဆောက်ပြီးပါပြီ!');
+      alert('✅ မြန်မာစံတော်ချိန် (Asia/Yangon)၊ Sheet အသစ်များနှင့် Dropdown တည်ဆောက်ပြီးပါပြီ!');
       setTimeout(() => { loadAdminDashboard(false); loadProducts(true); }, 1000);
     }
 
@@ -2754,6 +2975,8 @@
     function init() {
       if (APP_ROLE === 'admin') {
         document.getElementById('admin-view').classList.remove('hidden');
+        updateAdminClock();
+        setInterval(updateAdminClock, 1000);
         if (localStorage.getItem('mt_admin_authed') === '1') {
           showAdminDashboard();
         }
