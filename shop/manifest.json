@@ -1,13 +1,11 @@
 {
-  "id": "/minitrend-kids/shop/",
-  "name": "MiniTrend Kids — Partner Shop",
+  "id": "./",
+  "name": "MiniTrend Shop",
   "short_name": "MiniTrend Shop",
-  "description": "MiniTrend Kids ချိတ်ဆက်ဆိုင်များအတွက် အော်ဒါအတည်ပြုခြင်း၊ Stock ထပ်တိုးပို့ခြင်း၊ Return နှင့် 95% ငွေစာရင်း App",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#fffbeb",
+  "background_color": "#ffffff",
   "theme_color": "#d97706",
   "icons": [
     {
