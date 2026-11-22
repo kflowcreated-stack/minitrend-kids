@@ -9,7 +9,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="MiniTrend Kids" />
-  <link rel="manifest" href="./manifest.json?v=9" />
+  <link rel="manifest" href="./manifest.json?v=10" />
   <link rel="icon" type="image/png" href="./icon.png?v=3" />
   <link rel="apple-touch-icon" href="./icon.png?v=3" />
 
@@ -101,7 +101,6 @@
       "ဒိုင်ဘာ", "အနှီး", "လက်အိတ်၊ ခြေအိတ်", "ကုတင်၊ ပုခက်",
       "သင်ကြားရေး", "ကစားစရာ"
     ];
-    // Age/Size ONLY for these 6 categories
     const AGE_REQUIRED_CATS = ["ဝမ်းဆက်", "နွေရာသီဝတ်", "အင်္ကျီ", "ဘောင်းဘီ", "ဦးထုတ်", "ဖိနပ်"];
     const SIZE_LABELS = [
       "၆ လ - ၁ နှစ်", "၁ နှစ် - ၂ နှစ်", "၂ - ၃ နှစ်",
@@ -242,7 +241,6 @@
           <div id="pm-colors" class="flex flex-wrap gap-2"></div>
         </div>
 
-        <!-- Size Section (Shown ONLY for the 6 age-required categories) -->
         <div id="pm-size-section">
           <div class="flex justify-between items-center mb-1.5">
             <p class="text-xs font-extrabold text-gray-700">📏 အရွယ်အစား (Size) ရွေးချယ်ပါ:</p>
@@ -251,7 +249,6 @@
           <div id="pm-sizes" class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
         </div>
 
-        <!-- Stock Row when Age/Size is NOT required -->
         <div id="pm-no-size-stock-row" class="hidden flex justify-between items-center bg-gray-50 border border-gray-200 rounded-xl px-3 py-2">
           <span class="text-xs font-bold text-gray-600">📦 လက်ကျန်အခြေအနေ</span>
           <span id="pm-no-size-stock-label" class="text-xs font-extrabold"></span>
@@ -464,7 +461,7 @@
         <div id="adm-restocks-list" class="space-y-3"></div>
       </div>
 
-      <!-- TAB 3: RETURNS (ADMIN CONFIRMS BEFORE NOTIFYING SHOP) -->
+      <!-- TAB 3: RETURNS -->
       <div id="adm-panel-returns" class="hidden space-y-3">
         <div class="bg-red-50 border border-red-200 rounded-xl p-3 text-xs font-bold text-red-900">
           🔄 Delivery မှ Cancel / COD ငြင်း (Return) တင်ထားသော အထုပ်များကို ဤနေရာတွင် စစ်ဆေးနိုင်ပါသည်။ Admin မှ <b>"🔔 Return Confirm (ဆိုင်ထံအကြောင်းကြားမည်)"</b> နှိပ်မှသာ သက်ဆိုင်ရာဆိုင် App ထံ အကြောင်းကြားစာ ရောက်ရှိပါမည်။
@@ -537,17 +534,55 @@
         </div>
       </div>
 
-      <!-- TAB 8: SEPARATE BROADCAST NOTI TAB -->
+      <!-- TAB 8: SPLIT BROADCAST NOTI TAB (CUSTOMER / DELIVERY / SHOP) -->
       <div id="adm-panel-noti" class="hidden space-y-4">
-        <div class="bg-white rounded-2xl shadow-sm border-2 border-pink-200 p-4 space-y-3">
-          <div class="flex justify-between items-center">
-            <h3 class="font-extrabold text-sm sm:text-base text-gray-900">📢 ဝယ်သူအားလုံးထံ Push Notification ပို့ရန်</h3>
-            <span id="adm-fcm-count" class="bg-pink-100 text-pink-700 text-[11px] font-extrabold px-2.5 py-0.5 rounded-full">Subscribers: 0</span>
+        <div class="bg-white rounded-2xl shadow-sm border-2 border-pink-200 p-4 space-y-3.5">
+          <div class="flex flex-wrap justify-between items-center gap-2">
+            <h3 class="font-extrabold text-sm sm:text-base text-gray-900">📢 Push Notification ခွဲပို့ရန်</h3>
+            <div class="flex flex-wrap gap-1.5 text-[11px] font-extrabold">
+              <span id="adm-fcm-cust" class="bg-pink-100 text-pink-700 px-2.5 py-0.5 rounded-full">🛍️ ဝယ်သူ: 0</span>
+              <span id="adm-fcm-rider" class="bg-blue-100 text-blue-700 px-2.5 py-0.5 rounded-full">🚚 Delivery: 0</span>
+              <span id="adm-fcm-shop" class="bg-amber-100 text-amber-800 px-2.5 py-0.5 rounded-full">🏪 ဆိုင်: 0</span>
+            </div>
           </div>
+
+          <!-- 3-Way Audience Switcher -->
+          <div class="grid grid-cols-3 gap-1.5 bg-gray-100 p-1.5 rounded-xl">
+            <button type="button" id="noti-aud-customer" onclick="switchNotiAudience('customer')" class="py-2.5 px-2 rounded-lg text-xs font-extrabold bg-pink-600 text-white shadow-sm transition">
+              🛍️ ဝယ်သူများ
+            </button>
+            <button type="button" id="noti-aud-rider" onclick="switchNotiAudience('rider')" class="py-2.5 px-2 rounded-lg text-xs font-bold text-gray-700 hover:bg-white transition">
+              🚚 Delivery App
+            </button>
+            <button type="button" id="noti-aud-shop" onclick="switchNotiAudience('shop')" class="py-2.5 px-2 rounded-lg text-xs font-bold text-gray-700 hover:bg-white transition">
+              🏪 ဆိုင် App
+            </button>
+          </div>
+
+          <!-- Specific Rider Selector -->
+          <div id="noti-rider-select-wrap" class="hidden bg-blue-50 border border-blue-200 rounded-xl p-2.5 space-y-1">
+            <label class="block text-[11px] font-extrabold text-blue-900">🚚 ပေးပို့မည့် Delivery ဝန်ထမ်း ရွေးချယ်ပါ:</label>
+            <select id="bc-rider-target" class="w-full border border-blue-300 rounded-xl px-3 py-2 text-xs font-bold bg-white">
+              <option value="all_riders">🚚 Delivery ဝန်ထမ်းအားလုံးထံ ပို့မည်</option>
+            </select>
+          </div>
+
+          <!-- Specific Shop Selector -->
+          <div id="noti-shop-select-wrap" class="hidden bg-amber-50 border border-amber-200 rounded-xl p-2.5 space-y-1">
+            <label class="block text-[11px] font-extrabold text-amber-900">🏪 ပေးပို့မည့် ချိတ်ဆက်ဆိုင် ရွေးချယ်ပါ:</label>
+            <select id="bc-shop-target" class="w-full border border-amber-300 rounded-xl px-3 py-2 text-xs font-bold bg-white">
+              <option value="all_shops">🏪 ချိတ်ဆက်ဆိုင်အားလုံးထံ ပို့မည်</option>
+            </select>
+          </div>
+
+          <p id="noti-audience-hint" class="text-[11px] font-bold text-pink-700 bg-pink-50 border border-pink-200 rounded-xl px-3 py-2">
+            🛍️ ဝယ်သူ App (Customer) တွင် Notification ဖွင့်ထားသူအားလုံးထံ ရောက်ရှိပါမည်။
+          </p>
+
           <form onsubmit="sendBroadcastAdmin(event)" class="space-y-2.5">
-            <input type="text" id="bc-title" required placeholder="ခေါင်းစဉ် (ဥပမာ - 🎁 ပစ္စည်းအသစ်များ ရောက်ပါပြီ!)" class="w-full border rounded-xl px-3 py-2.5 text-xs">
-            <textarea id="bc-msg" required rows="3" placeholder="ဝယ်သူထံ ပေးပို့မည့် စာသား..." class="w-full border rounded-xl px-3 py-2.5 text-xs"></textarea>
-            <button type="submit" id="btn-send-bc" class="bg-pink-600 hover:bg-pink-700 text-white font-extrabold px-5 py-2.5 rounded-xl text-xs shadow-sm">🚀 အားလုံးထံ ပို့မည်</button>
+            <input type="text" id="bc-title" required placeholder="ခေါင်းစဉ် (ဥပမာ - 🎁 ပစ္စည်းအသစ်များ ရောက်ပါပြီ!)" class="w-full border-2 border-gray-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-pink-400">
+            <textarea id="bc-msg" required rows="3" placeholder="ပေးပို့မည့် စာသား..." class="w-full border-2 border-gray-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-pink-400"></textarea>
+            <button type="submit" id="btn-send-bc" class="bg-pink-600 hover:bg-pink-700 text-white font-extrabold px-5 py-2.5 rounded-xl text-xs shadow-sm">🚀 ဝယ်သူအားလုံးထံ ပို့မည်</button>
           </form>
         </div>
       </div>
@@ -586,6 +621,7 @@
     let adminDataCache = null;
     let currentAdminTab = 'orders';
     let currentAdminOrderFilter = 'all';
+    let currentNotiAudience = 'customer';
     let pushPopupTimer = null;
     let activePreviewInfo = null;
     window.__adminPreviewMap = {};
@@ -904,7 +940,7 @@
       document.getElementById('sc-result-box').classList.remove('hidden');
     }
 
-    // ==================== LOAD & PARSE PRODUCTS (WITH INSTANT CACHE) ====================
+    // ==================== LOAD & PARSE PRODUCTS ====================
     function parseProductsRows(rows) {
       return (rows || []).map((r, idx) => {
         const prices = SIZE_LABELS.map((_, i) => parseInt(r[3 + i], 10) || 0);
@@ -1415,7 +1451,6 @@
       if (reason === null) return;
       if (btnEl) { btnEl.disabled = true; btnEl.innerText = '⏳ ပေးပို့နေပါသည်...'; }
 
-      // Instant visual feedback
       const target = customerActiveOrders.find(x => x.orderId === orderId);
       if (target) {
         target.canCancel = false;
@@ -1673,6 +1708,47 @@
       renderAdminOrdersAndRiders();
     }
 
+    // ==================== SPLIT NOTI AUDIENCE SWITCHER ====================
+    function switchNotiAudience(aud) {
+      currentNotiAudience = aud;
+      const btnCust = document.getElementById('noti-aud-customer');
+      const btnRider = document.getElementById('noti-aud-rider');
+      const btnShop = document.getElementById('noti-aud-shop');
+      const riderWrap = document.getElementById('noti-rider-select-wrap');
+      const shopWrap = document.getElementById('noti-shop-select-wrap');
+      const hintEl = document.getElementById('noti-audience-hint');
+      const titleInput = document.getElementById('bc-title');
+      const submitBtn = document.getElementById('btn-send-bc');
+
+      const baseIdle = 'py-2.5 px-2 rounded-lg text-xs font-bold text-gray-700 hover:bg-white transition';
+      btnCust.className = aud === 'customer' ? 'py-2.5 px-2 rounded-lg text-xs font-extrabold bg-pink-600 text-white shadow-sm transition' : baseIdle;
+      btnRider.className = aud === 'rider' ? 'py-2.5 px-2 rounded-lg text-xs font-extrabold bg-blue-600 text-white shadow-sm transition' : baseIdle;
+      btnShop.className = aud === 'shop' ? 'py-2.5 px-2 rounded-lg text-xs font-extrabold bg-amber-600 text-white shadow-sm transition' : baseIdle;
+
+      riderWrap.classList.toggle('hidden', aud !== 'rider');
+      shopWrap.classList.toggle('hidden', aud !== 'shop');
+
+      if (aud === 'customer') {
+        hintEl.className = 'text-[11px] font-bold text-pink-700 bg-pink-50 border border-pink-200 rounded-xl px-3 py-2';
+        hintEl.innerText = '🛍️ ဝယ်သူ App (Customer) တွင် Notification ဖွင့်ထားသူအားလုံးထံ ရောက်ရှိပါမည်။';
+        titleInput.placeholder = 'ခေါင်းစဉ် (ဥပမာ - 🎁 ပစ္စည်းအသစ်များ ရောက်ပါပြီ!)';
+        submitBtn.className = 'bg-pink-600 hover:bg-pink-700 text-white font-extrabold px-5 py-2.5 rounded-xl text-xs shadow-sm';
+        submitBtn.innerText = '🚀 ဝယ်သူအားလုံးထံ ပို့မည်';
+      } else if (aud === 'rider') {
+        hintEl.className = 'text-[11px] font-bold text-blue-800 bg-blue-50 border border-blue-200 rounded-xl px-3 py-2';
+        hintEl.innerText = '🚚 ရွေးချယ်ထားသော Delivery ဝန်ထမ်း App ထံသို့သာ ရောက်ရှိမည် (ဝယ်သူနှင့် ဆိုင်ဘက် မပေါ်ပါ)။';
+        titleInput.placeholder = 'ခေါင်းစဉ် (ဥပမာ - 🚚 ယနေ့ ပို့ဆောင်ရေး အရေးကြီးအသိပေးချက်)';
+        submitBtn.className = 'bg-blue-600 hover:bg-blue-700 text-white font-extrabold px-5 py-2.5 rounded-xl text-xs shadow-sm';
+        submitBtn.innerText = '🚀 Delivery ဝန်ထမ်းထံ ပို့မည်';
+      } else {
+        hintEl.className = 'text-[11px] font-bold text-amber-900 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2';
+        hintEl.innerText = '🏪 ရွေးချယ်ထားသော ချိတ်ဆက်ဆိုင် App ထံသို့သာ ရောက်ရှိမည် (ဝယ်သူနှင့် Delivery ဘက် မပေါ်ပါ)။';
+        titleInput.placeholder = 'ခေါင်းစဉ် (ဥပမာ - 🏪 ချိတ်ဆက်ဆိုင်များအတွက် အသိပေးချက်)';
+        submitBtn.className = 'bg-amber-600 hover:bg-amber-700 text-white font-extrabold px-5 py-2.5 rounded-xl text-xs shadow-sm';
+        submitBtn.innerText = '🚀 ဆိုင် App ထံ ပို့မည်';
+      }
+    }
+
     async function loadAdminDashboard(silent = false) {
       const btn = document.getElementById('btn-admin-refresh');
       if (btn && !silent) btn.innerText = '⏳...';
@@ -1847,7 +1923,31 @@
       document.getElementById('adm-badge-restocks').innerText = restocks.length;
       document.getElementById('adm-badge-returns').innerText = openReturnsCount;
       document.getElementById('adm-badge-payouts').innerText = payouts.length;
-      document.getElementById('adm-fcm-count').innerText = `Subscribers: ${d.fcmSubscribers || 0}`;
+
+      // Update per-role FCM counts & Notification Rider/Shop dropdowns
+      const fc = d.fcmCounts || { customers: d.fcmSubscribers || 0, riders: 0, shops: 0 };
+      const fCustEl = document.getElementById('adm-fcm-cust');
+      const fRiderEl = document.getElementById('adm-fcm-rider');
+      const fShopEl = document.getElementById('adm-fcm-shop');
+      if (fCustEl) fCustEl.innerText = `🛍️ ဝယ်သူ: ${fc.customers || 0}`;
+      if (fRiderEl) fRiderEl.innerText = `🚚 Delivery: ${fc.riders || 0}`;
+      if (fShopEl) fShopEl.innerText = `🏪 ဆိုင်: ${fc.shops || 0}`;
+
+      const bcRiderSel = document.getElementById('bc-rider-target');
+      if (bcRiderSel) {
+        const prevR = bcRiderSel.value;
+        bcRiderSel.innerHTML = `<option value="all_riders">🚚 Delivery ဝန်ထမ်းအားလုံးထံ ပို့မည်</option>` +
+          riders.map(r => `<option value="rider:${escapeHtml(r.id)}">👤 ${escapeHtml(r.id)} — ${escapeHtml(r.name)}</option>`).join('');
+        if ([...bcRiderSel.options].some(o => o.value === prevR)) bcRiderSel.value = prevR;
+      }
+
+      const bcShopSel = document.getElementById('bc-shop-target');
+      if (bcShopSel) {
+        const prevS = bcShopSel.value;
+        bcShopSel.innerHTML = `<option value="all_shops">🏪 ချိတ်ဆက်ဆိုင်အားလုံးထံ ပို့မည်</option>` +
+          shops.map(s => `<option value="shop:${escapeHtml(s.id)}">🏪 ${escapeHtml(s.id)} — ${escapeHtml(s.name)}</option>`).join('');
+        if ([...bcShopSel.options].some(o => o.value === prevS)) bcShopSel.value = prevS;
+      }
 
       const stkSel = document.getElementById('adm-stock-shop-filter');
       if (stkSel) {
@@ -2103,7 +2203,7 @@
         }).join('');
       }
 
-      // ---- TAB 3: RETURNS (ADMIN GATEKEEPER CONFIRM TO SHOP) ----
+      // ---- TAB 3: RETURNS ----
       const retEl = document.getElementById('adm-returns-list');
       if (returns.length === 0) {
         retEl.innerHTML = `<div class="bg-white rounded-2xl border p-8 text-center text-xs text-gray-400">✅ လက်ရှိ Return / COD ငြင်း စာရင်း မရှိပါ</div>`;
@@ -2590,21 +2690,39 @@
 
     async function sendBroadcastAdmin(e) {
       e.preventDefault();
+      let targetVal = 'all';
+      let targetLabel = '🛍️ ဝယ်သူအားလုံး';
+
+      if (currentNotiAudience === 'rider') {
+        const sel = document.getElementById('bc-rider-target');
+        targetVal = sel ? sel.value : 'all_riders';
+        targetLabel = sel && sel.selectedIndex >= 0 ? sel.options[sel.selectedIndex].text : '🚚 Delivery ဝန်ထမ်းအားလုံး';
+      } else if (currentNotiAudience === 'shop') {
+        const sel = document.getElementById('bc-shop-target');
+        targetVal = sel ? sel.value : 'all_shops';
+        targetLabel = sel && sel.selectedIndex >= 0 ? sel.options[sel.selectedIndex].text : '🏪 ချိတ်ဆက်ဆိုင်အားလုံး';
+      }
+
+      if (!confirm(`ဤ Notification ကို\n\n👉 ${targetLabel}\n\nထံသို့ ပေးပို့မည်မှာ သေချာပါသလား?`)) return;
+
       const btn = document.getElementById('btn-send-bc');
+      const prevBtnText = btn.innerText;
       btn.disabled = true; btn.innerText = '⏳ ပို့နေသည်...';
+
       await fetch(APPS_SCRIPT_URL, {
         method: 'POST', mode: 'no-cors',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify({
           action: 'sendBroadcast',
+          target: targetVal,
           title: document.getElementById('bc-title').value.trim(),
           message: document.getElementById('bc-msg').value.trim()
         })
       });
       document.getElementById('bc-title').value = '';
       document.getElementById('bc-msg').value = '';
-      btn.disabled = false; btn.innerText = '🚀 အားလုံးထံ ပို့မည်';
-      alert('✅ ဝယ်သူအားလုံးထံ Notification ပေးပို့ပြီးပါပြီ!');
+      btn.disabled = false; btn.innerText = prevBtnText;
+      alert(`✅ ${targetLabel} ထံ Notification ပေးပို့ပြီးပါပြီ!`);
     }
 
     async function setupCategorySheetsAdmin() {
