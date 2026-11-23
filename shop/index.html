@@ -14,7 +14,6 @@
   <link rel="apple-touch-icon" href="../icon.png?v=3" />
 
   <script>
-    // Auto-open in Google Chrome if opened from Viber / Messenger / Facebook / Telegram on Android
     if (window.location.pathname.endsWith('/shop')) {
       window.location.replace(window.location.pathname + '/' + window.location.search + window.location.hash);
     }
@@ -231,7 +230,7 @@
       <!-- TAB 2: MY STOCK HISTORY & DIRECT +/- ADJUSTMENT -->
       <div id="tab-panel-mystock" class="hidden space-y-3">
         <div class="bg-blue-50 border border-blue-200 rounded-xl px-3.5 py-2.5 text-[11px] text-blue-950 font-bold leading-relaxed">
-          📊 Admin ထံ ပို့ထားသော မိမိဆိုင်ပစ္စည်းများ၏ လက်ရှိ Stock မှတ်တမ်း ဖြစ်ပါသည်။ ဆိုင်တွင် လာဝယ်သူအား ရောင်းမိလိုက်ပါက <b>"−"</b> နှိပ်၍ ချက်ချင်းလျှော့ထားနိုင်သလို ပစ္စည်းထပ်ရောက်ပါက <b>"+"</b> နှိပ်၍ တိုးနိုင်ပါသည်။
+          📊 Admin ထံ Approve ပြီးသား မိမိဆိုင်ပစ္စည်းများ၏ လက်ရှိ Stock မှတ်တမ်း ဖြစ်ပါသည်။ ဆိုင်တွင် လာဝယ်သူအား ရောင်းမိလိုက်ပါက <b>"−"</b> နှိပ်၍ ချက်ချင်းလျှော့ထားနိုင်သလို ပစ္စည်းထပ်ရောက်ပါက <b>"+"</b> နှိပ်၍ တိုးနိုင်ပါသည်။
         </div>
         <div class="bg-white rounded-2xl border border-amber-200 p-3 shadow-sm flex gap-2 items-center">
           <input type="text" id="mystock-search" oninput="renderMyStockHistory()" placeholder="🔍 မိမိပစ္စည်းအမည် သို့မဟုတ် အမျိုးအစား ရှာရန်..." class="flex-1 border border-gray-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500">
@@ -242,12 +241,12 @@
         </div>
       </div>
 
-      <!-- TAB 3: RESTOCK / NEW PRODUCT SUBMISSION -->
+      <!-- TAB 3: RESTOCK / NEW PRODUCT SUBMISSION (UP TO 3 PHOTOS) -->
       <div id="tab-panel-restock" class="hidden space-y-4">
         <div class="bg-white rounded-2xl border-2 border-amber-300 p-4 shadow-sm space-y-3.5">
           <div>
             <h3 class="font-extrabold text-sm sm:text-base text-gray-900">📥 ပစ္စည်း Stock အသစ် / ထပ်တိုး ပို့ရန်</h3>
-            <p class="text-[11px] text-gray-500 mt-0.5">ပစ္စည်းအသစ်ထည့်ရန် သို့မဟုတ် ယခင်ပို့ထားသော ပစ္စည်းကို ရှာဖွေ၍ Stock ထပ်တိုးနိုင်ပါသည်။</p>
+            <p class="text-[11px] text-gray-500 mt-0.5">Admin မှ စစ်ဆေးပြီး Approve လုပ်မှသာ ဝယ်သူ App တွင် ပေါ်လာပါမည်။</p>
           </div>
 
           <div class="grid grid-cols-2 gap-1.5 bg-amber-50 p-1.5 rounded-xl border border-amber-200">
@@ -338,16 +337,20 @@
               </div>
             </div>
 
+            <!-- MULTI-IMAGE UPLOAD (1 TO 3 PHOTOS) -->
             <div>
-              <label class="block text-xs font-extrabold text-gray-700 mb-1">📷 Product ပုံ (Gallery မှ တန်းရွေးရန်)</label>
-              <input type="file" id="rs-image-file" accept="image/*" onchange="handleRestockGalleryFile(event)" class="hidden">
-              <div class="flex items-center gap-3 bg-amber-50/70 border-2 border-dashed border-amber-300 rounded-2xl p-3">
-                <img id="rs-img-preview" src="../icon.png?v=3" class="w-16 h-16 rounded-xl object-cover border bg-white shrink-0">
-                <div class="flex-1 space-y-1.5">
-                  <button type="button" onclick="document.getElementById('rs-image-file').click()" class="bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-xs px-3.5 py-2 rounded-xl shadow-sm">
-                    🖼️ Gallery မှ ပုံရွေးမည်
+              <div class="flex justify-between items-center mb-1">
+                <label class="block text-xs font-extrabold text-gray-700">📷 Product ပုံများ (၁ ပုံ မှ ၃ ပုံအထိ ထည့်နိုင်သည်)</label>
+                <span id="rs-img-count-badge" class="text-[10px] font-extrabold bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full">0 / 3 ပုံ</span>
+              </div>
+              <input type="file" id="rs-image-file" accept="image/*" multiple onchange="handleRestockGalleryFile(event)" class="hidden">
+              <div class="bg-amber-50/70 border-2 border-dashed border-amber-300 rounded-2xl p-3 space-y-2.5">
+                <div id="rs-photo-slots" class="grid grid-cols-3 gap-2"></div>
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <button type="button" id="btn-add-rs-photo" onclick="document.getElementById('rs-image-file').click()" class="bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-xs px-3.5 py-2 rounded-xl shadow-sm">
+                    🖼️ Gallery မှ ပုံရွေးမည် (+ ၃ ပုံအထိ)
                   </button>
-                  <p id="rs-img-status" class="text-[11px] font-bold text-gray-500">ပုံမရွေးရသေးပါ (Gallery မှ ရွေးထည့်နိုင်သည်)</p>
+                  <p id="rs-img-status" class="text-[11px] font-bold text-gray-500">၁ ပုံတည်း သို့မဟုတ် ၃ ပုံအထိ ရွေးထည့်နိုင်သည်</p>
                 </div>
               </div>
             </div>
@@ -450,12 +453,12 @@
     let restockMode = 'new';
     let shopProductsCache = [];
     let selectedExistingProduct = null;
-    let existingImageUrl = "";
-    let restockImageBase64 = "";
+    let restockPhotos = []; // Array of { base64: string, url: string }, max 3
     let pushPopupTimer = null;
     let isHandlingPopState = false;
     window.__shopImgMap = {};
 
+    const MAX_RESTOCK_PHOTOS = 3;
     const AGE_REQUIRED_CATS = ["ဝမ်းဆက်", "နွေရာသီဝတ်", "အင်္ကျီ", "ဘောင်းဘီ", "ဦးထုတ်", "ဖိနပ်"];
     const STANDARD_AGES = [
       "၆ လ - ၁ နှစ်", "၁ နှစ် - ၂ နှစ်", "၂ - ၃ နှစ်",
@@ -527,6 +530,130 @@
       try { localStorage.setItem('mt_shop_session', JSON.stringify(obj)); } catch (e) {}
     }
 
+    // ==================== MULTI-PHOTO (1 TO 3) MANAGER ====================
+    function renderRestockPhotoSlots() {
+      const container = document.getElementById('rs-photo-slots');
+      const countBadge = document.getElementById('rs-img-count-badge');
+      const addBtn = document.getElementById('btn-add-rs-photo');
+      const statusEl = document.getElementById('rs-img-status');
+      if (!container) return;
+
+      if (countBadge) countBadge.innerText = `${restockPhotos.length} / ${MAX_RESTOCK_PHOTOS} ပုံ`;
+
+      const slotsHtml = [];
+      for (let i = 0; i < MAX_RESTOCK_PHOTOS; i++) {
+        const photo = restockPhotos[i];
+        if (photo) {
+          const src = photo.base64 || photo.url || '../icon.png?v=3';
+          slotsHtml.push(`
+            <div class="relative aspect-square rounded-xl overflow-hidden border-2 border-amber-400 bg-white shadow-sm">
+              <img src="${escapeHtml(src)}" alt="ပုံ ${i + 1}" class="w-full h-full object-cover">
+              <span class="absolute bottom-1 left-1 bg-black/70 text-white text-[9px] font-extrabold px-1.5 py-0.5 rounded">${i === 0 ? 'ပုံ ၁ (အဓိက)' : 'ပုံ ' + (i + 1)}</span>
+              <button type="button" onclick="removeRestockPhoto(${i})" class="absolute top-1 right-1 bg-red-600 hover:bg-red-700 text-white w-6 h-6 rounded-full text-xs font-extrabold flex items-center justify-center shadow">✕</button>
+            </div>
+          `);
+        } else {
+          slotsHtml.push(`
+            <button type="button" onclick="document.getElementById('rs-image-file').click()" class="aspect-square rounded-xl border-2 border-dashed border-amber-300 bg-white/80 hover:bg-amber-100/50 flex flex-col items-center justify-center gap-1 text-amber-700 transition">
+              <span class="text-xl leading-none">＋</span>
+              <span class="text-[10px] font-extrabold">${i === 0 ? 'ပုံ ၁ (အဓိက)' : 'ပုံ ' + (i + 1) + ' (ထပ်ထည့်)'}</span>
+            </button>
+          `);
+        }
+      }
+      container.innerHTML = slotsHtml.join('');
+
+      if (addBtn) {
+        if (restockPhotos.length >= MAX_RESTOCK_PHOTOS) {
+          addBtn.disabled = true;
+          addBtn.className = 'bg-gray-300 text-gray-600 font-extrabold text-xs px-3.5 py-2 rounded-xl cursor-not-allowed';
+          addBtn.innerText = '✅ ၃ ပုံ ပြည့်ပါပြီ';
+        } else {
+          addBtn.disabled = false;
+          addBtn.className = 'bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-xs px-3.5 py-2 rounded-xl shadow-sm';
+          addBtn.innerText = restockPhotos.length === 0
+            ? '🖼️ Gallery မှ ပုံရွေးမည် (+ ၃ ပုံအထိ)'
+            : `🖼️ ပုံထပ်ထည့်မည် (ကျန် ${MAX_RESTOCK_PHOTOS - restockPhotos.length} ပုံ)`;
+        }
+      }
+
+      if (statusEl) {
+        if (restockPhotos.length === 0) {
+          statusEl.innerText = '၁ ပုံတည်း သို့မဟုတ် ၃ ပုံအထိ ရွေးထည့်နိုင်သည်';
+          statusEl.className = 'text-[11px] font-bold text-gray-500';
+        } else {
+          statusEl.innerText = `✅ ပုံ ${restockPhotos.length} ပုံ ရွေးပြီး (✕ နှိပ်၍ ဖျက်နိုင်သည်)`;
+          statusEl.className = 'text-[11px] font-extrabold text-emerald-700';
+        }
+      }
+    }
+
+    function removeRestockPhoto(idx) {
+      restockPhotos.splice(idx, 1);
+      renderRestockPhotoSlots();
+    }
+
+    function compressImageFile(file) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+          const img = new Image();
+          img.onload = function() {
+            const maxDim = 800;
+            let w = img.width;
+            let h = img.height;
+            if (w > maxDim || h > maxDim) {
+              if (w > h) { h = Math.round(h * (maxDim / w)); w = maxDim; }
+              else { w = Math.round(w * (maxDim / h)); h = maxDim; }
+            }
+            const canvas = document.createElement('canvas');
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, w, h);
+            ctx.drawImage(img, 0, 0, w, h);
+            resolve(canvas.toDataURL('image/jpeg', 0.70));
+          };
+          img.onerror = function() { resolve(''); };
+          img.src = ev.target.result;
+        };
+        reader.onerror = function() { resolve(''); };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function handleRestockGalleryFile(event) {
+      const files = Array.from(event.target.files || []);
+      event.target.value = '';
+      if (files.length === 0) return;
+
+      const remaining = MAX_RESTOCK_PHOTOS - restockPhotos.length;
+      if (remaining <= 0) {
+        alert('အများဆုံး ၃ ပုံအထိသာ ထည့်သွင်းနိုင်ပါသည်။');
+        return;
+      }
+
+      const statusEl = document.getElementById('rs-img-status');
+      if (statusEl) {
+        statusEl.innerText = '⏳ ပုံများ ပြင်ဆင်နေပါသည်...';
+        statusEl.className = 'text-[11px] font-extrabold text-amber-700';
+      }
+
+      const toProcess = files.slice(0, remaining);
+      for (let i = 0; i < toProcess.length; i++) {
+        const b64 = await compressImageFile(toProcess[i]);
+        if (b64 && restockPhotos.length < MAX_RESTOCK_PHOTOS) {
+          restockPhotos.push({ base64: b64, url: '' });
+        }
+      }
+
+      renderRestockPhotoSlots();
+      if (files.length > remaining && statusEl) {
+        statusEl.innerText = `✅ အများဆုံး ၃ ပုံအထိသာ ထည့်သွင်းပြီးပါပြီ`;
+      }
+    }
+
     // ==================== MY STOCK HISTORY WITH DIRECT +/- ADJUSTMENT ====================
     function renderMyStockHistory() {
       const box = document.getElementById('shop-mystock-list');
@@ -541,7 +668,7 @@
       });
 
       if (shopProductsCache.length === 0) {
-        box.innerHTML = `<div class="bg-white rounded-2xl border p-8 text-center text-xs text-gray-400">Admin ထံ ပို့ထားသော မိမိဆိုင်ပစ္စည်း မရှိသေးပါ — "📥 Stock ပို့ရန်" မှ ထည့်သွင်းနိုင်ပါသည်။</div>`;
+        box.innerHTML = `<div class="bg-white rounded-2xl border p-8 text-center text-xs text-gray-400">Admin ထံ Approve ပြီးသား မိမိဆိုင်ပစ္စည်း မရှိသေးပါ — "📥 Stock ပို့ရန်" မှ ထည့်သွင်းနိုင်ပါသည်။</div>`;
         return;
       }
       if (filtered.length === 0) {
@@ -736,20 +863,17 @@
       document.getElementById('rs-color').value = firstColor ? firstColor.name : '';
       document.getElementById('rs-desc').value = p.desc || '';
 
-      restockImageBase64 = '';
-      document.getElementById('rs-image-file').value = '';
-      existingImageUrl = (firstColor && firstColor.image) ? firstColor.image : '';
-      document.getElementById('rs-img-preview').src = existingImageUrl || '../icon.png?v=3';
-      const statusEl = document.getElementById('rs-img-status');
-      if (existingImageUrl) {
-        statusEl.innerText = '✅ ယခင်ပစ္စည်းပုံ အသင့်ထည့်ပြီး (ပုံအသစ်ပြောင်းလိုမှသာ Gallery မှ ရွေးပါ)';
-        statusEl.className = 'text-[11px] font-extrabold text-emerald-700';
-      } else {
-        statusEl.innerText = 'ပုံမရှိသေးပါ (Gallery မှ ရွေးထည့်နိုင်သည်)';
-        statusEl.className = 'text-[11px] font-bold text-gray-500';
-      }
+      // Pre-fill existing images (up to 3 unique URLs)
+      const uniqueImgs = [];
+      (p.colors || []).forEach(c => {
+        if (c && c.image && !uniqueImgs.includes(c.image) && uniqueImgs.length < MAX_RESTOCK_PHOTOS) {
+          uniqueImgs.push(c.image);
+        }
+      });
+      restockPhotos = uniqueImgs.map(u => ({ base64: '', url: u }));
+      renderRestockPhotoSlots();
 
-      document.getElementById('rs-sel-img').src = existingImageUrl || '../icon.png?v=3';
+      document.getElementById('rs-sel-img').src = uniqueImgs[0] || '../icon.png?v=3';
       document.getElementById('rs-sel-name').innerText = p.name;
       document.getElementById('rs-sel-meta').innerText = `📂 ${p.category} | 📦 စုစုပေါင်းလက်ကျန်: ${p.totalStock} ခု`;
 
@@ -790,15 +914,18 @@
       const c = selectedExistingProduct.colors[colorIdx];
       if (!c) return;
       document.getElementById('rs-color').value = c.name || '';
-      if (c.image && !restockImageBase64) {
-        existingImageUrl = c.image;
-        document.getElementById('rs-img-preview').src = c.image;
+      if (c.image) {
+        const exists = restockPhotos.some(ph => ph.url === c.image);
+        if (!exists) {
+          if (restockPhotos.length === 0) restockPhotos.push({ base64: '', url: c.image });
+          else if (!restockPhotos[0].base64) restockPhotos[0] = { base64: '', url: c.image };
+          renderRestockPhotoSlots();
+        }
       }
     }
 
     function clearSelectedExistingProduct(resetInputs = false) {
       selectedExistingProduct = null;
-      existingImageUrl = '';
       document.getElementById('rs-selected-summary')?.classList.add('hidden');
       document.getElementById('rs-current-size-stock')?.classList.add('hidden');
       if (resetInputs) {
@@ -807,14 +934,8 @@
           if (el) el.value = '';
         });
         document.getElementById('rs-qty').value = '10';
-        restockImageBase64 = '';
-        document.getElementById('rs-image-file').value = '';
-        document.getElementById('rs-img-preview').src = '../icon.png?v=3';
-        const statusEl = document.getElementById('rs-img-status');
-        if (statusEl) {
-          statusEl.innerText = 'ပုံမရွေးရသေးပါ (Gallery မှ ရွေးထည့်နိုင်သည်)';
-          statusEl.className = 'text-[11px] font-bold text-gray-500';
-        }
+        restockPhotos = [];
+        renderRestockPhotoSlots();
       }
       renderExistingProductsList();
     }
@@ -881,41 +1002,6 @@
       }
       document.getElementById('ios-guide-modal').classList.remove('hidden');
       pushShopHistoryState('install_guide');
-    }
-
-    function handleRestockGalleryFile(event) {
-      const file = event.target.files && event.target.files[0];
-      if (!file) return;
-      const statusEl = document.getElementById('rs-img-status');
-      statusEl.innerText = '⏳ ပုံပြင်ဆင်နေပါသည်...';
-
-      const reader = new FileReader();
-      reader.onload = function(ev) {
-        const img = new Image();
-        img.onload = function() {
-          const maxDim = 800;
-          let w = img.width;
-          let h = img.height;
-          if (w > maxDim || h > maxDim) {
-            if (w > h) { h = Math.round(h * (maxDim / w)); w = maxDim; }
-            else { w = Math.round(w * (maxDim / h)); h = maxDim; }
-          }
-          const canvas = document.createElement('canvas');
-          canvas.width = w;
-          canvas.height = h;
-          const ctx = canvas.getContext('2d');
-          ctx.fillStyle = '#ffffff';
-          ctx.fillRect(0, 0, w, h);
-          ctx.drawImage(img, 0, 0, w, h);
-
-          restockImageBase64 = canvas.toDataURL('image/jpeg', 0.72);
-          document.getElementById('rs-img-preview').src = restockImageBase64;
-          statusEl.innerText = '✅ Gallery မှ ပုံအသစ်ရွေးပြီးပါပြီ';
-          statusEl.className = 'text-[11px] font-extrabold text-emerald-700';
-        };
-        img.src = ev.target.result;
-      };
-      reader.readAsDataURL(file);
     }
 
     function playNotiChime() {
@@ -1231,12 +1317,12 @@
         }).join('');
       }
 
-      // ---- TAB 3: Restock Request History ----
+      // ---- TAB 3: Restock Request History (Multi-Photo + Reject Reason) ----
       const rsHistEl = document.getElementById('shop-restock-history');
       if (restockHistory.length === 0) {
         rsHistEl.innerHTML = `<p class="text-gray-400 py-3 text-center">ပို့ထားသော မှတ်တမ်း မရှိသေးပါ။</p>`;
       } else {
-        rsHistEl.innerHTML = restockHistory.map(r => {
+        rsHistEl.innerHTML = restockHistory.map((r, rIdx) => {
           const isApp = r.status === 'Approved';
           const isRej = r.status === 'Rejected';
           const badge = isApp
@@ -1245,17 +1331,33 @@
               ? `<span class="bg-red-100 text-red-800 px-2 py-0.5 rounded-full text-[10px] font-extrabold">❌ ပယ်ချထား</span>`
               : `<span class="bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full text-[10px] font-extrabold">⏳ Admin စစ်ဆေးဆဲ</span>`);
           const szShow = r.size && r.size !== 'အသက်မလို' ? ` | 📏 ${escapeHtml(r.size)}` : '';
+
+          const imgs = (Array.isArray(r.images) && r.images.length > 0)
+            ? r.images.filter(Boolean)
+            : (r.image ? [r.image] : []);
+
+          const thumbsHtml = imgs.length > 0
+            ? `<div class="flex gap-1.5 mt-1.5 flex-wrap">${imgs.map((im, iIdx) => {
+                const k = `rsh_${rIdx}_${iIdx}`;
+                window.__shopImgMap[k] = { name: r.productName, colorName: r.color || r.category, size: r.size, qty: r.qty, image: im };
+                return `<button type="button" onclick="openImageLightbox('${k}')" class="relative w-12 h-12 rounded-lg overflow-hidden border border-amber-200 bg-gray-50 shrink-0 cursor-zoom-in"><img src="${escapeHtml(im)}" class="w-full h-full object-cover"></button>`;
+              }).join('')}</div>`
+            : '';
+
+          const rejectReasonHtml = (isRej && r.rejectReason)
+            ? `<div class="mt-1.5 bg-red-50 border border-red-200 text-red-700 rounded-lg px-2.5 py-1.5 text-[11px] font-extrabold">❌ ပယ်ချရသည့်အကြောင်းရင်း: ${escapeHtml(r.rejectReason)}</div>`
+            : '';
+
           return `
-            <div class="py-2.5 flex items-center gap-2.5">
-              ${r.image ? `<img src="${escapeHtml(r.image)}" class="w-12 h-12 rounded-xl object-cover border shrink-0">` : ''}
-              <div class="flex-1 min-w-0">
-                <div class="flex justify-between items-center gap-1">
-                  <p class="font-extrabold text-gray-900 truncate">${escapeHtml(r.productName)}</p>
-                  ${badge}
-                </div>
-                <p class="text-[11px] font-bold text-gray-600">${escapeHtml(r.category)}${szShow} | <b>+${r.qty} ခု</b>${Number(r.price || 0) > 0 ? ` | 💰 <span class="text-emerald-700">${Number(r.price).toLocaleString()} Ks</span>` : ''}${r.color ? ` | 🎨 ${escapeHtml(r.color)}` : ''}</p>
-                <p class="text-[10px] text-gray-400">⏰ ${escapeHtml(r.dateTime)}</p>
+            <div class="py-2.5 space-y-1">
+              <div class="flex justify-between items-center gap-1">
+                <p class="font-extrabold text-gray-900 truncate">${escapeHtml(r.productName)}</p>
+                ${badge}
               </div>
+              <p class="text-[11px] font-bold text-gray-600">${escapeHtml(r.category)}${szShow} | <b>+${r.qty} ခု</b>${Number(r.price || 0) > 0 ? ` | 💰 <span class="text-emerald-700">${Number(r.price).toLocaleString()} Ks</span>` : ''}${r.color ? ` | 🎨 ${escapeHtml(r.color)}` : ''}</p>
+              ${thumbsHtml}
+              ${rejectReasonHtml}
+              <p class="text-[10px] text-gray-400">⏰ ${escapeHtml(r.dateTime)}</p>
             </div>
           `;
         }).join('');
@@ -1385,6 +1487,12 @@
       const btn = document.getElementById('btn-submit-restock');
       btn.disabled = true; btn.innerText = "⏳ ပို့နေပါသည်...";
 
+      const photoList = restockPhotos.slice(0, MAX_RESTOCK_PHOTOS).map(p => ({
+        base64: p.base64 || "",
+        url: p.base64 ? "" : (p.url || "")
+      }));
+      const firstPhoto = photoList[0] || { base64: "", url: "" };
+
       try {
         await fetch(APPS_SCRIPT_URL, {
           method: "POST", mode: "no-cors",
@@ -1399,13 +1507,14 @@
             qty: parseInt(document.getElementById('rs-qty').value, 10) || 1,
             price: parseInt(document.getElementById('rs-price').value, 10) || 0,
             color: document.getElementById('rs-color').value.trim(),
-            imageBase64: restockImageBase64,
-            image: restockImageBase64 ? "" : existingImageUrl,
+            imageBase64: firstPhoto.base64,
+            image: firstPhoto.url,
+            photoList: photoList,
             description: document.getElementById('rs-desc').value.trim()
           })
         });
         clearSelectedExistingProduct(true);
-        alert("MiniTrend kids သို့ Stock ထပ်တိုးပို့ပြီးပါပြီ၊ Admin မှ စစ်ဆေးပြီး approve လုပ်ပါမည်");
+        alert("MiniTrend Kids သို့ Stock ထပ်တိုးပို့ပြီးပါပြီ၊ Admin မှ စစ်ဆေးပြီး Approve လုပ်မှသာ ဝယ်သူ App တွင် ပေါ်လာပါမည်။");
         setTimeout(() => loadShopDashboard(false), 1200);
       } catch (err) {
         alert("⚠️ ပေးပို့ရာတွင် အမှားရှိနေပါသည်။");
@@ -1440,6 +1549,7 @@
       try { history.replaceState({ shopHome: true }, ''); } catch (e) {}
       updateRestockSizeOptions();
       updateQuietHoursBanner();
+      renderRestockPhotoSlots();
 
       if (isStandaloneApp()) {
         document.getElementById('btn-shop-install')?.classList.add('hidden');
