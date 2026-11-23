@@ -1373,11 +1373,9 @@
         const isPartner = p.shopId !== 'OWN';
         const isSoldOut = p.totalStock <= 0;
         const imgUrl = (p.colors[0] && p.colors[0].image) ? p.colors[0].image : './icon.png?v=3';
-        const stockBadge = isSoldOut
+       const stockBadge = isSoldOut
           ? `<span class="bg-gray-800/85 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full">❌ ကုန်ပြီ</span>`
-          : (isPartner
-              ? `<span class="bg-emerald-600/90 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full">✅ မှာယူနိုင်သည်</span>`
-              : `<span class="bg-white/90 text-emerald-700 border border-emerald-200 text-[10px] font-extrabold px-2 py-0.5 rounded-full">လက်ကျန်: ${p.totalStock}</span>`);
+          : `<span class="bg-emerald-600/90 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full">✅ မှာယူနိုင်ပါသည်</span>`;
 
         return `
           <div onclick="openProductModal(${p.id})" class="bg-white rounded-2xl shadow-sm border border-pink-100 overflow-hidden cursor-pointer hover:shadow-md transition flex flex-col">
