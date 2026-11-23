@@ -1,4 +1,4 @@
-const CACHE_NAME = "minitrend-app-shell-v5";
+const CACHE_NAME = "minitrend-app-shell-v6";
 const CORE_SHELL_ASSETS = [
   "./",
   "./index.html",
@@ -9,9 +9,10 @@ const CORE_SHELL_ASSETS = [
   "./delivery/"
 ];
 
-// Always bypass cache for live order/API calls & Cloudflare Proxy
+// Always bypass cache for Admin Panel, Cloudflare Proxy & live API calls
 function isBypassUrl(urlStr) {
   return (
+    urlStr.indexOf("role=admin") !== -1 ||
     urlStr.indexOf("/api/") !== -1 ||
     urlStr.indexOf("script.google.com") !== -1 ||
     urlStr.indexOf("script.googleusercontent.com") !== -1 ||
@@ -59,7 +60,7 @@ self.addEventListener("activate", function(event) {
   );
 });
 
-// Stale-While-Revalidate: Instant open from phone cache + silent background refresh
+// Stale-While-Revalidate for Customer/Shop/Delivery instant launch (Admin always live)
 self.addEventListener("fetch", function(event) {
   const req = event.request;
   if (req.method !== "GET") return;
@@ -82,7 +83,6 @@ self.addEventListener("fetch", function(event) {
           return cachedRes;
         });
 
-        // Serve cached shell/assets immediately for instant launch!
         return cachedRes || networkPromise;
       });
     })
