@@ -214,7 +214,6 @@
           <p id="sc-result-note" class="text-[11px] text-gray-600 font-bold leading-relaxed"></p>
         </div>
 
-        <!-- MATCHING PRODUCTS LIST INSIDE SIZE CALCULATOR POP-UP -->
         <div id="sc-products-section" class="hidden pt-2 border-t border-purple-100 space-y-2.5">
           <div class="flex justify-between items-center gap-2">
             <p class="text-xs font-extrabold text-gray-900">🛍️ ဤ Size နှင့် ကိုက်ညီသော ပစ္စည်းများ</p>
@@ -443,7 +442,7 @@
         <button type="button" id="adm-tab-restocks" onclick="switchAdminTab('restocks')" class="px-3 py-2 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 shrink-0">📥 Stock ထပ်တိုး (<span id="adm-badge-restocks">0</span>)</button>
         <button type="button" id="adm-tab-returns" onclick="switchAdminTab('returns')" class="px-3 py-2 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 shrink-0">🔄 Return (<span id="adm-badge-returns">0</span>)</button>
         <button type="button" id="adm-tab-payouts" onclick="switchAdminTab('payouts')" class="px-3 py-2 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 shrink-0">💰 95% ရှင်း (<span id="adm-badge-payouts">0</span>)</button>
-        <button type="button" id="adm-tab-stock" onclick="switchAdminTab('stock')" class="px-3 py-2 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 shrink-0">📊 Stock</button>
+        <button type="button" id="adm-tab-stock" onclick="switchAdminTab('stock')" class="px-3 py-2 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 shrink-0">📊 Stock (Sheet)</button>
         <button type="button" id="adm-tab-shops" onclick="switchAdminTab('shops')" class="px-3 py-2 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 shrink-0">🏪 ဆိုင်များ</button>
         <button type="button" id="adm-tab-riders" onclick="switchAdminTab('riders')" class="px-3 py-2 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 shrink-0">🚚 ဝန်ထမ်းများ</button>
         <button type="button" id="adm-tab-noti" onclick="switchAdminTab('noti')" class="px-3 py-2 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 shrink-0">📢 Noti ပို့ရန်</button>
@@ -465,10 +464,10 @@
         </div>
       </div>
 
-      <!-- TAB 2: SHOP RESTOCK / NEW ARRIVAL APPROVALS -->
+      <!-- TAB 2: SHOP RESTOCK / NEW ARRIVAL APPROVALS (APPROVE-FIRST + PHOTO EDITOR + REJECT REASON) -->
       <div id="adm-panel-restocks" class="hidden space-y-3">
-        <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs font-bold text-amber-950">
-          📥 ဆိုင်ရှင် App မှ ပို့လာသော Stock ထပ်တိုးများကို သက်ဆိုင်ရာ Google Sheet ထဲ Auto ထည့်သွင်းပေးပြီးဖြစ်ပါသည်။ ပုံကြည့်/Download ဆွဲပြီး <b>"✅ Approve"</b> နှိပ်အတည်ပြုနိုင်ပါသည်။
+        <div class="bg-amber-50 border-2 border-amber-300 rounded-xl p-3 text-xs font-bold text-amber-950 leading-relaxed">
+          📥 ဆိုင်ရှင် App မှ ပို့လာသော Stock ထပ်တိုး/အသစ်များသည် <b>Admin မှ Approve နှိပ်မှသာ</b> ဝယ်သူ App နှင့် Google Sheet ထဲသို့ ဝင်ရောက်ပါမည်။ Approve မလုပ်မီ ပုံများ (၁–၃ ပုံ) ကို ကြည့်/Download ဆွဲနိုင်သလို <b>"✏️ ပုံပြင် (Edit)"</b> ဖြင့် ပုံအသစ်လဲ/ပြင်ဆင်နိုင်ပြီး ပယ်ချလိုပါက အကြောင်းပြချက် ရေးထည့်ပေးပို့နိုင်ပါသည်။
         </div>
         <div id="adm-restocks-list" class="space-y-3"></div>
       </div>
@@ -513,15 +512,34 @@
         </div>
       </div>
 
-      <!-- TAB 5: 100% ADMIN STOCK CONTROL -->
+      <!-- TAB 5: GOOGLE SHEET STOCK CONTROL (READ-ONLY VIEW + DIRECT SHEET OPEN & SYNC) -->
       <div id="adm-panel-stock" class="hidden space-y-3">
-        <div class="bg-white rounded-2xl border border-pink-200 p-3.5 flex flex-wrap gap-2 items-center">
+        <div class="bg-emerald-50 border-2 border-emerald-300 rounded-2xl p-3.5 shadow-sm flex flex-wrap justify-between items-center gap-3">
+          <div class="flex-1 min-w-[220px] space-y-1">
+            <p class="text-xs sm:text-sm font-extrabold text-emerald-950">📗 Google Sheet မှတစ်ဆင့် Stock အားလုံး Control လုပ်ခြင်း</p>
+            <p class="text-[11px] font-bold text-emerald-800 leading-relaxed">
+              Stock အတိုး/အလျော့၊ ဈေးနှုန်းနှင့် ပစ္စည်းအဖွင့်/အပိတ် အားလုံးကို Google Sheet ထဲတွင် တိုက်ရိုက်ပြင်ဆင်နိုင်ပါသည်။ ပြင်ပြီးပါက <b>"🔄 Sheet မှ Sync ဆွဲမည်"</b> ကို နှိပ်လိုက်ရုံဖြင့် Admin နှင့် ဝယ်သူ App တွင် ချက်ချင်း Update ဖြစ်သွားပါမည်။
+            </p>
+          </div>
+          <div class="flex flex-wrap gap-2 shrink-0">
+            <button type="button" id="btn-open-master-sheet" onclick="openGoogleSheetForStock('')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs shadow-sm flex items-center gap-1.5">
+              📗 Google Sheet ဖွင့်မည်
+            </button>
+            <button type="button" id="btn-sync-sheet-stock" onclick="syncStockFromSheet(this)" class="bg-pink-600 hover:bg-pink-700 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs shadow-sm">
+              🔄 Sheet မှ Sync ဆွဲမည်
+            </button>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-pink-200 p-3 flex flex-wrap gap-2 items-center">
           <select id="adm-stock-shop-filter" onchange="renderAdminStockPanel()" class="border-2 border-pink-200 rounded-xl px-3 py-2 text-xs font-extrabold bg-gray-50">
             <option value="ALL">🏪 ဆိုင်အားလုံး (OWN + ချိတ်ဆိုင်)</option>
             <option value="OWN">🏠 OWN (ကိုယ်ပိုင်စတော့)</option>
           </select>
-          <input type="text" id="adm-stock-search" oninput="renderAdminStockPanel()" placeholder="🔍 ပစ္စည်းအမည် ရှာရန်..." class="flex-1 min-w-[180px] border border-gray-200 rounded-xl px-3 py-2 text-xs">
-          <button type="button" onclick="loadProducts(true)" class="bg-pink-600 text-white font-extrabold px-3 py-2 rounded-xl text-xs">🔄 Stock ပြန်ဆွဲ</button>
+          <select id="adm-stock-cat-filter" onchange="renderAdminStockPanel()" class="border-2 border-gray-200 rounded-xl px-3 py-2 text-xs font-bold bg-gray-50">
+            <option value="ALL">📂 အမျိုးအစားအားလုံး</option>
+          </select>
+          <input type="text" id="adm-stock-search" oninput="renderAdminStockPanel()" placeholder="🔍 ပစ္စည်းအမည် ရှာရန်..." class="flex-1 min-w-[160px] border border-gray-200 rounded-xl px-3 py-2 text-xs">
         </div>
         <div id="adm-stock-list" class="space-y-3"></div>
       </div>
@@ -636,6 +654,70 @@
     </div>
   </div>
 
+  <!-- ADMIN RESTOCK PHOTO EDIT MODAL (EDIT / REPLACE / ROTATE / 1:1 WHITE BG BEFORE APPROVE) -->
+  <div id="admin-restock-edit-modal" onclick="closeRestockEditModal()" class="fixed inset-0 bg-black/75 z-50 hidden flex items-end sm:items-center justify-center sm:p-4 backdrop-blur-sm">
+    <div onclick="event.stopPropagation()" class="bg-white rounded-t-3xl sm:rounded-3xl max-w-xl w-full max-h-[92vh] overflow-y-auto p-4 sm:p-5 shadow-2xl border-2 border-amber-300 space-y-3.5">
+      <div class="flex justify-between items-center border-b pb-2.5 sticky top-0 bg-white z-10">
+        <div>
+          <h3 class="text-sm sm:text-base font-extrabold text-gray-900">✏️ ပစ္စည်းပုံများ ပြင်ဆင်ရန် (Approve မလုပ်မီ)</h3>
+          <p id="re-product-title" class="text-xs font-extrabold text-amber-700 mt-0.5"></p>
+        </div>
+        <button type="button" onclick="closeRestockEditModal()" class="text-gray-400 hover:text-gray-800 text-xl font-bold px-1">✕</button>
+      </div>
+
+      <p id="re-product-meta" class="text-[11px] font-bold text-gray-600 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2"></p>
+
+      <input type="file" id="re-add-photo-file" accept="image/*" multiple onchange="handleAdminAddRestockPhotos(event)" class="hidden">
+      <input type="file" id="re-replace-photo-file" accept="image/*" onchange="handleAdminReplaceRestockPhoto(event)" class="hidden">
+
+      <div id="re-photo-slots" class="space-y-2.5"></div>
+
+      <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+        <button type="button" id="btn-re-add-photo" onclick="document.getElementById('re-add-photo-file').click()" class="bg-amber-100 hover:bg-amber-200 text-amber-900 font-extrabold text-xs px-3.5 py-2 rounded-xl border border-amber-300">
+          ➕ Gallery မှ ပုံထပ်ထည့်မည် (၃ ပုံအထိ)
+        </button>
+        <p id="re-edit-status" class="text-[11px] font-bold text-gray-500"></p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 border-t">
+        <button type="button" id="btn-re-save-only" onclick="saveEditedRestockPhotos(false, this)" class="bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-2.5 px-4 rounded-xl text-xs shadow-sm">
+          💾 ပုံပြင်ဆင်မှု သိမ်းမည်
+        </button>
+        <button type="button" id="btn-re-save-approve" onclick="saveEditedRestockPhotos(true, this)" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-2.5 px-4 rounded-xl text-xs shadow-sm">
+          ✅ သိမ်းပြီး ဝယ်သူ App ထဲ Approve ထည့်မည်
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN REJECT RESTOCK REASON MODAL -->
+  <div id="admin-reject-restock-modal" onclick="closeRejectRestockModal()" class="fixed inset-0 bg-black/75 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+    <div onclick="event.stopPropagation()" class="bg-white rounded-2xl max-w-md w-full p-5 shadow-2xl border-2 border-red-300 space-y-3">
+      <div class="flex justify-between items-center border-b pb-2.5">
+        <h3 class="text-sm sm:text-base font-extrabold text-red-700">❌ Stock Request ပယ်ချရန်</h3>
+        <button type="button" onclick="closeRejectRestockModal()" class="text-gray-400 hover:text-gray-800 text-xl font-bold px-1">✕</button>
+      </div>
+      <div id="rej-modal-info" class="bg-red-50 border border-red-200 rounded-xl p-2.5 text-xs font-bold text-gray-800"></div>
+      <div class="space-y-1.5">
+        <p class="text-[11px] font-extrabold text-gray-600">⚡ အမြန်ရွေးရန် (သို့မဟုတ် အောက်တွင် ကိုယ်တိုင်ရေးပါ):</p>
+        <div class="flex flex-wrap gap-1.5">
+          <button type="button" onclick="setQuickRejectReason('ပုံမကြည်လင်ပါ — ပုံအသစ်ပြန်ရိုက်ပို့ပေးပါ။')" class="bg-gray-100 hover:bg-red-50 text-gray-700 border border-gray-200 px-2.5 py-1 rounded-lg text-[11px] font-bold">📷 ပုံမကြည်လင်ပါ</button>
+          <button type="button" onclick="setQuickRejectReason('ဈေးနှုန်း ပြန်လည်စစ်ဆေးပေးပါ။')" class="bg-gray-100 hover:bg-red-50 text-gray-700 border border-gray-200 px-2.5 py-1 rounded-lg text-[11px] font-bold">💰 ဈေးနှုန်းပြန်စစ်ပါ</button>
+          <button type="button" onclick="setQuickRejectReason('ပစ္စည်းအချက်အလက် / Size မပြည့်စုံပါ။')" class="bg-gray-100 hover:bg-red-50 text-gray-700 border border-gray-200 px-2.5 py-1 rounded-lg text-[11px] font-bold">📝 အချက်အလက်မပြည့်စုံ</button>
+          <button type="button" onclick="setQuickRejectReason('ပစ္စည်းအမည် သို့မဟုတ် အမျိုးအစား မှားယွင်းနေပါသည်။')" class="bg-gray-100 hover:bg-red-50 text-gray-700 border border-gray-200 px-2.5 py-1 rounded-lg text-[11px] font-bold">📂 အမျိုးအစားမှား</button>
+        </div>
+      </div>
+      <div>
+        <label class="block text-xs font-extrabold text-gray-700 mb-1">✍️ ပယ်ချရသည့် အကြောင်းပြချက် (ဆိုင် App တွင် ပေါ်ပါမည်)</label>
+        <textarea id="rej-reason-input" rows="3" placeholder="ပယ်ချရသည့် အကြောင်းပြချက်ကို ရေးသားပါ..." class="w-full border-2 border-red-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-red-500"></textarea>
+        <p id="rej-reason-err" class="hidden text-[11px] font-extrabold text-red-600 mt-1">⚠️ ပယ်ချရသည့် အကြောင်းပြချက် ရေးထည့်ပေးပါ။</p>
+      </div>
+      <div class="flex gap-2 pt-1">
+        <button type="button" onclick="closeRejectRestockModal()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-extrabold py-2.5 rounded-xl text-xs">မလုပ်တော့ပါ</button>
+        <button type="button" id="btn-confirm-reject-restock" onclick="confirmAdminRejectRestock()" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-extrabold py-2.5 rounded-xl text-xs shadow-sm">❌ ပယ်ချပြီး ဆိုင်ထံပို့မည်</button>
+      </div>
+    </div>
+  </div>
   <script>
     const urlParams = new URLSearchParams(window.location.search);
     const APP_ROLE = (urlParams.get('role') || 'customer').toLowerCase();
@@ -661,6 +743,14 @@
     let currentNotiAudience = 'customer';
     let pushPopupTimer = null;
     let activePreviewInfo = null;
+
+    // Restock Photo Editor & Reject Modal states
+    let editingRestockId = '';
+    let editingRestockPhotos = []; // [{ url, fileId, base64, modified }]
+    let replacePhotoTargetIdx = -1;
+    let rejectingRestockId = '';
+    const MAX_ADMIN_RESTOCK_PHOTOS = 3;
+
     window.__adminPreviewMap = {};
     window.__custOrderImgMap = {};
     window.__b64ImgCache = {};
@@ -813,6 +903,19 @@
       const safeName = ((titleName || 'minitrend_product').replace(/[^a-zA-Z0-9\u1000-\u109F_-]+/g, '_').substring(0, 40) || 'product') + '.jpg';
 
       try {
+        if (imageUrl && imageUrl.startsWith('data:image/')) {
+          const blob = dataUrlToBlob(imageUrl);
+          const blobUrl = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = blobUrl;
+          a.download = safeName;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          setTimeout(() => URL.revokeObjectURL(blobUrl), 4000);
+          if (btnEl) { btnEl.disabled = false; btnEl.innerText = '✅ Download ပြီး'; setTimeout(() => { btnEl.innerText = origText || '⬇️ ပုံ Download ဆွဲမည်'; }, 2500); }
+          return;
+        }
         if (fid) {
           let imgData = window.__b64ImgCache[fid];
           if (!imgData) {
@@ -1140,14 +1243,14 @@
       let data = null;
       const useFresh = (APP_ROLE === 'admin' || forceRenderAdminStock);
 
-      // ၁။ အဓိကလမ်းကြောင်း — Cloudflare Cache Proxy (လူထောင်ချီခံနိုင်ပြီး မြန်ဆန်သည်)
+      // ၁။ အဓိကလမ်းကြောင်း — Cloudflare Cache Proxy
       const proxyUrl = useFresh ? `/api/products?nocache=1&t=${Date.now()}` : `/api/products`;
       const proxyData = await fetchJsonWithTimeout(proxyUrl, 8000);
       if (proxyData && Array.isArray(proxyData.rows) && proxyData.rows.length > 0) {
         data = proxyData;
       }
 
-      // ၂။ Auto-Fallback — Proxy Error တက်ပါက သို့မဟုတ် Limit ပြည့်ပါက Google Apps Script မှ အလိုအလျောက် တိုက်ရိုက်ဆွဲမည်
+      // ၂။ Auto-Fallback — Proxy မရပါက Google Apps Script မှ တိုက်ရိုက်ဆွဲမည်
       if (!data) {
         const directData = await fetchJsonWithTimeout(`${APPS_SCRIPT_URL}?action=getProducts&t=${Date.now()}`, 12000);
         if (directData && Array.isArray(directData.rows)) {
@@ -1954,6 +2057,9 @@
         const res = await fetch(`${APPS_SCRIPT_URL}?action=getVisitors&t=${Date.now()}`, { cache: 'no-store' });
         const data = await res.json();
         adminDataCache = data;
+        if (data && data.sheetUrl) {
+          try { localStorage.setItem('mt_master_sheet_url', data.sheetUrl); } catch (e) {}
+        }
         renderAdminOrdersAndRiders();
       } catch (e) {}
       if (btn && !silent) btn.innerText = '🔄 စာရင်းပြန်စစ်မည်';
@@ -2029,6 +2135,343 @@
     }
 
     function closeAdminItemPreview() { document.getElementById('admin-item-preview-modal').classList.add('hidden'); }
+
+    // ==================== ADMIN RESTOCK PHOTO EDITOR (BEFORE APPROVE) ====================
+    function getRestockImagesArray(rs) {
+      if (Array.isArray(rs.images) && rs.images.length > 0) {
+        return rs.images.filter(Boolean).slice(0, MAX_ADMIN_RESTOCK_PHOTOS);
+      }
+      return rs.image ? [rs.image] : [];
+    }
+
+    function openRestockEditModal(requestId) {
+      const rs = (adminDataCache?.pendingRestocks || []).find(x => x.requestId === requestId);
+      if (!rs) return;
+      editingRestockId = requestId;
+      const imgs = getRestockImagesArray(rs);
+      const fIds = Array.isArray(rs.fileIds) ? rs.fileIds : [];
+      editingRestockPhotos = imgs.map((u, i) => ({
+        url: u,
+        fileId: fIds[i] || extractDriveIdClient(u),
+        base64: '',
+        modified: false
+      }));
+
+      document.getElementById('re-product-title').innerText = `${rs.productName} (${rs.shopId} — ${rs.shopName})`;
+      const szShow = rs.size && rs.size !== 'အသက်မလို' ? ` | 📏 ${rs.size}` : '';
+      document.getElementById('re-product-meta').innerText =
+        `📂 ${rs.category}${szShow} | 📦 +${rs.qty} ခု | 💰 ${Number(rs.price || 0).toLocaleString()} Ks${rs.color ? ' | 🎨 ' + rs.color : ''}`;
+      document.getElementById('re-edit-status').innerText = '';
+
+      renderAdminRestockEditSlots();
+      document.getElementById('admin-restock-edit-modal').classList.remove('hidden');
+    }
+
+    function closeRestockEditModal() {
+      document.getElementById('admin-restock-edit-modal').classList.add('hidden');
+      editingRestockId = '';
+      editingRestockPhotos = [];
+      replacePhotoTargetIdx = -1;
+    }
+
+    function renderAdminRestockEditSlots() {
+      const box = document.getElementById('re-photo-slots');
+      const addBtn = document.getElementById('btn-re-add-photo');
+      if (!box) return;
+
+      if (editingRestockPhotos.length === 0) {
+        box.innerHTML = `<div class="bg-gray-50 border-2 border-dashed border-gray-300 rounded-2xl p-6 text-center text-xs text-gray-500 font-bold">ပုံမရှိသေးပါ — အောက်ပါ "➕ Gallery မှ ပုံထပ်ထည့်မည်" ကို နှိပ်၍ ထည့်နိုင်ပါသည်။</div>`;
+      } else {
+        box.innerHTML = editingRestockPhotos.map((ph, idx) => {
+          const cached = ph.fileId && window.__b64ImgCache[ph.fileId];
+          const src = ph.base64 || (cached ? cached.dataUrl : ph.url) || './icon.png?v=3';
+          return `
+            <div class="bg-gray-50 border-2 ${idx === 0 ? 'border-amber-400' : 'border-gray-200'} rounded-2xl p-2.5 flex items-center gap-3">
+              <div class="relative w-20 h-20 rounded-xl overflow-hidden border bg-white shrink-0">
+                <img src="${escapeHtml(src)}" ${!ph.base64 && ph.fileId ? `onerror="loadDriveImageFallback(this, '${escapeHtml(ph.fileId)}')"` : ''} class="w-full h-full object-contain">
+                <span class="absolute bottom-0.5 left-0.5 bg-black/75 text-white text-[9px] font-extrabold px-1.5 py-0.5 rounded">${idx === 0 ? 'ပုံ ၁ (အဓိက)' : 'ပုံ ' + (idx + 1)}</span>
+              </div>
+              <div class="flex-1 min-w-0 space-y-1.5">
+                <div class="flex flex-wrap items-center gap-1">
+                  ${ph.modified ? `<span class="bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-2 py-0.5 rounded-full">✨ ပြင်ဆင်ပြီး</span>` : `<span class="bg-amber-100 text-amber-900 text-[10px] font-bold px-2 py-0.5 rounded-full">မူရင်းပုံ</span>`}
+                </div>
+                <div class="flex flex-wrap gap-1.5">
+                  <button type="button" onclick="triggerReplaceRestockPhoto(${idx})" class="bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-extrabold px-2.5 py-1 rounded-lg">🔄 ပုံလဲ</button>
+                  <button type="button" onclick="transformAdminRestockPhoto(${idx}, 'rotate', this)" class="bg-purple-100 hover:bg-purple-200 text-purple-900 text-[11px] font-extrabold px-2.5 py-1 rounded-lg">↪️ 90° လှည့်</button>
+                  <button type="button" onclick="transformAdminRestockPhoto(${idx}, 'square', this)" class="bg-white hover:bg-gray-100 text-gray-800 border border-gray-300 text-[11px] font-extrabold px-2.5 py-1 rounded-lg">⬜ 1:1 ဖြူ</button>
+                  ${idx > 0 ? `<button type="button" onclick="moveRestockPhotoFirst(${idx})" class="bg-amber-100 hover:bg-amber-200 text-amber-900 text-[11px] font-extrabold px-2.5 py-1 rounded-lg">⭐ အဓိကထား</button>` : ''}
+                  <button type="button" onclick="removeAdminRestockPhoto(${idx})" class="bg-red-100 hover:bg-red-200 text-red-700 text-[11px] font-extrabold px-2.5 py-1 rounded-lg">🗑️ ဖျက်</button>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      if (addBtn) {
+        const isFull = editingRestockPhotos.length >= MAX_ADMIN_RESTOCK_PHOTOS;
+        addBtn.disabled = isFull;
+        addBtn.className = isFull
+          ? 'bg-gray-200 text-gray-500 font-extrabold text-xs px-3.5 py-2 rounded-xl cursor-not-allowed'
+          : 'bg-amber-100 hover:bg-amber-200 text-amber-900 font-extrabold text-xs px-3.5 py-2 rounded-xl border border-amber-300';
+        addBtn.innerText = isFull
+          ? '✅ ၃ ပုံ ပြည့်ပါပြီ'
+          : `➕ Gallery မှ ပုံထပ်ထည့်မည် (ကျန် ${MAX_ADMIN_RESTOCK_PHOTOS - editingRestockPhotos.length} ပုံ)`;
+      }
+    }
+
+    function compressAdminImageFile(file) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+          const img = new Image();
+          img.onload = function() {
+            const maxDim = 900;
+            let w = img.width, h = img.height;
+            if (w > maxDim || h > maxDim) {
+              if (w > h) { h = Math.round(h * (maxDim / w)); w = maxDim; }
+              else { w = Math.round(w * (maxDim / h)); h = maxDim; }
+            }
+            const canvas = document.createElement('canvas');
+            canvas.width = w; canvas.height = h;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, w, h);
+            ctx.drawImage(img, 0, 0, w, h);
+            resolve(canvas.toDataURL('image/jpeg', 0.78));
+          };
+          img.onerror = () => resolve('');
+          img.src = ev.target.result;
+        };
+        reader.onerror = () => resolve('');
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function handleAdminAddRestockPhotos(event) {
+      const files = Array.from(event.target.files || []);
+      event.target.value = '';
+      if (!files.length) return;
+      const remain = MAX_ADMIN_RESTOCK_PHOTOS - editingRestockPhotos.length;
+      if (remain <= 0) return;
+      document.getElementById('re-edit-status').innerText = '⏳ ပုံပြင်ဆင်နေ...';
+      for (const f of files.slice(0, remain)) {
+        const b64 = await compressAdminImageFile(f);
+        if (b64) editingRestockPhotos.push({ url: '', fileId: '', base64: b64, modified: true });
+      }
+      document.getElementById('re-edit-status').innerText = '✅ ပုံထည့်ပြီးပါပြီ';
+      renderAdminRestockEditSlots();
+    }
+
+    function triggerReplaceRestockPhoto(idx) {
+      replacePhotoTargetIdx = idx;
+      document.getElementById('re-replace-photo-file').click();
+    }
+
+    async function handleAdminReplaceRestockPhoto(event) {
+      const file = event.target.files && event.target.files[0];
+      event.target.value = '';
+      if (!file || replacePhotoTargetIdx < 0 || !editingRestockPhotos[replacePhotoTargetIdx]) return;
+      document.getElementById('re-edit-status').innerText = '⏳ ပုံအသစ်ပြင်ဆင်နေ...';
+      const b64 = await compressAdminImageFile(file);
+      if (b64) {
+        editingRestockPhotos[replacePhotoTargetIdx] = { url: '', fileId: '', base64: b64, modified: true };
+        document.getElementById('re-edit-status').innerText = '✅ ပုံအသစ်လဲပြီးပါပြီ';
+        renderAdminRestockEditSlots();
+      }
+      replacePhotoTargetIdx = -1;
+    }
+
+    function moveRestockPhotoFirst(idx) {
+      if (idx <= 0 || idx >= editingRestockPhotos.length) return;
+      const [picked] = editingRestockPhotos.splice(idx, 1);
+      editingRestockPhotos.unshift(picked);
+      renderAdminRestockEditSlots();
+    }
+
+    function removeAdminRestockPhoto(idx) {
+      editingRestockPhotos.splice(idx, 1);
+      renderAdminRestockEditSlots();
+    }
+
+    async function ensureEditablePhotoBase64(ph) {
+      if (ph.base64) return ph.base64;
+      if (ph.fileId) {
+        if (window.__b64ImgCache[ph.fileId]?.dataUrl) return window.__b64ImgCache[ph.fileId].dataUrl;
+        const res = await fetch(`${APPS_SCRIPT_URL}?action=getImageBase64&fileId=${encodeURIComponent(ph.fileId)}&t=${Date.now()}`, { cache: 'no-store' });
+        const data = await res.json();
+        if (data && data.status === 'ok' && data.dataUrl) {
+          window.__b64ImgCache[ph.fileId] = data;
+          return data.dataUrl;
+        }
+      }
+      if (ph.url) {
+        const resp = await fetch(ph.url);
+        const blob = await resp.blob();
+        return await new Promise((resolve) => {
+          const r = new FileReader();
+          r.onload = () => resolve(r.result || '');
+          r.onerror = () => resolve('');
+          r.readAsDataURL(blob);
+        });
+      }
+      return '';
+    }
+
+    async function transformAdminRestockPhoto(idx, mode, btnEl) {
+      const ph = editingRestockPhotos[idx];
+      if (!ph) return;
+      const origTxt = btnEl ? btnEl.innerText : '';
+      if (btnEl) { btnEl.disabled = true; btnEl.innerText = '⏳...'; }
+      document.getElementById('re-edit-status').innerText = '⏳ ပုံပြုပြင်နေပါသည်...';
+
+      try {
+        const srcB64 = await ensureEditablePhotoBase64(ph);
+        if (!srcB64) throw new Error('no_image');
+        const newB64 = await new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = function() {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            if (mode === 'rotate') {
+              canvas.width = img.height;
+              canvas.height = img.width;
+              ctx.fillStyle = '#ffffff';
+              ctx.fillRect(0, 0, canvas.width, canvas.height);
+              ctx.translate(canvas.width / 2, canvas.height / 2);
+              ctx.rotate(Math.PI / 2);
+              ctx.drawImage(img, -img.width / 2, -img.height / 2);
+            } else {
+              // 1:1 square on crisp white background
+              const side = Math.min(800, Math.max(img.width, img.height, 600));
+              canvas.width = side;
+              canvas.height = side;
+              ctx.fillStyle = '#ffffff';
+              ctx.fillRect(0, 0, side, side);
+              const pad = Math.round(side * 0.05);
+              const maxBox = side - pad * 2;
+              const ratio = Math.min(maxBox / img.width, maxBox / img.height);
+              const dw = Math.round(img.width * ratio);
+              const dh = Math.round(img.height * ratio);
+              ctx.drawImage(img, Math.round((side - dw) / 2), Math.round((side - dh) / 2), dw, dh);
+            }
+            resolve(canvas.toDataURL('image/jpeg', 0.80));
+          };
+          img.onerror = reject;
+          img.src = srcB64;
+        });
+
+        editingRestockPhotos[idx].base64 = newB64;
+        editingRestockPhotos[idx].modified = true;
+        document.getElementById('re-edit-status').innerText = mode === 'rotate' ? '✅ 90° လှည့်ပြီးပါပြီ' : '✅ 1:1 အဖြူရောင်နောက်ခံ ပြင်ပြီးပါပြီ';
+        renderAdminRestockEditSlots();
+      } catch (e) {
+        alert('⚠️ ဤပုံကို တိုက်ရိုက်ပြင်မရပါ — "🔄 ပုံလဲ" ဖြင့် ပြင်ပြီးသားပုံကို Gallery မှ ထည့်နိုင်ပါသည်။');
+        if (btnEl) { btnEl.disabled = false; btnEl.innerText = origTxt; }
+      }
+    }
+
+    async function saveEditedRestockPhotos(andApprove, btnEl) {
+      if (!editingRestockId) return;
+      if (andApprove && !confirm('ပုံပြင်ဆင်မှုကို သိမ်းဆည်းပြီး ဝယ်သူ App နှင့် Google Sheet ထဲသို့ Approve ထည့်သွင်းပါမည်လား?')) return;
+
+      const btnSave = document.getElementById('btn-re-save-only');
+      const btnApp = document.getElementById('btn-re-save-approve');
+      if (btnSave) btnSave.disabled = true;
+      if (btnApp) btnApp.disabled = true;
+      if (btnEl) btnEl.innerText = andApprove ? '⏳ Approve ထည့်နေ...' : '⏳ သိမ်းနေ...';
+
+      const photoList = editingRestockPhotos.slice(0, MAX_ADMIN_RESTOCK_PHOTOS).map(ph => ({
+        base64: ph.base64 || '',
+        url: ph.base64 ? '' : (ph.url || '')
+      }));
+      const firstPhoto = photoList[0] || { base64: '', url: '' };
+
+      try {
+        await fetch(APPS_SCRIPT_URL, {
+          method: 'POST', mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({
+            action: andApprove ? 'adminApproveRestock' : 'adminUpdateRestockImages',
+            requestId: editingRestockId,
+            photoList: photoList,
+            imageBase64: firstPhoto.base64,
+            image: firstPhoto.url
+          })
+        });
+        closeRestockEditModal();
+        showBannerNoti(
+          andApprove ? '✅ Approve ပြီးပါပြီ' : '💾 ပုံပြင်ဆင်မှု သိမ်းပြီးပါပြီ',
+          andApprove ? 'ဝယ်သူ App နှင့် Google Sheet ထဲသို့ ထည့်သွင်းပြီးပါပြီ။' : 'Approve မလုပ်မီ ပုံပြင်ဆင်ချက်များ သိမ်းဆည်းပြီးပါပြီ။'
+        );
+        setTimeout(() => {
+          loadAdminDashboard(false);
+          if (andApprove) loadProducts(true);
+        }, 1200);
+      } catch (e) {
+        alert('⚠️ သိမ်းဆည်းရာတွင် အင်တာနက်ချိတ်ဆက်မှု စစ်ဆေးပေးပါ။');
+      }
+
+      if (btnSave) { btnSave.disabled = false; btnSave.innerText = '💾 ပုံပြင်ဆင်မှု သိမ်းမည်'; }
+      if (btnApp) { btnApp.disabled = false; btnApp.innerText = '✅ သိမ်းပြီး ဝယ်သူ App ထဲ Approve ထည့်မည်'; }
+    }
+
+    // ==================== ADMIN REJECT RESTOCK MODAL (WITH CUSTOM REASON) ====================
+    function openRejectRestockModal(requestId) {
+      const rs = (adminDataCache?.pendingRestocks || []).find(x => x.requestId === requestId);
+      if (!rs) return;
+      rejectingRestockId = requestId;
+      document.getElementById('rej-modal-info').innerText =
+        `🏪 ${rs.shopId} (${rs.shopName}) — ${rs.productName} (+${rs.qty} ခု)`;
+      document.getElementById('rej-reason-input').value = '';
+      document.getElementById('rej-reason-err').classList.add('hidden');
+      document.getElementById('admin-reject-restock-modal').classList.remove('hidden');
+      setTimeout(() => document.getElementById('rej-reason-input').focus(), 100);
+    }
+
+    function closeRejectRestockModal() {
+      document.getElementById('admin-reject-restock-modal').classList.add('hidden');
+      rejectingRestockId = '';
+    }
+
+    function setQuickRejectReason(txt) {
+      document.getElementById('rej-reason-input').value = txt;
+      document.getElementById('rej-reason-err').classList.add('hidden');
+    }
+
+    async function confirmAdminRejectRestock() {
+      if (!rejectingRestockId) return;
+      const reason = (document.getElementById('rej-reason-input').value || '').trim();
+      const errEl = document.getElementById('rej-reason-err');
+      if (!reason) {
+        errEl.classList.remove('hidden');
+        document.getElementById('rej-reason-input').focus();
+        return;
+      }
+      errEl.classList.add('hidden');
+
+      const btn = document.getElementById('btn-confirm-reject-restock');
+      btn.disabled = true; btn.innerText = '⏳ ပယ်ချနေသည်...';
+
+      try {
+        await fetch(APPS_SCRIPT_URL, {
+          method: 'POST', mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({
+            action: 'adminRejectRestock',
+            requestId: rejectingRestockId,
+            rejectReason: reason
+          })
+        });
+        closeRejectRestockModal();
+        showBannerNoti('❌ ပယ်ချပြီးပါပြီ', `ဆိုင် App ထံ အကြောင်းပြချက် (${reason}) ပေးပို့ပြီးပါပြီ။`);
+        setTimeout(() => loadAdminDashboard(false), 900);
+      } catch (e) {
+        alert('⚠️ အင်တာနက်ချိတ်ဆက်မှု စစ်ဆေးပေးပါ။');
+      }
+
+      btn.disabled = false; btn.innerText = '❌ ပယ်ချပြီး ဆိုင်ထံပို့မည်';
+    }
 
     // ==================== ADMIN ORDER PROCESS STEP BAR ====================
     function buildAdminOrderProcessSteps(ord, hasPartner) {
@@ -2222,6 +2665,13 @@
         if ([...stkSel.options].some(o => o.value === prevVal)) stkSel.value = prevVal;
       }
 
+      const catSel = document.getElementById('adm-stock-cat-filter');
+      if (catSel && catSel.options.length <= 1) {
+        const catsOnly = CATEGORY_LIST.filter(c => c !== 'အားလုံး' && c !== '🔥 Trending');
+        catSel.innerHTML = `<option value="ALL">📂 အမျိုးအစားအားလုံး</option>` +
+          catsOnly.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+      }
+
       // ---- TAB 1: ORDERS ----
       const filteredOrders = orders.filter(o => {
         const hasPartner = o.shopIds && o.shopIds !== 'OWN';
@@ -2408,28 +2858,42 @@
         }).join('');
       }
 
-      // ---- TAB 2: RESTOCK REQUESTS FROM SHOPS ----
+      // ---- TAB 2: RESTOCK REQUESTS FROM SHOPS (MULTI-PHOTO + EDIT + APPROVE + CUSTOM REJECT) ----
       const rsEl = document.getElementById('adm-restocks-list');
       if (restocks.length === 0) {
         rsEl.innerHTML = `<div class="bg-white rounded-2xl border p-8 text-center text-xs text-gray-400">✅ စစ်ဆေးရန် ကျန်ရှိသော Stock ထပ်တိုး စာရင်း မရှိပါ</div>`;
       } else {
         rsEl.innerHTML = restocks.map((rs, idx) => {
-          const pvKey = `rst_${rs.requestId}_${idx}`;
-          const fId = rs.fileId || extractDriveIdClient(rs.image || '');
-          const cachedData = fId && window.__b64ImgCache[fId];
-          const displaySrc = cachedData ? cachedData.dataUrl : (rs.image || '');
+          const imgs = getRestockImagesArray(rs);
+          const fIds = Array.isArray(rs.fileIds) ? rs.fileIds : [];
 
-          window.__adminPreviewMap[pvKey] = {
-            name: rs.productName, shopId: rs.shopId, colorName: rs.color || rs.category,
-            size: rs.size, qty: rs.qty, price: rs.price || 0,
-            image: rs.image || '', fileId: fId, allowDownload: true
-          };
-
-          const thumbHtml = (rs.image || fId)
-            ? `<button type="button" onclick="openAdminItemPreview('${pvKey}')" class="relative w-20 h-20 rounded-xl overflow-hidden border-2 border-amber-200 bg-gray-50 shrink-0 cursor-zoom-in">
-                 <img src="${escapeHtml(displaySrc)}" onerror="loadDriveImageFallback(this, '${escapeHtml(fId)}')" alt="" class="w-full h-full object-cover">
-                 <span class="absolute bottom-0.5 right-0.5 bg-black/70 text-white text-[9px] px-1 rounded">🔍</span>
-               </button>`
+          const thumbsHtml = imgs.length > 0
+            ? `<div class="flex flex-wrap gap-2">
+                ${imgs.map((imgUrl, iIdx) => {
+                  const pvKey = `rst_${rs.requestId}_${idx}_${iIdx}`;
+                  const fId = fIds[iIdx] || extractDriveIdClient(imgUrl);
+                  const cachedData = fId && window.__b64ImgCache[fId];
+                  const displaySrc = cachedData ? cachedData.dataUrl : imgUrl;
+                  window.__adminPreviewMap[pvKey] = {
+                    name: `${rs.productName} (ပုံ ${iIdx + 1})`,
+                    shopId: rs.shopId,
+                    colorName: rs.color || rs.category,
+                    size: rs.size,
+                    qty: rs.qty,
+                    price: rs.price || 0,
+                    image: imgUrl,
+                    fileId: fId,
+                    allowDownload: true
+                  };
+                  return `
+                    <button type="button" onclick="openAdminItemPreview('${pvKey}')" class="relative w-20 h-20 rounded-xl overflow-hidden border-2 ${iIdx === 0 ? 'border-amber-400' : 'border-gray-200'} bg-gray-50 shrink-0 cursor-zoom-in">
+                      <img src="${escapeHtml(displaySrc)}" onerror="loadDriveImageFallback(this, '${escapeHtml(fId)}')" alt="" class="w-full h-full object-cover">
+                      <span class="absolute top-0.5 left-0.5 bg-black/70 text-white text-[8px] font-extrabold px-1 rounded">${iIdx === 0 ? 'ပုံ ၁' : 'ပုံ ' + (iIdx + 1)}</span>
+                      <span class="absolute bottom-0.5 right-0.5 bg-black/70 text-white text-[9px] px-1 rounded">🔍</span>
+                    </button>
+                  `;
+                }).join('')}
+              </div>`
             : `<div class="w-20 h-20 rounded-xl border border-dashed bg-gray-100 flex items-center justify-center text-[10px] text-gray-400 shrink-0">ပုံမရှိ</div>`;
 
           const priceBadge = Number(rs.price || 0) > 0
@@ -2441,13 +2905,16 @@
           const szShow = rs.size && rs.size !== 'အသက်မလို' ? `<span>| 📏 ${escapeHtml(rs.size)}</span>` : '';
 
           return `
-            <div class="bg-white rounded-2xl border-2 border-amber-300 p-3.5 shadow-sm flex flex-col sm:flex-row gap-3 items-start sm:items-center">
-              ${thumbHtml}
-              <div class="flex-1 min-w-0 space-y-1.5 text-xs">
+            <div class="bg-white rounded-2xl border-2 border-amber-300 p-3.5 shadow-sm space-y-3">
+              <div class="flex flex-wrap justify-between items-center gap-1.5">
                 <div class="flex flex-wrap items-center gap-1.5">
-                  <span class="bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full text-[10px] font-extrabold">🏪 ${escapeHtml(rs.shopId)} — ${escapeHtml(rs.shopName)}</span>
-                  <span class="text-[10px] text-gray-500">⏰ ${escapeHtml(rs.dateTime)}</span>
+                  <span class="bg-amber-100 text-amber-900 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold">🏪 ${escapeHtml(rs.shopId)} — ${escapeHtml(rs.shopName)}</span>
+                  <span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full text-[10px] font-extrabold">⏳ ဝယ်သူ App ထဲ မထည့်ရသေး</span>
                 </div>
+                <span class="text-[10px] text-gray-500">⏰ ${escapeHtml(rs.dateTime)}</span>
+              </div>
+
+              <div class="space-y-1.5 text-xs">
                 <p class="font-extrabold text-sm text-gray-900">${escapeHtml(rs.productName)}</p>
                 <div class="flex flex-wrap items-center gap-1.5 text-[11px] font-bold text-gray-700">
                   <span>📂 ${escapeHtml(rs.category)}</span>
@@ -2457,11 +2924,17 @@
                   ${colorBadge}
                 </div>
                 ${rs.description ? `<p class="text-[11px] text-gray-600 bg-gray-50 border rounded-lg px-2.5 py-1.5">📝 ${escapeHtml(rs.description)}</p>` : ''}
-                ${(fId || rs.image) ? `<button type="button" onclick="downloadRestockImage('${escapeHtml(fId)}', '${escapeHtml(rs.image || '')}', '${escapeHtml(rs.productName)}', this)" class="inline-flex items-center gap-1 mt-1 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-[11px] px-3 py-1.5 rounded-lg shadow-sm">⬇️ ပုံ Download ဆွဲမည်</button>` : ''}
               </div>
-              <div class="flex sm:flex-col gap-2 w-full sm:w-auto shrink-0">
-                <button type="button" onclick="adminApproveRestock('${escapeHtml(rs.requestId)}', this)" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-3.5 py-2 rounded-xl text-xs shadow-sm">✅ Approve</button>
-                <button type="button" onclick="adminRejectRestock('${escapeHtml(rs.requestId)}', this)" class="bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 font-extrabold px-3 py-2 rounded-xl text-xs">❌ ပယ်ချ</button>
+
+              <div class="space-y-1.5">
+                <p class="text-[11px] font-extrabold text-gray-600">📷 ဆိုင်မှ ပို့ထားသော ပုံများ (${imgs.length} ပုံ — နှိပ်၍ ကြီးကြည့်/Download ဆွဲနိုင်သည်)</p>
+                ${thumbsHtml}
+              </div>
+
+              <div class="flex flex-wrap gap-2 pt-2 border-t border-gray-100">
+                <button type="button" onclick="openRestockEditModal('${escapeHtml(rs.requestId)}')" class="bg-blue-600 hover:bg-blue-700 text-white font-extrabold px-3.5 py-2 rounded-xl text-xs shadow-sm">✏️ ပုံပြင် (Edit)</button>
+                <button type="button" onclick="adminApproveRestock('${escapeHtml(rs.requestId)}', this)" class="flex-1 sm:flex-none bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-4 py-2 rounded-xl text-xs shadow-sm">✅ Approve (ဝယ်သူ App ထဲထည့်)</button>
+                <button type="button" onclick="openRejectRestockModal('${escapeHtml(rs.requestId)}')" class="bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 font-extrabold px-3.5 py-2 rounded-xl text-xs">❌ ပယ်ချ</button>
               </div>
             </div>
           `;
@@ -2641,35 +3114,53 @@
     }
 
     async function adminApproveRestock(requestId, btnEl) {
-      if (!confirm(`Stock ထပ်တိုး Request (${requestId}) ကို Approve အတည်ပြုပါမည်လား?`)) return;
-      if (btnEl) { btnEl.disabled = true; btnEl.innerText = '⏳...'; }
+      if (!confirm(`Stock ထပ်တိုး Request (${requestId}) ကို Approve လုပ်ပြီး ဝယ်သူ App နှင့် Google Sheet ထဲသို့ ထည့်သွင်းပါမည်လား?`)) return;
+      if (btnEl) { btnEl.disabled = true; btnEl.innerText = '⏳ Approve...'; }
       await fetch(APPS_SCRIPT_URL, {
         method: 'POST', mode: 'no-cors',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify({ action: 'adminApproveRestock', requestId })
       });
-      setTimeout(() => { loadAdminDashboard(false); loadProducts(true); }, 1000);
+      setTimeout(() => { loadAdminDashboard(false); loadProducts(true); }, 1200);
     }
 
-    async function adminRejectRestock(requestId, btnEl) {
-      if (!confirm(`Request (${requestId}) ကို ပယ်ချမည်မှာ သေချာပါသလား?`)) return;
-      if (btnEl) { btnEl.disabled = true; btnEl.innerText = '⏳...'; }
-      await fetch(APPS_SCRIPT_URL, {
-        method: 'POST', mode: 'no-cors',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action: 'adminRejectRestock', requestId })
-      });
-      setTimeout(() => loadAdminDashboard(false), 800);
+    // ==================== GOOGLE SHEET CONTROLLED ADMIN STOCK PANEL ====================
+    function openGoogleSheetForStock(catName) {
+      const catUrls = (adminDataCache && adminDataCache.categorySheetUrls) ? adminDataCache.categorySheetUrls : {};
+      let targetUrl = (catName && catUrls[catName])
+        ? catUrls[catName]
+        : ((adminDataCache && adminDataCache.sheetUrl) || localStorage.getItem('mt_master_sheet_url') || '');
+
+      if (!targetUrl) {
+        const pasted = prompt('Google Sheet Link ကို တစ်ကြိမ်သာ ထည့်သွင်းပေးပါ (နောက်တစ်ကြိမ် အလိုအလျောက် ဖွင့်ပေးပါမည်):', '');
+        if (!pasted || !pasted.trim()) return;
+        targetUrl = pasted.trim();
+        try { localStorage.setItem('mt_master_sheet_url', targetUrl); } catch (e) {}
+      }
+      window.open(targetUrl, '_blank', 'noopener');
+    }
+
+    async function syncStockFromSheet(btnEl) {
+      const orig = btnEl ? btnEl.innerText : '';
+      if (btnEl) { btnEl.disabled = true; btnEl.innerText = '⏳ Sync ဆွဲနေ...'; }
+      await loadProducts(true);
+      if (btnEl) {
+        btnEl.disabled = false;
+        btnEl.innerText = '✅ Sync ပြီးပါပြီ';
+        setTimeout(() => { btnEl.innerText = orig || '🔄 Sheet မှ Sync ဆွဲမည်'; }, 2000);
+      }
     }
 
     function renderAdminStockPanel() {
       const box = document.getElementById('adm-stock-list');
       if (!box) return;
       const shopF = document.getElementById('adm-stock-shop-filter')?.value || 'ALL';
+      const catF = document.getElementById('adm-stock-cat-filter')?.value || 'ALL';
       const q = (document.getElementById('adm-stock-search')?.value || '').trim().toLowerCase();
 
       const list = allProducts.filter(p => {
         if (shopF !== 'ALL' && p.shopId !== shopF) return false;
+        if (catF !== 'ALL' && p.category !== catF) return false;
         if (q && !p.name.toLowerCase().includes(q) && !p.category.toLowerCase().includes(q)) return false;
         return true;
       });
@@ -2687,90 +3178,58 @@
         let sizesHtml = '';
         if (!needsAge) {
           const stk = p.stocks[0] || 0;
-          if (isPartner) {
-            const isAvail = stk > 0;
-            sizesHtml = `
-              <div class="flex items-center justify-between gap-2 bg-gray-50 border rounded-xl px-2.5 py-1.5 text-xs">
-                <span class="font-bold text-gray-700">လက်ကျန် (${stk})</span>
-                <button type="button" onclick="adminSetStock(${p.id}, 0, ${isAvail ? 0 : 99}, this)" class="${isAvail ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white'} font-extrabold px-2.5 py-1 rounded-lg text-[11px]">
-                  ${isAvail ? '✅ ဖွင့်ထား' : '❌ ပိတ် (Sold Out)'}
-                </button>
-              </div>
-            `;
-          } else {
-            sizesHtml = `
-              <div class="flex items-center justify-between gap-2 bg-gray-50 border rounded-xl px-2.5 py-1.5 text-xs">
-                <span class="font-bold text-gray-700">Stock အရေအတွက်</span>
-                <div class="flex items-center gap-1">
-                  <button type="button" onclick="adminSetStock(${p.id}, 0, ${Math.max(0, stk - 1)}, this)" class="bg-gray-200 hover:bg-gray-300 font-extrabold w-7 h-7 rounded-lg">−</button>
-                  <span class="w-8 text-center font-extrabold ${stk <= 2 ? 'text-red-600' : 'text-gray-900'}">${stk}</span>
-                  <button type="button" onclick="adminSetStock(${p.id}, 0, ${stk + 1}, this)" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-extrabold w-7 h-7 rounded-lg">+</button>
-                </div>
-              </div>
-            `;
-          }
+          const badgeCls = stk <= 0
+            ? 'bg-red-100 text-red-700 border-red-200'
+            : (stk <= 2 ? 'bg-amber-100 text-amber-900 border-amber-300' : 'bg-emerald-100 text-emerald-800 border-emerald-200');
+          sizesHtml = `
+            <div class="flex items-center justify-between gap-2 bg-gray-50 border rounded-xl px-3 py-2 text-xs">
+              <span class="font-bold text-gray-700">📦 လက်ရှိ Stock</span>
+              <span class="border ${badgeCls} font-extrabold px-2.5 py-0.5 rounded-full">${stk <= 0 ? '❌ 0 (ကုန်ပြီ)' : stk + ' ခု'}</span>
+            </div>
+          `;
         } else {
           sizesHtml = SIZE_LABELS.map((sz, i) => {
             if (p.prices[i] <= 0 && p.stocks[i] <= 0) return '';
             const stk = p.stocks[i] || 0;
-            if (isPartner) {
-              const isAvail = stk > 0;
-              return `
-                <div class="flex items-center justify-between gap-2 bg-gray-50 border rounded-xl px-2.5 py-1.5 text-xs">
-                  <span class="font-bold text-gray-700">${escapeHtml(sz)} (${stk})</span>
-                  <button type="button" onclick="adminSetStock(${p.id}, ${i}, ${isAvail ? 0 : 99}, this)" class="${isAvail ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white'} font-extrabold px-2.5 py-1 rounded-lg text-[11px]">
-                    ${isAvail ? '✅ ဖွင့်ထား' : '❌ ပိတ် (Sold Out)'}
-                  </button>
+            const pr = p.prices[i] || 0;
+            const badgeCls = stk <= 0
+              ? 'bg-red-100 text-red-700 border-red-200'
+              : (stk <= 2 ? 'bg-amber-100 text-amber-900 border-amber-300' : 'bg-emerald-100 text-emerald-800 border-emerald-200');
+            return `
+              <div class="flex items-center justify-between gap-2 bg-gray-50 border rounded-xl px-2.5 py-1.5 text-xs">
+                <div class="min-w-0">
+                  <span class="font-bold text-gray-800">${escapeHtml(sz)}</span>
+                  ${pr > 0 ? `<span class="text-[10px] text-gray-500 font-bold ml-1">(${pr.toLocaleString()} Ks)</span>` : ''}
                 </div>
-              `;
-            } else {
-              return `
-                <div class="flex items-center justify-between gap-2 bg-gray-50 border rounded-xl px-2.5 py-1.5 text-xs">
-                  <span class="font-bold text-gray-700">${escapeHtml(sz)}</span>
-                  <div class="flex items-center gap-1">
-                    <button type="button" onclick="adminSetStock(${p.id}, ${i}, ${Math.max(0, stk - 1)}, this)" class="bg-gray-200 hover:bg-gray-300 font-extrabold w-7 h-7 rounded-lg">−</button>
-                    <span class="w-8 text-center font-extrabold ${stk <= 2 ? 'text-red-600' : 'text-gray-900'}">${stk}</span>
-                    <button type="button" onclick="adminSetStock(${p.id}, ${i}, ${stk + 1}, this)" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-extrabold w-7 h-7 rounded-lg">+</button>
-                  </div>
-                </div>
-              `;
-            }
+                <span class="border ${badgeCls} font-extrabold px-2 py-0.5 rounded-full text-[11px] shrink-0">${stk <= 0 ? '❌ 0' : stk + ' ခု'}</span>
+              </div>
+            `;
           }).join('');
         }
 
         return `
           <div class="bg-white rounded-2xl border border-gray-200 p-3 shadow-sm space-y-2">
-            <div class="flex items-center gap-2.5">
-              <img src="${escapeHtml(imgUrl)}" class="w-12 h-12 rounded-xl object-cover border shrink-0">
-              <div class="min-w-0 flex-1">
-                <div class="flex flex-wrap items-center gap-1.5">
-                  <span class="${isPartner ? 'bg-amber-100 text-amber-900' : 'bg-blue-100 text-blue-800'} text-[10px] font-extrabold px-2 py-0.5 rounded">${isPartner ? '🏪 ' + escapeHtml(p.shopId) : '🏠 OWN'}</span>
-                  <span class="text-[10px] text-gray-500 font-bold">${escapeHtml(p.category)}</span>
-                  <span class="text-[10px] text-pink-600 font-extrabold">${p.minPrice.toLocaleString()} Ks</span>
+            <div class="flex items-center justify-between gap-2.5">
+              <div class="flex items-center gap-2.5 min-w-0 flex-1">
+                <img src="${escapeHtml(imgUrl)}" class="w-12 h-12 rounded-xl object-cover border shrink-0">
+                <div class="min-w-0 flex-1">
+                  <div class="flex flex-wrap items-center gap-1.5">
+                    <span class="${isPartner ? 'bg-amber-100 text-amber-900' : 'bg-blue-100 text-blue-800'} text-[10px] font-extrabold px-2 py-0.5 rounded">${isPartner ? '🏪 ' + escapeHtml(p.shopId) : '🏠 OWN'}</span>
+                    <span class="text-[10px] text-gray-500 font-bold">${escapeHtml(p.category)}</span>
+                    <span class="text-[10px] text-pink-600 font-extrabold">${p.minPrice.toLocaleString()} Ks</span>
+                    <span class="text-[10px] ${p.totalStock <= 0 ? 'text-red-600' : 'text-emerald-700'} font-extrabold">• စုစုပေါင်း: ${p.totalStock}</span>
+                  </div>
+                  <p class="font-extrabold text-xs sm:text-sm text-gray-900 truncate mt-0.5">${escapeHtml(p.name)}</p>
                 </div>
-                <p class="font-extrabold text-xs sm:text-sm text-gray-900 truncate mt-0.5">${escapeHtml(p.name)}</p>
               </div>
+              <button type="button" onclick="openGoogleSheetForStock('${escapeHtml(p.category)}')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 font-extrabold text-[11px] px-2.5 py-1.5 rounded-xl shrink-0">
+                📗 Sheet ဖွင့်ပြင်
+              </button>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1.5">${sizesHtml}</div>
           </div>
         `;
       }).join('');
-    }
-
-    async function adminSetStock(prodId, sizeIdx, newStock, btnEl) {
-      const p = allProducts.find(x => x.id === prodId);
-      if (!p) return;
-      const sizeLabel = AGE_REQUIRED_CATS.includes(p.category) ? SIZE_LABELS[sizeIdx] : 'အသက်မလို';
-      p.stocks[sizeIdx] = newStock;
-      p.totalStock = p.stocks.reduce((a, b) => a + b, 0);
-      renderAdminStockPanel();
-      try {
-        await fetch(APPS_SCRIPT_URL, {
-          method: 'POST', mode: 'no-cors',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({ action: 'adminUpdateStock', productName: p.name, size: sizeLabel, newStock })
-        });
-      } catch (e) {}
     }
 
     async function adminAssignPickupRider(orderId, selEl) {
