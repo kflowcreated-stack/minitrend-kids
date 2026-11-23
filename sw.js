@@ -1,4 +1,4 @@
-const CACHE_NAME = "minitrend-app-shell-v4";
+const CACHE_NAME = "minitrend-app-shell-v5";
 const CORE_SHELL_ASSETS = [
   "./",
   "./index.html",
@@ -9,9 +9,10 @@ const CORE_SHELL_ASSETS = [
   "./delivery/"
 ];
 
-// Always bypass cache for live order/API calls
+// Always bypass cache for live order/API calls & Cloudflare Proxy
 function isBypassUrl(urlStr) {
   return (
+    urlStr.indexOf("/api/") !== -1 ||
     urlStr.indexOf("script.google.com") !== -1 ||
     urlStr.indexOf("script.googleusercontent.com") !== -1 ||
     urlStr.indexOf("fcm.googleapis.com") !== -1 ||
