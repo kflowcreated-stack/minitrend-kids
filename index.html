@@ -1119,16 +1119,47 @@
       return false;
     }
 
-    async function loadProducts(forceRenderAdminStock = false) {
+    async function fetchJsonWithTimeout(url, timeoutMs = 9000) {
+      const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+      const timer = controller ? setTimeout(() => controller.abort(), timeoutMs) : null;
       try {
-        const res = await fetch(`${APPS_SCRIPT_URL}?action=getProducts&t=${Date.now()}`, { cache: 'no-store' });
-        const data = await res.json();
-        if (data && data.latestNoti) checkAndTriggerBroadcastNoti(data.latestNoti);
-        if (data && Array.isArray(data.rows)) {
-          try { localStorage.setItem('mt_products_cache_v1', JSON.stringify(data.rows)); } catch (e) {}
-          allProducts = parseProductsRows(data.rows);
+        const res = await fetch(url, {
+          cache: 'no-store',
+          signal: controller ? controller.signal : undefined
+        });
+        if (timer) clearTimeout(timer);
+        if (!res.ok) return null;
+        return await res.json();
+      } catch (e) {
+        if (timer) clearTimeout(timer);
+        return null;
+      }
+    }
+
+    async function loadProducts(forceRenderAdminStock = false) {
+      let data = null;
+      const useFresh = (APP_ROLE === 'admin' || forceRenderAdminStock);
+
+      // ၁။ အဓိကလမ်းကြောင်း — Cloudflare Cache Proxy (လူထောင်ချီခံနိုင်ပြီး မြန်ဆန်သည်)
+      const proxyUrl = useFresh ? `/api/products?nocache=1&t=${Date.now()}` : `/api/products`;
+      const proxyData = await fetchJsonWithTimeout(proxyUrl, 8000);
+      if (proxyData && Array.isArray(proxyData.rows) && proxyData.rows.length > 0) {
+        data = proxyData;
+      }
+
+      // ၂။ Auto-Fallback — Proxy Error တက်ပါက သို့မဟုတ် Limit ပြည့်ပါက Google Apps Script မှ အလိုအလျောက် တိုက်ရိုက်ဆွဲမည်
+      if (!data) {
+        const directData = await fetchJsonWithTimeout(`${APPS_SCRIPT_URL}?action=getProducts&t=${Date.now()}`, 12000);
+        if (directData && Array.isArray(directData.rows)) {
+          data = directData;
         }
-      } catch (e) {}
+      }
+
+      if (data && data.latestNoti) checkAndTriggerBroadcastNoti(data.latestNoti);
+      if (data && Array.isArray(data.rows)) {
+        try { localStorage.setItem('mt_products_cache_v1', JSON.stringify(data.rows)); } catch (e) {}
+        allProducts = parseProductsRows(data.rows);
+      }
 
       document.getElementById('products-loading')?.classList.add('hidden');
       if (APP_ROLE !== 'admin') {
@@ -2233,7 +2264,7 @@
             : (isNoAns
               ? `<div class="bg-orange-500 text-white rounded-xl p-2.5 flex flex-wrap justify-between items-center gap-2 shadow-sm">
                    <div class="text-xs font-extrabold">📞 Delivery မှ ဝယ်သူ ဖုန်းမကိုင်ကြောင်း ပို့ထားသည် (ဆိုင်ထံ မပို့ရသေးပါ)</div>
-                   <button type="button" onclick="adminConfirmCancel('${o.orderId}', ${hasPartner}, this)" class="bg-white text-orange-800 hover:bg-orange-50 font-extrabold px-3 py-1.5 rounded-lg text-xs shadow">❌ Cancel Confirm (${hasPartner ? 'ဆိုင်ထံပို့' : 'ပယ်ဖျက်'})</button>
+                   <button type="button" onclick="adminConfirmCancel('${o.orderId}', ${hasPartner}, this)" class="bg-white text-orange-800 hover:bg-orange-50 font-extrabold px-3.5 py-1.5 rounded-lg text-xs shadow">❌ Cancel Confirm (${hasPartner ? 'ဆိုင်ထံပို့' : 'ပယ်ဖျက်'})</button>
                  </div>`
               : '');
 
