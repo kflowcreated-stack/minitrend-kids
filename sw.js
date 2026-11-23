@@ -1,4 +1,4 @@
-const CACHE_NAME = "minitrend-app-shell-v6";
+const CACHE_NAME = "minitrend-app-shell-v7";
 const CORE_SHELL_ASSETS = [
   "./",
   "./index.html",
