@@ -1204,7 +1204,7 @@
             <div class="relative aspect-square bg-white">
               <img src="${escapeHtml(imgUrl)}" loading="lazy" alt="${escapeHtml(p.name)}" class="w-full h-full object-contain p-1">
               <span class="absolute top-1.5 left-1.5 bg-purple-600/90 text-white text-[9px] font-extrabold px-1.5 py-0.5 rounded-full">${escapeHtml(SIZE_LABELS[sizeIdx])}</span>
-              <span class="absolute bottom-1.5 left-1.5 bg-emerald-600/90 text-white text-[9px] font-extrabold px-1.5 py-0.5 rounded-full">${isPartner ? '✅ မှာယူနိုင်သည်' : 'လက်ကျန် ' + exactStock}</span>
+              <span class="absolute bottom-1.5 left-1.5 bg-emerald-600/90 text-white text-[9px] font-extrabold px-1.5 py-0.5 rounded-full">✅ မှာယူနိုင်ပါသည်</span>
             </div>
             <div class="p-2 flex-1 flex flex-col justify-between">
               <div>
@@ -1504,7 +1504,7 @@
         addBtn.innerText = '❌ ကုန်နေပါသည်';
         addBtn.className = 'flex-1 bg-gray-300 text-gray-600 font-extrabold py-3 rounded-xl text-sm cursor-not-allowed';
       } else {
-        activeStkEl.innerText = isPartner ? '✅ မှာယူနိုင်သည်' : `✅ လက်ကျန်: ${stk} ခု`;
+        activeStkEl.innerText = '✅ မှာယူနိုင်ပါသည်';
         activeStkEl.className = 'text-xs font-extrabold text-emerald-600';
         addBtn.disabled = false;
         addBtn.innerText = '🛍️ ခြင်းတောင်းထဲ ထည့်မည်';
@@ -3260,17 +3260,22 @@
         const isPartner = p.shopId !== 'OWN';
         const needsAge = AGE_REQUIRED_CATS.includes(p.category);
         const imgUrl = (p.colors[0] && p.colors[0].image) ? p.colors[0].image : './icon.png?v=3';
+        const isTotalLow = p.totalStock <= 5;
 
         let sizesHtml = '';
         if (!needsAge) {
           const stk = p.stocks[0] || 0;
-          const badgeCls = stk <= 0
-            ? 'bg-red-100 text-red-700 border-red-200'
-            : (stk <= 2 ? 'bg-amber-100 text-amber-900 border-amber-300' : 'bg-emerald-100 text-emerald-800 border-emerald-200');
+          const isLow = stk <= 5;
+          const badgeCls = isLow
+            ? 'bg-red-50 text-red-600 border-red-300'
+            : 'bg-emerald-100 text-emerald-800 border-emerald-200';
+          const badgeText = stk <= 0
+            ? '❌ 0 ခု (ကုန်ပြီ)'
+            : (stk <= 5 ? `⚠️ ${stk} ခု — Stock နည်းနေပါပြီ` : `${stk} ခု`);
           sizesHtml = `
-            <div class="flex items-center justify-between gap-2 bg-gray-50 border rounded-xl px-3 py-2 text-xs">
+            <div class="flex items-center justify-between gap-2 ${isLow ? 'bg-red-50/40 border-red-200' : 'bg-gray-50 border-gray-200'} border rounded-xl px-3 py-2 text-xs">
               <span class="font-bold text-gray-700">📦 လက်ရှိ Stock</span>
-              <span class="border ${badgeCls} font-extrabold px-2.5 py-0.5 rounded-full">${stk <= 0 ? '❌ 0 (ကုန်ပြီ)' : stk + ' ခု'}</span>
+              <span class="border ${badgeCls} font-extrabold px-2.5 py-0.5 rounded-full">${badgeText}</span>
             </div>
           `;
         } else {
@@ -3278,23 +3283,33 @@
             if (p.prices[i] <= 0 && p.stocks[i] <= 0) return '';
             const stk = p.stocks[i] || 0;
             const pr = p.prices[i] || 0;
-            const badgeCls = stk <= 0
-              ? 'bg-red-100 text-red-700 border-red-200'
-              : (stk <= 2 ? 'bg-amber-100 text-amber-900 border-amber-300' : 'bg-emerald-100 text-emerald-800 border-emerald-200');
+            const isLow = stk <= 5;
+            const badgeCls = isLow
+              ? 'bg-red-50 text-red-600 border-red-300'
+              : 'bg-emerald-100 text-emerald-800 border-emerald-200';
+            const badgeText = stk <= 0
+              ? '❌ 0 ခု (ကုန်ပြီ)'
+              : (stk <= 5 ? `⚠️ ${stk} ခု — Stock နည်းနေပါပြီ` : `${stk} ခု`);
             return `
-              <div class="flex items-center justify-between gap-2 bg-gray-50 border rounded-xl px-2.5 py-1.5 text-xs">
+              <div class="flex items-center justify-between gap-2 ${isLow ? 'bg-red-50/40 border-red-200' : 'bg-gray-50 border-gray-200'} border rounded-xl px-2.5 py-1.5 text-xs">
                 <div class="min-w-0">
                   <span class="font-bold text-gray-800">${escapeHtml(sz)}</span>
                   ${pr > 0 ? `<span class="text-[10px] text-gray-500 font-bold ml-1">(${pr.toLocaleString()} Ks)</span>` : ''}
                 </div>
-                <span class="border ${badgeCls} font-extrabold px-2 py-0.5 rounded-full text-[11px] shrink-0">${stk <= 0 ? '❌ 0' : stk + ' ခု'}</span>
+                <span class="border ${badgeCls} font-extrabold px-2 py-0.5 rounded-full text-[11px] shrink-0">${badgeText}</span>
               </div>
             `;
           }).join('');
         }
 
+        const totalSummaryHtml = p.totalStock <= 0
+          ? `<span class="text-[10px] text-red-600 font-extrabold">• စုစုပေါင်း: 0 ခု (❌ ကုန်ပြီ)</span>`
+          : (p.totalStock <= 5
+              ? `<span class="text-[10px] text-red-600 font-extrabold">• စုစုပေါင်း: ${p.totalStock} ခု (⚠️ Stock နည်းနေပါပြီ)</span>`
+              : `<span class="text-[10px] text-emerald-700 font-extrabold">• စုစုပေါင်း: ${p.totalStock} ခု</span>`);
+
         return `
-          <div class="bg-white rounded-2xl border border-gray-200 p-3 shadow-sm space-y-2">
+          <div class="bg-white rounded-2xl border ${isTotalLow ? 'border-red-300' : 'border-gray-200'} p-3 shadow-sm space-y-2">
             <div class="flex items-center justify-between gap-2.5">
               <div class="flex items-center gap-2.5 min-w-0 flex-1">
                 <img src="${escapeHtml(imgUrl)}" class="w-12 h-12 rounded-xl object-cover border shrink-0">
@@ -3303,7 +3318,7 @@
                     <span class="${isPartner ? 'bg-amber-100 text-amber-900' : 'bg-blue-100 text-blue-800'} text-[10px] font-extrabold px-2 py-0.5 rounded">${isPartner ? '🏪 ' + escapeHtml(p.shopId) : '🏠 OWN'}</span>
                     <span class="text-[10px] text-gray-500 font-bold">${escapeHtml(p.category)}</span>
                     <span class="text-[10px] text-pink-600 font-extrabold">${p.minPrice.toLocaleString()} Ks</span>
-                    <span class="text-[10px] ${p.totalStock <= 0 ? 'text-red-600' : 'text-emerald-700'} font-extrabold">• စုစုပေါင်း: ${p.totalStock}</span>
+                    ${totalSummaryHtml}
                   </div>
                   <p class="font-extrabold text-xs sm:text-sm text-gray-900 truncate mt-0.5">${escapeHtml(p.name)}</p>
                 </div>
