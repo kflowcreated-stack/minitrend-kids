@@ -9,7 +9,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="MiniTrend Shop" />
-  <link rel="manifest" href="/shop/manifest.json?v=9" />
+  <link rel="manifest" href="/shop/manifest.json?v=10" />
   <link rel="icon" type="image/png" href="../icon.png?v=3" />
   <link rel="apple-touch-icon" href="../icon.png?v=3" />
 
@@ -129,7 +129,7 @@
     <div id="shop-login-card" class="bg-white rounded-2xl shadow-lg border-2 border-amber-200 max-w-md mx-auto p-6 mt-6">
       <div class="text-center mb-5">
         <div class="w-16 h-16 bg-amber-100 text-amber-700 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-2.5 border border-amber-200 shadow-sm">🏪</div>
-        <h1 class="text-xl font-extrabold text-gray-900">MiniTrend Partner Shop</h1>
+        <h1 class="text-xl font-extrabold text-gray-900">MiniTrend Partner Shop <span class="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">v2.5</span></h1>
         <p class="text-xs text-gray-500 mt-1">ချိတ်ဆက်ဆိုင်အမည် ရွေးချယ်ပြီး PIN နံပါတ် ရိုက်ထည့်ပါ</p>
       </div>
 
@@ -161,7 +161,10 @@
       <!-- Header -->
       <div class="bg-gradient-to-r from-amber-600 via-orange-600 to-rose-600 text-white p-4 sm:p-5 rounded-2xl shadow-md flex flex-wrap justify-between items-center gap-3">
         <div>
-          <p class="text-[11px] text-amber-100 font-bold">🏪 MiniTrend Kids — Partner Shop</p>
+          <div class="flex items-center gap-1.5">
+            <p class="text-[11px] text-amber-100 font-bold">🏪 MiniTrend Kids — Partner Shop</p>
+            <span class="bg-white/25 text-white text-[10px] font-extrabold px-1.5 py-0.5 rounded-full">v2.5</span>
+          </div>
           <h2 id="shop-header-name" class="text-lg sm:text-xl font-extrabold mt-0.5">ဆိုင်အမည်</h2>
           <p id="shop-header-meta" class="text-[11px] text-amber-100 font-bold mt-0.5">ကော်မရှင်: 5% | ဆိုင်ရငွေ: 95%</p>
         </div>
@@ -241,7 +244,7 @@
         </div>
       </div>
 
-      <!-- TAB 3: RESTOCK / NEW PRODUCT SUBMISSION (UP TO 3 PHOTOS) -->
+      <!-- TAB 3: RESTOCK / NEW PRODUCT SUBMISSION (1 TO 3 PHOTOS) -->
       <div id="tab-panel-restock" class="hidden space-y-4">
         <div class="bg-white rounded-2xl border-2 border-amber-300 p-4 shadow-sm space-y-3.5">
           <div>
@@ -599,7 +602,7 @@
         reader.onload = function(ev) {
           const img = new Image();
           img.onload = function() {
-            const maxDim = 800;
+            const maxDim = 700;
             let w = img.width;
             let h = img.height;
             if (w > maxDim || h > maxDim) {
@@ -613,7 +616,7 @@
             ctx.fillStyle = '#ffffff';
             ctx.fillRect(0, 0, w, h);
             ctx.drawImage(img, 0, 0, w, h);
-            resolve(canvas.toDataURL('image/jpeg', 0.70));
+            resolve(canvas.toDataURL('image/jpeg', 0.68));
           };
           img.onerror = function() { resolve(''); };
           img.src = ev.target.result;
@@ -635,13 +638,12 @@
       }
 
       const statusEl = document.getElementById('rs-img-status');
-      if (statusEl) {
-        statusEl.innerText = '⏳ ပုံများ ပြင်ဆင်နေပါသည်...';
-        statusEl.className = 'text-[11px] font-extrabold text-amber-700';
-      }
-
       const toProcess = files.slice(0, remaining);
       for (let i = 0; i < toProcess.length; i++) {
+        if (statusEl) {
+          statusEl.innerText = `⏳ ပုံ ${i + 1}/${toProcess.length} ပြင်ဆင်နေ...`;
+          statusEl.className = 'text-[11px] font-extrabold text-amber-700';
+        }
         const b64 = await compressImageFile(toProcess[i]);
         if (b64 && restockPhotos.length < MAX_RESTOCK_PHOTOS) {
           restockPhotos.push({ base64: b64, url: '' });
@@ -863,7 +865,6 @@
       document.getElementById('rs-color').value = firstColor ? firstColor.name : '';
       document.getElementById('rs-desc').value = p.desc || '';
 
-      // Pre-fill existing images (up to 3 unique URLs)
       const uniqueImgs = [];
       (p.colors || []).forEach(c => {
         if (c && c.image && !uniqueImgs.includes(c.image) && uniqueImgs.length < MAX_RESTOCK_PHOTOS) {
@@ -1344,8 +1345,8 @@
               }).join('')}</div>`
             : '';
 
-          const rejectReasonHtml = (isRej && r.rejectReason)
-            ? `<div class="mt-1.5 bg-red-50 border border-red-200 text-red-700 rounded-lg px-2.5 py-1.5 text-[11px] font-extrabold">❌ ပယ်ချရသည့်အကြောင်းရင်း: ${escapeHtml(r.rejectReason)}</div>`
+          const rejectReasonHtml = isRej
+            ? `<div class="mt-1.5 bg-red-50 border border-red-300 text-red-700 rounded-lg px-2.5 py-1.5 text-[11px] font-extrabold">❌ ပယ်ချရသည့်အကြောင်းရင်း: ${escapeHtml(r.rejectReason || 'Admin မှ ပယ်ချထားပါသည်')}</div>`
             : '';
 
           return `
@@ -1485,13 +1486,13 @@
       const saved = getSavedShopSession();
       if (!saved) return;
       const btn = document.getElementById('btn-submit-restock');
-      btn.disabled = true; btn.innerText = "⏳ ပို့နေပါသည်...";
+      btn.disabled = true; btn.innerText = "⏳ ပုံများနှင့် Stock ပို့နေပါသည်...";
 
+      // Send clean photoList (1 to 3 photos) without duplicating base64 payload
       const photoList = restockPhotos.slice(0, MAX_RESTOCK_PHOTOS).map(p => ({
         base64: p.base64 || "",
         url: p.base64 ? "" : (p.url || "")
       }));
-      const firstPhoto = photoList[0] || { base64: "", url: "" };
 
       try {
         await fetch(APPS_SCRIPT_URL, {
@@ -1507,15 +1508,13 @@
             qty: parseInt(document.getElementById('rs-qty').value, 10) || 1,
             price: parseInt(document.getElementById('rs-price').value, 10) || 0,
             color: document.getElementById('rs-color').value.trim(),
-            imageBase64: firstPhoto.base64,
-            image: firstPhoto.url,
             photoList: photoList,
             description: document.getElementById('rs-desc').value.trim()
           })
         });
         clearSelectedExistingProduct(true);
         alert("MiniTrend Kids သို့ Stock ထပ်တိုးပို့ပြီးပါပြီ၊ Admin မှ စစ်ဆေးပြီး Approve လုပ်မှသာ ဝယ်သူ App တွင် ပေါ်လာပါမည်။");
-        setTimeout(() => loadShopDashboard(false), 1200);
+        setTimeout(() => loadShopDashboard(false), 1800);
       } catch (err) {
         alert("⚠️ ပေးပို့ရာတွင် အမှားရှိနေပါသည်။");
       }
