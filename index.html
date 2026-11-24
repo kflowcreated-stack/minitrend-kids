@@ -3380,7 +3380,7 @@
       btn.disabled = false; btn.innerText = '❌ ပယ်ချပြီး ဆိုင်ထံပို့မည်';
     }
 
-    // ==================== COMPACT 4-STEP ORDER PROCESS BAR (1-4) ====================
+    // ==================== 6-STEP ORDER PROCESS BAR (1-6) ====================
     function buildAdminOrderProcessSteps(ord, hasPartner) {
       const st = (ord.status || '').trim();
       const pSt = (ord.pickupStatus || '').trim();
@@ -3388,29 +3388,59 @@
       const isDelivered = (st === 'ပို့ပြီး');
       const isCodPaid = (st === 'COD ငွေပေးချေပြီး');
       const isOnWay = (st === 'ပို့ဆောင်နေပြီ');
-      const isPacked = !!(meta.shopPacked || meta.adminPickupConfirmed || pSt === 'ဆိုင်မှ ထုပ်ပိုးပြီး (ကောက်ရန်အသင့်)' || pSt === 'ဆိုင်မှ ပစ္စည်းကောက်ပြီးပြီ' || (!hasPartner && ord.riderId));
+      const isShopPacked = !!(meta.shopPacked || pSt === 'ဆိုင်မှ ထုပ်ပိုးပြီး (ကောက်ရန်အသင့်)');
+      const isPickupGoing = (pSt === 'ဆိုင်သို့ သွားနေပါသည်');
+      const isPicked = (pSt === 'ဆိုင်မှ ပစ္စည်းကောက်ပြီးပြီ' || !!meta.adminPickupConfirmed);
+      const pRider = (ord.pickupRiderName || '').trim();
+      const dRider = (ord.riderName || '').trim();
 
-      const steps = [
-        { num: '၁', label: 'အော်ဒါအသစ်', state: 'done' },
-        { num: '၂', label: 'ထုပ်ပိုးပြီး', state: (isOnWay || isCodPaid || isDelivered) ? 'done' : (isPacked ? 'active' : 'pending') },
-        { num: '၃', label: 'Delivery ပို့နေဆဲ', state: (isCodPaid || isDelivered) ? 'done' : (isOnWay ? 'active' : 'pending') },
-        { num: '၄', label: 'ပို့ဆောင်ပြီး', state: isDelivered ? 'done' : (isCodPaid ? 'active' : 'pending') }
-      ];
+      let steps = [];
+      if (hasPartner) {
+        const s3Label = pRider
+          ? `Pickup လုပ်ရန် (${escapeHtml(pRider)}) သွားနေပြီ`
+          : 'Pickup သွားနေပြီ';
+        const s5Label = dRider
+          ? `Delivery (${escapeHtml(dRider)}) ပို့နေပြီ`
+          : 'Delivery ပို့နေပြီ';
+
+        steps = [
+          { num: '၁', label: 'အော်ဒါအသစ်', state: 'done' },
+          { num: '၂', label: 'ထုပ်ပိုးပြီး', state: (isPickupGoing || isPicked || isOnWay || isCodPaid || isDelivered) ? 'done' : (isShopPacked ? 'active' : 'pending') },
+          { num: '၃', label: s3Label, state: (isPicked || isOnWay || isCodPaid || isDelivered) ? 'done' : (isPickupGoing ? 'active' : 'pending') },
+          { num: '၄', label: 'ဆိုင်မှပစ္စည်းကောက်ပြီးပြီ', state: (isOnWay || isCodPaid || isDelivered) ? 'done' : (isPicked ? 'active' : 'pending') },
+          { num: '၅', label: s5Label, state: (isCodPaid || isDelivered) ? 'done' : (isOnWay ? 'active' : 'pending') },
+          { num: '၆', label: 'COD Confirm', state: isDelivered ? 'done' : (isCodPaid ? 'active' : 'pending') }
+        ];
+      } else {
+        steps = [
+          { num: '၁', label: 'အော်ဒါအသစ်', state: 'done' },
+          { num: '၂', label: dRider ? `Delivery (${escapeHtml(dRider)}) ပေးပြီး` : 'Delivery ပေးပြီး', state: (isOnWay || isCodPaid || isDelivered) ? 'done' : (ord.riderId ? 'active' : 'pending') },
+          { num: '၃', label: 'Delivery ပို့နေပြီ', state: (isCodPaid || isDelivered) ? 'done' : (isOnWay ? 'active' : 'pending') },
+          { num: '၄', label: 'COD Confirm', state: isDelivered ? 'done' : (isCodPaid ? 'active' : 'pending') }
+        ];
+      }
 
       const itemsHtml = steps.map((s, idx) => {
         let circleCls = 'bg-gray-200 text-gray-500';
         let labelCls = 'text-gray-400 font-bold';
-        if (s.state === 'done') { circleCls = 'bg-emerald-600 text-white'; labelCls = 'text-emerald-700 font-extrabold'; }
-        else if (s.state === 'active') { circleCls = 'bg-amber-500 text-white ring-2 ring-amber-200'; labelCls = 'text-amber-800 font-extrabold'; }
+        if (s.state === 'done') {
+          circleCls = 'bg-emerald-600 text-white';
+          labelCls = 'text-emerald-700 font-extrabold';
+        } else if (s.state === 'active') {
+          circleCls = 'bg-amber-500 text-white ring-2 ring-amber-200 animate-pulse';
+          labelCls = 'text-amber-800 font-extrabold';
+        }
 
         const nextStep = steps[idx + 1];
         const lineDone = nextStep && (s.state === 'done' && (nextStep.state === 'done' || nextStep.state === 'active'));
-        const connectorHtml = idx < steps.length - 1 ? `<div class="flex-1 h-1 ${lineDone ? 'bg-emerald-500' : 'bg-gray-200'} rounded-full mx-1"></div>` : '';
+        const connectorHtml = idx < steps.length - 1
+          ? `<div class="flex-1 min-w-[12px] h-1 ${lineDone ? 'bg-emerald-500' : 'bg-gray-200'} rounded-full mx-1"></div>`
+          : '';
 
         return `
           <div class="flex items-center gap-1 shrink-0">
-            <span class="w-5 h-5 rounded-full ${circleCls} text-[10px] font-extrabold flex items-center justify-center">${s.num}</span>
-            <span class="text-[10px] ${labelCls}">${s.label}</span>
+            <span class="w-5 h-5 rounded-full ${circleCls} text-[10px] font-extrabold flex items-center justify-center shrink-0">${s.num}</span>
+            <span class="text-[10px] ${labelCls} whitespace-nowrap">${s.label}</span>
           </div>
           ${connectorHtml}
         `;
