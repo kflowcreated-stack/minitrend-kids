@@ -4162,20 +4162,30 @@
       const prevBtnText = btn.innerText;
       btn.disabled = true; btn.innerText = '⏳ ပို့နေသည်...';
 
-      await fetch(APPS_SCRIPT_URL, {
-        method: 'POST', mode: 'no-cors',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({
-          action: 'sendBroadcast',
-          target: targetVal,
-          title: document.getElementById('bc-title').value.trim(),
-          message: document.getElementById('bc-msg').value.trim()
-        })
-      });
-      document.getElementById('bc-title').value = '';
-      document.getElementById('bc-msg').value = '';
+      try {
+        const res = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({
+            action: 'sendBroadcast',
+            target: targetVal,
+            title: document.getElementById('bc-title').value.trim(),
+            message: document.getElementById('bc-msg').value.trim()
+          })
+        });
+        const data = await res.json();
+        const r = (data && data.fcmResult) ? data.fcmResult : {};
+        document.getElementById('bc-title').value = '';
+        document.getElementById('bc-msg').value = '';
+        if (r.sent > 0) {
+          alert(`✅ ${targetLabel} ထံ Notification ရောက်ရှိပြီးပါပြီ! (ဖုန်း ${r.sent} လုံး)`);
+        } else {
+          alert(`⚠️ Noti မရောက်ပါ!\n\nအဖြေ: ${JSON.stringify(r)}`);
+        }
+      } catch (err) {
+        alert('⚠️ ပေးပို့ရာတွင် အင်တာနက်ချိတ်ဆက်မှု စစ်ဆေးပေးပါ။');
+      }
       btn.disabled = false; btn.innerText = prevBtnText;
-      alert(`✅ ${targetLabel} ထံ Notification ပေးပို့ပြီးပါပြီ!`);
     }
 
     async function setupCategorySheetsAdmin() {
