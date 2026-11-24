@@ -1,9 +1,10 @@
-const CACHE_NAME = "minitrend-app-shell-v10";
+const CACHE_NAME = "minitrend-app-shell-v11";
 const CORE_SHELL_ASSETS = [
   "./",
   "./index.html",
   "./manifest.json",
   "./icon.png?v=3",
+  "./badge.png?v=1",
   "./shop/",
   "./delivery/"
 ];
@@ -125,11 +126,13 @@ self.addEventListener("push", function(event) {
   var targetUrl = d.url || (payload.fcmOptions && payload.fcmOptions.link) || (self.location.origin + "/");
   var tagId = d.tag || d.notiId || n.tag || ("mt-" + Date.now());
   var iconUrl = d.icon || n.icon || (self.location.origin + "/icon.png?v=3");
+  var badgeUrl = self.location.origin + "/badge.png?v=1";
 
   event.waitUntil(
     self.registration.showNotification(title, {
       body: body,
       icon: iconUrl,
+      badge: badgeUrl,
       tag: tagId,
       renotify: true,
       vibrate: [300, 100, 300],
