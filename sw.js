@@ -1,4 +1,4 @@
-const CACHE_NAME = "minitrend-app-shell-v9";
+const CACHE_NAME = "minitrend-app-shell-v10";
 const CORE_SHELL_ASSETS = [
   "./",
   "./index.html",
@@ -130,7 +130,6 @@ self.addEventListener("push", function(event) {
     self.registration.showNotification(title, {
       body: body,
       icon: iconUrl,
-      badge: iconUrl,
       tag: tagId,
       renotify: true,
       vibrate: [300, 100, 300],
