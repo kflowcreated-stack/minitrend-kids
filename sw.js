@@ -1,4 +1,4 @@
-const CACHE_NAME = "minitrend-app-shell-v7";
+const CACHE_NAME = "minitrend-app-shell-v8";
 const CORE_SHELL_ASSETS = [
   "./",
   "./index.html",
@@ -89,44 +89,46 @@ self.addEventListener("fetch", function(event) {
   );
 });
 
-// ==================== FIREBASE CLOUD MESSAGING ====================
-try {
-  importScripts("https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js");
-  importScripts("https://www.gstatic.com/firebasejs/10.13.2/firebase-messaging-compat.js");
-
-  if (!firebase.apps.length) {
-    firebase.initializeApp({
-      apiKey: "AIzaSyDyb--Qc9tic7g8GOzVWYi8vpLMSfTaI5U",
-      authDomain: "minitrend-kids.firebaseapp.com",
-      projectId: "minitrend-kids",
-      storageBucket: "minitrend-kids.firebasestorage.app",
-      messagingSenderId: "523213115439",
-      appId: "1:523213115439:web:0e97b742e7d067943f36da"
-    });
+// ==================== NATIVE PUSH NOTIFICATION (WORKS EVEN WHEN SCREEN OFF) ====================
+self.addEventListener("push", function(event) {
+  var payload = {};
+  try {
+    if (event.data) {
+      payload = event.data.json();
+    }
+  } catch (e) {
+    payload = {
+      notification: {
+        title: "MiniTrend Kids 🎁",
+        body: event.data ? event.data.text() : ""
+      }
+    };
   }
 
-  const messaging = firebase.messaging();
-  messaging.onBackgroundMessage(function(payload) {
-    const d = payload.data || {};
-    const n = payload.notification || {};
-    const title = d.title || n.title || "MiniTrend Kids 🎁";
-    const body = d.body || n.body || "";
-    const targetUrl = d.url || (self.location.origin + "/");
+  var d = payload.data || {};
+  var n = payload.notification || {};
+  var title = d.title || n.title || "MiniTrend Kids 🎁";
+  var body = d.body || n.body || "";
+  var targetUrl = d.url || (payload.fcmOptions && payload.fcmOptions.link) || (self.location.origin + "/");
+  var tagId = d.tag || d.notiId || n.tag || ("mt-" + Date.now());
 
-    return self.registration.showNotification(title, {
+  event.waitUntil(
+    self.registration.showNotification(title, {
       body: body,
-      icon: d.icon || (self.location.origin + "/icon.png?v=3"),
-      badge: d.badge || (self.location.origin + "/badge.png?v=1"),
-      tag: d.tag || d.notiId || ("mt-" + Date.now()),
-      vibrate: [200, 100, 200],
+      icon: d.icon || n.icon || (self.location.origin + "/icon.png?v=3"),
+      badge: d.badge || n.badge || (self.location.origin + "/badge.png?v=1"),
+      tag: tagId,
+      renotify: true,
+      requireInteraction: false,
+      vibrate: [300, 100, 300],
       data: { url: targetUrl }
-    });
-  });
-} catch (err) {}
+    })
+  );
+});
 
 self.addEventListener("notificationclick", function(event) {
   event.notification.close();
-  const targetUrl = (event.notification && event.notification.data && event.notification.data.url)
+  var targetUrl = (event.notification && event.notification.data && event.notification.data.url)
     ? event.notification.data.url
     : (self.location.origin + "/");
 
@@ -134,11 +136,13 @@ self.addEventListener("notificationclick", function(event) {
     self.clients.matchAll({ type: "window", includeUncontrolled: true }).then(function(clientList) {
       for (var i = 0; i < clientList.length; i++) {
         var client = clientList[i];
-        if (client.url.indexOf(self.location.origin) === 0 && "focus" in client) {
+        if (client.url === targetUrl && "focus" in client) {
           return client.focus();
         }
       }
-      if (self.clients.openWindow) return self.clients.openWindow(targetUrl);
+      if (self.clients.openWindow) {
+        return self.clients.openWindow(targetUrl);
+      }
     })
   );
 });
