@@ -1,1842 +1,3728 @@
-<!DOCTYPE html>
-<html lang="my">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>MiniTrend Shop — ချိတ်ဆက်ဆိုင် App</title>
-  <meta name="theme-color" content="#d97706" />
-  <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="apple-mobile-web-app-title" content="MiniTrend Shop" />
-  <link rel="manifest" href="/shop/manifest.json?v=10" />
-  <link rel="icon" type="image/png" href="../icon.png?v=3" />
-  <link rel="apple-touch-icon" href="../icon.png?v=3" />
+&lt;!DOCTYPE html&gt;
 
-  <script>
-    if (window.location.pathname.endsWith('/shop')) {
-      window.location.replace(window.location.pathname + '/' + window.location.search + window.location.hash);
+&lt;html lang=&quot;my&quot;&gt;
+
+&lt;head&gt;
+
+  &lt;meta charset=&quot;UTF-8&quot; /&gt;
+
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no&quot; /&gt;
+
+  &lt;title&gt;MiniTrend Shop — ချိတ်ဆက်ဆိုင် App&lt;/title&gt;
+
+  &lt;meta name=&quot;theme-color&quot; content=&quot;#d97706&quot; /&gt;
+
+  &lt;meta name=&quot;mobile-web-app-capable&quot; content=&quot;yes&quot; /&gt;
+
+  &lt;meta name=&quot;apple-mobile-web-app-capable&quot; content=&quot;yes&quot; /&gt;
+
+  &lt;meta name=&quot;apple-mobile-web-app-status-bar-style&quot; content=&quot;default&quot; /&gt;
+
+  &lt;meta name=&quot;apple-mobile-web-app-title&quot; content=&quot;MiniTrend Shop&quot; /&gt;
+
+  &lt;link rel=&quot;manifest&quot; href=&quot;/shop/manifest.json?v=11&quot; /&gt;
+
+  &lt;link rel=&quot;icon&quot; type=&quot;image/png&quot; href=&quot;../icon.png?v=3&quot; /&gt;
+
+  &lt;link rel=&quot;apple-touch-icon&quot; href=&quot;../icon.png?v=3&quot; /&gt;
+
+
+
+  &lt;script&gt;
+
+    if (window.location.pathname.endsWith(&#39;/shop&#39;)) {
+
+      window.location.replace(window.location.pathname + &#39;/&#39; + window.location.search + window.location.hash);
+
     }
+
     (function() {
-      var ua = navigator.userAgent || "";
+
+      var ua = navigator.userAgent || &quot;&quot;;
+
       var isAndroid = /Android/i.test(ua);
+
       var isInAppBrowser = /FBAN|FBAV|Messenger|Viber|Line|Telegram|Instagram|wv\)/i.test(ua);
-      if (isAndroid && isInAppBrowser) {
-        var cleanUrl = window.location.href.replace(/^https?:\/\//i, "");
-        window.location.href = "intent://" + cleanUrl + "#Intent;scheme=https;package=com.android.chrome;end";
+
+      if (isAndroid &amp;&amp; isInAppBrowser) {
+
+        var cleanUrl = window.location.href.replace(/^https?:\/\//i, &quot;&quot;);
+
+        window.location.href = &quot;intent://&quot; + cleanUrl + &quot;#Intent;scheme=https;package=com.android.chrome;end&quot;;
+
       }
+
     })();
 
-    window.__deferredInstallPrompt = null;
-    window.__currentFcmToken = "";
 
-    document.addEventListener('gesturestart', function(e) { e.preventDefault(); });
+
+    window.__deferredInstallPrompt = null;
+
+    window.__currentFcmToken = &quot;&quot;;
+
+
+
+    document.addEventListener(&#39;gesturestart&#39;, function(e) { e.preventDefault(); });
+
+
 
     function isStandaloneApp() {
+
       return (
-        window.matchMedia('(display-mode: standalone)').matches ||
-        window.matchMedia('(display-mode: minimal-ui)').matches ||
-        window.matchMedia('(display-mode: fullscreen)').matches ||
+
+        window.matchMedia(&#39;(display-mode: standalone)&#39;).matches ||
+
+        window.matchMedia(&#39;(display-mode: minimal-ui)&#39;).matches ||
+
+        window.matchMedia(&#39;(display-mode: fullscreen)&#39;).matches ||
+
         window.navigator.standalone === true
+
       );
+
     }
 
-    window.addEventListener('beforeinstallprompt', function(e) {
+
+
+    window.addEventListener(&#39;beforeinstallprompt&#39;, function(e) {
+
       e.preventDefault();
+
       window.__deferredInstallPrompt = e;
-      var btn = document.getElementById('btn-shop-install');
-      if (btn && !isStandaloneApp()) btn.classList.remove('hidden');
-      var btnLogin = document.getElementById('btn-shop-install-login');
-      if (btnLogin && !isStandaloneApp()) btnLogin.classList.remove('hidden');
+
+      var btn = document.getElementById(&#39;btn-shop-install&#39;);
+
+      if (btn &amp;&amp; !isStandaloneApp()) btn.classList.remove(&#39;hidden&#39;);
+
+      var btnLogin = document.getElementById(&#39;btn-shop-install-login&#39;);
+
+      if (btnLogin &amp;&amp; !isStandaloneApp()) btnLogin.classList.remove(&#39;hidden&#39;);
+
     });
 
-    window.addEventListener('appinstalled', function() {
+
+
+    window.addEventListener(&#39;appinstalled&#39;, function() {
+
       window.__deferredInstallPrompt = null;
-      var btn = document.getElementById('btn-shop-install');
-      if (btn) btn.classList.add('hidden');
-      var btnLogin = document.getElementById('btn-shop-install-login');
-      if (btnLogin) btnLogin.classList.add('hidden');
+
+      var btn = document.getElementById(&#39;btn-shop-install&#39;);
+
+      if (btn) btn.classList.add(&#39;hidden&#39;);
+
+      var btnLogin = document.getElementById(&#39;btn-shop-install-login&#39;);
+
+      if (btnLogin) btnLogin.classList.add(&#39;hidden&#39;);
+
     });
-  </script>
 
-  <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-messaging-compat.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
+  &lt;/script&gt;
+
+
+
+  &lt;script src=&quot;https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js&quot;&gt;&lt;/script&gt;
+
+  &lt;script src=&quot;https://www.gstatic.com/firebasejs/10.13.2/firebase-messaging-compat.js&quot;&gt;&lt;/script&gt;
+
+  &lt;script src=&quot;https://cdn.tailwindcss.com&quot;&gt;&lt;/script&gt;
+
+  &lt;style&gt;
+
     html, body {
-      touch-action: manipulation;
-      -webkit-text-size-adjust: 100%;
-      overflow-x: hidden;
-    }
-    body {
-      font-family: 'Pyidaungsu', 'Myanmar Text', 'Noto Sans Myanmar', system-ui, -apple-system, sans-serif;
-      padding-top: env(safe-area-inset-top, 0px);
-    }
-    .noti-safe-top { top: calc(0.75rem + env(safe-area-inset-top, 0px)); }
-    button, a { touch-action: manipulation; }
-    input, select, textarea {
-      font-size: 16px !important;
-      touch-action: manipulation;
-    }
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    @keyframes slideDownNoti {
-      0% { transform: translate(-50%, -120%); opacity: 0; }
-      100% { transform: translate(-50%, 0); opacity: 1; }
-    }
-    .noti-slide-in { animation: slideDownNoti 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-  </style>
-</head>
-<body class="bg-amber-50/40 text-gray-800 min-h-screen">
 
-  <script>
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzjiat7rNkOGkQYjf3RT6rC4g5AdXiVtraecqUTG8wXcu4l6Dm1mmtnXpVhaxjAzsrd/exec";
+      touch-action: manipulation;
+
+      -webkit-text-size-adjust: 100%;
+
+      overflow-x: hidden;
+
+    }
+
+    body {
+
+      font-family: &#39;Pyidaungsu&#39;, &#39;Myanmar Text&#39;, &#39;Noto Sans Myanmar&#39;, system-ui, -apple-system, sans-serif;
+
+      padding-top: env(safe-area-inset-top, 0px);
+
+    }
+
+    .noti-safe-top { top: calc(0.75rem + env(safe-area-inset-top, 0px)); }
+
+    button, a { touch-action: manipulation; }
+
+    input, select, textarea {
+
+      font-size: 16px !important;
+
+      touch-action: manipulation;
+
+    }
+
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    @keyframes slideDownNoti {
+
+      0% { transform: translate(-50%, -120%); opacity: 0; }
+
+      100% { transform: translate(-50%, 0); opacity: 1; }
+
+    }
+
+    .noti-slide-in { animation: slideDownNoti 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+  &lt;/style&gt;
+
+&lt;/head&gt;
+
+&lt;body class=&quot;bg-amber-50/40 text-gray-800 min-h-screen&quot;&gt;
+
+
+
+  &lt;script&gt;
+
+    const APPS_SCRIPT_URL = &quot;https://script.google.com/macros/s/AKfycbzjiat7rNkOGkQYjf3RT6rC4g5AdXiVtraecqUTG8wXcu4l6Dm1mmtnXpVhaxjAzsrd/exec&quot;;
+
+
 
     const FIREBASE_CONFIG = {
-      apiKey: "AIzaSyDyb--Qc9tic7g8GOzVWYi8vpLMSfTaI5U",
-      authDomain: "minitrend-kids.firebaseapp.com",
-      projectId: "minitrend-kids",
-      storageBucket: "minitrend-kids.firebasestorage.app",
-      messagingSenderId: "523213115439",
-      appId: "1:523213115439:web:0e97b742e7d067943f36da"
+
+      apiKey: &quot;AIzaSyDyb--Qc9tic7g8GOzVWYi8vpLMSfTaI5U&quot;,
+
+      authDomain: &quot;minitrend-kids.firebaseapp.com&quot;,
+
+      projectId: &quot;minitrend-kids&quot;,
+
+      storageBucket: &quot;minitrend-kids.firebasestorage.app&quot;,
+
+      messagingSenderId: &quot;523213115439&quot;,
+
+      appId: &quot;1:523213115439:web:0e97b742e7d067943f36da&quot;
+
     };
-    const FIREBASE_VAPID_KEY = "BEDkISmwDq6ytVzt2e-eWRndSXKxPttzdfxnKXETfJGhdnn_Se4b778DZ9YEi6NQDdy6gHuNz4twCZuKtzItqSI";
+
+    const FIREBASE_VAPID_KEY = &quot;BEDkISmwDq6ytVzt2e-eWRndSXKxPttzdfxnKXETfJGhdnn_Se4b778DZ9YEi6NQDdy6gHuNz4twCZuKtzItqSI&quot;;
+
+
 
     window.__swRegistrationPromise = null;
-    if ('serviceWorker' in navigator) {
-      window.__swRegistrationPromise = navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(() => null);
+
+    if (&#39;serviceWorker&#39; in navigator) {
+
+      window.__swRegistrationPromise = navigator.serviceWorker.register(&#39;/sw.js&#39;, { scope: &#39;/&#39; }).catch(() =&gt; null);
+
     }
-  </script>
 
-  <!-- TOP NOTIFICATION BANNER -->
-  <div id="push-noti-popup" class="fixed noti-safe-top left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-md hidden noti-slide-in">
-    <div class="bg-gray-900/95 text-white rounded-2xl p-3.5 shadow-2xl border-2 border-amber-400 flex items-start gap-3 backdrop-blur-md">
-      <img src="../icon.png?v=3" class="w-11 h-11 rounded-xl object-cover shrink-0 border border-white/20" />
-      <div class="flex-1 min-w-0">
-        <div class="flex justify-between items-center gap-1">
-          <p id="push-noti-title" class="text-xs sm:text-sm font-extrabold text-amber-300 truncate">🔔 MiniTrend Shop</p>
-          <span class="text-[10px] text-gray-300 shrink-0">ယခုလေးတင်</span>
-        </div>
-        <p id="push-noti-body" class="text-xs sm:text-sm text-white font-bold mt-1 leading-relaxed"></p>
-      </div>
-      <button type="button" onclick="closePushPopup()" class="text-gray-400 hover:text-white font-bold text-lg leading-none px-1">✕</button>
-    </div>
-  </div>
+  &lt;/script&gt;
 
-  <div class="max-w-3xl mx-auto px-3.5 py-4 sm:py-6">
+
+
+  &lt;!-- TOP NOTIFICATION BANNER --&gt;
+
+  &lt;div id=&quot;push-noti-popup&quot; class=&quot;fixed noti-safe-top left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-md hidden noti-slide-in&quot;&gt;
+
+    &lt;div class=&quot;bg-gray-900/95 text-white rounded-2xl p-3.5 shadow-2xl border-2 border-amber-400 flex items-start gap-3 backdrop-blur-md&quot;&gt;
+
+      &lt;img src=&quot;../icon.png?v=3&quot; class=&quot;w-11 h-11 rounded-xl object-cover shrink-0 border border-white/20&quot; /&gt;
+
+      &lt;div class=&quot;flex-1 min-w-0&quot;&gt;
+
+        &lt;div class=&quot;flex justify-between items-center gap-1&quot;&gt;
+
+          &lt;p id=&quot;push-noti-title&quot; class=&quot;text-xs sm:text-sm font-extrabold text-amber-300 truncate&quot;&gt;🔔 MiniTrend Shop&lt;/p&gt;
+
+          &lt;span class=&quot;text-[10px] text-gray-300 shrink-0&quot;&gt;ယခုလေးတင်&lt;/span&gt;
+
+        &lt;/div&gt;
+
+        &lt;p id=&quot;push-noti-body&quot; class=&quot;text-xs sm:text-sm text-white font-bold mt-1 leading-relaxed&quot;&gt;&lt;/p&gt;
+
+      &lt;/div&gt;
+
+      &lt;button type=&quot;button&quot; onclick=&quot;closePushPopup()&quot; class=&quot;text-gray-400 hover:text-white font-bold text-lg leading-none px-1&quot;&gt;✕&lt;/button&gt;
+
+    &lt;/div&gt;
+
+  &lt;/div&gt;
+
+
+
+  &lt;div class=&quot;max-w-3xl mx-auto px-3.5 py-4 sm:py-6&quot;&gt;
+
+
 
     <!-- ================= LOGIN SCREEN ================= -->
+
     <div id="shop-login-card" class="bg-white rounded-2xl shadow-lg border-2 border-amber-200 max-w-md mx-auto p-6 mt-6">
+
       <div class="text-center mb-5">
+
         <div class="w-16 h-16 bg-amber-100 text-amber-700 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-2.5 border border-amber-200 shadow-sm">🏪</div>
+
         <h1 class="text-xl font-extrabold text-gray-900">MiniTrend Partner Shop <span class="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">v2.6</span></h1>
+
         <p class="text-xs text-gray-500 mt-1">ချိတ်ဆက်ဆိုင်အမည် ရွေးချယ်ပြီး PIN နံပါတ် ရိုက်ထည့်ပါ</p>
+
       </div>
+
+
 
       <form onsubmit="handleShopLogin(event)" class="space-y-3.5">
+
         <div>
+
           <label class="block text-xs font-bold text-gray-700 mb-1">🏪 ဆိုင်အမည် ရွေးချယ်ပါ</label>
+
           <select id="shop-login-select" required class="w-full border-2 border-amber-200 rounded-xl px-3 py-2.5 text-base font-bold bg-gray-50 focus:outline-none focus:border-amber-500">
+
             <option value="">⏳ ဆိုင်စာရင်း ရယူနေပါသည်...</option>
+
           </select>
+
         </div>
+
         <div>
+
           <label class="block text-xs font-bold text-gray-700 mb-1">🔑 ဆိုင် PIN နံပါတ်</label>
+
           <input type="password" inputmode="numeric" id="shop-login-pin" required placeholder="ဥပမာ - 2001" class="w-full border-2 border-amber-200 rounded-xl px-3.5 py-2.5 text-base font-bold focus:outline-none focus:border-amber-500">
+
         </div>
+
         <p id="shop-login-error" class="hidden text-xs font-bold text-red-600 bg-red-50 border border-red-200 rounded-xl p-2.5">❌ PIN နံပါတ် မှားယွင်းနေပါသည်၊ ပြန်လည်စစ်ဆေးပါ။</p>
+
         <button type="submit" id="btn-shop-login" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-extrabold py-3 rounded-xl shadow text-sm">🔓 Shop App သို့ ဝင်ရောက်မည်</button>
+
       </form>
+
+
 
       <div class="mt-4 pt-3 border-t border-gray-100 text-center">
+
         <button type="button" id="btn-shop-install-login" onclick="triggerShopInstall()" class="hidden bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold px-4 py-2.5 rounded-xl shadow-sm">
+
           📲 ဤဖုန်းတွင် Shop App သွင်းမည်
+
         </button>
+
       </div>
+
     </div>
+
+
 
     <!-- ================= SHOP DASHBOARD ================= -->
+
     <div id="shop-dashboard" class="hidden space-y-4 transition-all duration-300">
 
+
+
       <!-- Header -->
+
       <div class="bg-gradient-to-r from-amber-600 via-orange-600 to-rose-600 text-white p-4 sm:p-5 rounded-2xl shadow-md flex flex-wrap justify-between items-center gap-3">
+
         <div class="min-w-0">
+
           <div class="flex items-center gap-1.5">
+
             <p class="text-[11px] text-amber-100 font-bold">🏪 MiniTrend Kids — Partner Shop</p>
+
             <span class="bg-white/25 text-white text-[10px] font-extrabold px-1.5 py-0.5 rounded-full">v2.6</span>
+
           </div>
+
           <div class="flex flex-wrap items-center gap-2 mt-0.5">
+
             <h2 id="shop-header-name" class="text-lg sm:text-xl font-extrabold truncate">ဆိုင်အမည်</h2>
+
             <button type="button" onclick="openAgreementViewModal()" class="bg-white/25 hover:bg-white/35 active:scale-95 text-white text-[11px] font-extrabold px-2.5 py-1 rounded-xl border border-white/30 shadow-sm shrink-0">
+
               📜 သဘောတူညီချက်
+
             </button>
+
           </div>
+
           <p id="shop-header-meta" class="text-[11px] text-amber-100 font-bold mt-0.5">ကော်မရှင်: 5% | ဆိုင်ရငွေ: 95%</p>
+
         </div>
+
         <div class="flex flex-wrap gap-1.5">
+
           <button type="button" id="btn-shop-install" onclick="triggerShopInstall()" class="hidden bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-extrabold px-3 py-2 rounded-xl shadow-sm">📲 App သွင်း</button>
+
           <button type="button" onclick="connectShopFirebase()" id="btn-shop-fcm" class="bg-amber-300 hover:bg-amber-200 text-gray-900 text-xs font-extrabold px-3 py-2 rounded-xl shadow-sm">🔔 Noti ချိတ်မည်</button>
+
           <button type="button" onclick="loadShopDashboard(false)" id="btn-shop-refresh" class="bg-white/20 hover:bg-white/30 text-white text-xs font-bold px-3 py-2 rounded-xl">🔄 ပြန်စစ်</button>
+
           <button type="button" onclick="logoutShop()" class="bg-red-600/90 hover:bg-red-700 text-white text-xs font-bold px-3 py-2 rounded-xl">🔒 ထွက်</button>
+
         </div>
+
       </div>
+
+
 
       <!-- AUTO MUTE QUIET HOURS BANNER (6:00 PM - 8:00 AM MMT) -->
+
       <div id="shop-quiet-banner" class="hidden bg-slate-900 text-amber-200 border-2 border-slate-700 rounded-2xl px-3.5 py-2.5 text-xs font-bold flex items-center gap-2.5 shadow-sm">
+
         <span class="text-lg shrink-0">🌙</span>
+
         <div class="leading-relaxed">
+
           <p class="font-extrabold text-white">ညဘက် Auto Mute ဖွင့်ထားပါသည် (ညနေ ၆:၀၀ မှ နံနက် ၈:၀၀)</p>
+
           <p class="text-[11px] text-slate-300">ယခုအချိန်အတွင်း Notification အသံပိတ်ထားမည်ဖြစ်ပြီး ညကဝင်ထားသော အော်ဒါများကို နံနက် ၈:၀၀ နာရီတွင် စုပေါင်းအကြောင်းကြားပေးပါမည်။</p>
+
         </div>
+
       </div>
+
+
 
       <!-- 3 Stat Cards -->
+
       <div class="grid grid-cols-3 gap-2.5 sm:gap-3.5">
+
         <button type="button" onclick="switchShopTab('orders')" class="bg-white border-2 border-amber-200 p-3 rounded-2xl shadow-sm text-center hover:border-amber-400 transition">
+
           <p class="text-[11px] font-bold text-gray-500">📦 အော်ဒါများ</p>
+
           <p id="stat-active-orders" class="text-2xl font-extrabold text-amber-600 mt-1">0</p>
+
           <p id="stat-picked-count" class="text-[10px] font-bold text-emerald-600 mt-0.5"></p>
+
         </button>
+
         <button type="button" onclick="switchShopTab('returns')" class="bg-white border-2 border-red-200 p-3 rounded-2xl shadow-sm text-center hover:border-red-400 transition">
+
           <p class="text-[11px] font-bold text-gray-500">🔄 Cancel/Return</p>
+
           <p id="stat-returns-count" class="text-2xl font-extrabold text-red-600 mt-1">0</p>
+
           <p id="stat-returns-pending" class="text-[10px] font-bold text-red-500 mt-0.5"></p>
+
         </button>
+
         <button type="button" onclick="switchShopTab('payouts')" class="bg-emerald-600 text-white p-3 rounded-2xl shadow-sm text-center hover:bg-emerald-700 transition">
+
           <p class="text-[11px] font-bold text-emerald-100">💰 ရရန်ကျန် (95%)</p>
+
           <p id="stat-unpaid-total" class="text-base sm:text-xl font-extrabold mt-1.5">0 Ks</p>
+
           <p class="text-[10px] text-emerald-100 mt-0.5">ငွေစာရင်းကြည့်ရန်</p>
+
         </button>
+
       </div>
+
+
 
       <!-- 5 Navigation Tabs -->
+
       <div class="flex gap-1.5 overflow-x-auto no-scrollbar bg-white p-1.5 rounded-2xl border border-amber-200 shadow-sm">
+
         <button type="button" onclick="switchShopTab('orders')" id="tab-btn-orders" class="py-2.5 px-3 rounded-xl text-xs font-extrabold bg-amber-600 text-white shadow-sm transition shrink-0">
+
           📦 အော်ဒါ <span id="tab-badge-orders" class="ml-0.5 bg-white/25 px-1.5 py-0.5 rounded-full text-[10px]">0</span>
+
         </button>
+
         <button type="button" onclick="switchShopTab('mystock')" id="tab-btn-mystock" class="py-2.5 px-3 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 transition shrink-0">
+
           📊 မိမိ Stock (+/-) <span id="tab-badge-mystock" class="ml-0.5 bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded-full text-[10px]">0</span>
+
         </button>
+
         <button type="button" onclick="switchShopTab('restock')" id="tab-btn-restock" class="py-2.5 px-3 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 transition shrink-0">
+
           📥 Stock ပို့ရန်
+
         </button>
+
         <button type="button" onclick="switchShopTab('returns')" id="tab-btn-returns" class="py-2.5 px-3 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 transition shrink-0">
+
           🔄 Cancel/Return <span id="tab-badge-returns" class="ml-0.5 bg-red-100 text-red-700 px-1.5 py-0.5 rounded-full text-[10px]">0</span>
+
         </button>
+
         <button type="button" onclick="switchShopTab('payouts')" id="tab-btn-payouts" class="py-2.5 px-3 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 transition shrink-0">
+
           💰 95% စာရင်း
+
         </button>
+
       </div>
+
+
 
       <!-- TAB 1: ACTIVE ORDERS -->
+
       <div id="tab-panel-orders" class="space-y-3">
+
         <div class="bg-amber-50 border border-amber-200 rounded-xl px-3.5 py-2 text-[11px] font-extrabold text-amber-900 flex justify-between items-center">
+
           <span>📋 MiniTrend Kids မှ တစ်နေ့တာရောင်းရသော အော်ဒါများ</span>
+
           <span class="text-[10px] text-amber-700">ထုပ်ပိုးပြီးလျှင် ခလုတ်နှိပ်ပါ</span>
+
         </div>
+
         <div id="shop-orders-list" class="space-y-3.5">
+
           <p class="text-xs text-gray-400 py-8 text-center bg-white rounded-2xl border">⏳ အော်ဒါစာရင်း ရယူနေပါသည်...</p>
+
         </div>
+
       </div>
+
+
 
       <!-- TAB 2: MY STOCK HISTORY & DIRECT +/- ADJUSTMENT -->
+
       <div id="tab-panel-mystock" class="hidden space-y-3">
+
         <div class="bg-blue-50 border border-blue-200 rounded-xl px-3.5 py-2.5 text-[11px] text-blue-950 font-bold leading-relaxed">
+
           📊 Admin ထံ Approve ပြီးသား မိမိဆိုင်ပစ္စည်းများ၏ လက်ရှိ Stock မှတ်တမ်း ဖြစ်ပါသည်။ ဆိုင်တွင် လာဝယ်သူအား ရောင်းမိလိုက်ပါက <b>"−"</b> နှိပ်၍ ချက်ချင်းလျှော့ထားနိုင်သလို ပစ္စည်းထပ်ရောက်ပါက <b>"+"</b> နှိပ်၍ တိုးနိုင်ပါသည်။
+
         </div>
+
         <div class="bg-white rounded-2xl border border-amber-200 p-3 shadow-sm flex gap-2 items-center">
+
           <input type="text" id="mystock-search" oninput="renderMyStockHistory()" placeholder="🔍 မိမိပစ္စည်းအမည် သို့မဟုတ် အမျိုးအစား ရှာရန်..." class="flex-1 border border-gray-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500">
+
           <button type="button" onclick="loadShopDashboard(false)" class="bg-amber-600 text-white font-extrabold px-3 py-2 rounded-xl text-xs shrink-0">🔄 စစ်မည်</button>
+
         </div>
+
         <div id="shop-mystock-list" class="space-y-3">
+
           <p class="text-xs text-gray-400 py-8 text-center bg-white rounded-2xl border">⏳ ပစ္စည်းစာရင်း ရယူနေပါသည်...</p>
+
         </div>
+
       </div>
+
+
 
       <!-- TAB 3: RESTOCK / NEW PRODUCT SUBMISSION (1 TO 3 PHOTOS) -->
+
       <div id="tab-panel-restock" class="hidden space-y-4">
+
         <div class="bg-white rounded-2xl border-2 border-amber-300 p-4 shadow-sm space-y-3.5">
+
           <div>
+
             <h3 class="font-extrabold text-sm sm:text-base text-gray-900">📥 ပစ္စည်း Stock အသစ် / ထပ်တိုး ပို့ရန်</h3>
+
             <p class="text-[11px] text-gray-500 mt-0.5">Admin မှ စစ်ဆေးပြီး Approve လုပ်မှသာ ဝယ်သူ App တွင် ပေါ်လာပါမည်။</p>
+
           </div>
+
+
 
           <div class="grid grid-cols-2 gap-1.5 bg-amber-50 p-1.5 rounded-xl border border-amber-200">
+
             <button type="button" id="rs-mode-new" onclick="setRestockMode('new')" class="py-2 px-2 rounded-lg text-xs font-extrabold bg-amber-600 text-white shadow-sm transition">
+
               🆕 ပစ္စည်းအသစ် ထည့်ရန်
+
             </button>
+
             <button type="button" id="rs-mode-existing" onclick="setRestockMode('existing')" class="py-2 px-2 rounded-lg text-xs font-bold text-amber-900 hover:bg-amber-100 transition">
+
               ➕ ရှိပြီးသား Stock ထပ်တိုး
+
             </button>
+
           </div>
+
+
 
           <div id="rs-existing-picker" class="hidden bg-blue-50/70 border-2 border-blue-200 rounded-2xl p-3 space-y-2.5">
+
             <div class="flex justify-between items-center gap-2">
+
               <p class="text-xs font-extrabold text-blue-900">🔍 ယခင်ပို့ထားသော မိမိဆိုင်ပစ္စည်း ရှာဖွေရန်</p>
+
               <span id="rs-existing-count" class="text-[10px] font-extrabold bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">0 မျိုး</span>
+
             </div>
+
             <input type="text" id="rs-existing-search" oninput="renderExistingProductsList()" placeholder="🔎 ပစ္စည်းအမည်၊ အမျိုးအစား သို့မဟုတ် အရောင် ရှာရန်..." class="w-full border-2 border-blue-200 rounded-xl px-3 py-2 bg-white text-sm focus:outline-none focus:border-blue-500">
+
             <div id="rs-existing-list" class="max-h-60 overflow-y-auto space-y-2 pr-0.5">
+
               <p class="text-xs text-gray-400 text-center py-4">ပစ္စည်းစာရင်း ရယူနေပါသည်...</p>
+
             </div>
+
           </div>
+
+
 
           <div id="rs-selected-summary" class="hidden bg-emerald-50 border-2 border-emerald-300 rounded-2xl p-3 space-y-2">
+
             <div class="flex justify-between items-start gap-2">
+
               <div class="flex items-center gap-2.5 min-w-0">
+
                 <img id="rs-sel-img" src="../icon.png?v=3" class="w-12 h-12 rounded-xl object-cover border bg-white shrink-0">
+
                 <div class="min-w-0">
+
                   <p class="text-[10px] font-extrabold text-emerald-700">✅ ရွေးချယ်ထားသော ယခင်ပစ္စည်း</p>
+
                   <p id="rs-sel-name" class="text-xs sm:text-sm font-extrabold text-gray-900 truncate"></p>
+
                   <p id="rs-sel-meta" class="text-[11px] font-bold text-gray-600"></p>
+
                 </div>
+
               </div>
+
               <button type="button" onclick="clearSelectedExistingProduct()" class="text-[11px] font-extrabold text-red-600 bg-white border border-red-200 px-2 py-1 rounded-lg shrink-0">✕ ဖယ်</button>
+
             </div>
+
             <div id="rs-sel-stock-badges" class="flex flex-wrap gap-1 text-[10px] font-extrabold"></div>
+
             <div id="rs-sel-color-chips" class="hidden space-y-1">
+
               <p class="text-[10px] font-bold text-gray-600">🎨 ရှိပြီးသား အရောင်ရွေးရန် (နှိပ်၍ အသင့်ဖြည့်နိုင်သည်):</p>
+
               <div id="rs-sel-colors-wrap" class="flex flex-wrap gap-1.5"></div>
+
             </div>
+
           </div>
+
+
 
           <form onsubmit="submitShopRestock(event)" class="space-y-3">
+
             <div>
+
               <label class="block text-xs font-extrabold text-gray-700 mb-1">🧸 ပစ္စည်းအမည်</label>
+
               <input type="text" id="rs-name" required placeholder="ဥပမာ - ကလေးဝတ် ချည်သားအင်္ကျီလက်တို" class="w-full border-2 border-amber-200 rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-amber-500">
+
             </div>
+
+
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+
               <div>
+
                 <label class="block text-xs font-extrabold text-gray-700 mb-1">📂 အမျိုးအစား</label>
+
                 <select id="rs-category" onchange="updateRestockSizeOptions()" class="w-full border-2 border-amber-200 rounded-xl px-3 py-2.5 bg-gray-50 font-bold">
+
                   <option value="ဝမ်းဆက်">ဝမ်းဆက်</option>
+
                   <option value="နွေရာသီဝတ်">နွေရာသီဝတ်</option>
+
                   <option value="အင်္ကျီ">အင်္ကျီ</option>
+
                   <option value="ဘောင်းဘီ">ဘောင်းဘီ</option>
+
                   <option value="ဦးထုတ်">ဦးထုတ်</option>
+
                   <option value="ဖိနပ်">ဖိနပ်</option>
+
                   <option value="Baby Kits">Baby Kits</option>
+
                   <option value="ဒိုင်ဘာ">ဒိုင်ဘာ</option>
+
                   <option value="အနှီး">အနှီး</option>
+
                   <option value="လက်အိတ်၊ ခြေအိတ်">လက်အိတ်၊ ခြေအိတ်</option>
+
                   <option value="ကုတင်၊ ပုခက်">ကုတင်၊ ပုခက်</option>
+
                   <option value="သင်ကြားရေး">သင်ကြားရေး</option>
+
                   <option value="ကစားစရာ">ကစားစရာ</option>
+
                 </select>
+
               </div>
+
               <div id="rs-size-col">
+
                 <div class="flex justify-between items-center mb-1">
+
                   <label class="block text-xs font-extrabold text-gray-700">📏 Size / အသက်</label>
+
                   <span id="rs-current-size-stock" class="hidden text-[10px] font-extrabold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full"></span>
+
                 </div>
+
                 <select id="rs-size" onchange="onRestockSizeChanged()" class="w-full border-2 border-amber-200 rounded-xl px-3 py-2.5 bg-gray-50 font-bold"></select>
+
               </div>
+
             </div>
+
+
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+
               <div>
+
                 <label class="block text-xs font-extrabold text-gray-700 mb-1">📦 ထပ်တိုး အရေအတွက်</label>
+
                 <input type="number" id="rs-qty" required min="1" value="10" class="w-full border-2 border-amber-200 rounded-xl px-3 py-2.5 font-extrabold">
+
               </div>
+
               <div>
+
                 <label class="block text-xs font-extrabold text-gray-700 mb-1">💰 ရောင်းမည့်ဈေး (ကျပ်)</label>
+
                 <input type="number" id="rs-price" required min="500" step="100" placeholder="ဥပမာ - 15000" class="w-full border-2 border-emerald-300 rounded-xl px-3 py-2.5 font-extrabold text-emerald-800 bg-emerald-50/40 focus:outline-none focus:border-emerald-500">
+
               </div>
+
               <div>
+
                 <label class="block text-xs font-extrabold text-gray-700 mb-1">🎨 အရောင်</label>
+
                 <input type="text" id="rs-color" placeholder="ဥပမာ - ပန်းရောင်" class="w-full border-2 border-amber-200 rounded-xl px-3 py-2.5 font-bold focus:outline-none focus:border-amber-500">
+
               </div>
+
             </div>
+
+
 
             <!-- MULTI-IMAGE UPLOAD (1 TO 3 PHOTOS) -->
-            <div>
-              <div class="flex justify-between items-center mb-1">
-                <label class="block text-xs font-extrabold text-gray-700">📷 Product ပုံများ (၁ ပုံ မှ ၃ ပုံအထိ ထည့်နိုင်သည်)</label>
-                <span id="rs-img-count-badge" class="text-[10px] font-extrabold bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full">0 / 3 ပုံ</span>
-              </div>
-              <input type="file" id="rs-image-file" accept="image/*" multiple onchange="handleRestockGalleryFile(event)" class="hidden">
-              <div class="bg-amber-50/70 border-2 border-dashed border-amber-300 rounded-2xl p-3 space-y-2.5">
-                <div id="rs-photo-slots" class="grid grid-cols-3 gap-2"></div>
-                <div class="flex flex-wrap items-center justify-between gap-2">
-                  <button type="button" id="btn-add-rs-photo" onclick="document.getElementById('rs-image-file').click()" class="bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-xs px-3.5 py-2 rounded-xl shadow-sm">
-                    🖼️ Gallery မှ ပုံရွေးမည် (+ ၃ ပုံအထိ)
-                  </button>
-                  <p id="rs-img-status" class="text-[11px] font-bold text-gray-500">၁ ပုံတည်း သို့မဟုတ် ၃ ပုံအထိ ရွေးထည့်နိုင်သည်</p>
-                </div>
-              </div>
-            </div>
 
             <div>
-              <label class="block text-xs font-extrabold text-gray-700 mb-1">📝 ပစ္စည်းအကြောင်းအရာ (Description)</label>
-              <textarea id="rs-desc" rows="2" placeholder="အထည်သား၊ အရောင်၊ အသုံးပြုပုံ သို့မဟုတ် အသေးစိတ်အချက်အလက်..." class="w-full border-2 border-amber-200 rounded-xl px-3.5 py-2 focus:outline-none focus:border-amber-500"></textarea>
+
+              <div class="flex justify-between items-center mb-1">
+
+                <label class="block text-xs font-extrabold text-gray-700">📷 Product ပုံများ (၁ ပုံ မှ ၃ ပုံအထိ ထည့်နိုင်သည်)</label>
+
+                <span id="rs-img-count-badge" class="text-[10px] font-extrabold bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full">0 / 3 ပုံ</span>
+
+              </div>
+
+              <input type="file" id="rs-image-file" accept="image/*" multiple onchange="handleRestockGalleryFile(event)" class="hidden">
+
+              <div class="bg-amber-50/70 border-2 border-dashed border-amber-300 rounded-2xl p-3 space-y-2.5">
+
+                <div id="rs-photo-slots" class="grid grid-cols-3 gap-2"></div>
+
+                <div class="flex flex-wrap items-center justify-between gap-2">
+
+                  <button type="button" id="btn-add-rs-photo" onclick="document.getElementById('rs-image-file').click()" class="bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-xs px-3.5 py-2 rounded-xl shadow-sm">
+
+                    🖼️ Gallery မှ ပုံရွေးမည် (+ ၃ ပုံအထိ)
+
+                  </button>
+
+                  <p id="rs-img-status" class="text-[11px] font-bold text-gray-500">၁ ပုံတည်း သို့မဟုတ် ၃ ပုံအထိ ရွေးထည့်နိုင်သည်</p>
+
+                </div>
+
+              </div>
+
             </div>
+
+
+
+            <div>
+
+              <label class="block text-xs font-extrabold text-gray-700 mb-1">📝 ပစ္စည်းအကြောင်းအရာ (Description)</label>
+
+              <textarea id="rs-desc" rows="2" placeholder="အထည်သား၊ အရောင်၊ အသုံးပြုပုံ သို့မဟုတ် အသေးစိတ်အချက်အလက်..." class="w-full border-2 border-amber-200 rounded-xl px-3.5 py-2 focus:outline-none focus:border-amber-500"></textarea>
+
+            </div>
+
+
 
             <button type="submit" id="btn-submit-restock" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-extrabold py-3 rounded-xl shadow text-sm">
+
               📤 Admin ဘက်သို့ Stock ထပ်တိုး ပို့မည်
+
             </button>
+
           </form>
+
         </div>
+
+
 
         <div class="bg-white rounded-2xl border border-gray-200 p-4 shadow-sm space-y-2.5">
+
           <h4 class="font-extrabold text-xs sm:text-sm text-gray-900">📋 ပို့ထားသော Stock ထပ်တိုး Request မှတ်တမ်း</h4>
+
           <div id="shop-restock-history" class="divide-y text-xs">
+
             <p class="text-gray-400 py-3 text-center">ပို့ထားသော မှတ်တမ်း မရှိသေးပါ။</p>
+
           </div>
+
         </div>
+
       </div>
+
+
 
       <!-- TAB 4: CANCEL / RETURN HISTORY -->
+
       <div id="tab-panel-returns" class="hidden space-y-3">
+
         <div class="bg-red-50 border border-red-200 rounded-xl px-3.5 py-2.5 text-[11px] text-red-900 font-bold leading-relaxed">
+
           🔄 Cancel ဖြစ်သော အော်ဒါများနှင့် ဆိုင်သို့ Return ပြန်အပ်ပြီးသော ပစ္စည်းများကို History အဖြစ် ဤနေရာတွင် သိမ်းဆည်းပြသပေးပါသည်။ ပစ္စည်းပြန်လက်ခံရရှိပါက <b>"✅ ပြန်အပ်ပစ္စည်း လက်ခံပြီး"</b> ကို နှိပ်အတည်ပြုပေးပါ။
+
         </div>
+
         <div id="shop-returns-list" class="space-y-3.5">
+
           <p class="text-xs text-gray-400 py-8 text-center bg-white rounded-2xl border">Cancel / Return History မရှိသေးပါ။</p>
+
         </div>
+
       </div>
+
+
 
       <!-- TAB 5: 95% PAYOUTS -->
+
       <div id="tab-panel-payouts" class="hidden space-y-4">
+
         <div class="grid grid-cols-2 gap-3">
+
           <div class="bg-white border-2 border-emerald-200 rounded-2xl p-3.5 shadow-sm">
+
             <p class="text-[11px] font-bold text-gray-500">⏳ MiniTrend မှ ရှင်းရန်ကျန် (95%)</p>
+
             <p id="payout-unpaid-sum" class="text-xl font-extrabold text-emerald-700 mt-1">0 ကျပ်</p>
+
           </div>
+
           <div class="bg-white border border-gray-200 rounded-2xl p-3.5 shadow-sm">
+
             <p class="text-[11px] font-bold text-gray-500">💸 လွှဲရှင်းပြီး စုစုပေါင်း</p>
+
             <p id="payout-settled-sum" class="text-xl font-extrabold text-gray-800 mt-1">0 ကျပ်</p>
+
           </div>
+
         </div>
+
+
 
         <div class="bg-white rounded-2xl shadow-sm border border-emerald-200 p-4">
+
           <h3 class="font-extrabold text-sm text-gray-900 mb-3">⏳ ပို့ပြီး — ငွေလွှဲရှင်းရန် ကျန်ရှိသော အော်ဒါများ</h3>
+
           <div id="shop-unpaid-list" class="divide-y text-xs">
+
             <p class="text-gray-400 py-4 text-center">ငွေရှင်းရန် ကျန်ရှိသော အော်ဒါ မရှိသေးပါ။</p>
+
           </div>
+
         </div>
+
+
 
         <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4">
+
           <h3 class="font-extrabold text-sm text-gray-900 mb-3">✅ ငွေလွှဲရှင်းပြီး မှတ်တမ်း (နောက်ဆုံး ၃၀)</h3>
+
           <div id="shop-settled-list" class="divide-y text-xs">
+
             <p class="text-gray-400 py-4 text-center">ငွေလွှဲရှင်းပြီး မှတ်တမ်း မရှိသေးပါ။</p>
+
           </div>
+
         </div>
+
       </div>
+
+
 
     </div>
-  </div>
 
-  <!-- ================= APPROVAL GATE OVERLAY (BLURS APP UNTIL APPROVED) ================= -->
-  <div id="shop-approval-gate" class="fixed inset-0 z-40 hidden bg-black/55 backdrop-blur-md flex items-center justify-center p-3.5 overflow-y-auto">
-    <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl border-2 border-amber-300 overflow-hidden my-auto">
-      <div class="bg-gradient-to-r from-amber-600 to-orange-600 text-white px-4 py-3.5 flex justify-between items-center">
-        <div>
-          <p class="text-[10px] font-bold text-amber-100">MiniTrend Kids Partner Shop</p>
-          <h3 class="text-sm sm:text-base font-extrabold">📜 ဆိုင်အချက်အလက်နှင့် သဘောတူညီချက်</h3>
-        </div>
-        <button type="button" onclick="logoutShop()" class="bg-white/20 hover:bg-white/30 text-white text-[11px] font-bold px-2.5 py-1.5 rounded-lg">🔒 ထွက်</button>
-      </div>
+  &lt;/div&gt;
+
+
+
+  &lt;!-- ================= APPROVAL GATE OVERLAY (BLURS APP UNTIL APPROVED) ================= --&gt;
+
+  &lt;div id=&quot;shop-approval-gate&quot; class=&quot;fixed inset-0 z-40 hidden bg-black/55 backdrop-blur-md flex items-center justify-center p-3.5 overflow-y-auto&quot;&gt;
+
+    &lt;div class=&quot;bg-white rounded-2xl max-w-md w-full shadow-2xl border-2 border-amber-300 overflow-hidden my-auto&quot;&gt;
+
+      &lt;div class=&quot;bg-gradient-to-r from-amber-600 to-orange-600 text-white px-4 py-3.5 flex justify-between items-center&quot;&gt;
+
+        &lt;div&gt;
+
+          &lt;p class=&quot;text-[10px] font-bold text-amber-100&quot;&gt;MiniTrend Kids Partner Shop&lt;/p&gt;
+
+          &lt;h3 class=&quot;text-sm sm:text-base font-extrabold&quot;&gt;📜 ဆိုင်အချက်အလက်နှင့် သဘောတူညီချက်&lt;/h3&gt;
+
+        &lt;/div&gt;
+
+        &lt;button type=&quot;button&quot; onclick=&quot;logoutShop()&quot; class=&quot;bg-white/20 hover:bg-white/30 text-white text-[11px] font-bold px-2.5 py-1.5 rounded-lg&quot;&gt;🔒 ထွက်&lt;/button&gt;
+
+      &lt;/div&gt;
+
+
 
       <!-- STEP A: FILL SHOP NAME & READ AGREEMENT -->
+
       <form id="gate-form-view" onsubmit="submitShopAgreement(event)" class="p-4 space-y-3 max-h-[80vh] overflow-y-auto">
+
         <div class="bg-amber-50 border border-amber-200 rounded-xl p-2.5 text-[11px] font-bold text-amber-950">
+
           App စတင်အသုံးပြုရန် ဆိုင်နာမည်နှင့် လုပ်ငန်းအမည် အပြည့်အစုံဖြည့်ပြီး သဘောတူညီချက်ကို အတည်ပြုပေးပါ။
+
+        </div>
+
+
+
+        <div>
+
+          <label class="block text-xs font-extrabold text-gray-700 mb-1">🏪 ဆိုင်နာမည်</label>
+
+          <input type="text" id="gate-shop-name" required placeholder="ဥပမာ - Baby Store 3" class="w-full border-2 border-amber-200 rounded-xl px-3 py-2 font-bold focus:outline-none focus:border-amber-500">
+
         </div>
 
         <div>
-          <label class="block text-xs font-extrabold text-gray-700 mb-1">🏪 ဆိုင်နာမည်</label>
-          <input type="text" id="gate-shop-name" required placeholder="ဥပမာ - Baby Store 3" class="w-full border-2 border-amber-200 rounded-xl px-3 py-2 font-bold focus:outline-none focus:border-amber-500">
-        </div>
-        <div>
+
           <label class="block text-xs font-extrabold text-gray-700 mb-1">🏢 လုပ်ငန်းအမည် အပြည့်အစုံ</label>
+
           <input type="text" id="gate-biz-name" required placeholder="ဥပမာ - Baby Store 3 ကလေးအသုံးအဆောင်ဆိုင်" class="w-full border-2 border-amber-200 rounded-xl px-3 py-2 font-bold focus:outline-none focus:border-amber-500">
+
         </div>
+
+
 
         <div class="bg-gray-50 border border-gray-200 rounded-xl p-3 space-y-2 text-xs text-gray-700 leading-relaxed max-h-56 overflow-y-auto">
+
           <p class="font-extrabold text-amber-800 text-xs">📜 MiniTrend Kids နှင့် ချိတ်ဆက်ဆိုင် သဘောတူညီချက်</p>
+
           <p><b>၁။ ဆိုင်အလုပ်ရှုပ်သက်သာစေရန် ကူညီပေးခြင်း:</b> ဝယ်သူရှာဖွေခြင်း၊ စာပြန်ဖြေကြားခြင်းနှင့် Delivery ပို့ဆောင်ခြင်းများကို MiniTrend Kids မှ အပြည့်အစုံ တာဝန်ယူ ဆောင်ရွက်ပေးပါမည်။</p>
+
           <p><b>၂။ ပစ္စည်းထုပ်ပိုးခြင်း (`📦 ထုပ်ပိုးပြီး` စနစ်):</b> အော်ဒါအသစ်ဝင်လာပါက ဆိုင်ဘက်မှ ပစ္စည်းမှန်ကန်စွာ စစ်ဆေးထုပ်ပိုးပြီး <b>"📦 ထုပ်ပိုးပြီး"</b> ခလုတ်ကို နှိပ်ပေးရုံသာ ဖြစ်ပါသည်။</p>
+
           <p><b>၃။ တစ်နေ့တာရောင်းရစာရင်း:</b> နေ့စဉ်အော်ဒါများကို App ထဲရှိ <b>"MiniTrend Kids မှ တစ်နေ့တာရောင်းရသော"</b> စာရင်းတွင် အချိန်မရွေး တိုက်ဆိုင်စစ်ဆေးနိုင်ပါသည်။</p>
+
           <p><b>၄။ ဝန်ဆောင်ခ (၅%) နှင့် ဆိုင်ရငွေ (၉၅%):</b> အောင်မြင်စွာ ရောင်းချပြီးသော ပစ္စည်းတန်ဖိုးအပေါ် MiniTrend Kids ဝန်ဆောင်ခ <b>၅%</b> နှုတ်ယူပြီး ဆိုင်ဘက်မှ <b>၉၅%</b> ရရှိပါမည်။</p>
+
           <p><b>၅။ ငွေရှင်းပေးမည့်အချိန်:</b> ဝယ်သူထံ ပစ္စည်းရောက်ရှိပြီး ငွေချေပြီးသည့် <b>နောက်နေ့ (အော်ဒါတင်ပြီး ခန့်မှန်း ၄ ရက်မြောက်)</b> တွင် ဆိုင်ထံသို့ ငွေလွှဲရှင်းပေးပါမည်။</p>
+
           <p class="bg-amber-100/70 border border-amber-300 rounded-lg px-2.5 py-1.5 font-extrabold text-amber-950">📞 ဆက်သွယ်ရန် MiniTrend Kids Admin ဖုန်း — <a href="tel:09942739543" class="underline text-amber-800">09-942739543</a></p>
+
         </div>
+
+
 
         <button type="submit" id="btn-submit-agreement" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3 rounded-xl shadow text-sm">
+
           ✅ သဘောတူညီပါသည် (Admin အတည်ပြုချက်တောင်းမည်)
+
         </button>
+
       </form>
 
+
+
       <!-- STEP B: WAITING FOR ADMIN APPROVAL -->
+
       <div id="gate-pending-view" class="hidden p-5 text-center space-y-3.5">
+
         <div class="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center text-3xl mx-auto animate-pulse">⏳</div>
+
         <h4 class="text-base font-extrabold text-gray-900">Admin အတည်ပြုချက် စောင့်ဆိုင်းနေပါသည်</h4>
+
         <p class="text-xs text-gray-600 leading-relaxed">
+
           သဘောတူညီချက်ကို MiniTrend Kids Admin ထံ ပေးပို့ပြီးပါပြီ။ Admin မှ အတည်ပြုပေးပြီးသည်နှင့် ဤ App ကို အလိုအလျောက် စတင်အသုံးပြုနိုင်ပါမည်။
+
         </p>
+
         <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs font-bold text-amber-950">
+
           အမြန်အတည်ပြုလိုပါက Admin ဖုန်း <a href="tel:09942739543" class="underline text-amber-700 font-extrabold">09-942739543</a> သို့ ဆက်သွယ်နိုင်ပါသည်။
+
         </div>
+
         <button type="button" onclick="loadShopDashboard(false)" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-extrabold py-2.5 rounded-xl text-xs shadow-sm">
+
           🔄 အတည်ပြုပြီး/မပြီး ပြန်စစ်မည်
+
         </button>
-      </div>
-    </div>
-  </div>
 
-  <!-- ================= READ-ONLY AGREEMENT MODAL (FROM HEADER BUTTON) ================= -->
-  <div id="agreement-view-modal" onclick="closeAgreementViewModal()" class="fixed inset-0 bg-black/75 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
-    <div onclick="event.stopPropagation()" class="bg-white rounded-2xl max-w-md w-full shadow-2xl border-2 border-amber-300 overflow-hidden">
-      <div class="bg-gradient-to-r from-amber-600 to-orange-600 text-white px-4 py-3 flex justify-between items-center">
-        <h3 class="text-sm font-extrabold">📜 MiniTrend Kids ချိတ်ဆက်ဆိုင် သဘောတူညီချက်</h3>
-        <button type="button" onclick="closeAgreementViewModal()" class="text-white/90 hover:text-white font-bold text-xl px-1">✕</button>
       </div>
-      <div class="p-4 space-y-2.5 text-xs text-gray-700 leading-relaxed max-h-[70vh] overflow-y-auto">
-        <div id="agreement-modal-shop-info" class="bg-emerald-50 border border-emerald-200 rounded-xl p-2.5 text-emerald-900 font-bold"></div>
-        <p><b>၁။ ဆိုင်အလုပ်ရှုပ်သက်သာစေရန် ကူညီပေးခြင်း:</b> ဝယ်သူရှာဖွေခြင်း၊ စာပြန်ဖြေကြားခြင်းနှင့် Delivery ပို့ဆောင်ခြင်းများကို MiniTrend Kids မှ အပြည့်အစုံ တာဝန်ယူ ဆောင်ရွက်ပေးပါမည်။</p>
-        <p><b>၂။ ပစ္စည်းထုပ်ပိုးခြင်း (`📦 ထုပ်ပိုးပြီး` စနစ်):</b> အော်ဒါအသစ်ဝင်လာပါက ဆိုင်ဘက်မှ ပစ္စည်းမှန်ကန်စွာ စစ်ဆေးထုပ်ပိုးပြီး <b>"📦 ထုပ်ပိုးပြီး"</b> ခလုတ်ကို နှိပ်ပေးရုံသာ ဖြစ်ပါသည်။</p>
-        <p><b>၃။ တစ်နေ့တာရောင်းရစာရင်း:</b> နေ့စဉ်အော်ဒါများကို App ထဲရှိ <b>"MiniTrend Kids မှ တစ်နေ့တာရောင်းရသော"</b> စာရင်းတွင် အချိန်မရွေး တိုက်ဆိုင်စစ်ဆေးနိုင်ပါသည်။</p>
-        <p><b>၄။ ဝန်ဆောင်ခ (၅%) နှင့် ဆိုင်ရငွေ (၉၅%):</b> အောင်မြင်စွာ ရောင်းချပြီးသော ပစ္စည်းတန်ဖိုးအပေါ် MiniTrend Kids ဝန်ဆောင်ခ <b>၅%</b> နှုတ်ယူပြီး ဆိုင်ဘက်မှ <b>၉၅%</b> ရရှိပါမည်။</p>
-        <p><b>၅။ ငွေရှင်းပေးမည့်အချိန်:</b> ဝယ်သူထံ ပစ္စည်းရောက်ရှိပြီး ငွေချေပြီးသည့် <b>နောက်နေ့ (အော်ဒါတင်ပြီး ခန့်မှန်း ၄ ရက်မြောက်)</b> တွင် ဆိုင်ထံသို့ ငွေလွှဲရှင်းပေးပါမည်။</p>
-        <p class="bg-amber-50 border border-amber-200 rounded-xl p-2.5 font-extrabold text-amber-950">📞 ဆက်သွယ်ရန် MiniTrend Kids Admin ဖုန်း — <a href="tel:09942739543" class="underline text-amber-800">09-942739543</a></p>
-      </div>
-      <div class="p-3 border-t bg-gray-50">
-        <button type="button" onclick="closeAgreementViewModal()" class="w-full bg-gray-900 text-white font-extrabold py-2.5 rounded-xl text-xs">ပိတ်မည်</button>
-      </div>
-    </div>
-  </div>
 
-  <!-- FULL-SCREEN IMAGE LIGHTBOX -->
-  <div id="image-lightbox-modal" onclick="closeImageLightbox()" class="fixed inset-0 bg-black/90 z-50 hidden flex flex-col items-center justify-center p-4 backdrop-blur-sm">
-    <button type="button" onclick="closeImageLightbox()" class="fixed noti-safe-top right-3 z-50 bg-white/20 hover:bg-white/35 text-white w-10 h-10 rounded-full flex items-center justify-center text-xl font-bold shadow-lg">✕</button>
-    <div onclick="event.stopPropagation()" class="max-w-md w-full flex flex-col items-center">
-      <img id="lightbox-img" src="" alt="" class="max-h-[65vh] w-auto max-w-full object-contain rounded-2xl shadow-2xl border border-white/15 bg-black/40">
-      <div class="mt-3 w-full bg-white rounded-2xl p-3.5 shadow-xl text-left">
-        <p id="lightbox-title" class="text-sm font-extrabold text-gray-900"></p>
-        <p id="lightbox-meta" class="text-xs font-bold text-amber-700 mt-1"></p>
-      </div>
     </div>
-  </div>
 
-  <!-- FALLBACK INSTALL GUIDE -->
-  <div id="ios-guide-modal" onclick="closeIosGuide()" class="fixed inset-0 bg-black/75 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
-    <div onclick="event.stopPropagation()" class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl border-2 border-amber-300 space-y-3">
-      <div class="flex justify-between items-center border-b pb-2.5">
-        <h3 class="text-sm font-extrabold text-gray-900">📲 Shop App ထည့်သွင်းနည်း</h3>
-        <button type="button" onclick="closeIosGuide()" class="text-gray-400 font-bold text-xl px-1">✕</button>
-      </div>
-      <div class="space-y-2.5 text-xs text-gray-700 leading-relaxed">
-        <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 space-y-1">
-          <p class="font-extrabold text-gray-900">🍎 iPhone (Safari):</p>
-          <p>အောက်ခြေ <b>Share (⬆️)</b> → <b>Add to Home Screen (➕)</b> → <b>Add</b> နှိပ်ပါ။</p>
-        </div>
-        <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 space-y-1">
-          <p class="font-extrabold text-gray-900">🤖 Android (Chrome):</p>
-          <p>အပေါ်ညာဘက် <b>⋮</b> → <b>Install app</b> ကို နှိပ်ပါ။</p>
-        </div>
-      </div>
-      <button type="button" onclick="closeIosGuide()" class="w-full bg-gray-900 text-white font-extrabold py-2.5 rounded-xl text-xs">နားလည်ပါပြီ</button>
-    </div>
-  </div>
+  &lt;/div&gt;
 
-  <!-- ===== အပိုင်း (၂) ကို ဤစာကြောင်းအောက်တွင် ဆက်ထည့်ပါ ===== -->
-  <script>
-    let currentShopTab = 'orders';
-    let restockMode = 'new';
+
+
+  &lt;!-- ================= READ-ONLY AGREEMENT MODAL (FROM HEADER BUTTON) ================= --&gt;
+
+  &lt;div id=&quot;agreement-view-modal&quot; onclick=&quot;closeAgreementViewModal()&quot; class=&quot;fixed inset-0 bg-black/75 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm&quot;&gt;
+
+    &lt;div onclick=&quot;event.stopPropagation()&quot; class=&quot;bg-white rounded-2xl max-w-md w-full shadow-2xl border-2 border-amber-300 overflow-hidden&quot;&gt;
+
+      &lt;div class=&quot;bg-gradient-to-r from-amber-600 to-orange-600 text-white px-4 py-3 flex justify-between items-center&quot;&gt;
+
+        &lt;h3 class=&quot;text-sm font-extrabold&quot;&gt;📜 MiniTrend Kids ချိတ်ဆက်ဆိုင် သဘောတူညီချက်&lt;/h3&gt;
+
+        &lt;button type=&quot;button&quot; onclick=&quot;closeAgreementViewModal()&quot; class=&quot;text-white/90 hover:text-white font-bold text-xl px-1&quot;&gt;✕&lt;/button&gt;
+
+      &lt;/div&gt;
+
+      &lt;div class=&quot;p-4 space-y-2.5 text-xs text-gray-700 leading-relaxed max-h-[70vh] overflow-y-auto&quot;&gt;
+
+        &lt;div id=&quot;agreement-modal-shop-info&quot; class=&quot;bg-emerald-50 border border-emerald-200 rounded-xl p-2.5 text-emerald-900 font-bold&quot;&gt;&lt;/div&gt;
+
+        &lt;p&gt;&lt;b&gt;၁။ ဆိုင်အလုပ်ရှုပ်သက်သာစေရန် ကူညီပေးခြင်း:&lt;/b&gt; ဝယ်သူရှာဖွေခြင်း၊ စာပြန်ဖြေကြားခြင်းနှင့် Delivery ပို့ဆောင်ခြင်းများကို MiniTrend Kids မှ အပြည့်အစုံ တာဝန်ယူ ဆောင်ရွက်ပေးပါမည်။&lt;/p&gt;
+
+        &lt;p&gt;&lt;b&gt;၂။ ပစ္စည်းထုပ်ပိုးခြင်း (`📦 ထုပ်ပိုးပြီး` စနစ်):&lt;/b&gt; အော်ဒါအသစ်ဝင်လာပါက ဆိုင်ဘက်မှ ပစ္စည်းမှန်ကန်စွာ စစ်ဆေးထုပ်ပိုးပြီး &lt;b&gt;&quot;📦 ထုပ်ပိုးပြီး&quot;&lt;/b&gt; ခလုတ်ကို နှိပ်ပေးရုံသာ ဖြစ်ပါသည်။&lt;/p&gt;
+
+        &lt;p&gt;&lt;b&gt;၃။ တစ်နေ့တာရောင်းရစာရင်း:&lt;/b&gt; နေ့စဉ်အော်ဒါများကို App ထဲရှိ &lt;b&gt;&quot;MiniTrend Kids မှ တစ်နေ့တာရောင်းရသော&quot;&lt;/b&gt; စာရင်းတွင် အချိန်မရွေး တိုက်ဆိုင်စစ်ဆေးနိုင်ပါသည်။&lt;/p&gt;
+
+        &lt;p&gt;&lt;b&gt;၄။ ဝန်ဆောင်ခ (၅%) နှင့် ဆိုင်ရငွေ (၉၅%):&lt;/b&gt; အောင်မြင်စွာ ရောင်းချပြီးသော ပစ္စည်းတန်ဖိုးအပေါ် MiniTrend Kids ဝန်ဆောင်ခ &lt;b&gt;၅%&lt;/b&gt; နှုတ်ယူပြီး ဆိုင်ဘက်မှ &lt;b&gt;၉၅%&lt;/b&gt; ရရှိပါမည်။&lt;/p&gt;
+
+        &lt;p&gt;&lt;b&gt;၅။ ငွေရှင်းပေးမည့်အချိန်:&lt;/b&gt; ဝယ်သူထံ ပစ္စည်းရောက်ရှိပြီး ငွေချေပြီးသည့် &lt;b&gt;နောက်နေ့ (အော်ဒါတင်ပြီး ခန့်မှန်း ၄ ရက်မြောက်)&lt;/b&gt; တွင် ဆိုင်ထံသို့ ငွေလွှဲရှင်းပေးပါမည်။&lt;/p&gt;
+
+        &lt;p class=&quot;bg-amber-50 border border-amber-200 rounded-xl p-2.5 font-extrabold text-amber-950&quot;&gt;📞 ဆက်သွယ်ရန် MiniTrend Kids Admin ဖုန်း — &lt;a href=&quot;tel:09942739543&quot; class=&quot;underline text-amber-800&quot;&gt;09-942739543&lt;/a&gt;&lt;/p&gt;
+
+      &lt;/div&gt;
+
+      &lt;div class=&quot;p-3 border-t bg-gray-50&quot;&gt;
+
+        &lt;button type=&quot;button&quot; onclick=&quot;closeAgreementViewModal()&quot; class=&quot;w-full bg-gray-900 text-white font-extrabold py-2.5 rounded-xl text-xs&quot;&gt;ပိတ်မည်&lt;/button&gt;
+
+      &lt;/div&gt;
+
+    &lt;/div&gt;
+
+  &lt;/div&gt;
+
+
+
+  &lt;!-- FULL-SCREEN IMAGE LIGHTBOX --&gt;
+
+  &lt;div id=&quot;image-lightbox-modal&quot; onclick=&quot;closeImageLightbox()&quot; class=&quot;fixed inset-0 bg-black/90 z-50 hidden flex flex-col items-center justify-center p-4 backdrop-blur-sm&quot;&gt;
+
+    &lt;button type=&quot;button&quot; onclick=&quot;closeImageLightbox()&quot; class=&quot;fixed noti-safe-top right-3 z-50 bg-white/20 hover:bg-white/35 text-white w-10 h-10 rounded-full flex items-center justify-center text-xl font-bold shadow-lg&quot;&gt;✕&lt;/button&gt;
+
+    &lt;div onclick=&quot;event.stopPropagation()&quot; class=&quot;max-w-md w-full flex flex-col items-center&quot;&gt;
+
+      &lt;img id=&quot;lightbox-img&quot; src=&quot;&quot; alt=&quot;&quot; class=&quot;max-h-[65vh] w-auto max-w-full object-contain rounded-2xl shadow-2xl border border-white/15 bg-black/40&quot;&gt;
+
+      &lt;div class=&quot;mt-3 w-full bg-white rounded-2xl p-3.5 shadow-xl text-left&quot;&gt;
+
+        &lt;p id=&quot;lightbox-title&quot; class=&quot;text-sm font-extrabold text-gray-900&quot;&gt;&lt;/p&gt;
+
+        &lt;p id=&quot;lightbox-meta&quot; class=&quot;text-xs font-bold text-amber-700 mt-1&quot;&gt;&lt;/p&gt;
+
+      &lt;/div&gt;
+
+    &lt;/div&gt;
+
+  &lt;/div&gt;
+
+
+
+  &lt;!-- FALLBACK INSTALL GUIDE --&gt;
+
+  &lt;div id=&quot;ios-guide-modal&quot; onclick=&quot;closeIosGuide()&quot; class=&quot;fixed inset-0 bg-black/75 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm&quot;&gt;
+
+    &lt;div onclick=&quot;event.stopPropagation()&quot; class=&quot;bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl border-2 border-amber-300 space-y-3&quot;&gt;
+
+      &lt;div class=&quot;flex justify-between items-center border-b pb-2.5&quot;&gt;
+
+        &lt;h3 class=&quot;text-sm font-extrabold text-gray-900&quot;&gt;📲 Shop App ထည့်သွင်းနည်း&lt;/h3&gt;
+
+        &lt;button type=&quot;button&quot; onclick=&quot;closeIosGuide()&quot; class=&quot;text-gray-400 font-bold text-xl px-1&quot;&gt;✕&lt;/button&gt;
+
+      &lt;/div&gt;
+
+      &lt;div class=&quot;space-y-2.5 text-xs text-gray-700 leading-relaxed&quot;&gt;
+
+        &lt;div class=&quot;bg-blue-50 border border-blue-200 rounded-xl p-3 space-y-1&quot;&gt;
+
+          &lt;p class=&quot;font-extrabold text-gray-900&quot;&gt;🍎 iPhone (Safari):&lt;/p&gt;
+
+          &lt;p&gt;အောက်ခြေ &lt;b&gt;Share (⬆️)&lt;/b&gt; → &lt;b&gt;Add to Home Screen (➕)&lt;/b&gt; → &lt;b&gt;Add&lt;/b&gt; နှိပ်ပါ။&lt;/p&gt;
+
+        &lt;/div&gt;
+
+        &lt;div class=&quot;bg-amber-50 border border-amber-200 rounded-xl p-3 space-y-1&quot;&gt;
+
+          &lt;p class=&quot;font-extrabold text-gray-900&quot;&gt;🤖 Android (Chrome):&lt;/p&gt;
+
+          &lt;p&gt;အပေါ်ညာဘက် &lt;b&gt;⋮&lt;/b&gt; → &lt;b&gt;Install app&lt;/b&gt; ကို နှိပ်ပါ။&lt;/p&gt;
+
+        &lt;/div&gt;
+
+      &lt;/div&gt;
+
+      &lt;button type=&quot;button&quot; onclick=&quot;closeIosGuide()&quot; class=&quot;w-full bg-gray-900 text-white font-extrabold py-2.5 rounded-xl text-xs&quot;&gt;နားလည်ပါပြီ&lt;/button&gt;
+
+    &lt;/div&gt;
+
+  &lt;/div&gt;
+
+
+
+  &lt;script&gt;
+
+    let currentShopTab = &#39;orders&#39;;
+
+    let restockMode = &#39;new&#39;;
+
     let shopProductsCache = [];
+
     let selectedExistingProduct = null;
+
     let restockPhotos = []; // Array of { base64: string, url: string }, max 3
+
     let pushPopupTimer = null;
+
     let isHandlingPopState = false;
+
     let currentShopInfo = null;
+
     window.__shopImgMap = {};
 
+
+
     const MAX_RESTOCK_PHOTOS = 3;
-    const AGE_REQUIRED_CATS = ["ဝမ်းဆက်", "နွေရာသီဝတ်", "အင်္ကျီ", "ဘောင်းဘီ", "ဦးထုတ်", "ဖိနပ်"];
+
+    const AGE_REQUIRED_CATS = [&quot;ဝမ်းဆက်&quot;, &quot;နွေရာသီဝတ်&quot;, &quot;အင်္ကျီ&quot;, &quot;ဘောင်းဘီ&quot;, &quot;ဦးထုတ်&quot;, &quot;ဖိနပ်&quot;];
+
     const STANDARD_AGES = [
-      "၆ လ - ၁ နှစ်", "၁ နှစ် - ၂ နှစ်", "၂ - ၃ နှစ်",
-      "၄ - ၅ နှစ်", "၆ - ၇ နှစ်", "၈ - ၉ နှစ်"
+
+      &quot;၆ လ - ၁ နှစ်&quot;, &quot;၁ နှစ် - ၂ နှစ်&quot;, &quot;၂ - ၃ နှစ်&quot;,
+
+      &quot;၄ - ၅ နှစ်&quot;, &quot;၆ - ၇ နှစ်&quot;, &quot;၈ - ၉ နှစ်&quot;
+
     ];
 
+
+
     // ==================== MYANMAR TIME AUTO MUTE (6:00 PM - 8:00 AM MMT) ====================
+
     function isShopQuietHoursMMT() {
+
       const mmDate = new Date(Date.now() + (6.5 * 60 * 60 * 1000));
+
       const hr = mmDate.getUTCHours();
-      return (hr >= 18 || hr < 8);
+
+      return (hr &gt;= 18 || hr &lt; 8);
+
     }
+
+
 
     function updateQuietHoursBanner(serverFlag) {
-      const banner = document.getElementById('shop-quiet-banner');
+
+      const banner = document.getElementById(&#39;shop-quiet-banner&#39;);
+
       if (!banner) return;
-      const isQuiet = (typeof serverFlag === 'boolean') ? serverFlag : isShopQuietHoursMMT();
-      banner.classList.toggle('hidden', !isQuiet);
+
+      const isQuiet = (typeof serverFlag === &#39;boolean&#39;) ? serverFlag : isShopQuietHoursMMT();
+
+      banner.classList.toggle(&#39;hidden&#39;, !isQuiet);
+
     }
+
+
 
     function sizeLabelToIndex(sz) {
-      if (!sz || sz === 'အသက်မလို') return 0;
+
+      if (!sz || sz === &#39;အသက်မလို&#39;) return 0;
+
       const idx = STANDARD_AGES.indexOf(sz);
-      return idx >= 0 ? idx : 0;
+
+      return idx &gt;= 0 ? idx : 0;
+
     }
 
-    // ==================== APPROVAL GATE & AGREEMENT MODAL ====================
+
+
+    // ==================== APPROVAL GATE &amp; AGREEMENT MODAL ====================
+
     function applyShopApprovalGate(shopObj) {
+
       if (!shopObj) return;
+
       currentShopInfo = shopObj;
 
-      const dash = document.getElementById('shop-dashboard');
-      const gate = document.getElementById('shop-approval-gate');
-      const formView = document.getElementById('gate-form-view');
-      const pendingView = document.getElementById('gate-pending-view');
-      const st = (shopObj.approvalStatus || '').toString().trim();
 
-      if (st === 'Approved') {
-        if (gate) gate.classList.add('hidden');
-        if (dash) dash.classList.remove('blur-sm', 'pointer-events-none', 'select-none');
-      } else if (st === 'Pending') {
-        if (dash) dash.classList.add('blur-sm', 'pointer-events-none', 'select-none');
-        if (gate) gate.classList.remove('hidden');
-        if (formView) formView.classList.add('hidden');
-        if (pendingView) pendingView.classList.remove('hidden');
+
+      const dash = document.getElementById(&#39;shop-dashboard&#39;);
+
+      const gate = document.getElementById(&#39;shop-approval-gate&#39;);
+
+      const formView = document.getElementById(&#39;gate-form-view&#39;);
+
+      const pendingView = document.getElementById(&#39;gate-pending-view&#39;);
+
+      const st = (shopObj.approvalStatus || &#39;&#39;).toString().trim();
+
+
+
+      if (st === &#39;Approved&#39;) {
+
+        if (gate) gate.classList.add(&#39;hidden&#39;);
+
+        if (dash) dash.classList.remove(&#39;blur-sm&#39;, &#39;pointer-events-none&#39;, &#39;select-none&#39;);
+
+      } else if (st === &#39;Pending&#39;) {
+
+        if (dash) dash.classList.add(&#39;blur-sm&#39;, &#39;pointer-events-none&#39;, &#39;select-none&#39;);
+
+        if (gate) gate.classList.remove(&#39;hidden&#39;);
+
+        if (formView) formView.classList.add(&#39;hidden&#39;);
+
+        if (pendingView) pendingView.classList.remove(&#39;hidden&#39;);
+
       } else {
-        if (dash) dash.classList.add('blur-sm', 'pointer-events-none', 'select-none');
-        if (gate) gate.classList.remove('hidden');
-        if (formView) formView.classList.remove('hidden');
-        if (pendingView) pendingView.classList.add('hidden');
 
-        const sNameEl = document.getElementById('gate-shop-name');
-        const bNameEl = document.getElementById('gate-biz-name');
-        if (sNameEl && !sNameEl.value) sNameEl.value = shopObj.name || '';
-        if (bNameEl && !bNameEl.value) bNameEl.value = shopObj.businessName || '';
+        if (dash) dash.classList.add(&#39;blur-sm&#39;, &#39;pointer-events-none&#39;, &#39;select-none&#39;);
+
+        if (gate) gate.classList.remove(&#39;hidden&#39;);
+
+        if (formView) formView.classList.remove(&#39;hidden&#39;);
+
+        if (pendingView) pendingView.classList.add(&#39;hidden&#39;);
+
+
+
+        const sNameEl = document.getElementById(&#39;gate-shop-name&#39;);
+
+        const bNameEl = document.getElementById(&#39;gate-biz-name&#39;);
+
+        if (sNameEl &amp;&amp; !sNameEl.value) sNameEl.value = shopObj.name || &#39;&#39;;
+
+        if (bNameEl &amp;&amp; !bNameEl.value) bNameEl.value = shopObj.businessName || &#39;&#39;;
+
       }
+
     }
+
+
 
     async function submitShopAgreement(e) {
+
       e.preventDefault();
+
       const saved = getSavedShopSession();
+
       if (!saved) return;
 
-      const shopName = (document.getElementById('gate-shop-name')?.value || '').trim();
-      const businessName = (document.getElementById('gate-biz-name')?.value || '').trim();
+
+
+      const shopName = (document.getElementById(&#39;gate-shop-name&#39;)?.value || &#39;&#39;).trim();
+
+      const businessName = (document.getElementById(&#39;gate-biz-name&#39;)?.value || &#39;&#39;).trim();
+
       if (!shopName || !businessName) {
-        alert('ဆိုင်နာမည်နှင့် လုပ်ငန်းအမည် အပြည့်အစုံ ဖြည့်ပေးပါ။');
+
+        alert(&#39;ဆိုင်နာမည်နှင့် လုပ်ငန်းအမည် အပြည့်အစုံ ဖြည့်ပေးပါ။&#39;);
+
         return;
+
       }
 
-      const btn = document.getElementById('btn-submit-agreement');
-      if (btn) { btn.disabled = true; btn.innerText = '⏳ Admin ထံ Request ပို့နေပါသည်...'; }
+
+
+      const btn = document.getElementById(&#39;btn-submit-agreement&#39;);
+
+      if (btn) { btn.disabled = true; btn.innerText = &#39;⏳ Admin ထံ Request ပို့နေပါသည်...&#39;; }
+
+
 
       try {
+
         await fetch(APPS_SCRIPT_URL, {
-          method: "POST", mode: "no-cors",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
+
+          method: &quot;POST&quot;, mode: &quot;no-cors&quot;,
+
+          headers: { &quot;Content-Type&quot;: &quot;text/plain;charset=utf-8&quot; },
+
           body: JSON.stringify({
-            action: "shopSubmitAgreement",
+
+            action: &quot;shopSubmitAgreement&quot;,
+
             shopId: saved.id,
+
             pin: saved.pin,
+
             shopName: shopName,
+
             businessName: businessName
+
           })
+
         });
+
+
 
         saved.name = shopName;
+
         saveShopSession(saved);
 
-        document.getElementById('gate-form-view')?.classList.add('hidden');
-        document.getElementById('gate-pending-view')?.classList.remove('hidden');
-        setTimeout(() => loadShopDashboard(false), 1500);
+
+
+        document.getElementById(&#39;gate-form-view&#39;)?.classList.add(&#39;hidden&#39;);
+
+        document.getElementById(&#39;gate-pending-view&#39;)?.classList.remove(&#39;hidden&#39;);
+
+        setTimeout(() =&gt; loadShopDashboard(false), 1500);
+
       } catch (err) {
-        alert('⚠️ ပေးပို့ရာတွင် အမှားရှိနေပါသည်၊ အင်တာနက်စစ်ဆေးပြီး ပြန်ကြိုးစားပါ။');
+
+        alert(&#39;⚠️ ပေးပို့ရာတွင် အမှားရှိနေပါသည်၊ အင်တာနက်စစ်ဆေးပြီး ပြန်ကြိုးစားပါ။&#39;);
+
       }
 
-      if (btn) { btn.disabled = false; btn.innerText = '✅ သဘောတူညီပါသည် (Admin အတည်ပြုချက်တောင်းမည်)'; }
+
+
+      if (btn) { btn.disabled = false; btn.innerText = &#39;✅ သဘောတူညီပါသည် (Admin အတည်ပြုချက်တောင်းမည်)&#39;; }
+
     }
+
+
 
     function openAgreementViewModal() {
-      const infoEl = document.getElementById('agreement-modal-shop-info');
+
+      const infoEl = document.getElementById(&#39;agreement-modal-shop-info&#39;);
+
       const saved = getSavedShopSession() || {};
+
       const sh = currentShopInfo || {};
-      const sName = sh.name || saved.name || '';
-      const sId = sh.id || saved.id || '';
-      const bName = sh.businessName || '';
-      const appAt = sh.approvedAt || sh.agreedAt || '';
+
+      const sName = sh.name || saved.name || &#39;&#39;;
+
+      const sId = sh.id || saved.id || &#39;&#39;;
+
+      const bName = sh.businessName || &#39;&#39;;
+
+      const appAt = sh.approvedAt || sh.agreedAt || &#39;&#39;;
+
+
 
       if (infoEl) {
+
         infoEl.innerHTML = `
-          <div>🏪 ဆိုင်အမည်: <b>${escapeHtml(sName)} (${escapeHtml(sId)})</b></div>
-          ${bName ? `<div>🏢 လုပ်ငန်းအမည်: <b>${escapeHtml(bName)}</b></div>` : ''}
-          ${appAt ? `<div class="text-[11px] text-emerald-700 mt-0.5">✅ သဘောတူ/အတည်ပြုချိန်: ${escapeHtml(appAt)}</div>` : ''}
+
+          &lt;div&gt;🏪 ဆိုင်အမည်: &lt;b&gt;${escapeHtml(sName)} (${escapeHtml(sId)})&lt;/b&gt;&lt;/div&gt;
+
+          ${bName ? `&lt;div&gt;🏢 လုပ်ငန်းအမည်: &lt;b&gt;${escapeHtml(bName)}&lt;/b&gt;&lt;/div&gt;` : &#39;&#39;}
+
+          ${appAt ? `&lt;div class=&quot;text-[11px] text-emerald-700 mt-0.5&quot;&gt;✅ သဘောတူ/အတည်ပြုချိန်: ${escapeHtml(appAt)}&lt;/div&gt;` : &#39;&#39;}
+
         `;
+
       }
-      document.getElementById('agreement-view-modal')?.classList.remove('hidden');
-      pushShopHistoryState('agreement_modal');
+
+      document.getElementById(&#39;agreement-view-modal&#39;)?.classList.remove(&#39;hidden&#39;);
+
+      pushShopHistoryState(&#39;agreement_modal&#39;);
+
     }
+
+
 
     function closeAgreementViewModal() {
-      document.getElementById('agreement-view-modal')?.classList.add('hidden');
+
+      document.getElementById(&#39;agreement-view-modal&#39;)?.classList.add(&#39;hidden&#39;);
+
     }
+
+
 
     // ==================== MARK ORDER AS PACKED (📦 ထုပ်ပိုးပြီး) ====================
+
     async function markOrderPacked(orderId, btnEl) {
+
       const saved = getSavedShopSession();
+
       if (!saved || !orderId) return;
+
       if (!confirm(`အော်ဒါ #${orderId} ပစ္စည်းထုပ်ပိုးပြီးကြောင်း Admin ထံ အကြောင်းကြားမည်လား?`)) return;
 
+
+
       if (btnEl) {
+
         btnEl.disabled = true;
-        btnEl.innerText = '⏳ Admin ထံ အကြောင်းကြားနေ...';
+
+        btnEl.innerText = &#39;⏳ Admin ထံ အကြောင်းကြားနေ...&#39;;
+
       }
 
+
+
       try {
+
         await fetch(APPS_SCRIPT_URL, {
-          method: "POST", mode: "no-cors",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
+
+          method: &quot;POST&quot;, mode: &quot;no-cors&quot;,
+
+          headers: { &quot;Content-Type&quot;: &quot;text/plain;charset=utf-8&quot; },
+
           body: JSON.stringify({
-            action: "shopMarkPacked",
+
+            action: &quot;shopMarkPacked&quot;,
+
             shopId: saved.id,
+
             pin: saved.pin,
+
             orderId: orderId
+
           })
+
         });
-        if (navigator.vibrate && !isShopQuietHoursMMT()) navigator.vibrate(60);
+
+        if (navigator.vibrate &amp;&amp; !isShopQuietHoursMMT()) navigator.vibrate(60);
+
         if (btnEl) {
-          btnEl.className = 'w-full bg-teal-600 text-white font-extrabold py-2.5 rounded-xl text-xs shadow-sm cursor-default';
-          btnEl.innerText = '✅ ထုပ်ပိုးပြီး (Admin ထံ အကြောင်းကြားပြီး)';
+
+          btnEl.className = &#39;w-full bg-teal-600 text-white font-extrabold py-2.5 rounded-xl text-xs shadow-sm cursor-default&#39;;
+
+          btnEl.innerText = &#39;✅ ထုပ်ပိုးပြီး (Admin ထံ အကြောင်းကြားပြီး)&#39;;
+
         }
-        setTimeout(() => loadShopDashboard(true), 1200);
+
+        setTimeout(() =&gt; loadShopDashboard(true), 1200);
+
       } catch (err) {
-        alert('⚠️ ပေးပို့ရာတွင် အမှားရှိနေပါသည်။');
+
+        alert(&#39;⚠️ ပေးပို့ရာတွင် အမှားရှိနေပါသည်။&#39;);
+
         if (btnEl) {
+
           btnEl.disabled = false;
-          btnEl.innerText = '📦 ထုပ်ပိုးပြီး (Admin ထံ အကြောင်းကြားမည်)';
+
+          btnEl.innerText = &#39;📦 ထုပ်ပိုးပြီး (Admin ထံ အကြောင်းကြားမည်)&#39;;
+
         }
+
       }
+
     }
+
+
 
     // ==================== BACK BUTTON GUARD ====================
+
     function pushShopHistoryState(name) {
+
       if (isHandlingPopState) return;
-      try { history.pushState({ shopOverlay: name, ts: Date.now() }, ''); } catch (e) {}
+
+      try { history.pushState({ shopOverlay: name, ts: Date.now() }, &#39;&#39;); } catch (e) {}
+
     }
 
-    window.addEventListener('popstate', function() {
+
+
+    window.addEventListener(&#39;popstate&#39;, function() {
+
       isHandlingPopState = true;
+
       try {
-        const ag = document.getElementById('agreement-view-modal');
-        if (ag && !ag.classList.contains('hidden')) {
-          ag.classList.add('hidden');
+
+        const ag = document.getElementById(&#39;agreement-view-modal&#39;);
+
+        if (ag &amp;&amp; !ag.classList.contains(&#39;hidden&#39;)) {
+
+          ag.classList.add(&#39;hidden&#39;);
+
           return;
+
         }
-        const lb = document.getElementById('image-lightbox-modal');
-        if (lb && !lb.classList.contains('hidden')) {
-          lb.classList.add('hidden');
+
+        const lb = document.getElementById(&#39;image-lightbox-modal&#39;);
+
+        if (lb &amp;&amp; !lb.classList.contains(&#39;hidden&#39;)) {
+
+          lb.classList.add(&#39;hidden&#39;);
+
           return;
+
         }
-        const guide = document.getElementById('ios-guide-modal');
-        if (guide && !guide.classList.contains('hidden')) {
-          guide.classList.add('hidden');
+
+        const guide = document.getElementById(&#39;ios-guide-modal&#39;);
+
+        if (guide &amp;&amp; !guide.classList.contains(&#39;hidden&#39;)) {
+
+          guide.classList.add(&#39;hidden&#39;);
+
           return;
+
         }
-        if (currentShopTab !== 'orders') {
-          switchShopTab('orders', true);
+
+        if (currentShopTab !== &#39;orders&#39;) {
+
+          switchShopTab(&#39;orders&#39;, true);
+
           return;
+
         }
+
       } finally {
+
         isHandlingPopState = false;
+
       }
+
     });
 
+
+
     function escapeHtml(str) {
-      return (str || '').toString()
-        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+
+      return (str || &#39;&#39;).toString()
+
+        .replace(/&amp;/g, &#39;&amp;amp;&#39;).replace(/&lt;/g, &#39;&amp;lt;&#39;).replace(/&gt;/g, &#39;&amp;gt;&#39;)
+
+        .replace(/&quot;/g, &#39;&amp;quot;&#39;).replace(/&#39;/g, &#39;&amp;#39;&#39;);
+
     }
 
-    function isAndroidDevice() { return /Android/i.test(navigator.userAgent || ''); }
-    function isInAppBrowser() { return /FBAN|FBAV|Messenger|Viber|Line|Telegram|Instagram|wv\)/i.test(navigator.userAgent || ''); }
+
+
+    function isIOSDevice() {
+
+      const ua = navigator.userAgent || &#39;&#39;;
+
+      return /iPad|iPhone|iPod/.test(ua) || (navigator.platform === &#39;MacIntel&#39; &amp;&amp; navigator.maxTouchPoints &gt; 1);
+
+    }
+
+
+
+    function isAndroidDevice() { return /Android/i.test(navigator.userAgent || &#39;&#39;); }
+
+    function isInAppBrowser() { return /FBAN|FBAV|Messenger|Viber|Line|Telegram|Instagram|wv\)/i.test(navigator.userAgent || &#39;&#39;); }
+
+
 
     function getSavedShopSession() {
-      try { return JSON.parse(localStorage.getItem('mt_shop_session') || 'null'); } catch (e) { return null; }
+
+      try { return JSON.parse(localStorage.getItem(&#39;mt_shop_session&#39;) || &#39;null&#39;); } catch (e) { return null; }
+
     }
+
+
 
     function saveShopSession(obj) {
-      try { localStorage.setItem('mt_shop_session', JSON.stringify(obj)); } catch (e) {}
+
+      try { localStorage.setItem(&#39;mt_shop_session&#39;, JSON.stringify(obj)); } catch (e) {}
+
     }
 
+
+
     // ==================== MULTI-PHOTO (1 TO 3) MANAGER ====================
+
     function renderRestockPhotoSlots() {
-      const container = document.getElementById('rs-photo-slots');
-      const countBadge = document.getElementById('rs-img-count-badge');
-      const addBtn = document.getElementById('btn-add-rs-photo');
-      const statusEl = document.getElementById('rs-img-status');
+
+      const container = document.getElementById(&#39;rs-photo-slots&#39;);
+
+      const countBadge = document.getElementById(&#39;rs-img-count-badge&#39;);
+
+      const addBtn = document.getElementById(&#39;btn-add-rs-photo&#39;);
+
+      const statusEl = document.getElementById(&#39;rs-img-status&#39;);
+
       if (!container) return;
+
+
 
       if (countBadge) countBadge.innerText = `${restockPhotos.length} / ${MAX_RESTOCK_PHOTOS} ပုံ`;
 
+
+
       const slotsHtml = [];
-      for (let i = 0; i < MAX_RESTOCK_PHOTOS; i++) {
+
+      for (let i = 0; i &lt; MAX_RESTOCK_PHOTOS; i++) {
+
         const photo = restockPhotos[i];
+
         if (photo) {
-          const src = photo.base64 || photo.url || '../icon.png?v=3';
+
+          const src = photo.base64 || photo.url || &#39;../icon.png?v=3&#39;;
+
           slotsHtml.push(`
-            <div class="relative aspect-square rounded-xl overflow-hidden border-2 border-amber-400 bg-white shadow-sm">
-              <img src="${escapeHtml(src)}" alt="ပုံ ${i + 1}" class="w-full h-full object-cover">
-              <span class="absolute bottom-1 left-1 bg-black/70 text-white text-[9px] font-extrabold px-1.5 py-0.5 rounded">${i === 0 ? 'ပုံ ၁ (အဓိက)' : 'ပုံ ' + (i + 1)}</span>
-              <button type="button" onclick="removeRestockPhoto(${i})" class="absolute top-1 right-1 bg-red-600 hover:bg-red-700 text-white w-6 h-6 rounded-full text-xs font-extrabold flex items-center justify-center shadow">✕</button>
-            </div>
+
+            &lt;div class=&quot;relative aspect-square rounded-xl overflow-hidden border-2 border-amber-400 bg-white shadow-sm&quot;&gt;
+
+              &lt;img src=&quot;${escapeHtml(src)}&quot; alt=&quot;ပုံ ${i + 1}&quot; class=&quot;w-full h-full object-cover&quot;&gt;
+
+              &lt;span class=&quot;absolute bottom-1 left-1 bg-black/70 text-white text-[9px] font-extrabold px-1.5 py-0.5 rounded&quot;&gt;${i === 0 ? &#39;ပုံ ၁ (အဓိက)&#39; : &#39;ပုံ &#39; + (i + 1)}&lt;/span&gt;
+
+              &lt;button type=&quot;button&quot; onclick=&quot;removeRestockPhoto(${i})&quot; class=&quot;absolute top-1 right-1 bg-red-600 hover:bg-red-700 text-white w-6 h-6 rounded-full text-xs font-extrabold flex items-center justify-center shadow&quot;&gt;✕&lt;/button&gt;
+
+            &lt;/div&gt;
+
           `);
+
         } else {
+
           slotsHtml.push(`
-            <button type="button" onclick="document.getElementById('rs-image-file').click()" class="aspect-square rounded-xl border-2 border-dashed border-amber-300 bg-white/80 hover:bg-amber-100/50 flex flex-col items-center justify-center gap-1 text-amber-700 transition">
-              <span class="text-xl leading-none">＋</span>
-              <span class="text-[10px] font-extrabold">${i === 0 ? 'ပုံ ၁ (အဓိက)' : 'ပုံ ' + (i + 1) + ' (ထပ်ထည့်)'}</span>
-            </button>
+
+            &lt;button type=&quot;button&quot; onclick=&quot;document.getElementById(&#39;rs-image-file&#39;).click()&quot; class=&quot;aspect-square rounded-xl border-2 border-dashed border-amber-300 bg-white/80 hover:bg-amber-100/50 flex flex-col items-center justify-center gap-1 text-amber-700 transition&quot;&gt;
+
+              &lt;span class=&quot;text-xl leading-none&quot;&gt;＋&lt;/span&gt;
+
+              &lt;span class=&quot;text-[10px] font-extrabold&quot;&gt;${i === 0 ? &#39;ပုံ ၁ (အဓိက)&#39; : &#39;ပုံ &#39; + (i + 1) + &#39; (ထပ်ထည့်)&#39;}&lt;/span&gt;
+
+            &lt;/button&gt;
+
           `);
+
         }
+
       }
-      container.innerHTML = slotsHtml.join('');
+
+      container.innerHTML = slotsHtml.join(&#39;&#39;);
+
+
 
       if (addBtn) {
-        if (restockPhotos.length >= MAX_RESTOCK_PHOTOS) {
+
+        if (restockPhotos.length &gt;= MAX_RESTOCK_PHOTOS) {
+
           addBtn.disabled = true;
-          addBtn.className = 'bg-gray-300 text-gray-600 font-extrabold text-xs px-3.5 py-2 rounded-xl cursor-not-allowed';
-          addBtn.innerText = '✅ ၃ ပုံ ပြည့်ပါပြီ';
+
+          addBtn.className = &#39;bg-gray-300 text-gray-600 font-extrabold text-xs px-3.5 py-2 rounded-xl cursor-not-allowed&#39;;
+
+          addBtn.innerText = &#39;✅ ၃ ပုံ ပြည့်ပါပြီ&#39;;
+
         } else {
+
           addBtn.disabled = false;
-          addBtn.className = 'bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-xs px-3.5 py-2 rounded-xl shadow-sm';
+
+          addBtn.className = &#39;bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-xs px-3.5 py-2 rounded-xl shadow-sm&#39;;
+
           addBtn.innerText = restockPhotos.length === 0
-            ? '🖼️ Gallery မှ ပုံရွေးမည် (+ ၃ ပုံအထိ)'
+
+            ? &#39;🖼️ Gallery မှ ပုံရွေးမည် (+ ၃ ပုံအထိ)&#39;
+
             : `🖼️ ပုံထပ်ထည့်မည် (ကျန် ${MAX_RESTOCK_PHOTOS - restockPhotos.length} ပုံ)`;
+
         }
+
       }
+
+
 
       if (statusEl) {
+
         if (restockPhotos.length === 0) {
-          statusEl.innerText = '၁ ပုံတည်း သို့မဟုတ် ၃ ပုံအထိ ရွေးထည့်နိုင်သည်';
-          statusEl.className = 'text-[11px] font-bold text-gray-500';
+
+          statusEl.innerText = &#39;၁ ပုံတည်း သို့မဟုတ် ၃ ပုံအထိ ရွေးထည့်နိုင်သည်&#39;;
+
+          statusEl.className = &#39;text-[11px] font-bold text-gray-500&#39;;
+
         } else {
+
           statusEl.innerText = `✅ ပုံ ${restockPhotos.length} ပုံ ရွေးပြီး (✕ နှိပ်၍ ဖျက်နိုင်သည်)`;
-          statusEl.className = 'text-[11px] font-extrabold text-emerald-700';
+
+          statusEl.className = &#39;text-[11px] font-extrabold text-emerald-700&#39;;
+
         }
+
       }
+
     }
+
+
 
     function removeRestockPhoto(idx) {
+
       restockPhotos.splice(idx, 1);
+
       renderRestockPhotoSlots();
+
     }
+
+
 
     function compressImageFile(file) {
-      return new Promise((resolve) => {
+
+      return new Promise((resolve) =&gt; {
+
         const reader = new FileReader();
+
         reader.onload = function(ev) {
+
           const img = new Image();
+
           img.onload = function() {
+
             const maxDim = 700;
+
             let w = img.width;
+
             let h = img.height;
-            if (w > maxDim || h > maxDim) {
-              if (w > h) { h = Math.round(h * (maxDim / w)); w = maxDim; }
+
+            if (w &gt; maxDim || h &gt; maxDim) {
+
+              if (w &gt; h) { h = Math.round(h * (maxDim / w)); w = maxDim; }
+
               else { w = Math.round(w * (maxDim / h)); h = maxDim; }
+
             }
-            const canvas = document.createElement('canvas');
+
+            const canvas = document.createElement(&#39;canvas&#39;);
+
             canvas.width = w;
+
             canvas.height = h;
-            const ctx = canvas.getContext('2d');
-            ctx.fillStyle = '#ffffff';
+
+            const ctx = canvas.getContext(&#39;2d&#39;);
+
+            ctx.fillStyle = &#39;#ffffff&#39;;
+
             ctx.fillRect(0, 0, w, h);
+
             ctx.drawImage(img, 0, 0, w, h);
-            resolve(canvas.toDataURL('image/jpeg', 0.68));
+
+            resolve(canvas.toDataURL(&#39;image/jpeg&#39;, 0.68));
+
           };
-          img.onerror = function() { resolve(''); };
+
+          img.onerror = function() { resolve(&#39;&#39;); };
+
           img.src = ev.target.result;
+
         };
-        reader.onerror = function() { resolve(''); };
+
+        reader.onerror = function() { resolve(&#39;&#39;); };
+
         reader.readAsDataURL(file);
+
       });
+
     }
+
+
 
     async function handleRestockGalleryFile(event) {
+
       const files = Array.from(event.target.files || []);
-      event.target.value = '';
+
+      event.target.value = &#39;&#39;;
+
       if (files.length === 0) return;
 
+
+
       const remaining = MAX_RESTOCK_PHOTOS - restockPhotos.length;
-      if (remaining <= 0) {
-        alert('အများဆုံး ၃ ပုံအထိသာ ထည့်သွင်းနိုင်ပါသည်။');
+
+      if (remaining &lt;= 0) {
+
+        alert(&#39;အများဆုံး ၃ ပုံအထိသာ ထည့်သွင်းနိုင်ပါသည်။&#39;);
+
         return;
+
       }
 
-      const statusEl = document.getElementById('rs-img-status');
+
+
+      const statusEl = document.getElementById(&#39;rs-img-status&#39;);
+
       const toProcess = files.slice(0, remaining);
-      for (let i = 0; i < toProcess.length; i++) {
+
+      for (let i = 0; i &lt; toProcess.length; i++) {
+
         if (statusEl) {
+
           statusEl.innerText = `⏳ ပုံ ${i + 1}/${toProcess.length} ပြင်ဆင်နေ...`;
-          statusEl.className = 'text-[11px] font-extrabold text-amber-700';
+
+          statusEl.className = &#39;text-[11px] font-extrabold text-amber-700&#39;;
+
         }
+
         const b64 = await compressImageFile(toProcess[i]);
-        if (b64 && restockPhotos.length < MAX_RESTOCK_PHOTOS) {
-          restockPhotos.push({ base64: b64, url: '' });
+
+        if (b64 &amp;&amp; restockPhotos.length &lt; MAX_RESTOCK_PHOTOS) {
+
+          restockPhotos.push({ base64: b64, url: &#39;&#39; });
+
         }
+
       }
+
+
 
       renderRestockPhotoSlots();
-      if (files.length > remaining && statusEl) {
+
+      if (files.length &gt; remaining &amp;&amp; statusEl) {
+
         statusEl.innerText = `✅ အများဆုံး ၃ ပုံအထိသာ ထည့်သွင်းပြီးပါပြီ`;
+
       }
+
     }
+
+
 
     // ==================== MY STOCK HISTORY WITH DIRECT +/- ADJUSTMENT ====================
+
     function renderMyStockHistory() {
-      const box = document.getElementById('shop-mystock-list');
-      const badge = document.getElementById('tab-badge-mystock');
+
+      const box = document.getElementById(&#39;shop-mystock-list&#39;);
+
+      const badge = document.getElementById(&#39;tab-badge-mystock&#39;);
+
       if (badge) badge.innerText = shopProductsCache.length;
+
       if (!box) return;
 
-      const q = (document.getElementById('mystock-search')?.value || '').trim().toLowerCase();
-      const filtered = shopProductsCache.filter(p => {
+
+
+      const q = (document.getElementById(&#39;mystock-search&#39;)?.value || &#39;&#39;).trim().toLowerCase();
+
+      const filtered = shopProductsCache.filter(p =&gt; {
+
         if (!q) return true;
-        return (p.name || '').toLowerCase().includes(q) || (p.category || '').toLowerCase().includes(q);
+
+        return (p.name || &#39;&#39;).toLowerCase().includes(q) || (p.category || &#39;&#39;).toLowerCase().includes(q);
+
       });
+
+
 
       if (shopProductsCache.length === 0) {
-        box.innerHTML = `<div class="bg-white rounded-2xl border p-8 text-center text-xs text-gray-400">Admin ထံ Approve ပြီးသား မိမိဆိုင်ပစ္စည်း မရှိသေးပါ — "📥 Stock ပို့ရန်" မှ ထည့်သွင်းနိုင်ပါသည်။</div>`;
+
+        box.innerHTML = `&lt;div class=&quot;bg-white rounded-2xl border p-8 text-center text-xs text-gray-400&quot;&gt;Admin ထံ Approve ပြီးသား မိမိဆိုင်ပစ္စည်း မရှိသေးပါ — &quot;📥 Stock ပို့ရန်&quot; မှ ထည့်သွင်းနိုင်ပါသည်။&lt;/div&gt;`;
+
         return;
+
       }
+
       if (filtered.length === 0) {
-        box.innerHTML = `<div class="bg-white rounded-2xl border p-8 text-center text-xs text-gray-400">ရှာဖွေထားသော ပစ္စည်း မတွေ့ရှိပါ။</div>`;
+
+        box.innerHTML = `&lt;div class=&quot;bg-white rounded-2xl border p-8 text-center text-xs text-gray-400&quot;&gt;ရှာဖွေထားသော ပစ္စည်း မတွေ့ရှိပါ။&lt;/div&gt;`;
+
         return;
+
       }
 
-      box.innerHTML = filtered.map(p => {
-        const origIdx = shopProductsCache.indexOf(p);
-        const firstImg = (p.colors && p.colors[0] && p.colors[0].image) ? p.colors[0].image : '../icon.png?v=3';
-        const needsAge = AGE_REQUIRED_CATS.includes(p.category);
-        const validPrices = (p.prices || []).filter(v => v > 0);
-        const showPrice = validPrices.length > 0 ? Math.min(...validPrices) : 0;
-        const colorNames = (p.colors || []).map(c => c.name).filter(Boolean).join(', ');
 
-        let stockRowsHtml = '';
+
+      box.innerHTML = filtered.map(p =&gt; {
+
+        const origIdx = shopProductsCache.indexOf(p);
+
+        const firstImg = (p.colors &amp;&amp; p.colors[0] &amp;&amp; p.colors[0].image) ? p.colors[0].image : &#39;../icon.png?v=3&#39;;
+
+        const needsAge = AGE_REQUIRED_CATS.includes(p.category);
+
+        const validPrices = (p.prices || []).filter(v =&gt; v &gt; 0);
+
+        const showPrice = validPrices.length &gt; 0 ? Math.min(...validPrices) : 0;
+
+        const colorNames = (p.colors || []).map(c =&gt; c.name).filter(Boolean).join(&#39;, &#39;);
+
+
+
+        let stockRowsHtml = &#39;&#39;;
+
         if (!needsAge) {
-          const stk = (p.stocks && p.stocks[0]) || 0;
+
+          const stk = (p.stocks &amp;&amp; p.stocks[0]) || 0;
+
           stockRowsHtml = `
-            <div class="flex items-center justify-between gap-2 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs">
-              <div>
-                <span class="font-extrabold text-gray-800">လက်ရှိ Stock</span>
-                ${showPrice > 0 ? `<span class="text-[11px] text-emerald-700 font-bold ml-1.5">(${showPrice.toLocaleString()} Ks)</span>` : ''}
-              </div>
-              <div class="flex items-center gap-1.5">
-                <button type="button" onclick="shopAdjustProductStock(${origIdx}, 0, -1)" class="w-8 h-8 rounded-lg bg-red-100 hover:bg-red-200 active:scale-95 text-red-700 font-extrabold text-base">−</button>
-                <span class="w-9 text-center font-extrabold text-sm ${stk <= 0 ? 'text-red-600' : 'text-gray-900'}">${stk}</span>
-                <button type="button" onclick="shopAdjustProductStock(${origIdx}, 0, 1)" class="w-8 h-8 rounded-lg bg-emerald-100 hover:bg-emerald-200 active:scale-95 text-emerald-800 font-extrabold text-base">+</button>
-              </div>
-            </div>
+
+            &lt;div class=&quot;flex items-center justify-between gap-2 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs&quot;&gt;
+
+              &lt;div&gt;
+
+                &lt;span class=&quot;font-extrabold text-gray-800&quot;&gt;လက်ရှိ Stock&lt;/span&gt;
+
+                ${showPrice &gt; 0 ? `&lt;span class=&quot;text-[11px] text-emerald-700 font-bold ml-1.5&quot;&gt;(${showPrice.toLocaleString()} Ks)&lt;/span&gt;` : &#39;&#39;}
+
+              &lt;/div&gt;
+
+              &lt;div class=&quot;flex items-center gap-1.5&quot;&gt;
+
+                &lt;button type=&quot;button&quot; onclick=&quot;shopAdjustProductStock(${origIdx}, 0, -1)&quot; class=&quot;w-8 h-8 rounded-lg bg-red-100 hover:bg-red-200 active:scale-95 text-red-700 font-extrabold text-base&quot;&gt;−&lt;/button&gt;
+
+                &lt;span class=&quot;w-9 text-center font-extrabold text-sm ${stk &lt;= 0 ? &#39;text-red-600&#39; : &#39;text-gray-900&#39;}&quot;&gt;${stk}&lt;/span&gt;
+
+                &lt;button type=&quot;button&quot; onclick=&quot;shopAdjustProductStock(${origIdx}, 0, 1)&quot; class=&quot;w-8 h-8 rounded-lg bg-emerald-100 hover:bg-emerald-200 active:scale-95 text-emerald-800 font-extrabold text-base&quot;&gt;+&lt;/button&gt;
+
+              &lt;/div&gt;
+
+            &lt;/div&gt;
+
           `;
+
         } else {
-          stockRowsHtml = STANDARD_AGES.map((sz, i) => {
-            const stk = (p.stocks && p.stocks[i]) || 0;
-            const pr = (p.prices && p.prices[i]) || 0;
-            if (pr <= 0 && stk <= 0) return '';
+
+          stockRowsHtml = STANDARD_AGES.map((sz, i) =&gt; {
+
+            const stk = (p.stocks &amp;&amp; p.stocks[i]) || 0;
+
+            const pr = (p.prices &amp;&amp; p.prices[i]) || 0;
+
+            if (pr &lt;= 0 &amp;&amp; stk &lt;= 0) return &#39;&#39;;
+
             return `
-              <div class="flex items-center justify-between gap-2 bg-gray-50 border border-gray-200 rounded-xl px-3 py-1.5 text-xs">
-                <div class="min-w-0">
-                  <span class="font-extrabold text-gray-800">${escapeHtml(sz)}</span>
-                  ${pr > 0 ? `<span class="text-[10px] text-emerald-700 font-bold ml-1">(${pr.toLocaleString()} Ks)</span>` : ''}
-                </div>
-                <div class="flex items-center gap-1.5 shrink-0">
-                  <button type="button" onclick="shopAdjustProductStock(${origIdx}, ${i}, -1)" class="w-8 h-8 rounded-lg bg-red-100 hover:bg-red-200 active:scale-95 text-red-700 font-extrabold text-base">−</button>
-                  <span class="w-9 text-center font-extrabold text-sm ${stk <= 0 ? 'text-red-600' : 'text-gray-900'}">${stk}</span>
-                  <button type="button" onclick="shopAdjustProductStock(${origIdx}, ${i}, 1)" class="w-8 h-8 rounded-lg bg-emerald-100 hover:bg-emerald-200 active:scale-95 text-emerald-800 font-extrabold text-base">+</button>
-                </div>
-              </div>
+
+              &lt;div class=&quot;flex items-center justify-between gap-2 bg-gray-50 border border-gray-200 rounded-xl px-3 py-1.5 text-xs&quot;&gt;
+
+                &lt;div class=&quot;min-w-0&quot;&gt;
+
+                  &lt;span class=&quot;font-extrabold text-gray-800&quot;&gt;${escapeHtml(sz)}&lt;/span&gt;
+
+                  ${pr &gt; 0 ? `&lt;span class=&quot;text-[10px] text-emerald-700 font-bold ml-1&quot;&gt;(${pr.toLocaleString()} Ks)&lt;/span&gt;` : &#39;&#39;}
+
+                &lt;/div&gt;
+
+                &lt;div class=&quot;flex items-center gap-1.5 shrink-0&quot;&gt;
+
+                  &lt;button type=&quot;button&quot; onclick=&quot;shopAdjustProductStock(${origIdx}, ${i}, -1)&quot; class=&quot;w-8 h-8 rounded-lg bg-red-100 hover:bg-red-200 active:scale-95 text-red-700 font-extrabold text-base&quot;&gt;−&lt;/button&gt;
+
+                  &lt;span class=&quot;w-9 text-center font-extrabold text-sm ${stk &lt;= 0 ? &#39;text-red-600&#39; : &#39;text-gray-900&#39;}&quot;&gt;${stk}&lt;/span&gt;
+
+                  &lt;button type=&quot;button&quot; onclick=&quot;shopAdjustProductStock(${origIdx}, ${i}, 1)&quot; class=&quot;w-8 h-8 rounded-lg bg-emerald-100 hover:bg-emerald-200 active:scale-95 text-emerald-800 font-extrabold text-base&quot;&gt;+&lt;/button&gt;
+
+                &lt;/div&gt;
+
+              &lt;/div&gt;
+
             `;
-          }).join('') || `
-            <div class="flex items-center justify-between gap-2 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs">
-              <span class="font-extrabold text-gray-800">${STANDARD_AGES[0]}</span>
-              <div class="flex items-center gap-1.5">
-                <button type="button" onclick="shopAdjustProductStock(${origIdx}, 0, -1)" class="w-8 h-8 rounded-lg bg-red-100 text-red-700 font-extrabold text-base">−</button>
-                <span class="w-9 text-center font-extrabold text-sm">0</span>
-                <button type="button" onclick="shopAdjustProductStock(${origIdx}, 0, 1)" class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 font-extrabold text-base">+</button>
-              </div>
-            </div>
+
+          }).join(&#39;&#39;) || `
+
+            &lt;div class=&quot;flex items-center justify-between gap-2 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs&quot;&gt;
+
+              &lt;span class=&quot;font-extrabold text-gray-800&quot;&gt;${STANDARD_AGES[0]}&lt;/span&gt;
+
+              &lt;div class=&quot;flex items-center gap-1.5&quot;&gt;
+
+                &lt;button type=&quot;button&quot; onclick=&quot;shopAdjustProductStock(${origIdx}, 0, -1)&quot; class=&quot;w-8 h-8 rounded-lg bg-red-100 text-red-700 font-extrabold text-base&quot;&gt;−&lt;/button&gt;
+
+                &lt;span class=&quot;w-9 text-center font-extrabold text-sm&quot;&gt;0&lt;/span&gt;
+
+                &lt;button type=&quot;button&quot; onclick=&quot;shopAdjustProductStock(${origIdx}, 0, 1)&quot; class=&quot;w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 font-extrabold text-base&quot;&gt;+&lt;/button&gt;
+
+              &lt;/div&gt;
+
+            &lt;/div&gt;
+
           `;
+
         }
 
+
+
         return `
-          <div class="bg-white rounded-2xl border-2 border-amber-200 p-3.5 shadow-sm space-y-2.5">
-            <div class="flex items-center gap-2.5">
-              <img src="${escapeHtml(firstImg)}" class="w-14 h-14 rounded-xl object-cover border bg-gray-50 shrink-0">
-              <div class="flex-1 min-w-0">
-                <div class="flex flex-wrap items-center gap-1">
-                  <span class="bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full text-[10px] font-extrabold">${escapeHtml(p.category)}</span>
-                  <span class="${p.totalStock <= 0 ? 'bg-red-100 text-red-700' : 'bg-emerald-100 text-emerald-800'} px-2 py-0.5 rounded-full text-[10px] font-extrabold">စုစုပေါင်း: ${p.totalStock} ခု</span>
-                </div>
-                <p class="font-extrabold text-xs sm:text-sm text-gray-900 truncate mt-1">${escapeHtml(p.name)}</p>
-                ${colorNames ? `<p class="text-[10px] font-bold text-purple-700 truncate">🎨 ${escapeHtml(colorNames)}</p>` : ''}
-              </div>
-            </div>
-            <div class="space-y-1.5">${stockRowsHtml}</div>
-          </div>
+
+          &lt;div class=&quot;bg-white rounded-2xl border-2 border-amber-200 p-3.5 shadow-sm space-y-2.5&quot;&gt;
+
+            &lt;div class=&quot;flex items-center gap-2.5&quot;&gt;
+
+              &lt;img src=&quot;${escapeHtml(firstImg)}&quot; class=&quot;w-14 h-14 rounded-xl object-cover border bg-gray-50 shrink-0&quot;&gt;
+
+              &lt;div class=&quot;flex-1 min-w-0&quot;&gt;
+
+                &lt;div class=&quot;flex flex-wrap items-center gap-1&quot;&gt;
+
+                  &lt;span class=&quot;bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full text-[10px] font-extrabold&quot;&gt;${escapeHtml(p.category)}&lt;/span&gt;
+
+                  &lt;span class=&quot;${p.totalStock &lt;= 0 ? &#39;bg-red-100 text-red-700&#39; : &#39;bg-emerald-100 text-emerald-800&#39;} px-2 py-0.5 rounded-full text-[10px] font-extrabold&quot;&gt;စုစုပေါင်း: ${p.totalStock} ခု&lt;/span&gt;
+
+                &lt;/div&gt;
+
+                &lt;p class=&quot;font-extrabold text-xs sm:text-sm text-gray-900 truncate mt-1&quot;&gt;${escapeHtml(p.name)}&lt;/p&gt;
+
+                ${colorNames ? `&lt;p class=&quot;text-[10px] font-bold text-purple-700 truncate&quot;&gt;🎨 ${escapeHtml(colorNames)}&lt;/p&gt;` : &#39;&#39;}
+
+              &lt;/div&gt;
+
+            &lt;/div&gt;
+
+            &lt;div class=&quot;space-y-1.5&quot;&gt;${stockRowsHtml}&lt;/div&gt;
+
+          &lt;/div&gt;
+
         `;
-      }).join('');
+
+      }).join(&#39;&#39;);
+
     }
+
+
 
     async function shopAdjustProductStock(prodIdx, sizeIdx, delta) {
+
       const saved = getSavedShopSession();
+
       const p = shopProductsCache[prodIdx];
+
       if (!saved || !p) return;
 
+
+
       const needsAge = AGE_REQUIRED_CATS.includes(p.category);
-      const sizeLabel = needsAge ? STANDARD_AGES[sizeIdx] : 'အသက်မလို';
-      const cur = (p.stocks && p.stocks[sizeIdx]) || 0;
+
+      const sizeLabel = needsAge ? STANDARD_AGES[sizeIdx] : &#39;အသက်မလို&#39;;
+
+      const cur = (p.stocks &amp;&amp; p.stocks[sizeIdx]) || 0;
+
       const nextVal = Math.max(0, cur + delta);
+
       if (nextVal === cur) return;
 
+
+
       p.stocks[sizeIdx] = nextVal;
-      p.totalStock = p.stocks.reduce((a, b) => a + (parseInt(b, 10) || 0), 0);
+
+      p.totalStock = p.stocks.reduce((a, b) =&gt; a + (parseInt(b, 10) || 0), 0);
+
       renderMyStockHistory();
-      if (navigator.vibrate && !isShopQuietHoursMMT()) navigator.vibrate(40);
+
+      if (navigator.vibrate &amp;&amp; !isShopQuietHoursMMT()) navigator.vibrate(40);
+
+
 
       try {
+
         await fetch(APPS_SCRIPT_URL, {
-          method: "POST", mode: "no-cors",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
+
+          method: &quot;POST&quot;, mode: &quot;no-cors&quot;,
+
+          headers: { &quot;Content-Type&quot;: &quot;text/plain;charset=utf-8&quot; },
+
           body: JSON.stringify({
-            action: "shopAdjustStock",
+
+            action: &quot;shopAdjustStock&quot;,
+
             shopId: saved.id,
+
             pin: saved.pin,
+
             productName: p.name,
+
             size: sizeLabel,
+
             newStock: nextVal
+
           })
+
         });
+
       } catch (e) {}
+
     }
 
-    // ==================== EXISTING PRODUCT RESTOCK SEARCH & AUTO-FILL ====================
+
+
+    // ==================== EXISTING PRODUCT RESTOCK SEARCH &amp; AUTO-FILL ====================
+
     function setRestockMode(mode) {
-      restockMode = mode;
-      const btnNew = document.getElementById('rs-mode-new');
-      const btnEx = document.getElementById('rs-mode-existing');
-      const picker = document.getElementById('rs-existing-picker');
 
-      if (mode === 'existing') {
-        btnEx.className = 'py-2 px-2 rounded-lg text-xs font-extrabold bg-blue-600 text-white shadow-sm transition';
-        btnNew.className = 'py-2 px-2 rounded-lg text-xs font-bold text-amber-900 hover:bg-amber-100 transition';
-        picker.classList.remove('hidden');
+      restockMode = mode;
+
+      const btnNew = document.getElementById(&#39;rs-mode-new&#39;);
+
+      const btnEx = document.getElementById(&#39;rs-mode-existing&#39;);
+
+      const picker = document.getElementById(&#39;rs-existing-picker&#39;);
+
+
+
+      if (mode === &#39;existing&#39;) {
+
+        btnEx.className = &#39;py-2 px-2 rounded-lg text-xs font-extrabold bg-blue-600 text-white shadow-sm transition&#39;;
+
+        btnNew.className = &#39;py-2 px-2 rounded-lg text-xs font-bold text-amber-900 hover:bg-amber-100 transition&#39;;
+
+        picker.classList.remove(&#39;hidden&#39;);
+
         renderExistingProductsList();
+
       } else {
-        btnNew.className = 'py-2 px-2 rounded-lg text-xs font-extrabold bg-amber-600 text-white shadow-sm transition';
-        btnEx.className = 'py-2 px-2 rounded-lg text-xs font-bold text-amber-900 hover:bg-amber-100 transition';
-        picker.classList.add('hidden');
+
+        btnNew.className = &#39;py-2 px-2 rounded-lg text-xs font-extrabold bg-amber-600 text-white shadow-sm transition&#39;;
+
+        btnEx.className = &#39;py-2 px-2 rounded-lg text-xs font-bold text-amber-900 hover:bg-amber-100 transition&#39;;
+
+        picker.classList.add(&#39;hidden&#39;);
+
         clearSelectedExistingProduct(true);
+
       }
+
     }
+
+
 
     function renderExistingProductsList() {
-      const box = document.getElementById('rs-existing-list');
-      const cntEl = document.getElementById('rs-existing-count');
-      if (!box) return;
-      const q = (document.getElementById('rs-existing-search')?.value || '').trim().toLowerCase();
 
-      const filtered = shopProductsCache.filter(p => {
+      const box = document.getElementById(&#39;rs-existing-list&#39;);
+
+      const cntEl = document.getElementById(&#39;rs-existing-count&#39;);
+
+      if (!box) return;
+
+      const q = (document.getElementById(&#39;rs-existing-search&#39;)?.value || &#39;&#39;).trim().toLowerCase();
+
+
+
+      const filtered = shopProductsCache.filter(p =&gt; {
+
         if (!q) return true;
-        const colStr = (p.colors || []).map(c => c.name).join(' ').toLowerCase();
-        return p.name.toLowerCase().includes(q) || (p.category || '').toLowerCase().includes(q) || colStr.includes(q);
+
+        const colStr = (p.colors || []).map(c =&gt; c.name).join(&#39; &#39;).toLowerCase();
+
+        return p.name.toLowerCase().includes(q) || (p.category || &#39;&#39;).toLowerCase().includes(q) || colStr.includes(q);
+
       });
+
+
 
       if (cntEl) cntEl.innerText = `${shopProductsCache.length} မျိုး`;
 
+
+
       if (shopProductsCache.length === 0) {
-        box.innerHTML = `<p class="text-xs text-gray-500 text-center py-4 bg-white rounded-xl border">ယခင်တင်ထားသော ပစ္စည်း မရှိသေးပါ — "🆕 ပစ္စည်းအသစ် ထည့်ရန်" မှ စတင်ထည့်နိုင်ပါသည်။</p>`;
+
+        box.innerHTML = `&lt;p class=&quot;text-xs text-gray-500 text-center py-4 bg-white rounded-xl border&quot;&gt;ယခင်တင်ထားသော ပစ္စည်း မရှိသေးပါ — &quot;🆕 ပစ္စည်းအသစ် ထည့်ရန်&quot; မှ စတင်ထည့်နိုင်ပါသည်။&lt;/p&gt;`;
+
         return;
+
       }
+
+
 
       if (filtered.length === 0) {
-        box.innerHTML = `<p class="text-xs text-gray-500 text-center py-4 bg-white rounded-xl border">ရှာဖွေထားသော ပစ္စည်း မတွေ့ရှိပါ</p>`;
+
+        box.innerHTML = `&lt;p class=&quot;text-xs text-gray-500 text-center py-4 bg-white rounded-xl border&quot;&gt;ရှာဖွေထားသော ပစ္စည်း မတွေ့ရှိပါ&lt;/p&gt;`;
+
         return;
+
       }
 
-      box.innerHTML = filtered.map((p) => {
+
+
+      box.innerHTML = filtered.map((p) =&gt; {
+
         const origIdx = shopProductsCache.indexOf(p);
-        const firstImg = (p.colors && p.colors[0] && p.colors[0].image) ? p.colors[0].image : '../icon.png?v=3';
-        const validPrices = (p.prices || []).filter(v => v > 0);
-        const showPrice = validPrices.length > 0 ? Math.min(...validPrices) : 0;
-        const colorNames = (p.colors || []).map(c => c.name).filter(Boolean).join(', ');
-        const isSelected = selectedExistingProduct && selectedExistingProduct.name === p.name;
+
+        const firstImg = (p.colors &amp;&amp; p.colors[0] &amp;&amp; p.colors[0].image) ? p.colors[0].image : &#39;../icon.png?v=3&#39;;
+
+        const validPrices = (p.prices || []).filter(v =&gt; v &gt; 0);
+
+        const showPrice = validPrices.length &gt; 0 ? Math.min(...validPrices) : 0;
+
+        const colorNames = (p.colors || []).map(c =&gt; c.name).filter(Boolean).join(&#39;, &#39;);
+
+        const isSelected = selectedExistingProduct &amp;&amp; selectedExistingProduct.name === p.name;
+
+
 
         return `
-          <div onclick="selectExistingProduct(${origIdx})" class="cursor-pointer flex items-center gap-2.5 p-2 rounded-xl border-2 transition ${isSelected ? 'border-emerald-500 bg-emerald-50' : 'border-blue-100 bg-white hover:border-blue-400'}">
-            <img src="${escapeHtml(firstImg)}" class="w-12 h-12 rounded-xl object-cover border bg-gray-50 shrink-0">
-            <div class="flex-1 min-w-0 text-xs space-y-0.5">
-              <p class="font-extrabold text-gray-900 truncate">${escapeHtml(p.name)}</p>
-              <p class="text-[11px] font-bold text-gray-600 truncate">📂 ${escapeHtml(p.category)} • 💰 ${showPrice > 0 ? showPrice.toLocaleString() + ' Ks' : 'ဈေးမရှိ'} • 📦 လက်ကျန်: <span class="text-emerald-700 font-extrabold">${p.totalStock}</span></p>
-              ${colorNames ? `<p class="text-[10px] font-bold text-purple-700 truncate">🎨 ${escapeHtml(colorNames)}</p>` : ''}
-            </div>
-            <span class="bg-blue-600 text-white text-[10px] font-extrabold px-2.5 py-1.5 rounded-lg shrink-0">ရွေးမည်</span>
-          </div>
+
+          &lt;div onclick=&quot;selectExistingProduct(${origIdx})&quot; class=&quot;cursor-pointer flex items-center gap-2.5 p-2 rounded-xl border-2 transition ${isSelected ? &#39;border-emerald-500 bg-emerald-50&#39; : &#39;border-blue-100 bg-white hover:border-blue-400&#39;}&quot;&gt;
+
+            &lt;img src=&quot;${escapeHtml(firstImg)}&quot; class=&quot;w-12 h-12 rounded-xl object-cover border bg-gray-50 shrink-0&quot;&gt;
+
+            &lt;div class=&quot;flex-1 min-w-0 text-xs space-y-0.5&quot;&gt;
+
+              &lt;p class=&quot;font-extrabold text-gray-900 truncate&quot;&gt;${escapeHtml(p.name)}&lt;/p&gt;
+
+              &lt;p class=&quot;text-[11px] font-bold text-gray-600 truncate&quot;&gt;📂 ${escapeHtml(p.category)} • 💰 ${showPrice &gt; 0 ? showPrice.toLocaleString() + &#39; Ks&#39; : &#39;ဈေးမရှိ&#39;} • 📦 လက်ကျန်: &lt;span class=&quot;text-emerald-700 font-extrabold&quot;&gt;${p.totalStock}&lt;/span&gt;&lt;/p&gt;
+
+              ${colorNames ? `&lt;p class=&quot;text-[10px] font-bold text-purple-700 truncate&quot;&gt;🎨 ${escapeHtml(colorNames)}&lt;/p&gt;` : &#39;&#39;}
+
+            &lt;/div&gt;
+
+            &lt;span class=&quot;bg-blue-600 text-white text-[10px] font-extrabold px-2.5 py-1.5 rounded-lg shrink-0&quot;&gt;ရွေးမည်&lt;/span&gt;
+
+          &lt;/div&gt;
+
         `;
-      }).join('');
+
+      }).join(&#39;&#39;);
+
     }
+
+
 
     function selectExistingProduct(idx) {
+
       const p = shopProductsCache[idx];
+
       if (!p) return;
+
       selectedExistingProduct = p;
 
-      document.getElementById('rs-name').value = p.name || '';
-      const catSel = document.getElementById('rs-category');
-      if (catSel && [...catSel.options].some(o => o.value === p.category)) {
+
+
+      document.getElementById(&#39;rs-name&#39;).value = p.name || &#39;&#39;;
+
+      const catSel = document.getElementById(&#39;rs-category&#39;);
+
+      if (catSel &amp;&amp; [...catSel.options].some(o =&gt; o.value === p.category)) {
+
         catSel.value = p.category;
+
       }
+
       updateRestockSizeOptions();
 
-      const firstColor = (p.colors && p.colors[0]) ? p.colors[0] : null;
-      document.getElementById('rs-color').value = firstColor ? firstColor.name : '';
-      document.getElementById('rs-desc').value = p.desc || '';
+
+
+      const firstColor = (p.colors &amp;&amp; p.colors[0]) ? p.colors[0] : null;
+
+      document.getElementById(&#39;rs-color&#39;).value = firstColor ? firstColor.name : &#39;&#39;;
+
+      document.getElementById(&#39;rs-desc&#39;).value = p.desc || &#39;&#39;;
+
+
 
       const uniqueImgs = [];
-      (p.colors || []).forEach(c => {
-        if (c && c.image && !uniqueImgs.includes(c.image) && uniqueImgs.length < MAX_RESTOCK_PHOTOS) {
+
+      (p.colors || []).forEach(c =&gt; {
+
+        if (c &amp;&amp; c.image &amp;&amp; !uniqueImgs.includes(c.image) &amp;&amp; uniqueImgs.length &lt; MAX_RESTOCK_PHOTOS) {
+
           uniqueImgs.push(c.image);
+
         }
+
       });
-      restockPhotos = uniqueImgs.map(u => ({ base64: '', url: u }));
+
+      restockPhotos = uniqueImgs.map(u =&gt; ({ base64: &#39;&#39;, url: u }));
+
       renderRestockPhotoSlots();
 
-      document.getElementById('rs-sel-img').src = uniqueImgs[0] || '../icon.png?v=3';
-      document.getElementById('rs-sel-name').innerText = p.name;
-      document.getElementById('rs-sel-meta').innerText = `📂 ${p.category} | 📦 စုစုပေါင်းလက်ကျန်: ${p.totalStock} ခု`;
 
-      const stkWrap = document.getElementById('rs-sel-stock-badges');
+
+      document.getElementById(&#39;rs-sel-img&#39;).src = uniqueImgs[0] || &#39;../icon.png?v=3&#39;;
+
+      document.getElementById(&#39;rs-sel-name&#39;).innerText = p.name;
+
+      document.getElementById(&#39;rs-sel-meta&#39;).innerText = `📂 ${p.category} | 📦 စုစုပေါင်းလက်ကျန်: ${p.totalStock} ခု`;
+
+
+
+      const stkWrap = document.getElementById(&#39;rs-sel-stock-badges&#39;);
+
       if (AGE_REQUIRED_CATS.includes(p.category)) {
-        stkWrap.innerHTML = STANDARD_AGES.map((sz, i) => {
+
+        stkWrap.innerHTML = STANDARD_AGES.map((sz, i) =&gt; {
+
           const s = p.stocks[i] || 0;
+
           const pr = p.prices[i] || 0;
-          if (s === 0 && pr === 0) return '';
-          return `<span class="bg-white border border-emerald-200 text-gray-800 px-2 py-0.5 rounded-lg">${sz}: <b class="text-emerald-700">${s} ခု</b>${pr > 0 ? ' • ' + pr.toLocaleString() + ' Ks' : ''}</span>`;
-        }).join('') || `<span class="text-gray-500">လက်ကျန် 0 ခု</span>`;
+
+          if (s === 0 &amp;&amp; pr === 0) return &#39;&#39;;
+
+          return `&lt;span class=&quot;bg-white border border-emerald-200 text-gray-800 px-2 py-0.5 rounded-lg&quot;&gt;${sz}: &lt;b class=&quot;text-emerald-700&quot;&gt;${s} ခု&lt;/b&gt;${pr &gt; 0 ? &#39; • &#39; + pr.toLocaleString() + &#39; Ks&#39; : &#39;&#39;}&lt;/span&gt;`;
+
+        }).join(&#39;&#39;) || `&lt;span class=&quot;text-gray-500&quot;&gt;လက်ကျန် 0 ခု&lt;/span&gt;`;
+
       } else {
-        const validPr = (p.prices || []).find(v => v > 0) || 0;
-        stkWrap.innerHTML = `<span class="bg-white border border-emerald-300 text-emerald-800 px-2 py-0.5 rounded-lg">လက်ကျန်: ${p.totalStock} ခု${validPr > 0 ? ' • ' + validPr.toLocaleString() + ' Ks' : ''}</span>`;
+
+        const validPr = (p.prices || []).find(v =&gt; v &gt; 0) || 0;
+
+        stkWrap.innerHTML = `&lt;span class=&quot;bg-white border border-emerald-300 text-emerald-800 px-2 py-0.5 rounded-lg&quot;&gt;လက်ကျန်: ${p.totalStock} ခု${validPr &gt; 0 ? &#39; • &#39; + validPr.toLocaleString() + &#39; Ks&#39; : &#39;&#39;}&lt;/span&gt;`;
+
       }
 
-      const colBox = document.getElementById('rs-sel-color-chips');
-      const colWrap = document.getElementById('rs-sel-colors-wrap');
-      if (p.colors && p.colors.length > 0) {
-        colBox.classList.remove('hidden');
-        colWrap.innerHTML = p.colors.map((c, ci) => `
-          <button type="button" onclick="pickExistingColor(${ci})" class="bg-white hover:bg-purple-50 border border-purple-300 text-purple-900 px-2.5 py-1 rounded-lg text-[11px] font-extrabold flex items-center gap-1.5">
-            ${c.image ? `<img src="${escapeHtml(c.image)}" class="w-5 h-5 rounded object-cover border">` : ''}
-            <span>${escapeHtml(c.name)}</span>
-          </button>
-        `).join('');
+
+
+      const colBox = document.getElementById(&#39;rs-sel-color-chips&#39;);
+
+      const colWrap = document.getElementById(&#39;rs-sel-colors-wrap&#39;);
+
+      if (p.colors &amp;&amp; p.colors.length &gt; 0) {
+
+        colBox.classList.remove(&#39;hidden&#39;);
+
+        colWrap.innerHTML = p.colors.map((c, ci) =&gt; `
+
+          &lt;button type=&quot;button&quot; onclick=&quot;pickExistingColor(${ci})&quot; class=&quot;bg-white hover:bg-purple-50 border border-purple-300 text-purple-900 px-2.5 py-1 rounded-lg text-[11px] font-extrabold flex items-center gap-1.5&quot;&gt;
+
+            ${c.image ? `&lt;img src=&quot;${escapeHtml(c.image)}&quot; class=&quot;w-5 h-5 rounded object-cover border&quot;&gt;` : &#39;&#39;}
+
+            &lt;span&gt;${escapeHtml(c.name)}&lt;/span&gt;
+
+          &lt;/button&gt;
+
+        `).join(&#39;&#39;);
+
       } else {
-        colBox.classList.add('hidden');
+
+        colBox.classList.add(&#39;hidden&#39;);
+
       }
 
-      document.getElementById('rs-selected-summary').classList.remove('hidden');
+
+
+      document.getElementById(&#39;rs-selected-summary&#39;).classList.remove(&#39;hidden&#39;);
+
       onRestockSizeChanged();
+
       renderExistingProductsList();
+
     }
+
+
 
     function pickExistingColor(colorIdx) {
+
       if (!selectedExistingProduct || !selectedExistingProduct.colors) return;
+
       const c = selectedExistingProduct.colors[colorIdx];
+
       if (!c) return;
-      document.getElementById('rs-color').value = c.name || '';
+
+      document.getElementById(&#39;rs-color&#39;).value = c.name || &#39;&#39;;
+
       if (c.image) {
-        const exists = restockPhotos.some(ph => ph.url === c.image);
+
+        const exists = restockPhotos.some(ph =&gt; ph.url === c.image);
+
         if (!exists) {
-          if (restockPhotos.length === 0) restockPhotos.push({ base64: '', url: c.image });
-          else if (!restockPhotos[0].base64) restockPhotos[0] = { base64: '', url: c.image };
+
+          if (restockPhotos.length === 0) restockPhotos.push({ base64: &#39;&#39;, url: c.image });
+
+          else if (!restockPhotos[0].base64) restockPhotos[0] = { base64: &#39;&#39;, url: c.image };
+
           renderRestockPhotoSlots();
+
         }
+
       }
+
     }
+
+
 
     function clearSelectedExistingProduct(resetInputs = false) {
+
       selectedExistingProduct = null;
-      document.getElementById('rs-selected-summary')?.classList.add('hidden');
-      document.getElementById('rs-current-size-stock')?.classList.add('hidden');
+
+      document.getElementById(&#39;rs-selected-summary&#39;)?.classList.add(&#39;hidden&#39;);
+
+      document.getElementById(&#39;rs-current-size-stock&#39;)?.classList.add(&#39;hidden&#39;);
+
       if (resetInputs) {
-        ['rs-name', 'rs-price', 'rs-color', 'rs-desc'].forEach(id => {
+
+        [&#39;rs-name&#39;, &#39;rs-price&#39;, &#39;rs-color&#39;, &#39;rs-desc&#39;].forEach(id =&gt; {
+
           const el = document.getElementById(id);
-          if (el) el.value = '';
+
+          if (el) el.value = &#39;&#39;;
+
         });
-        document.getElementById('rs-qty').value = '10';
+
+        document.getElementById(&#39;rs-qty&#39;).value = &#39;10&#39;;
+
         restockPhotos = [];
+
         renderRestockPhotoSlots();
+
       }
+
       renderExistingProductsList();
+
     }
+
+
 
     function onRestockSizeChanged() {
-      const stkBadge = document.getElementById('rs-current-size-stock');
+
+      const stkBadge = document.getElementById(&#39;rs-current-size-stock&#39;);
+
       if (!selectedExistingProduct) {
-        if (stkBadge) stkBadge.classList.add('hidden');
+
+        if (stkBadge) stkBadge.classList.add(&#39;hidden&#39;);
+
         return;
+
       }
-      const cat = document.getElementById('rs-category')?.value || '';
-      const sz = document.getElementById('rs-size')?.value || '';
+
+      const cat = document.getElementById(&#39;rs-category&#39;)?.value || &#39;&#39;;
+
+      const sz = document.getElementById(&#39;rs-size&#39;)?.value || &#39;&#39;;
+
       const idx = sizeLabelToIndex(sz);
+
       const curStk = AGE_REQUIRED_CATS.includes(cat)
-        ? ((selectedExistingProduct.stocks && selectedExistingProduct.stocks[idx]) || 0)
+
+        ? ((selectedExistingProduct.stocks &amp;&amp; selectedExistingProduct.stocks[idx]) || 0)
+
         : (selectedExistingProduct.totalStock || 0);
-      const szPrice = (selectedExistingProduct.prices && selectedExistingProduct.prices[idx]) || 0;
-      const validPrices = (selectedExistingProduct.prices || []).filter(v => v > 0);
-      const fallbackPrice = validPrices.length > 0 ? validPrices[0] : 0;
+
+      const szPrice = (selectedExistingProduct.prices &amp;&amp; selectedExistingProduct.prices[idx]) || 0;
+
+      const validPrices = (selectedExistingProduct.prices || []).filter(v =&gt; v &gt; 0);
+
+      const fallbackPrice = validPrices.length &gt; 0 ? validPrices[0] : 0;
+
+
 
       if (stkBadge) {
+
         stkBadge.innerText = `လက်ရှိလက်ကျန်: ${curStk} ခု`;
-        stkBadge.classList.remove('hidden');
+
+        stkBadge.classList.remove(&#39;hidden&#39;);
+
       }
-      const priceInput = document.getElementById('rs-price');
+
+      const priceInput = document.getElementById(&#39;rs-price&#39;);
+
       if (priceInput) {
-        const pToSet = szPrice > 0 ? szPrice : fallbackPrice;
-        if (pToSet > 0) priceInput.value = pToSet;
+
+        const pToSet = szPrice &gt; 0 ? szPrice : fallbackPrice;
+
+        if (pToSet &gt; 0) priceInput.value = pToSet;
+
       }
+
     }
+
+
 
     function updateRestockSizeOptions() {
-      const cat = document.getElementById('rs-category')?.value || 'ဝမ်းဆက်';
-      const sizeSel = document.getElementById('rs-size');
+
+      const cat = document.getElementById(&#39;rs-category&#39;)?.value || &#39;ဝမ်းဆက်&#39;;
+
+      const sizeSel = document.getElementById(&#39;rs-size&#39;);
+
       if (!sizeSel) return;
 
+
+
       if (AGE_REQUIRED_CATS.includes(cat)) {
-        sizeSel.innerHTML = STANDARD_AGES.map(sz => `<option value="${sz}">${sz}</option>`).join('');
+
+        sizeSel.innerHTML = STANDARD_AGES.map(sz =&gt; `&lt;option value=&quot;${sz}&quot;&gt;${sz}&lt;/option&gt;`).join(&#39;&#39;);
+
       } else {
-        sizeSel.innerHTML = `<option value="အသက်မလို">အသက်မလို</option>`;
+
+        sizeSel.innerHTML = `&lt;option value=&quot;အသက်မလို&quot;&gt;အသက်မလို&lt;/option&gt;`;
+
       }
+
       onRestockSizeChanged();
+
     }
 
-    function closeIosGuide() { document.getElementById('ios-guide-modal').classList.add('hidden'); }
+
+
+    function closeIosGuide() { document.getElementById(&#39;ios-guide-modal&#39;).classList.add(&#39;hidden&#39;); }
+
+
 
     async function triggerShopInstall() {
+
       if (window.__deferredInstallPrompt) {
+
         try {
+
           window.__deferredInstallPrompt.prompt();
+
           const choice = await window.__deferredInstallPrompt.userChoice;
+
           window.__deferredInstallPrompt = null;
-          if (choice && choice.outcome === 'accepted') {
-            document.getElementById('btn-shop-install')?.classList.add('hidden');
-            document.getElementById('btn-shop-install-login')?.classList.add('hidden');
+
+          if (choice &amp;&amp; choice.outcome === &#39;accepted&#39;) {
+
+            document.getElementById(&#39;btn-shop-install&#39;)?.classList.add(&#39;hidden&#39;);
+
+            document.getElementById(&#39;btn-shop-install-login&#39;)?.classList.add(&#39;hidden&#39;);
+
           }
+
         } catch (e) {}
+
         return;
+
       }
-      if (isAndroidDevice() && isInAppBrowser()) {
-        const cleanUrl = window.location.href.replace(/^https?:\/\//i, '');
+
+      if (isAndroidDevice() &amp;&amp; isInAppBrowser()) {
+
+        const cleanUrl = window.location.href.replace(/^https?:\/\//i, &#39;&#39;);
+
         window.location.href = `intent://${cleanUrl}#Intent;scheme=https;package=com.android.chrome;end`;
+
         return;
+
       }
-      document.getElementById('ios-guide-modal').classList.remove('hidden');
-      pushShopHistoryState('install_guide');
+
+      document.getElementById(&#39;ios-guide-modal&#39;).classList.remove(&#39;hidden&#39;);
+
+      pushShopHistoryState(&#39;install_guide&#39;);
+
     }
+
+
 
     function playNotiChime() {
+
       if (isShopQuietHoursMMT()) return;
+
       try {
+
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
+
         if (!AudioCtx) return;
+
         const ctx = new AudioCtx();
+
         const osc = ctx.createOscillator();
+
         const gain = ctx.createGain();
-        osc.type = 'sine';
+
+        osc.type = &#39;sine&#39;;
+
         osc.frequency.setValueAtTime(880, ctx.currentTime);
+
         osc.frequency.setValueAtTime(1174.66, ctx.currentTime + 0.14);
+
         gain.gain.setValueAtTime(0.25, ctx.currentTime);
+
         gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+
         osc.connect(gain); gain.connect(ctx.destination);
+
         osc.start(); osc.stop(ctx.currentTime + 0.5);
+
       } catch (e) {}
+
     }
+
+
 
     function showShopBannerNoti(title, bodyText) {
+
       if (isShopQuietHoursMMT()) return;
-      const popup = document.getElementById('push-noti-popup');
-      document.getElementById('push-noti-title').innerText = "🔔 " + (title || "MiniTrend Shop");
-      document.getElementById('push-noti-body').innerText = bodyText || "";
-      popup.classList.remove('hidden');
+
+      const popup = document.getElementById(&#39;push-noti-popup&#39;);
+
+      document.getElementById(&#39;push-noti-title&#39;).innerText = &quot;🔔 &quot; + (title || &quot;MiniTrend Shop&quot;);
+
+      document.getElementById(&#39;push-noti-body&#39;).innerText = bodyText || &quot;&quot;;
+
+      popup.classList.remove(&#39;hidden&#39;);
+
       playNotiChime();
+
       if (navigator.vibrate) navigator.vibrate([250, 100, 250]);
+
       if (pushPopupTimer) clearTimeout(pushPopupTimer);
-      pushPopupTimer = setTimeout(() => { popup.classList.add('hidden'); }, 9000);
+
+      pushPopupTimer = setTimeout(() =&gt; { popup.classList.add(&#39;hidden&#39;); }, 9000);
+
     }
 
-    function closePushPopup() { document.getElementById('push-noti-popup').classList.add('hidden'); }
+
+
+    function closePushPopup() { document.getElementById(&#39;push-noti-popup&#39;).classList.add(&#39;hidden&#39;); }
+
+
 
     async function initShopFirebasePush(shopId, allowPrompt = false) {
+
       try {
-        if (!('Notification' in window) || !('serviceWorker' in navigator) || typeof firebase === 'undefined') return null;
+
+        if (isIOSDevice() &amp;&amp; !isStandaloneApp()) {
+
+          return { ok: false, message: &#39;🍎 iPhone တွင် Notification ရရန် Safari အောက်ခြေ Share (⬆️) → Add to Home Screen လုပ်ပြီး Home Screen မှ Shop App ကို ဖွင့်ပေးပါ။&#39; };
+
+        }
+
+        if (!(&#39;Notification&#39; in window) || !(&#39;serviceWorker&#39; in navigator) || !(&#39;PushManager&#39; in window)) {
+
+          return { ok: false, message: &#39;⚠️ ဤ Browser သည် Push Notification မပံ့ပိုးပါ။ Chrome ဖြင့်ဖွင့်ပါ။&#39; };
+
+        }
+
+
+
+        let perm = Notification.permission;
+
+        if (perm === &#39;default&#39; &amp;&amp; allowPrompt) {
+
+          perm = await Notification.requestPermission();
+
+        }
+
+        if (perm === &#39;denied&#39;) {
+
+          return { ok: false, message: &#39;⚠️ Notification ကို Block ထားပါသည်။ Settings → Notifications တွင် Allow ပြန်ဖွင့်ပေးပါ။&#39; };
+
+        }
+
+        if (perm !== &#39;granted&#39;) {
+
+          return { ok: false, message: &#39;⚠️ Notification popup ပေါ်လာလျှင် Allow ကို နှိပ်ပေးပါ။&#39; };
+
+        }
+
+
+
         if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
 
         const messaging = firebase.messaging();
+
         if (!window.__shopFcmBound) {
+
           window.__shopFcmBound = true;
-          messaging.onMessage((payload) => {
+
+          messaging.onMessage((payload) =&gt; {
+
             const d = payload.data || {};
+
             const n = payload.notification || {};
-            showShopBannerNoti(d.title || n.title || "MiniTrend Shop", d.body || n.body || "");
+
+            showShopBannerNoti(d.title || n.title || &quot;MiniTrend Shop&quot;, d.body || n.body || &quot;&quot;);
+
             loadShopDashboard(true);
+
           });
+
         }
 
-        if (Notification.permission === 'default' && allowPrompt) await Notification.requestPermission();
-        if (Notification.permission !== 'granted') return null;
 
-        const reg = (await window.__swRegistrationPromise) || (await navigator.serviceWorker.ready);
+
+        await navigator.serviceWorker.register(&#39;/sw.js&#39;, { scope: &#39;/&#39; });
+
+        const reg = await navigator.serviceWorker.ready;
+
         const token = await messaging.getToken({ vapidKey: FIREBASE_VAPID_KEY, serviceWorkerRegistration: reg });
-        if (token) {
-          window.__currentFcmToken = token;
-          const roleKey = "shop:" + shopId;
-          if (!sessionStorage.getItem("mt_fcm_synced_" + roleKey)) {
-            await fetch(APPS_SCRIPT_URL, {
-              method: "POST", mode: "no-cors",
-              headers: { "Content-Type": "text/plain;charset=utf-8" },
-              body: JSON.stringify({ action: "saveFcmToken", token, role: roleKey, device: navigator.userAgent.substring(0, 80) })
-            });
-            sessionStorage.setItem("mt_fcm_synced_" + roleKey, "1");
-          }
-          const btn = document.getElementById('btn-shop-fcm');
-          if (btn) btn.innerText = "✅ Noti ချိတ်ပြီး";
-          return token;
-        }
-      } catch (e) {}
-      return null;
+
+
+
+        if (!token) return { ok: false, message: &#39;⚠️ FCM Token မထွက်ပါ။ ထပ်စမ်းပေးပါ။&#39; };
+
+
+
+        window.__currentFcmToken = token;
+
+        await fetch(APPS_SCRIPT_URL, {
+
+          method: &quot;POST&quot;, mode: &quot;no-cors&quot;,
+
+          headers: { &quot;Content-Type&quot;: &quot;text/plain;charset=utf-8&quot; },
+
+          body: JSON.stringify({
+
+            action: &quot;saveFcmToken&quot;,
+
+            token,
+
+            role: &quot;shop:&quot; + shopId,
+
+            device: (isIOSDevice() ? &quot;iOS PWA &quot; : &quot;&quot;) + navigator.userAgent.substring(0, 70)
+
+          })
+
+        });
+
+
+
+        const btn = document.getElementById(&#39;btn-shop-fcm&#39;);
+
+        if (btn) btn.innerText = &quot;✅ Noti ချိတ်ပြီး&quot;;
+
+        return { ok: true, token };
+
+      } catch (e) {
+
+        return { ok: false, message: &#39;⚠️ Shop Noti Error: &#39; + (e &amp;&amp; e.message ? e.message : String(e)) };
+
+      }
+
     }
+
+
 
     async function connectShopFirebase() {
+
       const saved = getSavedShopSession();
+
       if (!saved || !saved.id) return;
-      const btn = document.getElementById('btn-shop-fcm');
-      if (btn) btn.innerText = "⏳ ချိတ်ဆက်နေ...";
-      sessionStorage.removeItem("mt_fcm_synced_shop:" + saved.id);
-      const tk = await initShopFirebasePush(saved.id, true);
-      if (tk) alert(`✅ ${saved.name} ဖုန်းကို Notification စနစ်နှင့် ချိတ်ဆက်ပြီးပါပြီ! (ညနေ ၆:၀၀ မှ နံနက် ၈:၀၀ အထိ Auto Mute ဖြစ်ပါမည်)`);
-      else {
-        if (btn) btn.innerText = "🔔 Noti ချိတ်မည်";
-        alert("⚠️ Browser Settings တွင် Notification ကို Allow ပေးထားကြောင်း စစ်ဆေးပါ။");
+
+      const btn = document.getElementById(&#39;btn-shop-fcm&#39;);
+
+      if (btn) btn.innerText = &quot;⏳ ချိတ်ဆက်နေ...&quot;;
+
+      const res = await initShopFirebasePush(saved.id, true);
+
+      if (res &amp;&amp; res.ok) {
+
+        alert(`✅ ${saved.name} ဖုန်းကို Notification စနစ်နှင့် ချိတ်ဆက်ပြီးပါပြီ! (ညနေ ၆:၀၀ မှ နံနက် ၈:၀၀ အထိ Auto Mute ဖြစ်ပါမည်)`);
+
+      } else {
+
+        if (btn) btn.innerText = &quot;🔔 Noti ချိတ်မည်&quot;;
+
+        alert((res &amp;&amp; res.message) || &quot;⚠️ Notification ချိတ်မရပါ။&quot;);
+
       }
+
     }
+
+
 
     function openImageLightbox(imgKey) {
+
       const info = window.__shopImgMap[imgKey];
+
       if (!info) return;
-      document.getElementById('lightbox-img').src = info.image || '../icon.png?v=3';
-      document.getElementById('lightbox-title').innerText = info.name || '';
-      const szPart = info.size && info.size !== 'အသက်မလို' ? ` | 📏 ${info.size}` : '';
-      document.getElementById('lightbox-meta').innerText = `🎨 ${info.colorName || '-'}${szPart} | 📦 x ${info.qty || 1} ခု`;
-      document.getElementById('image-lightbox-modal').classList.remove('hidden');
-      pushShopHistoryState('lightbox');
+
+      document.getElementById(&#39;lightbox-img&#39;).src = info.image || &#39;../icon.png?v=3&#39;;
+
+      document.getElementById(&#39;lightbox-title&#39;).innerText = info.name || &#39;&#39;;
+
+      const szPart = info.size &amp;&amp; info.size !== &#39;အသက်မလို&#39; ? ` | 📏 ${info.size}` : &#39;&#39;;
+
+      document.getElementById(&#39;lightbox-meta&#39;).innerText = `🎨 ${info.colorName || &#39;-&#39;}${szPart} | 📦 x ${info.qty || 1} ခု`;
+
+      document.getElementById(&#39;image-lightbox-modal&#39;).classList.remove(&#39;hidden&#39;);
+
+      pushShopHistoryState(&#39;lightbox&#39;);
+
     }
 
-    function closeImageLightbox() { document.getElementById('image-lightbox-modal').classList.add('hidden'); }
+
+
+    function closeImageLightbox() { document.getElementById(&#39;image-lightbox-modal&#39;).classList.add(&#39;hidden&#39;); }
+
+
 
     function switchShopTab(tabName, fromBack = false) {
+
       const prevTab = currentShopTab;
+
       currentShopTab = tabName;
-      ['orders', 'mystock', 'restock', 'returns', 'payouts'].forEach(t => {
-        const panel = document.getElementById('tab-panel-' + t);
-        const btn = document.getElementById('tab-btn-' + t);
-        if (panel) panel.classList.toggle('hidden', t !== tabName);
+
+      [&#39;orders&#39;, &#39;mystock&#39;, &#39;restock&#39;, &#39;returns&#39;, &#39;payouts&#39;].forEach(t =&gt; {
+
+        const panel = document.getElementById(&#39;tab-panel-&#39; + t);
+
+        const btn = document.getElementById(&#39;tab-btn-&#39; + t);
+
+        if (panel) panel.classList.toggle(&#39;hidden&#39;, t !== tabName);
+
         if (btn) {
+
           if (t === tabName) {
-            let activeCls = 'py-2.5 px-3 rounded-xl text-xs font-extrabold bg-amber-600 text-white shadow-sm transition shrink-0';
-            if (t === 'returns') activeCls = 'py-2.5 px-3 rounded-xl text-xs font-extrabold bg-red-600 text-white shadow-sm transition shrink-0';
-            else if (t === 'payouts') activeCls = 'py-2.5 px-3 rounded-xl text-xs font-extrabold bg-emerald-600 text-white shadow-sm transition shrink-0';
-            else if (t === 'mystock') activeCls = 'py-2.5 px-3 rounded-xl text-xs font-extrabold bg-blue-600 text-white shadow-sm transition shrink-0';
+
+            let activeCls = &#39;py-2.5 px-3 rounded-xl text-xs font-extrabold bg-amber-600 text-white shadow-sm transition shrink-0&#39;;
+
+            if (t === &#39;returns&#39;) activeCls = &#39;py-2.5 px-3 rounded-xl text-xs font-extrabold bg-red-600 text-white shadow-sm transition shrink-0&#39;;
+
+            else if (t === &#39;payouts&#39;) activeCls = &#39;py-2.5 px-3 rounded-xl text-xs font-extrabold bg-emerald-600 text-white shadow-sm transition shrink-0&#39;;
+
+            else if (t === &#39;mystock&#39;) activeCls = &#39;py-2.5 px-3 rounded-xl text-xs font-extrabold bg-blue-600 text-white shadow-sm transition shrink-0&#39;;
+
             btn.className = activeCls;
+
           } else {
-            btn.className = 'py-2.5 px-3 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 transition shrink-0';
+
+            btn.className = &#39;py-2.5 px-3 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 transition shrink-0&#39;;
+
           }
+
         }
+
       });
-      if (tabName === 'mystock') renderMyStockHistory();
-      if (tabName === 'restock' && restockMode === 'existing') renderExistingProductsList();
-      if (!fromBack && prevTab === 'orders' && tabName !== 'orders') {
-        pushShopHistoryState('tab_' + tabName);
+
+      if (tabName === &#39;mystock&#39;) renderMyStockHistory();
+
+      if (tabName === &#39;restock&#39; &amp;&amp; restockMode === &#39;existing&#39;) renderExistingProductsList();
+
+      if (!fromBack &amp;&amp; prevTab === &#39;orders&#39; &amp;&amp; tabName !== &#39;orders&#39;) {
+
+        pushShopHistoryState(&#39;tab_&#39; + tabName);
+
       }
+
     }
+
+
 
     async function loadShopDropdown() {
-      const sel = document.getElementById('shop-login-select');
+
+      const sel = document.getElementById(&#39;shop-login-select&#39;);
+
       if (!sel) return;
+
       try {
-        const res = await fetch(`${APPS_SCRIPT_URL}?action=getShopData&t=${Date.now()}`, { cache: "no-store" });
+
+        const res = await fetch(`${APPS_SCRIPT_URL}?action=getShopData&amp;t=${Date.now()}`, { cache: &quot;no-store&quot; });
+
         const data = await res.json();
-        if (data && Array.isArray(data.shops) && data.shops.length > 0) {
-          sel.innerHTML = `<option value="">-- ဆိုင်အမည် ရွေးချယ်ပါ --</option>` +
-            data.shops.map(s => `<option value="${escapeHtml(s.id)}">${escapeHtml(s.id)} — ${escapeHtml(s.name)}</option>`).join('');
+
+        if (data &amp;&amp; Array.isArray(data.shops) &amp;&amp; data.shops.length &gt; 0) {
+
+          sel.innerHTML = `&lt;option value=&quot;&quot;&gt;-- ဆိုင်အမည် ရွေးချယ်ပါ --&lt;/option&gt;` +
+
+            data.shops.map(s =&gt; `&lt;option value=&quot;${escapeHtml(s.id)}&quot;&gt;${escapeHtml(s.id)} — ${escapeHtml(s.name)}&lt;/option&gt;`).join(&#39;&#39;);
+
         } else {
-          sel.innerHTML = `<option value="">ဆိုင်စာရင်း မထည့်ရသေးပါ</option>`;
+
+          sel.innerHTML = `&lt;option value=&quot;&quot;&gt;ဆိုင်စာရင်း မထည့်ရသေးပါ&lt;/option&gt;`;
+
         }
+
       } catch (e) {
-        sel.innerHTML = `<option value="">⚠️ အင်တာနက် ချိတ်ဆက်မှု စစ်ဆေးပါ</option>`;
+
+        sel.innerHTML = `&lt;option value=&quot;&quot;&gt;⚠️ အင်တာနက် ချိတ်ဆက်မှု စစ်ဆေးပါ&lt;/option&gt;`;
+
       }
+
     }
+
+
 
     async function handleShopLogin(e) {
+
       e.preventDefault();
-      const shopId = document.getElementById('shop-login-select').value.trim();
-      const pin = document.getElementById('shop-login-pin').value.trim();
-      const errEl = document.getElementById('shop-login-error');
-      const btn = document.getElementById('btn-shop-login');
+
+      const shopId = document.getElementById(&#39;shop-login-select&#39;).value.trim();
+
+      const pin = document.getElementById(&#39;shop-login-pin&#39;).value.trim();
+
+      const errEl = document.getElementById(&#39;shop-login-error&#39;);
+
+      const btn = document.getElementById(&#39;btn-shop-login&#39;);
+
       if (!shopId || !pin) return;
 
-      btn.disabled = true; btn.innerText = "⏳ စစ်ဆေးနေပါသည်...";
-      errEl.classList.add('hidden');
+
+
+      btn.disabled = true; btn.innerText = &quot;⏳ စစ်ဆေးနေပါသည်...&quot;;
+
+      errEl.classList.add(&#39;hidden&#39;);
+
+
 
       try {
-        const res = await fetch(`${APPS_SCRIPT_URL}?action=getShopData&shopId=${encodeURIComponent(shopId)}&pin=${encodeURIComponent(pin)}&t=${Date.now()}`, { cache: "no-store" });
+
+        const res = await fetch(`${APPS_SCRIPT_URL}?action=getShopData&amp;shopId=${encodeURIComponent(shopId)}&amp;pin=${encodeURIComponent(pin)}&amp;t=${Date.now()}`, { cache: &quot;no-store&quot; });
+
         const data = await res.json();
-        if (data && data.status === 'ok' && data.shop) {
+
+        if (data &amp;&amp; data.status === &#39;ok&#39; &amp;&amp; data.shop) {
+
           saveShopSession({ id: data.shop.id, name: data.shop.name, pin: pin, commissionRate: data.shop.commissionRate });
-          document.getElementById('shop-login-pin').value = '';
+
+          document.getElementById(&#39;shop-login-pin&#39;).value = &#39;&#39;;
+
           showDashboardScreen();
+
           renderShopData(data, false);
+
         } else {
-          errEl.classList.remove('hidden');
+
+          errEl.classList.remove(&#39;hidden&#39;);
+
         }
+
       } catch (err) {
-        errEl.innerText = "⚠️ အင်တာနက်ချိတ်ဆက်မှု စစ်ဆေးပေးပါ။";
-        errEl.classList.remove('hidden');
+
+        errEl.innerText = &quot;⚠️ အင်တာနက်ချိတ်ဆက်မှု စစ်ဆေးပေးပါ။&quot;;
+
+        errEl.classList.remove(&#39;hidden&#39;);
+
       }
 
-      btn.disabled = false; btn.innerText = "🔓 Shop App သို့ ဝင်ရောက်မည်";
+
+
+      btn.disabled = false; btn.innerText = &quot;🔓 Shop App သို့ ဝင်ရောက်မည်&quot;;
+
     }
+
+
 
     function logoutShop() {
-      try { localStorage.removeItem('mt_shop_session'); } catch (e) {}
+
+      try { localStorage.removeItem(&#39;mt_shop_session&#39;); } catch (e) {}
+
       currentShopInfo = null;
-      const dash = document.getElementById('shop-dashboard');
+
+      const dash = document.getElementById(&#39;shop-dashboard&#39;);
+
       if (dash) {
-        dash.classList.add('hidden');
-        dash.classList.remove('blur-sm', 'pointer-events-none', 'select-none');
+
+        dash.classList.add(&#39;hidden&#39;);
+
+        dash.classList.remove(&#39;blur-sm&#39;, &#39;pointer-events-none&#39;, &#39;select-none&#39;);
+
       }
-      document.getElementById('shop-approval-gate')?.classList.add('hidden');
-      document.getElementById('agreement-view-modal')?.classList.add('hidden');
-      document.getElementById('shop-login-card')?.classList.remove('hidden');
+
+      document.getElementById(&#39;shop-approval-gate&#39;)?.classList.add(&#39;hidden&#39;);
+
+      document.getElementById(&#39;agreement-view-modal&#39;)?.classList.add(&#39;hidden&#39;);
+
+      document.getElementById(&#39;shop-login-card&#39;)?.classList.remove(&#39;hidden&#39;);
+
       loadShopDropdown();
+
     }
+
+
 
     function showDashboardScreen() {
+
       const saved = getSavedShopSession();
+
       if (!saved) return;
-      document.getElementById('shop-login-card').classList.add('hidden');
-      document.getElementById('shop-dashboard').classList.remove('hidden');
-      document.getElementById('shop-header-name').innerText = `${saved.name} (${saved.id})`;
+
+      document.getElementById(&#39;shop-login-card&#39;).classList.add(&#39;hidden&#39;);
+
+      document.getElementById(&#39;shop-dashboard&#39;).classList.remove(&#39;hidden&#39;);
+
+      document.getElementById(&#39;shop-header-name&#39;).innerText = `${saved.name} (${saved.id})`;
+
       const comm = Number(saved.commissionRate !== undefined ? saved.commissionRate : 5);
-      document.getElementById('shop-header-meta').innerText = `ကော်မရှင်: ${comm}% | ဆိုင်ရငွေ: ${100 - comm}%`;
+
+      document.getElementById(&#39;shop-header-meta&#39;).innerText = `ကော်မရှင်: ${comm}% | ဆိုင်ရငွေ: ${100 - comm}%`;
+
       updateQuietHoursBanner();
-      if (isStandaloneApp()) document.getElementById('btn-shop-install')?.classList.add('hidden');
-      if ('Notification' in window && Notification.permission === 'granted') {
+
+      if (isStandaloneApp()) document.getElementById(&#39;btn-shop-install&#39;)?.classList.add(&#39;hidden&#39;);
+
+      if (&#39;Notification&#39; in window &amp;&amp; Notification.permission === &#39;granted&#39;) {
+
         initShopFirebasePush(saved.id, false);
+
       }
+
     }
+
+
 
     async function loadShopDashboard(silent = false) {
+
       const saved = getSavedShopSession();
+
       if (!saved || !saved.id || !saved.pin) return;
-      const btn = document.getElementById('btn-shop-refresh');
-      if (btn && !silent) btn.innerText = "⏳...";
+
+      const btn = document.getElementById(&#39;btn-shop-refresh&#39;);
+
+      if (btn &amp;&amp; !silent) btn.innerText = &quot;⏳...&quot;;
+
+
 
       try {
-        const res = await fetch(`${APPS_SCRIPT_URL}?action=getShopData&shopId=${encodeURIComponent(saved.id)}&pin=${encodeURIComponent(saved.pin)}&t=${Date.now()}`, { cache: "no-store" });
+
+        const res = await fetch(`${APPS_SCRIPT_URL}?action=getShopData&amp;shopId=${encodeURIComponent(saved.id)}&amp;pin=${encodeURIComponent(saved.pin)}&amp;t=${Date.now()}`, { cache: &quot;no-store&quot; });
+
         const data = await res.json();
-        if (data && data.status === 'unauthorized') { logoutShop(); return; }
-        if (data && data.status === 'ok') renderShopData(data, silent);
+
+        if (data &amp;&amp; data.status === &#39;unauthorized&#39;) { logoutShop(); return; }
+
+        if (data &amp;&amp; data.status === &#39;ok&#39;) renderShopData(data, silent);
+
       } catch (e) {}
 
-      if (btn && !silent) btn.innerText = "🔄 ပြန်စစ်";
+
+
+      if (btn &amp;&amp; !silent) btn.innerText = &quot;🔄 ပြန်စစ်&quot;;
+
     }
 
+
+
     function renderShopData(data, silent) {
+
       updateQuietHoursBanner(data.isQuietHours);
 
+
+
       if (data.shop) {
+
         applyShopApprovalGate(data.shop);
+
         const comm = Number(data.shop.commissionRate !== undefined ? data.shop.commissionRate : 5);
-        document.getElementById('shop-header-name').innerText = `${data.shop.name} (${data.shop.id})`;
-        document.getElementById('shop-header-meta').innerText = `ကော်မရှင်: ${comm}% | ဆိုင်ရငွေ: ${100 - comm}%`;
+
+        document.getElementById(&#39;shop-header-name&#39;).innerText = `${data.shop.name} (${data.shop.id})`;
+
+        document.getElementById(&#39;shop-header-meta&#39;).innerText = `ကော်မရှင်: ${comm}% | ဆိုင်ရငွေ: ${100 - comm}%`;
+
       }
 
+
+
       const activeOrders = data.activeOrders || [];
+
       const returnOrders = data.returnOrders || [];
+
       const unpaidOrders = data.unpaidPayoutOrders || [];
+
       const settledOrders = data.settledPayoutOrders || [];
+
       const restockHistory = data.restockHistory || [];
+
       const unpaidTotal = Number(data.unpaidPayoutTotal || 0);
+
       const settledTotal = Number(data.settledPayoutTotal || 0);
 
+
+
       shopProductsCache = Array.isArray(data.shopProducts) ? data.shopProducts : [];
+
       renderMyStockHistory();
-      if (restockMode === 'existing') renderExistingProductsList();
+
+      if (restockMode === &#39;existing&#39;) renderExistingProductsList();
+
+
 
       window.__shopImgMap = {};
 
-      const pickedUpCount = activeOrders.filter(o => !!o.adminPickupConfirmed).length;
-      const packedCount = activeOrders.filter(o => !o.adminPickupConfirmed && !!o.shopPacked).length;
-      const unconfirmedRetCount = returnOrders.filter(o => o.type === 'return' && o.returnInfo && o.returnInfo.myReturnStatus !== 'shop_confirmed').length;
 
-      document.getElementById('stat-active-orders').innerText = activeOrders.length;
-      document.getElementById('stat-picked-count').innerText = pickedUpCount > 0
+
+      const pickedUpCount = activeOrders.filter(o =&gt; !!o.adminPickupConfirmed).length;
+
+      const packedCount = activeOrders.filter(o =&gt; !o.adminPickupConfirmed &amp;&amp; !!o.shopPacked).length;
+
+      const unconfirmedRetCount = returnOrders.filter(o =&gt; o.type === &#39;return&#39; &amp;&amp; o.returnInfo &amp;&amp; o.returnInfo.myReturnStatus !== &#39;shop_confirmed&#39;).length;
+
+
+
+      document.getElementById(&#39;stat-active-orders&#39;).innerText = activeOrders.length;
+
+      document.getElementById(&#39;stat-picked-count&#39;).innerText = pickedUpCount &gt; 0
+
         ? `✅ ကောက်ပြီး ${pickedUpCount}`
-        : (packedCount > 0 ? `📦 ထုပ်ပိုးပြီး ${packedCount}` : '📦 ပြင်ဆင်ရန်');
-      document.getElementById('stat-returns-count').innerText = returnOrders.length;
-      document.getElementById('stat-returns-pending').innerText = unconfirmedRetCount > 0 ? `↩️ လက်ခံရန် ${unconfirmedRetCount}` : '✅ ရှင်းလင်းပြီး';
-      document.getElementById('stat-unpaid-total').innerText = unpaidTotal.toLocaleString() + " Ks";
-      document.getElementById('tab-badge-orders').innerText = activeOrders.length;
-      document.getElementById('tab-badge-returns').innerText = unconfirmedRetCount > 0 ? unconfirmedRetCount : returnOrders.length;
-      document.getElementById('payout-unpaid-sum').innerText = unpaidTotal.toLocaleString() + " ကျပ်";
-      document.getElementById('payout-settled-sum').innerText = settledTotal.toLocaleString() + " ကျပ်";
 
-      const shopId = data.shop ? data.shop.id : '';
-      if (activeOrders.length > 0 && shopId) {
+        : (packedCount &gt; 0 ? `📦 ထုပ်ပိုးပြီး ${packedCount}` : &#39;📦 ပြင်ဆင်ရန်&#39;);
+
+      document.getElementById(&#39;stat-returns-count&#39;).innerText = returnOrders.length;
+
+      document.getElementById(&#39;stat-returns-pending&#39;).innerText = unconfirmedRetCount &gt; 0 ? `↩️ လက်ခံရန် ${unconfirmedRetCount}` : &#39;✅ ရှင်းလင်းပြီး&#39;;
+
+      document.getElementById(&#39;stat-unpaid-total&#39;).innerText = unpaidTotal.toLocaleString() + &quot; Ks&quot;;
+
+      document.getElementById(&#39;tab-badge-orders&#39;).innerText = activeOrders.length;
+
+      document.getElementById(&#39;tab-badge-returns&#39;).innerText = unconfirmedRetCount &gt; 0 ? unconfirmedRetCount : returnOrders.length;
+
+      document.getElementById(&#39;payout-unpaid-sum&#39;).innerText = unpaidTotal.toLocaleString() + &quot; ကျပ်&quot;;
+
+      document.getElementById(&#39;payout-settled-sum&#39;).innerText = settledTotal.toLocaleString() + &quot; ကျပ်&quot;;
+
+
+
+      const shopId = data.shop ? data.shop.id : &#39;&#39;;
+
+      if (activeOrders.length &gt; 0 &amp;&amp; shopId) {
+
         const newestOrdId = activeOrders[0].orderId;
-        const lastKey = 'mt_shop_last_ord_' + shopId;
+
+        const lastKey = &#39;mt_shop_last_ord_&#39; + shopId;
+
         const prevOrdId = localStorage.getItem(lastKey);
-        if (prevOrdId && prevOrdId !== newestOrdId && silent && !isShopQuietHoursMMT()) {
-          showShopBannerNoti(`📦 အော်ဒါအသစ်ဝင်ပါပြီ! (${newestOrdId})`, "ပစ္စည်းထုပ်ပိုးအသင့်ပြင်ထားပေးပါခင်ဗျာ။");
+
+        if (prevOrdId &amp;&amp; prevOrdId !== newestOrdId &amp;&amp; silent &amp;&amp; !isShopQuietHoursMMT()) {
+
+          showShopBannerNoti(`📦 အော်ဒါအသစ်ဝင်ပါပြီ! (${newestOrdId})`, &quot;ပစ္စည်းထုပ်ပိုးအသင့်ပြင်ထားပေးပါခင်ဗျာ။&quot;);
+
         }
+
         localStorage.setItem(lastKey, newestOrdId);
+
       }
+
+
 
       // ---- TAB 1: Active Orders ----
-      const ordersEl = document.getElementById('shop-orders-list');
+
+      const ordersEl = document.getElementById(&#39;shop-orders-list&#39;);
+
       if (activeOrders.length === 0) {
-        ordersEl.innerHTML = `<div class="bg-white rounded-2xl border p-8 text-center text-xs sm:text-sm text-gray-400">🎉 လက်ရှိ အော်ဒါ မရှိသေးပါ</div>`;
+
+        ordersEl.innerHTML = `&lt;div class=&quot;bg-white rounded-2xl border p-8 text-center text-xs sm:text-sm text-gray-400&quot;&gt;🎉 လက်ရှိ အော်ဒါ မရှိသေးပါ&lt;/div&gt;`;
+
       } else {
-        ordersEl.innerHTML = activeOrders.map(o => {
+
+        ordersEl.innerHTML = activeOrders.map(o =&gt; {
+
           const isPicked = !!o.adminPickupConfirmed;
+
           const isPacked = !!o.shopPacked;
 
-          let statusBadge = `<span class="bg-amber-100 text-amber-900 border border-amber-300 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">📦 ပစ္စည်းပြင်ဆင်ထားရန်</span>`;
-          let borderCls = "border-amber-200 bg-white";
+
+
+          let statusBadge = `&lt;span class=&quot;bg-amber-100 text-amber-900 border border-amber-300 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full&quot;&gt;📦 ပစ္စည်းပြင်ဆင်ထားရန်&lt;/span&gt;`;
+
+          let borderCls = &quot;border-amber-200 bg-white&quot;;
+
           if (isPicked) {
-            statusBadge = `<span class="bg-emerald-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">✅ ပစ္စည်းကောက်ပြီး</span>`;
-            borderCls = "border-emerald-300 bg-emerald-50/25";
+
+            statusBadge = `&lt;span class=&quot;bg-emerald-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full&quot;&gt;✅ ပစ္စည်းကောက်ပြီး&lt;/span&gt;`;
+
+            borderCls = &quot;border-emerald-300 bg-emerald-50/25&quot;;
+
           } else if (isPacked) {
-            statusBadge = `<span class="bg-teal-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">📦 ထုပ်ပိုးပြီး (ကောက်ရန်အသင့်)</span>`;
-            borderCls = "border-teal-300 bg-teal-50/20";
+
+            statusBadge = `&lt;span class=&quot;bg-teal-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full&quot;&gt;📦 ထုပ်ပိုးပြီး (ကောက်ရန်အသင့်)&lt;/span&gt;`;
+
+            borderCls = &quot;border-teal-300 bg-teal-50/20&quot;;
+
           }
 
-          const itemsHtml = (o.items || []).map((it, idx) => {
+
+
+          const itemsHtml = (o.items || []).map((it, idx) =&gt; {
+
             const imgKey = `ord_${o.orderId}_${idx}`;
-            window.__shopImgMap[imgKey] = it;
-            const thumb = it.image
-              ? `<button type="button" onclick="openImageLightbox('${imgKey}')" class="relative w-16 h-16 rounded-xl overflow-hidden border-2 border-amber-200 shrink-0 bg-gray-100 cursor-zoom-in">
-                   <img src="${escapeHtml(it.image)}" alt="" class="w-full h-full object-cover object-top">
-                   <span class="absolute bottom-0.5 right-0.5 bg-black/70 text-white text-[9px] px-1 rounded">🔍</span>
-                 </button>`
-              : `<div class="w-16 h-16 rounded-xl border border-dashed border-gray-300 bg-gray-100 flex items-center justify-center text-[10px] text-gray-400 shrink-0">ပုံမရှိ</div>`;
-            return `
-              <div class="flex items-center gap-2.5 bg-gray-50/90 border border-gray-200 rounded-xl p-2">
-                ${thumb}
-                <div class="flex-1 min-w-0 space-y-1">
-                  <p class="font-extrabold text-xs sm:text-sm text-gray-900 leading-snug">${idx + 1}. ${escapeHtml(it.name)}</p>
-                  <div class="flex flex-wrap gap-1">
-                    <span class="bg-purple-100 text-purple-800 px-1.5 py-0.5 rounded-md text-[10px] font-extrabold">🎨 ${escapeHtml(it.colorName || 'မူရင်း')}</span>
-                    ${it.size && it.size !== 'အသက်မလို' ? `<span class="bg-pink-100 text-pink-800 px-1.5 py-0.5 rounded-md text-[10px] font-extrabold">📏 ${escapeHtml(it.size)}</span>` : ''}
-                    <span class="bg-gray-900 text-white px-2 py-0.5 rounded-md text-[10px] font-extrabold">x ${it.qty} ခု</span>
-                  </div>
-                  <p class="text-[11px] font-bold text-gray-600">${(Number(it.price || 0) * Number(it.qty || 1)).toLocaleString()} ကျပ်</p>
-                </div>
-              </div>
-            `;
-          }).join('');
 
-          let packActionHtml = '';
+            window.__shopImgMap[imgKey] = it;
+
+            const thumb = it.image
+
+              ? `&lt;button type=&quot;button&quot; onclick=&quot;openImageLightbox(&#39;${imgKey}&#39;)&quot; class=&quot;relative w-16 h-16 rounded-xl overflow-hidden border-2 border-amber-200 shrink-0 bg-gray-100 cursor-zoom-in&quot;&gt;
+
+                   &lt;img src=&quot;${escapeHtml(it.image)}&quot; alt=&quot;&quot; class=&quot;w-full h-full object-cover object-top&quot;&gt;
+
+                   &lt;span class=&quot;absolute bottom-0.5 right-0.5 bg-black/70 text-white text-[9px] px-1 rounded&quot;&gt;🔍&lt;/span&gt;
+
+                 &lt;/button&gt;`
+
+              : `&lt;div class=&quot;w-16 h-16 rounded-xl border border-dashed border-gray-300 bg-gray-100 flex items-center justify-center text-[10px] text-gray-400 shrink-0&quot;&gt;ပုံမရှိ&lt;/div&gt;`;
+
+            return `
+
+              &lt;div class=&quot;flex items-center gap-2.5 bg-gray-50/90 border border-gray-200 rounded-xl p-2&quot;&gt;
+
+                ${thumb}
+
+                &lt;div class=&quot;flex-1 min-w-0 space-y-1&quot;&gt;
+
+                  &lt;p class=&quot;font-extrabold text-xs sm:text-sm text-gray-900 leading-snug&quot;&gt;${idx + 1}. ${escapeHtml(it.name)}&lt;/p&gt;
+
+                  &lt;div class=&quot;flex flex-wrap gap-1&quot;&gt;
+
+                    &lt;span class=&quot;bg-purple-100 text-purple-800 px-1.5 py-0.5 rounded-md text-[10px] font-extrabold&quot;&gt;🎨 ${escapeHtml(it.colorName || &#39;မူရင်း&#39;)}&lt;/span&gt;
+
+                    ${it.size &amp;&amp; it.size !== &#39;အသက်မလို&#39; ? `&lt;span class=&quot;bg-pink-100 text-pink-800 px-1.5 py-0.5 rounded-md text-[10px] font-extrabold&quot;&gt;📏 ${escapeHtml(it.size)}&lt;/span&gt;` : &#39;&#39;}
+
+                    &lt;span class=&quot;bg-gray-900 text-white px-2 py-0.5 rounded-md text-[10px] font-extrabold&quot;&gt;x ${it.qty} ခု&lt;/span&gt;
+
+                  &lt;/div&gt;
+
+                  &lt;p class=&quot;text-[11px] font-bold text-gray-600&quot;&gt;${(Number(it.price || 0) * Number(it.qty || 1)).toLocaleString()} ကျပ်&lt;/p&gt;
+
+                &lt;/div&gt;
+
+              &lt;/div&gt;
+
+            `;
+
+          }).join(&#39;&#39;);
+
+
+
+          let packActionHtml = &#39;&#39;;
+
           if (!isPicked) {
+
             if (isPacked) {
+
               packActionHtml = `
-                <div class="bg-teal-50 border border-teal-200 text-teal-800 rounded-xl px-3 py-2 text-xs font-extrabold flex justify-between items-center gap-2">
-                  <span>✅ ထုပ်ပိုးပြီး (Admin ထံ အကြောင်းကြားပြီး)</span>
-                  ${o.shopPackedAt ? `<span class="text-[10px] font-bold text-teal-700 shrink-0">⏰ ${escapeHtml(o.shopPackedAt)}</span>` : ''}
-                </div>
+
+                &lt;div class=&quot;bg-teal-50 border border-teal-200 text-teal-800 rounded-xl px-3 py-2 text-xs font-extrabold flex justify-between items-center gap-2&quot;&gt;
+
+                  &lt;span&gt;✅ ထုပ်ပိုးပြီး (Admin ထံ အကြောင်းကြားပြီး)&lt;/span&gt;
+
+                  ${o.shopPackedAt ? `&lt;span class=&quot;text-[10px] font-bold text-teal-700 shrink-0&quot;&gt;⏰ ${escapeHtml(o.shopPackedAt)}&lt;/span&gt;` : &#39;&#39;}
+
+                &lt;/div&gt;
+
               `;
+
             } else {
+
               packActionHtml = `
-                <button type="button" onclick="markOrderPacked('${escapeHtml(o.orderId)}', this)" class="w-full bg-amber-600 hover:bg-amber-700 active:scale-[0.99] text-white font-extrabold py-2.5 rounded-xl text-xs shadow-sm transition">
+
+                &lt;button type=&quot;button&quot; onclick=&quot;markOrderPacked(&#39;${escapeHtml(o.orderId)}&#39;, this)&quot; class=&quot;w-full bg-amber-600 hover:bg-amber-700 active:scale-[0.99] text-white font-extrabold py-2.5 rounded-xl text-xs shadow-sm transition&quot;&gt;
+
                   📦 ထုပ်ပိုးပြီး (Admin ထံ အကြောင်းကြားမည်)
-                </button>
+
+                &lt;/button&gt;
+
               `;
+
             }
+
           }
+
+
 
           return `
-            <div class="rounded-2xl border-2 ${borderCls} p-3.5 shadow-sm space-y-2.5">
-              <div class="flex flex-wrap justify-between items-center gap-1.5">
-                <div>
-                  <span class="font-extrabold text-sm text-gray-900">🧾 ${escapeHtml(o.orderId)}</span>
-                  <span class="text-[11px] text-gray-500 ml-1.5">⏰ ${escapeHtml(o.dateTime)}</span>
-                </div>
+
+            &lt;div class=&quot;rounded-2xl border-2 ${borderCls} p-3.5 shadow-sm space-y-2.5&quot;&gt;
+
+              &lt;div class=&quot;flex flex-wrap justify-between items-center gap-1.5&quot;&gt;
+
+                &lt;div&gt;
+
+                  &lt;span class=&quot;font-extrabold text-sm text-gray-900&quot;&gt;🧾 ${escapeHtml(o.orderId)}&lt;/span&gt;
+
+                  &lt;span class=&quot;text-[11px] text-gray-500 ml-1.5&quot;&gt;⏰ ${escapeHtml(o.dateTime)}&lt;/span&gt;
+
+                &lt;/div&gt;
+
                 ${statusBadge}
-              </div>
-              <div class="space-y-2">${itemsHtml}</div>
-              <div class="bg-amber-50/70 border border-amber-200 rounded-xl px-3 py-2 flex flex-wrap justify-between items-center gap-2 text-xs">
-                <span class="text-gray-700 font-bold">ပစ္စည်းတန်ဖိုး: ${Number(o.gross || 0).toLocaleString()} Ks <span class="text-gray-500">(-${o.commissionRate}%: ${Number(o.commission || 0).toLocaleString()})</span></span>
-                <span class="font-extrabold text-emerald-700">💰 ဆိုင်ရမည့်ငွေ (${100 - Number(o.commissionRate || 5)}%): ${Number(o.payout || 0).toLocaleString()} Ks</span>
-              </div>
+
+              &lt;/div&gt;
+
+              &lt;div class=&quot;space-y-2&quot;&gt;${itemsHtml}&lt;/div&gt;
+
+              &lt;div class=&quot;bg-amber-50/70 border border-amber-200 rounded-xl px-3 py-2 flex flex-wrap justify-between items-center gap-2 text-xs&quot;&gt;
+
+                &lt;span class=&quot;text-gray-700 font-bold&quot;&gt;ပစ္စည်းတန်ဖိုး: ${Number(o.gross || 0).toLocaleString()} Ks &lt;span class=&quot;text-gray-500&quot;&gt;(-${o.commissionRate}%: ${Number(o.commission || 0).toLocaleString()})&lt;/span&gt;&lt;/span&gt;
+
+                &lt;span class=&quot;font-extrabold text-emerald-700&quot;&gt;💰 ဆိုင်ရမည့်ငွေ (${100 - Number(o.commissionRate || 5)}%): ${Number(o.payout || 0).toLocaleString()} Ks&lt;/span&gt;
+
+              &lt;/div&gt;
+
               ${packActionHtml}
-            </div>
+
+            &lt;/div&gt;
+
           `;
-        }).join('');
+
+        }).join(&#39;&#39;);
+
       }
+
+
 
       // ---- TAB 3: Restock Request History (Multi-Photo + Reject Reason) ----
-      const rsHistEl = document.getElementById('shop-restock-history');
-      if (restockHistory.length === 0) {
-        rsHistEl.innerHTML = `<p class="text-gray-400 py-3 text-center">ပို့ထားသော မှတ်တမ်း မရှိသေးပါ။</p>`;
-      } else {
-        rsHistEl.innerHTML = restockHistory.map((r, rIdx) => {
-          const isApp = r.status === 'Approved';
-          const isRej = r.status === 'Rejected';
-          const badge = isApp
-            ? `<span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full text-[10px] font-extrabold">✅ Approved</span>`
-            : (isRej
-              ? `<span class="bg-red-100 text-red-800 px-2 py-0.5 rounded-full text-[10px] font-extrabold">❌ ပယ်ချထား</span>`
-              : `<span class="bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full text-[10px] font-extrabold">⏳ Admin စစ်ဆေးဆဲ</span>`);
-          const szShow = r.size && r.size !== 'အသက်မလို' ? ` | 📏 ${escapeHtml(r.size)}` : '';
 
-          const imgs = (Array.isArray(r.images) && r.images.length > 0)
+      const rsHistEl = document.getElementById(&#39;shop-restock-history&#39;);
+
+      if (restockHistory.length === 0) {
+
+        rsHistEl.innerHTML = `&lt;p class=&quot;text-gray-400 py-3 text-center&quot;&gt;ပို့ထားသော မှတ်တမ်း မရှိသေးပါ။&lt;/p&gt;`;
+
+      } else {
+
+        rsHistEl.innerHTML = restockHistory.map((r, rIdx) =&gt; {
+
+          const isApp = r.status === &#39;Approved&#39;;
+
+          const isRej = r.status === &#39;Rejected&#39;;
+
+          const badge = isApp
+
+            ? `&lt;span class=&quot;bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full text-[10px] font-extrabold&quot;&gt;✅ Approved&lt;/span&gt;`
+
+            : (isRej
+
+              ? `&lt;span class=&quot;bg-red-100 text-red-800 px-2 py-0.5 rounded-full text-[10px] font-extrabold&quot;&gt;❌ ပယ်ချထား&lt;/span&gt;`
+
+              : `&lt;span class=&quot;bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full text-[10px] font-extrabold&quot;&gt;⏳ Admin စစ်ဆေးဆဲ&lt;/span&gt;`);
+
+          const szShow = r.size &amp;&amp; r.size !== &#39;အသက်မလို&#39; ? ` | 📏 ${escapeHtml(r.size)}` : &#39;&#39;;
+
+
+
+          const imgs = (Array.isArray(r.images) &amp;&amp; r.images.length &gt; 0)
+
             ? r.images.filter(Boolean)
+
             : (r.image ? [r.image] : []);
 
-          const thumbsHtml = imgs.length > 0
-            ? `<div class="flex gap-1.5 mt-1.5 flex-wrap">${imgs.map((im, iIdx) => {
+
+
+          const thumbsHtml = imgs.length &gt; 0
+
+            ? `&lt;div class=&quot;flex gap-1.5 mt-1.5 flex-wrap&quot;&gt;${imgs.map((im, iIdx) =&gt; {
+
                 const k = `rsh_${rIdx}_${iIdx}`;
+
                 window.__shopImgMap[k] = { name: r.productName, colorName: r.color || r.category, size: r.size, qty: r.qty, image: im };
-                return `<button type="button" onclick="openImageLightbox('${k}')" class="relative w-12 h-12 rounded-lg overflow-hidden border border-amber-200 bg-gray-50 shrink-0 cursor-zoom-in"><img src="${escapeHtml(im)}" class="w-full h-full object-cover"></button>`;
-              }).join('')}</div>`
-            : '';
+
+                return `&lt;button type=&quot;button&quot; onclick=&quot;openImageLightbox(&#39;${k}&#39;)&quot; class=&quot;relative w-12 h-12 rounded-lg overflow-hidden border border-amber-200 bg-gray-50 shrink-0 cursor-zoom-in&quot;&gt;&lt;img src=&quot;${escapeHtml(im)}&quot; class=&quot;w-full h-full object-cover&quot;&gt;&lt;/button&gt;`;
+
+              }).join(&#39;&#39;)}&lt;/div&gt;`
+
+            : &#39;&#39;;
+
+
 
           const rejectReasonHtml = isRej
-            ? `<div class="mt-1.5 bg-red-50 border border-red-300 text-red-700 rounded-lg px-2.5 py-1.5 text-[11px] font-extrabold">❌ ပယ်ချရသည့်အကြောင်းရင်း: ${escapeHtml(r.rejectReason || 'Admin မှ ပယ်ချထားပါသည်')}</div>`
-            : '';
+
+            ? `&lt;div class=&quot;mt-1.5 bg-red-50 border border-red-300 text-red-700 rounded-lg px-2.5 py-1.5 text-[11px] font-extrabold&quot;&gt;❌ ပယ်ချရသည့်အကြောင်းရင်း: ${escapeHtml(r.rejectReason || &#39;Admin မှ ပယ်ချထားပါသည်&#39;)}&lt;/div&gt;`
+
+            : &#39;&#39;;
+
+
 
           return `
-            <div class="py-2.5 space-y-1">
-              <div class="flex justify-between items-center gap-1">
-                <p class="font-extrabold text-gray-900 truncate">${escapeHtml(r.productName)}</p>
+
+            &lt;div class=&quot;py-2.5 space-y-1&quot;&gt;
+
+              &lt;div class=&quot;flex justify-between items-center gap-1&quot;&gt;
+
+                &lt;p class=&quot;font-extrabold text-gray-900 truncate&quot;&gt;${escapeHtml(r.productName)}&lt;/p&gt;
+
                 ${badge}
-              </div>
-              <p class="text-[11px] font-bold text-gray-600">${escapeHtml(r.category)}${szShow} | <b>+${r.qty} ခု</b>${Number(r.price || 0) > 0 ? ` | 💰 <span class="text-emerald-700">${Number(r.price).toLocaleString()} Ks</span>` : ''}${r.color ? ` | 🎨 ${escapeHtml(r.color)}` : ''}</p>
+
+              &lt;/div&gt;
+
+              &lt;p class=&quot;text-[11px] font-bold text-gray-600&quot;&gt;${escapeHtml(r.category)}${szShow} | &lt;b&gt;+${r.qty} ခု&lt;/b&gt;${Number(r.price || 0) &gt; 0 ? ` | 💰 &lt;span class=&quot;text-emerald-700&quot;&gt;${Number(r.price).toLocaleString()} Ks&lt;/span&gt;` : &#39;&#39;}${r.color ? ` | 🎨 ${escapeHtml(r.color)}` : &#39;&#39;}&lt;/p&gt;
+
               ${thumbsHtml}
+
               ${rejectReasonHtml}
-              <p class="text-[10px] text-gray-400">⏰ ${escapeHtml(r.dateTime)}</p>
-            </div>
+
+              &lt;p class=&quot;text-[10px] text-gray-400&quot;&gt;⏰ ${escapeHtml(r.dateTime)}&lt;/p&gt;
+
+            &lt;/div&gt;
+
           `;
-        }).join('');
+
+        }).join(&#39;&#39;);
+
       }
+
+
 
       // ---- TAB 4: CANCEL / RETURN HISTORY ----
-      const returnsEl = document.getElementById('shop-returns-list');
-      if (returnOrders.length === 0) {
-        returnsEl.innerHTML = `<div class="bg-white rounded-2xl border p-8 text-center text-xs sm:text-sm text-gray-400">✅ လက်ရှိ Cancel / Return History မရှိသေးပါ</div>`;
-      } else {
-        returnsEl.innerHTML = returnOrders.map(o => {
-          const retItemsHtml = (o.items || []).map((it, idx) => {
-            const imgKey = `ret_${o.orderId}_${idx}`;
-            window.__shopImgMap[imgKey] = it;
-            const thumb = it.image
-              ? `<button type="button" onclick="openImageLightbox('${imgKey}')" class="w-14 h-14 rounded-xl overflow-hidden border border-red-200 shrink-0 bg-gray-100 cursor-zoom-in"><img src="${escapeHtml(it.image)}" class="w-full h-full object-cover object-top"></button>`
-              : `<div class="w-14 h-14 rounded-xl border bg-gray-100 flex items-center justify-center text-[10px] text-gray-400 shrink-0">ပုံမရှိ</div>`;
-            const szHtml = it.size && it.size !== 'အသက်မလို' ? ` | 📏 ${escapeHtml(it.size)}` : '';
-            return `
-              <div class="flex items-center gap-2.5 bg-white border border-gray-200 rounded-xl p-2">
-                ${thumb}
-                <div class="flex-1 min-w-0">
-                  <p class="font-extrabold text-xs text-gray-900 truncate">${escapeHtml(it.name)}</p>
-                  <p class="text-[11px] font-bold text-gray-600">🎨 ${escapeHtml(it.colorName || '-')}${szHtml} | <b>x ${it.qty} ခု</b></p>
-                </div>
-              </div>
-            `;
-          }).join('');
 
-          if (o.type === 'cancelled') {
-            const ci = o.cancelInfo || {};
-            const cancelNote = ci.wasPickedUp
-              ? "ကောက်ယူပြီးပစ္စည်းကို MiniTrend Kids မှ ပြန်အပ်ပေးပါမည်။"
-              : "ပစ္စည်းမကောက်ရသေးသဖြင့် ဤအော်ဒါ ပစ္စည်းမကောက်တော့ပါ။";
+      const returnsEl = document.getElementById(&#39;shop-returns-list&#39;);
+
+      if (returnOrders.length === 0) {
+
+        returnsEl.innerHTML = `&lt;div class=&quot;bg-white rounded-2xl border p-8 text-center text-xs sm:text-sm text-gray-400&quot;&gt;✅ လက်ရှိ Cancel / Return History မရှိသေးပါ&lt;/div&gt;`;
+
+      } else {
+
+        returnsEl.innerHTML = returnOrders.map(o =&gt; {
+
+          const retItemsHtml = (o.items || []).map((it, idx) =&gt; {
+
+            const imgKey = `ret_${o.orderId}_${idx}`;
+
+            window.__shopImgMap[imgKey] = it;
+
+            const thumb = it.image
+
+              ? `&lt;button type=&quot;button&quot; onclick=&quot;openImageLightbox(&#39;${imgKey}&#39;)&quot; class=&quot;w-14 h-14 rounded-xl overflow-hidden border border-red-200 shrink-0 bg-gray-100 cursor-zoom-in&quot;&gt;&lt;img src=&quot;${escapeHtml(it.image)}&quot; class=&quot;w-full h-full object-cover object-top&quot;&gt;&lt;/button&gt;`
+
+              : `&lt;div class=&quot;w-14 h-14 rounded-xl border bg-gray-100 flex items-center justify-center text-[10px] text-gray-400 shrink-0&quot;&gt;ပုံမရှိ&lt;/div&gt;`;
+
+            const szHtml = it.size &amp;&amp; it.size !== &#39;အသက်မလို&#39; ? ` | 📏 ${escapeHtml(it.size)}` : &#39;&#39;;
+
             return `
-              <div class="rounded-2xl border-2 border-gray-300 bg-gray-50 p-3.5 shadow-sm space-y-2.5">
-                <div class="flex flex-wrap justify-between items-center gap-1.5">
-                  <span class="font-extrabold text-sm text-gray-900">❌ ${escapeHtml(o.orderId)}</span>
-                  <span class="bg-gray-700 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">❌ အော်ဒါပယ်ဖျက်ပြီး (Cancel)</span>
-                </div>
-                <div class="bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs space-y-1">
-                  <p class="font-extrabold text-red-700">📝 အကြောင်းရင်း: ${escapeHtml(ci.reason || 'အော်ဒါပယ်ဖျက်ပြီး')} <span class="text-gray-500 font-normal">(${escapeHtml(ci.cancelledAt || '')})</span></p>
-                  <p class="text-[11px] text-gray-700 font-bold">💸 95% ငွေစာရင်း: <span class="line-through text-gray-400">${Number(o.gross || 0).toLocaleString()} Ks</span> → <span class="text-red-600 font-extrabold">0 ကျပ် (Cancel)</span></p>
-                  <p class="text-[11px] text-gray-600 font-bold">${cancelNote}</p>
-                </div>
-                <div class="space-y-1.5">${retItemsHtml}</div>
-              </div>
+
+              &lt;div class=&quot;flex items-center gap-2.5 bg-white border border-gray-200 rounded-xl p-2&quot;&gt;
+
+                ${thumb}
+
+                &lt;div class=&quot;flex-1 min-w-0&quot;&gt;
+
+                  &lt;p class=&quot;font-extrabold text-xs text-gray-900 truncate&quot;&gt;${escapeHtml(it.name)}&lt;/p&gt;
+
+                  &lt;p class=&quot;text-[11px] font-bold text-gray-600&quot;&gt;🎨 ${escapeHtml(it.colorName || &#39;-&#39;)}${szHtml} | &lt;b&gt;x ${it.qty} ခု&lt;/b&gt;&lt;/p&gt;
+
+                &lt;/div&gt;
+
+              &lt;/div&gt;
+
             `;
+
+          }).join(&#39;&#39;);
+
+
+
+          if (o.type === &#39;cancelled&#39;) {
+
+            const ci = o.cancelInfo || {};
+
+            const cancelNote = ci.wasPickedUp
+
+              ? &quot;ကောက်ယူပြီးပစ္စည်းကို MiniTrend Kids မှ ပြန်အပ်ပေးပါမည်။&quot;
+
+              : &quot;ပစ္စည်းမကောက်ရသေးသဖြင့် ဤအော်ဒါ ပစ္စည်းမကောက်တော့ပါ။&quot;;
+
+            return `
+
+              &lt;div class=&quot;rounded-2xl border-2 border-gray-300 bg-gray-50 p-3.5 shadow-sm space-y-2.5&quot;&gt;
+
+                &lt;div class=&quot;flex flex-wrap justify-between items-center gap-1.5&quot;&gt;
+
+                  &lt;span class=&quot;font-extrabold text-sm text-gray-900&quot;&gt;❌ ${escapeHtml(o.orderId)}&lt;/span&gt;
+
+                  &lt;span class=&quot;bg-gray-700 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full&quot;&gt;❌ အော်ဒါပယ်ဖျက်ပြီး (Cancel)&lt;/span&gt;
+
+                &lt;/div&gt;
+
+                &lt;div class=&quot;bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs space-y-1&quot;&gt;
+
+                  &lt;p class=&quot;font-extrabold text-red-700&quot;&gt;📝 အကြောင်းရင်း: ${escapeHtml(ci.reason || &#39;အော်ဒါပယ်ဖျက်ပြီး&#39;)} &lt;span class=&quot;text-gray-500 font-normal&quot;&gt;(${escapeHtml(ci.cancelledAt || &#39;&#39;)})&lt;/span&gt;&lt;/p&gt;
+
+                  &lt;p class=&quot;text-[11px] text-gray-700 font-bold&quot;&gt;💸 95% ငွေစာရင်း: &lt;span class=&quot;line-through text-gray-400&quot;&gt;${Number(o.gross || 0).toLocaleString()} Ks&lt;/span&gt; → &lt;span class=&quot;text-red-600 font-extrabold&quot;&gt;0 ကျပ် (Cancel)&lt;/span&gt;&lt;/p&gt;
+
+                  &lt;p class=&quot;text-[11px] text-gray-600 font-bold&quot;&gt;${cancelNote}&lt;/p&gt;
+
+                &lt;/div&gt;
+
+                &lt;div class=&quot;space-y-1.5&quot;&gt;${retItemsHtml}&lt;/div&gt;
+
+              &lt;/div&gt;
+
+            `;
+
           }
+
+
 
           const ri = o.returnInfo || {};
-          const st = ri.myReturnStatus || 'waiting_pickup_return';
-          const tagPrefix = ri.isCancelReturn ? 'Cancel Return' : 'Return';
-          let stepBadge = `<span class="bg-red-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">🔄 ${tagPrefix} — ပြန်အပ်ရန် စီစဉ်နေသည်</span>`;
-          let stepDesc = "MiniTrend Kids မှ ပြန်အပ်ပစ္စည်းကို ဆိုင်သို့ ပြန်လည်ပို့ဆောင်အပ်နှံပေးပါမည်။";
-          let cardBorder = "border-red-300 bg-red-50/30";
 
-          if (st === 'delivered_to_shop') {
-            stepBadge = `<span class="bg-emerald-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full animate-pulse">📦 ဆိုင်သို့ ပြန်အပ်ပြီး — လက်ခံအတည်ပြုရန်</span>`;
-            stepDesc = `ပစ္စည်းပြန်အပ်ပြီးပါပြီ (${ri.deliveredToShopAt || ''})။ လက်ခံရရှိပြီးကြောင်း အောက်ပါခလုတ် နှိပ်အတည်ပြုပေးပါ။`;
-            cardBorder = "border-emerald-400 bg-emerald-50/40";
-          } else if (st === 'shop_confirmed') {
-            stepBadge = `<span class="bg-gray-700 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">✅ ပြန်အပ်ပစ္စည်း လက်ခံပြီး (History)</span>`;
-            stepDesc = `လက်ခံအတည်ပြုပြီးချိန်: ${ri.shopConfirmedAt || ''}`;
-            cardBorder = "border-gray-200 bg-white opacity-85";
+          const st = ri.myReturnStatus || &#39;waiting_pickup_return&#39;;
+
+          const tagPrefix = ri.isCancelReturn ? &#39;Cancel Return&#39; : &#39;Return&#39;;
+
+          let stepBadge = `&lt;span class=&quot;bg-red-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full&quot;&gt;🔄 ${tagPrefix} — ပြန်အပ်ရန် စီစဉ်နေသည်&lt;/span&gt;`;
+
+          let stepDesc = &quot;MiniTrend Kids မှ ပြန်အပ်ပစ္စည်းကို ဆိုင်သို့ ပြန်လည်ပို့ဆောင်အပ်နှံပေးပါမည်။&quot;;
+
+          let cardBorder = &quot;border-red-300 bg-red-50/30&quot;;
+
+
+
+          if (st === &#39;delivered_to_shop&#39;) {
+
+            stepBadge = `&lt;span class=&quot;bg-emerald-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full animate-pulse&quot;&gt;📦 ဆိုင်သို့ ပြန်အပ်ပြီး — လက်ခံအတည်ပြုရန်&lt;/span&gt;`;
+
+            stepDesc = `ပစ္စည်းပြန်အပ်ပြီးပါပြီ (${ri.deliveredToShopAt || &#39;&#39;})။ လက်ခံရရှိပြီးကြောင်း အောက်ပါခလုတ် နှိပ်အတည်ပြုပေးပါ။`;
+
+            cardBorder = &quot;border-emerald-400 bg-emerald-50/40&quot;;
+
+          } else if (st === &#39;shop_confirmed&#39;) {
+
+            stepBadge = `&lt;span class=&quot;bg-gray-700 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full&quot;&gt;✅ ပြန်အပ်ပစ္စည်း လက်ခံပြီး (History)&lt;/span&gt;`;
+
+            stepDesc = `လက်ခံအတည်ပြုပြီးချိန်: ${ri.shopConfirmedAt || &#39;&#39;}`;
+
+            cardBorder = &quot;border-gray-200 bg-white opacity-85&quot;;
+
           }
 
-          const confirmBtnHtml = st !== 'shop_confirmed'
-            ? `<button type="button" onclick="confirmReturnReceived('${o.orderId}', this)" class="w-full ${st === 'delivered_to_shop' ? 'bg-emerald-600 hover:bg-emerald-700 ring-4 ring-emerald-200' : 'bg-gray-900 hover:bg-emerald-700'} text-white font-extrabold py-2.5 rounded-xl text-xs shadow-sm">✅ ပြန်အပ်ပစ္စည်း လက်ခံရရှိပြီးကြောင်း အတည်ပြုမည်</button>`
-            : '';
+
+
+          const confirmBtnHtml = st !== &#39;shop_confirmed&#39;
+
+            ? `&lt;button type=&quot;button&quot; onclick=&quot;confirmReturnReceived(&#39;${o.orderId}&#39;, this)&quot; class=&quot;w-full ${st === &#39;delivered_to_shop&#39; ? &#39;bg-emerald-600 hover:bg-emerald-700 ring-4 ring-emerald-200&#39; : &#39;bg-gray-900 hover:bg-emerald-700&#39;} text-white font-extrabold py-2.5 rounded-xl text-xs shadow-sm&quot;&gt;✅ ပြန်အပ်ပစ္စည်း လက်ခံရရှိပြီးကြောင်း အတည်ပြုမည်&lt;/button&gt;`
+
+            : &#39;&#39;;
+
+
 
           return `
-            <div class="rounded-2xl border-2 ${cardBorder} p-3.5 shadow-sm space-y-2.5">
-              <div class="flex flex-wrap justify-between items-center gap-1.5">
-                <span class="font-extrabold text-sm text-gray-900">🔄 ${escapeHtml(o.orderId)}</span>
+
+            &lt;div class=&quot;rounded-2xl border-2 ${cardBorder} p-3.5 shadow-sm space-y-2.5&quot;&gt;
+
+              &lt;div class=&quot;flex flex-wrap justify-between items-center gap-1.5&quot;&gt;
+
+                &lt;span class=&quot;font-extrabold text-sm text-gray-900&quot;&gt;🔄 ${escapeHtml(o.orderId)}&lt;/span&gt;
+
                 ${stepBadge}
-              </div>
-              <div class="bg-white/90 border border-red-200 rounded-xl px-3 py-2 text-xs space-y-1">
-                <p class="font-extrabold text-red-700">❌ အကြောင်းရင်း: ${escapeHtml(ri.reason || 'Return ဖြစ်သည်')} <span class="text-gray-500 font-normal">(${escapeHtml(ri.confirmedAt || '')})</span></p>
-                <p class="text-[11px] text-gray-700 font-bold">💸 95% ငွေစာရင်း: <span class="line-through text-gray-400">${Number(o.gross || 0).toLocaleString()} Ks</span> → <span class="text-red-600 font-extrabold">0 ကျပ် (Return)</span></p>
-                <p class="text-[11px] text-gray-600">${stepDesc}</p>
-              </div>
-              <div class="space-y-1.5">${retItemsHtml}</div>
+
+              &lt;/div&gt;
+
+              &lt;div class=&quot;bg-white/90 border border-red-200 rounded-xl px-3 py-2 text-xs space-y-1&quot;&gt;
+
+                &lt;p class=&quot;font-extrabold text-red-700&quot;&gt;❌ အကြောင်းရင်း: ${escapeHtml(ri.reason || &#39;Return ဖြစ်သည်&#39;)} &lt;span class=&quot;text-gray-500 font-normal&quot;&gt;(${escapeHtml(ri.confirmedAt || &#39;&#39;)})&lt;/span&gt;&lt;/p&gt;
+
+                &lt;p class=&quot;text-[11px] text-gray-700 font-bold&quot;&gt;💸 95% ငွေစာရင်း: &lt;span class=&quot;line-through text-gray-400&quot;&gt;${Number(o.gross || 0).toLocaleString()} Ks&lt;/span&gt; → &lt;span class=&quot;text-red-600 font-extrabold&quot;&gt;0 ကျပ် (Return)&lt;/span&gt;&lt;/p&gt;
+
+                &lt;p class=&quot;text-[11px] text-gray-600&quot;&gt;${stepDesc}&lt;/p&gt;
+
+              &lt;/div&gt;
+
+              &lt;div class=&quot;space-y-1.5&quot;&gt;${retItemsHtml}&lt;/div&gt;
+
               ${confirmBtnHtml}
-            </div>
+
+            &lt;/div&gt;
+
           `;
-        }).join('');
+
+        }).join(&#39;&#39;);
+
       }
+
+
 
       // ---- TAB 5: Payouts ----
-      const unpaidEl = document.getElementById('shop-unpaid-list');
+
+      const unpaidEl = document.getElementById(&#39;shop-unpaid-list&#39;);
+
       if (unpaidOrders.length === 0) {
-        unpaidEl.innerHTML = `<p class="text-gray-400 py-4 text-center">ငွေရှင်းရန် ကျန်ရှိသော အော်ဒါ မရှိသေးပါ။</p>`;
+
+        unpaidEl.innerHTML = `&lt;p class=&quot;text-gray-400 py-4 text-center&quot;&gt;ငွေရှင်းရန် ကျန်ရှိသော အော်ဒါ မရှိသေးပါ။&lt;/p&gt;`;
+
       } else {
-        unpaidEl.innerHTML = unpaidOrders.map(o => `
-          <div class="py-2.5 flex justify-between items-start gap-2">
-            <div class="min-w-0">
-              <p class="font-extrabold text-gray-900">🧾 ${escapeHtml(o.orderId)} <span class="bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded text-[10px] font-bold">⏳ ရှင်းရန်ကျန်</span></p>
-              <p class="text-[11px] text-gray-500 mt-0.5">ပို့ပြီးချိန်: ${escapeHtml(o.deliveredAt || o.dateTime)}</p>
-              <p class="text-[11px] text-gray-600 mt-0.5">${(o.items || []).map(i => `${escapeHtml(i.name)}${i.size && i.size !== 'အသက်မလို' ? ' (' + escapeHtml(i.size) + ')' : ''} x${i.qty}`).join(', ')}</p>
-            </div>
-            <span class="font-extrabold text-emerald-700 text-sm shrink-0">${Number(o.payout).toLocaleString()} Ks</span>
-          </div>
-        `).join('');
+
+        unpaidEl.innerHTML = unpaidOrders.map(o =&gt; `
+
+          &lt;div class=&quot;py-2.5 flex justify-between items-start gap-2&quot;&gt;
+
+            &lt;div class=&quot;min-w-0&quot;&gt;
+
+              &lt;p class=&quot;font-extrabold text-gray-900&quot;&gt;🧾 ${escapeHtml(o.orderId)} &lt;span class=&quot;bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded text-[10px] font-bold&quot;&gt;⏳ ရှင်းရန်ကျန်&lt;/span&gt;&lt;/p&gt;
+
+              &lt;p class=&quot;text-[11px] text-gray-500 mt-0.5&quot;&gt;ပို့ပြီးချိန်: ${escapeHtml(o.deliveredAt || o.dateTime)}&lt;/p&gt;
+
+              &lt;p class=&quot;text-[11px] text-gray-600 mt-0.5&quot;&gt;${(o.items || []).map(i =&gt; `${escapeHtml(i.name)}${i.size &amp;&amp; i.size !== &#39;အသက်မလို&#39; ? &#39; (&#39; + escapeHtml(i.size) + &#39;)&#39; : &#39;&#39;} x${i.qty}`).join(&#39;, &#39;)}&lt;/p&gt;
+
+            &lt;/div&gt;
+
+            &lt;span class=&quot;font-extrabold text-emerald-700 text-sm shrink-0&quot;&gt;${Number(o.payout).toLocaleString()} Ks&lt;/span&gt;
+
+          &lt;/div&gt;
+
+        `).join(&#39;&#39;);
+
       }
 
-      const settledEl = document.getElementById('shop-settled-list');
+
+
+      const settledEl = document.getElementById(&#39;shop-settled-list&#39;);
+
       if (settledOrders.length === 0) {
-        settledEl.innerHTML = `<p class="text-gray-400 py-4 text-center">ငွေလွှဲရှင်းပြီး မှတ်တမ်း မရှိသေးပါ။</p>`;
+
+        settledEl.innerHTML = `&lt;p class=&quot;text-gray-400 py-4 text-center&quot;&gt;ငွေလွှဲရှင်းပြီး မှတ်တမ်း မရှိသေးပါ။&lt;/p&gt;`;
+
       } else {
-        settledEl.innerHTML = settledOrders.map(o => `
-          <div class="py-2.5 flex justify-between items-start gap-2">
-            <div class="min-w-0">
-              <p class="font-bold text-gray-800">✅ ${escapeHtml(o.orderId)} <span class="bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded text-[10px] font-bold">💸 ရှင်းပြီး</span></p>
-              <p class="text-[11px] text-gray-500">လွှဲရှင်းချိန်: ${escapeHtml(o.settledAt || o.deliveredAt)}</p>
-            </div>
-            <span class="font-extrabold text-gray-800 shrink-0">${Number(o.payout).toLocaleString()} Ks</span>
-          </div>
-        `).join('');
+
+        settledEl.innerHTML = settledOrders.map(o =&gt; `
+
+          &lt;div class=&quot;py-2.5 flex justify-between items-start gap-2&quot;&gt;
+
+            &lt;div class=&quot;min-w-0&quot;&gt;
+
+              &lt;p class=&quot;font-bold text-gray-800&quot;&gt;✅ ${escapeHtml(o.orderId)} &lt;span class=&quot;bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded text-[10px] font-bold&quot;&gt;💸 ရှင်းပြီး&lt;/span&gt;&lt;/p&gt;
+
+              &lt;p class=&quot;text-[11px] text-gray-500&quot;&gt;လွှဲရှင်းချိန်: ${escapeHtml(o.settledAt || o.deliveredAt)}&lt;/p&gt;
+
+            &lt;/div&gt;
+
+            &lt;span class=&quot;font-extrabold text-gray-800 shrink-0&quot;&gt;${Number(o.payout).toLocaleString()} Ks&lt;/span&gt;
+
+          &lt;/div&gt;
+
+        `).join(&#39;&#39;);
+
       }
+
     }
+
+
 
     async function submitShopRestock(e) {
-      e.preventDefault();
-      const saved = getSavedShopSession();
-      if (!saved) return;
-      const btn = document.getElementById('btn-submit-restock');
-      btn.disabled = true; btn.innerText = "⏳ ပုံများနှင့် Stock ပို့နေပါသည်...";
 
-      const photoList = restockPhotos.slice(0, MAX_RESTOCK_PHOTOS).map(p => ({
-        base64: p.base64 || "",
-        url: p.base64 ? "" : (p.url || "")
+      e.preventDefault();
+
+      const saved = getSavedShopSession();
+
+      if (!saved) return;
+
+      const btn = document.getElementById(&#39;btn-submit-restock&#39;);
+
+      btn.disabled = true; btn.innerText = &quot;⏳ ပုံများနှင့် Stock ပို့နေပါသည်...&quot;;
+
+
+
+      const photoList = restockPhotos.slice(0, MAX_RESTOCK_PHOTOS).map(p =&gt; ({
+
+        base64: p.base64 || &quot;&quot;,
+
+        url: p.base64 ? &quot;&quot; : (p.url || &quot;&quot;)
+
       }));
 
+
+
       try {
+
         await fetch(APPS_SCRIPT_URL, {
-          method: "POST", mode: "no-cors",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
+
+          method: &quot;POST&quot;, mode: &quot;no-cors&quot;,
+
+          headers: { &quot;Content-Type&quot;: &quot;text/plain;charset=utf-8&quot; },
+
           body: JSON.stringify({
-            action: "shopSubmitRestock",
+
+            action: &quot;shopSubmitRestock&quot;,
+
             shopId: saved.id,
+
             pin: saved.pin,
-            productName: document.getElementById('rs-name').value.trim(),
-            category: document.getElementById('rs-category').value,
-            size: document.getElementById('rs-size').value,
-            qty: parseInt(document.getElementById('rs-qty').value, 10) || 1,
-            price: parseInt(document.getElementById('rs-price').value, 10) || 0,
-            color: document.getElementById('rs-color').value.trim(),
+
+            productName: document.getElementById(&#39;rs-name&#39;).value.trim(),
+
+            category: document.getElementById(&#39;rs-category&#39;).value,
+
+            size: document.getElementById(&#39;rs-size&#39;).value,
+
+            qty: parseInt(document.getElementById(&#39;rs-qty&#39;).value, 10) || 1,
+
+            price: parseInt(document.getElementById(&#39;rs-price&#39;).value, 10) || 0,
+
+            color: document.getElementById(&#39;rs-color&#39;).value.trim(),
+
             photoList: photoList,
-            description: document.getElementById('rs-desc').value.trim()
+
+            description: document.getElementById(&#39;rs-desc&#39;).value.trim()
+
           })
+
         });
+
         clearSelectedExistingProduct(true);
-        alert("MiniTrend Kids သို့ Stock ထပ်တိုးပို့ပြီးပါပြီ၊ Admin မှ စစ်ဆေးပြီး Approve လုပ်မှသာ ဝယ်သူ App တွင် ပေါ်လာပါမည်။");
-        setTimeout(() => loadShopDashboard(false), 1800);
+
+        alert(&quot;MiniTrend Kids သို့ Stock ထပ်တိုးပို့ပြီးပါပြီ၊ Admin မှ စစ်ဆေးပြီး Approve လုပ်မှသာ ဝယ်သူ App တွင် ပေါ်လာပါမည်။&quot;);
+
+        setTimeout(() =&gt; loadShopDashboard(false), 1800);
+
       } catch (err) {
-        alert("⚠️ ပေးပို့ရာတွင် အမှားရှိနေပါသည်။");
+
+        alert(&quot;⚠️ ပေးပို့ရာတွင် အမှားရှိနေပါသည်။&quot;);
+
       }
 
-      btn.disabled = false; btn.innerText = "📤 Admin ဘက်သို့ Stock ထပ်တိုး ပို့မည်";
+
+
+      btn.disabled = false; btn.innerText = &quot;📤 Admin ဘက်သို့ Stock ထပ်တိုး ပို့မည်&quot;;
+
     }
+
+
 
     async function confirmReturnReceived(orderId, btnEl) {
+
       const saved = getSavedShopSession();
+
       if (!saved) return;
+
       if (!confirm(`အော်ဒါ #${orderId} ၏ ပြန်အပ်ပစ္စည်းကို လက်ခံရရှိပြီးကြောင်း အတည်ပြုပါသလား?`)) return;
-      if (btnEl) { btnEl.disabled = true; btnEl.innerText = "⏳ အတည်ပြုနေသည်..."; }
+
+      if (btnEl) { btnEl.disabled = true; btnEl.innerText = &quot;⏳ အတည်ပြုနေသည်...&quot;; }
+
       try {
+
         await fetch(APPS_SCRIPT_URL, {
-          method: "POST", mode: "no-cors",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
+
+          method: &quot;POST&quot;, mode: &quot;no-cors&quot;,
+
+          headers: { &quot;Content-Type&quot;: &quot;text/plain;charset=utf-8&quot; },
+
           body: JSON.stringify({
-            action: "shopConfirmReturnReceived",
+
+            action: &quot;shopConfirmReturnReceived&quot;,
+
             shopId: saved.id,
+
             pin: saved.pin,
+
             orderId: orderId
+
           })
+
         });
-        setTimeout(() => loadShopDashboard(false), 900);
+
+        setTimeout(() =&gt; loadShopDashboard(false), 900);
+
       } catch (e) {
-        if (btnEl) { btnEl.disabled = false; btnEl.innerText = "✅ ပြန်အပ်ပစ္စည်း လက်ခံရရှိပြီးကြောင်း အတည်ပြုမည်"; }
+
+        if (btnEl) { btnEl.disabled = false; btnEl.innerText = &quot;✅ ပြန်အပ်ပစ္စည်း လက်ခံရရှိပြီးကြောင်း အတည်ပြုမည်&quot;; }
+
       }
+
     }
+
+
 
     function initShopApp() {
-      try { history.replaceState({ shopHome: true }, ''); } catch (e) {}
+
+      try { history.replaceState({ shopHome: true }, &#39;&#39;); } catch (e) {}
+
       updateRestockSizeOptions();
+
       updateQuietHoursBanner();
+
       renderRestockPhotoSlots();
 
+
+
       if (isStandaloneApp()) {
-        document.getElementById('btn-shop-install')?.classList.add('hidden');
-        document.getElementById('btn-shop-install-login')?.classList.add('hidden');
-      }
-      const saved = getSavedShopSession();
-      if (saved && saved.id && saved.pin) {
-        showDashboardScreen();
-        loadShopDashboard(false);
-      } else {
-        loadShopDropdown();
+
+        document.getElementById(&#39;btn-shop-install&#39;)?.classList.add(&#39;hidden&#39;);
+
+        document.getElementById(&#39;btn-shop-install-login&#39;)?.classList.add(&#39;hidden&#39;);
+
       }
 
-      setInterval(() => {
+      const saved = getSavedShopSession();
+
+      if (saved &amp;&amp; saved.id &amp;&amp; saved.pin) {
+
+        showDashboardScreen();
+
+        loadShopDashboard(false);
+
+      } else {
+
+        loadShopDropdown();
+
+      }
+
+
+
+      setInterval(() =&gt; {
+
         updateQuietHoursBanner();
-        if (!document.getElementById('shop-dashboard').classList.contains('hidden')) {
+
+        if (!document.getElementById(&#39;shop-dashboard&#39;).classList.contains(&#39;hidden&#39;)) {
+
           loadShopDashboard(true);
+
         }
+
       }, 20000);
+
     }
 
+
+
     initShopApp();
-  </script>
-</body>
-</html>
+
+  &lt;/script&gt;
+
+&lt;/body&gt;
+
+&lt;/html&gt;
+
