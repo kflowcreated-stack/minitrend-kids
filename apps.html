@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>MiniTrend Kids — App များ ဒေါင်းလုဒ်လုပ်ရန်</title>
+  <meta name="theme-color" content="#ec4899" />
+  <link rel="icon" type="image/png" href="./icon.png?v=3" />
+  <link rel="apple-touch-icon" href="./icon.png?v=3" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Pyidaungsu', 'Myanmar Text', 'Noto Sans Myanmar', system-ui, -apple-system, sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-pink-50/50 text-gray-800 min-h-screen py-6 px-4">
+  <div class="max-w-md mx-auto space-y-4">
+
+    <div class="bg-white rounded-3xl shadow-md border-2 border-pink-200 p-5 text-center space-y-2">
+      <img src="./icon.png?v=3" alt="MiniTrend Kids" class="w-16 h-16 rounded-2xl mx-auto shadow border-2 border-pink-200 object-cover" />
+      <h1 class="text-xl font-extrabold text-pink-600">MiniTrend Kids Apps 🧸</h1>
+      <p class="text-xs text-gray-500 font-bold">မိမိအသုံးပြုမည့် App ကို ရွေးချယ်ဖွင့်ပြီး ဖုန်း Screen ပေါ် တင်ထားနိုင်ပါသည်</p>
+    </div>
+
+    <div class="space-y-3">
+      <!-- 1. Customer App -->
+      <div class="bg-white rounded-2xl border-2 border-pink-200 p-4 shadow-sm space-y-2.5">
+        <div class="flex items-center justify-between gap-2">
+          <div>
+            <p class="text-sm font-extrabold text-gray-900">🛍️ ဝယ်သူ App (Customer)</p>
+            <p class="text-[11px] text-gray-500 font-bold">ကလေးပစ္စည်းများ ကြည့်ရှုမှာယူရန်</p>
+          </div>
+          <button type="button" onclick="copyLink('https://minitrend-kids.pages.dev/', this)" class="bg-pink-50 hover:bg-pink-100 text-pink-700 border border-pink-200 text-[11px] font-extrabold px-2.5 py-1.5 rounded-xl shrink-0">📋 Copy</button>
+        </div>
+        <a href="https://minitrend-kids.pages.dev/" class="block w-full text-center bg-pink-600 hover:bg-pink-700 text-white font-extrabold py-2.5 rounded-xl text-xs shadow-sm">
+          📲 ဝယ်သူ App ဖွင့်မည်
+        </a>
+      </div>
+
+      <!-- 2. Partner Shop App -->
+      <div class="bg-white rounded-2xl border-2 border-amber-200 p-4 shadow-sm space-y-2.5">
+        <div class="flex items-center justify-between gap-2">
+          <div>
+            <p class="text-sm font-extrabold text-gray-900">🏪 ချိတ်ဆက်ဆိုင် App (Partner Shop)</p>
+            <p class="text-[11px] text-gray-500 font-bold">ဆိုင်ရှင်များ အော်ဒါစစ်ရန်နှင့် Stock ပို့ရန်</p>
+          </div>
+          <button type="button" onclick="copyLink('https://minitrend-kids.pages.dev/shop/', this)" class="bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-[11px] font-extrabold px-2.5 py-1.5 rounded-xl shrink-0">📋 Copy</button>
+        </div>
+        <a href="https://minitrend-kids.pages.dev/shop/" class="block w-full text-center bg-amber-600 hover:bg-amber-700 text-white font-extrabold py-2.5 rounded-xl text-xs shadow-sm">
+          📲 ဆိုင် App ဖွင့်မည်
+        </a>
+      </div>
+
+      <!-- 3. Delivery App -->
+      <div class="bg-white rounded-2xl border-2 border-blue-200 p-4 shadow-sm space-y-2.5">
+        <div class="flex items-center justify-between gap-2">
+          <div>
+            <p class="text-sm font-extrabold text-gray-900">🚚 Delivery App (ပို့ဆောင်ရေးဝန်ထမ်း)</p>
+            <p class="text-[11px] text-gray-500 font-bold">ပစ္စည်းကောက်ယူရန်နှင့် ပို့ဆောင်ရန်</p>
+          </div>
+          <button type="button" onclick="copyLink('https://minitrend-kids.pages.dev/delivery/', this)" class="bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-[11px] font-extrabold px-2.5 py-1.5 rounded-xl shrink-0">📋 Copy</button>
+        </div>
+        <a href="https://minitrend-kids.pages.dev/delivery/" class="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-2.5 rounded-xl text-xs shadow-sm">
+          📲 Delivery App ဖွင့်မည်
+        </a>
+      </div>
+
+      <!-- 4. Admin App -->
+      <div class="bg-white rounded-2xl border border-gray-200 p-3.5 shadow-sm space-y-2">
+        <div class="flex items-center justify-between gap-2">
+          <div>
+            <p class="text-xs font-extrabold text-gray-800">🔐 Admin Panel (ဆိုင်ပိုင်ရှင်သီးသန့်)</p>
+            <p class="text-[11px] text-gray-500">Password ရှိမှ ဝင်ရောက်နိုင်ပါသည်</p>
+          </div>
+          <button type="button" onclick="copyLink('https://minitrend-kids.pages.dev/?role=admin', this)" class="bg-gray-100 hover:bg-gray-200 text-gray-700 text-[11px] font-extrabold px-2.5 py-1.5 rounded-xl shrink-0">📋 Copy</button>
+        </div>
+        <a href="https://minitrend-kids.pages.dev/?role=admin" class="block w-full text-center bg-gray-900 hover:bg-gray-800 text-white font-extrabold py-2 rounded-xl text-xs">
+          🔓 Admin Panel ဖွင့်မည်
+        </a>
+      </div>
+    </div>
+
+    <!-- Install Guide -->
+    <div class="bg-white rounded-2xl border border-pink-200 p-4 space-y-2.5 text-xs text-gray-700 leading-relaxed">
+      <p class="font-extrabold text-gray-900 text-sm">📲 ဖုန်း Screen ပေါ် App တင်နည်းနှင့် Noti ဖွင့်နည်း</p>
+      <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 space-y-1">
+        <p class="font-extrabold text-emerald-900">🤖 Android (Chrome ဖြင့်ဖွင့်ပါ):</p>
+        <p>၁။ အပေါ်ညာဘက် <b>အစက် ၃ စက် (⋮)</b> → <b>Install app / Add to Home screen</b> ကို နှိပ်ပါ။</p>
+        <p>၂။ App ဖွင့်ပြီး <b>🔔 Noti</b> ခလုတ်နှိပ်ကာ <b>Allow</b> ကို နှိပ်ပါ။</p>
+      </div>
+      <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 space-y-1">
+        <p class="font-extrabold text-blue-900">🍎 iPhone (Safari ဖြင့်ဖွင့်ပါ):</p>
+        <p>၁။ အောက်ခြေ <b>Share (⬆️)</b> → <b>Add to Home Screen (➕)</b> → <b>Add</b> နှိပ်ပါ။</p>
+        <p>၂။ Home Screen ပေါ်က App icon ကို ဖွင့်ပြီး <b>🔔 Noti</b> ခလုတ်နှိပ်ကာ <b>Allow</b> ကို နှိပ်ပါ။</p>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function copyLink(url, btn) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(function() {
+          var orig = btn.innerText;
+          btn.innerText = '✅ Copied';
+          setTimeout(function() { btn.innerText = orig; }, 1800);
+        });
+      } else {
+        var ta = document.createElement('textarea');
+        ta.value = url;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        var orig2 = btn.innerText;
+        btn.innerText = '✅ Copied';
+        setTimeout(function() { btn.innerText = orig2; }, 1800);
+      }
+    }
+  </script>
+</body>
+</html>
