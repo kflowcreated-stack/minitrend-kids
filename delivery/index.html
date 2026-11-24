@@ -1,1115 +1,2274 @@
-<!DOCTYPE html>
-<html lang="my">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>MiniTrend Delivery & Pickup App</title>
-  <meta name="theme-color" content="#1d4ed8" />
-  <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="apple-mobile-web-app-title" content="MiniTrend Delivery" />
-  <link rel="manifest" href="./manifest.json?v=6" />
-  <link rel="icon" type="image/png" href="../icon.png?v=3" />
-  <link rel="apple-touch-icon" href="../icon.png?v=3" />
+&lt;!DOCTYPE html&gt;
 
-  <script>
+&lt;html lang=&quot;my&quot;&gt;
+
+&lt;head&gt;
+
+  &lt;meta charset=&quot;UTF-8&quot; /&gt;
+
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no&quot; /&gt;
+
+  &lt;title&gt;MiniTrend Delivery &amp; Pickup App&lt;/title&gt;
+
+  &lt;meta name=&quot;theme-color&quot; content=&quot;#1d4ed8&quot; /&gt;
+
+  &lt;meta name=&quot;mobile-web-app-capable&quot; content=&quot;yes&quot; /&gt;
+
+  &lt;meta name=&quot;apple-mobile-web-app-capable&quot; content=&quot;yes&quot; /&gt;
+
+  &lt;meta name=&quot;apple-mobile-web-app-status-bar-style&quot; content=&quot;default&quot; /&gt;
+
+  &lt;meta name=&quot;apple-mobile-web-app-title&quot; content=&quot;MiniTrend Delivery&quot; /&gt;
+
+  &lt;link rel=&quot;manifest&quot; href=&quot;/delivery/manifest.json?v=7&quot; /&gt;
+
+  &lt;link rel=&quot;icon&quot; type=&quot;image/png&quot; href=&quot;../icon.png?v=3&quot; /&gt;
+
+  &lt;link rel=&quot;apple-touch-icon&quot; href=&quot;../icon.png?v=3&quot; /&gt;
+
+
+
+  &lt;script&gt;
+
+    if (window.location.pathname.endsWith(&#39;/delivery&#39;)) {
+
+      window.location.replace(window.location.pathname + &#39;/&#39; + window.location.search + window.location.hash);
+
+    }
+
+
+
     window.__deferredInstallPrompt = null;
-    window.__currentFcmToken = "";
 
-    document.addEventListener('gesturestart', function(e) { e.preventDefault(); });
+    window.__currentFcmToken = &quot;&quot;;
+
+
+
+    document.addEventListener(&#39;gesturestart&#39;, function(e) { e.preventDefault(); });
+
+
 
     function isStandaloneApp() {
+
       return (
-        window.matchMedia('(display-mode: standalone)').matches ||
-        window.matchMedia('(display-mode: minimal-ui)').matches ||
-        window.matchMedia('(display-mode: fullscreen)').matches ||
+
+        window.matchMedia(&#39;(display-mode: standalone)&#39;).matches ||
+
+        window.matchMedia(&#39;(display-mode: minimal-ui)&#39;).matches ||
+
+        window.matchMedia(&#39;(display-mode: fullscreen)&#39;).matches ||
+
         window.navigator.standalone === true
+
       );
+
     }
 
-    window.addEventListener('beforeinstallprompt', function(e) {
+
+
+    window.addEventListener(&#39;beforeinstallprompt&#39;, function(e) {
+
       e.preventDefault();
+
       window.__deferredInstallPrompt = e;
-      var btn = document.getElementById('btn-del-install');
-      if (btn && !isStandaloneApp()) btn.classList.remove('hidden');
-      var btnLogin = document.getElementById('btn-del-install-login');
-      if (btnLogin && !isStandaloneApp()) btnLogin.classList.remove('hidden');
+
+      var btn = document.getElementById(&#39;btn-del-install&#39;);
+
+      if (btn &amp;&amp; !isStandaloneApp()) btn.classList.remove(&#39;hidden&#39;);
+
+      var btnLogin = document.getElementById(&#39;btn-del-install-login&#39;);
+
+      if (btnLogin &amp;&amp; !isStandaloneApp()) btnLogin.classList.remove(&#39;hidden&#39;);
+
     });
 
-    window.addEventListener('appinstalled', function() {
+
+
+    window.addEventListener(&#39;appinstalled&#39;, function() {
+
       window.__deferredInstallPrompt = null;
-      var btn = document.getElementById('btn-del-install');
-      if (btn) btn.classList.add('hidden');
-      var btnLogin = document.getElementById('btn-del-install-login');
-      if (btnLogin) btnLogin.classList.add('hidden');
+
+      var btn = document.getElementById(&#39;btn-del-install&#39;);
+
+      if (btn) btn.classList.add(&#39;hidden&#39;);
+
+      var btnLogin = document.getElementById(&#39;btn-del-install-login&#39;);
+
+      if (btnLogin) btnLogin.classList.add(&#39;hidden&#39;);
+
     });
-  </script>
 
-  <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-messaging-compat.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
+  &lt;/script&gt;
+
+
+
+  &lt;script src=&quot;https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js&quot;&gt;&lt;/script&gt;
+
+  &lt;script src=&quot;https://www.gstatic.com/firebasejs/10.13.2/firebase-messaging-compat.js&quot;&gt;&lt;/script&gt;
+
+  &lt;script src=&quot;https://cdn.tailwindcss.com&quot;&gt;&lt;/script&gt;
+
+  &lt;style&gt;
+
     html, body {
-      touch-action: manipulation;
-      -webkit-text-size-adjust: 100%;
-      overflow-x: hidden;
-    }
-    body {
-      font-family: 'Pyidaungsu', 'Myanmar Text', 'Noto Sans Myanmar', system-ui, -apple-system, sans-serif;
-      padding-top: env(safe-area-inset-top, 0px);
-    }
-    .noti-safe-top { top: calc(0.75rem + env(safe-area-inset-top, 0px)); }
-    button, a { touch-action: manipulation; }
-    input, select, textarea {
-      font-size: 16px !important;
-      touch-action: manipulation;
-    }
-    @keyframes slideDownNoti {
-      0% { transform: translate(-50%, -120%); opacity: 0; }
-      100% { transform: translate(-50%, 0); opacity: 1; }
-    }
-    .noti-slide-in { animation: slideDownNoti 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-  </style>
-</head>
-<body class="bg-blue-50/40 text-gray-800 min-h-screen">
 
-  <script>
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzjiat7rNkOGkQYjf3RT6rC4g5AdXiVtraecqUTG8wXcu4l6Dm1mmtnXpVhaxjAzsrd/exec";
+      touch-action: manipulation;
+
+      -webkit-text-size-adjust: 100%;
+
+      overflow-x: hidden;
+
+    }
+
+    body {
+
+      font-family: &#39;Pyidaungsu&#39;, &#39;Myanmar Text&#39;, &#39;Noto Sans Myanmar&#39;, system-ui, -apple-system, sans-serif;
+
+      padding-top: env(safe-area-inset-top, 0px);
+
+    }
+
+    .noti-safe-top { top: calc(0.75rem + env(safe-area-inset-top, 0px)); }
+
+    button, a { touch-action: manipulation; }
+
+    input, select, textarea {
+
+      font-size: 16px !important;
+
+      touch-action: manipulation;
+
+    }
+
+    @keyframes slideDownNoti {
+
+      0% { transform: translate(-50%, -120%); opacity: 0; }
+
+      100% { transform: translate(-50%, 0); opacity: 1; }
+
+    }
+
+    .noti-slide-in { animation: slideDownNoti 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+  &lt;/style&gt;
+
+&lt;/head&gt;
+
+&lt;body class=&quot;bg-blue-50/40 text-gray-800 min-h-screen&quot;&gt;
+
+
+
+  &lt;script&gt;
+
+    const APPS_SCRIPT_URL = &quot;https://script.google.com/macros/s/AKfycbzjiat7rNkOGkQYjf3RT6rC4g5AdXiVtraecqUTG8wXcu4l6Dm1mmtnXpVhaxjAzsrd/exec&quot;;
+
+
 
     const FIREBASE_CONFIG = {
-      apiKey: "AIzaSyDyb--Qc9tic7g8GOzVWYi8vpLMSfTaI5U",
-      authDomain: "minitrend-kids.firebaseapp.com",
-      projectId: "minitrend-kids",
-      storageBucket: "minitrend-kids.firebasestorage.app",
-      messagingSenderId: "523213115439",
-      appId: "1:523213115439:web:0e97b742e7d067943f36da"
+
+      apiKey: &quot;AIzaSyDyb--Qc9tic7g8GOzVWYi8vpLMSfTaI5U&quot;,
+
+      authDomain: &quot;minitrend-kids.firebaseapp.com&quot;,
+
+      projectId: &quot;minitrend-kids&quot;,
+
+      storageBucket: &quot;minitrend-kids.firebasestorage.app&quot;,
+
+      messagingSenderId: &quot;523213115439&quot;,
+
+      appId: &quot;1:523213115439:web:0e97b742e7d067943f36da&quot;
+
     };
-    const FIREBASE_VAPID_KEY = "BEDkISmwDq6ytVzt2e-eWRndSXKxPttzdfxnKXETfJGhdnn_Se4b778DZ9YEi6NQDdy6gHuNz4twCZuKtzItqSI";
+
+    const FIREBASE_VAPID_KEY = &quot;BEDkISmwDq6ytVzt2e-eWRndSXKxPttzdfxnKXETfJGhdnn_Se4b778DZ9YEi6NQDdy6gHuNz4twCZuKtzItqSI&quot;;
+
+
 
     window.__swRegistrationPromise = null;
-    if ('serviceWorker' in navigator) {
-      window.__swRegistrationPromise = navigator.serviceWorker.register('../sw.js', { scope: '../' }).catch(() => null);
+
+    if (&#39;serviceWorker&#39; in navigator) {
+
+      window.__swRegistrationPromise = navigator.serviceWorker.register(&#39;/sw.js&#39;, { scope: &#39;/&#39; }).catch(() =&gt; null);
+
     }
-  </script>
 
-  <!-- TOP NOTIFICATION BANNER -->
-  <div id="push-noti-popup" class="fixed noti-safe-top left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-md hidden noti-slide-in">
-    <div class="bg-gray-900/95 text-white rounded-2xl p-3.5 shadow-2xl border-2 border-blue-400 flex items-start gap-3 backdrop-blur-md">
-      <img src="../icon.png?v=3" class="w-11 h-11 rounded-xl object-cover shrink-0 border border-white/20" />
-      <div class="flex-1 min-w-0">
-        <div class="flex justify-between items-center gap-1">
-          <p id="push-noti-title" class="text-xs sm:text-sm font-extrabold text-amber-300 truncate">🔔 MiniTrend Delivery</p>
-          <span class="text-[10px] text-gray-300 shrink-0">ယခုလေးတင်</span>
-        </div>
-        <p id="push-noti-body" class="text-xs sm:text-sm text-white font-bold mt-1 leading-relaxed"></p>
-      </div>
-      <button type="button" onclick="closePushPopup()" class="text-gray-400 hover:text-white font-bold text-lg leading-none px-1">✕</button>
-    </div>
-  </div>
+  &lt;/script&gt;
 
-  <div class="max-w-3xl mx-auto px-3.5 py-4 sm:py-6">
+
+
+  &lt;!-- TOP NOTIFICATION BANNER --&gt;
+
+  &lt;div id=&quot;push-noti-popup&quot; class=&quot;fixed noti-safe-top left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-md hidden noti-slide-in&quot;&gt;
+
+    &lt;div class=&quot;bg-gray-900/95 text-white rounded-2xl p-3.5 shadow-2xl border-2 border-blue-400 flex items-start gap-3 backdrop-blur-md&quot;&gt;
+
+      &lt;img src=&quot;../icon.png?v=3&quot; class=&quot;w-11 h-11 rounded-xl object-cover shrink-0 border border-white/20&quot; /&gt;
+
+      &lt;div class=&quot;flex-1 min-w-0&quot;&gt;
+
+        &lt;div class=&quot;flex justify-between items-center gap-1&quot;&gt;
+
+          &lt;p id=&quot;push-noti-title&quot; class=&quot;text-xs sm:text-sm font-extrabold text-amber-300 truncate&quot;&gt;🔔 MiniTrend Delivery&lt;/p&gt;
+
+          &lt;span class=&quot;text-[10px] text-gray-300 shrink-0&quot;&gt;ယခုလေးတင်&lt;/span&gt;
+
+        &lt;/div&gt;
+
+        &lt;p id=&quot;push-noti-body&quot; class=&quot;text-xs sm:text-sm text-white font-bold mt-1 leading-relaxed&quot;&gt;&lt;/p&gt;
+
+      &lt;/div&gt;
+
+      &lt;button type=&quot;button&quot; onclick=&quot;closePushPopup()&quot; class=&quot;text-gray-400 hover:text-white font-bold text-lg leading-none px-1&quot;&gt;✕&lt;/button&gt;
+
+    &lt;/div&gt;
+
+  &lt;/div&gt;
+
+
+
+  &lt;div class=&quot;max-w-3xl mx-auto px-3.5 py-4 sm:py-6&quot;&gt;
+
+
 
     <!-- LOGIN SCREEN -->
+
     <div id="delivery-login-card" class="bg-white rounded-2xl shadow-lg border-2 border-blue-200 max-w-md mx-auto p-6 mt-6">
+
       <div class="text-center mb-5">
+
         <div class="w-16 h-16 bg-blue-100 text-blue-700 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-2.5 border border-blue-200 shadow-sm">🚚</div>
+
         <h1 class="text-xl font-extrabold text-gray-900">MiniTrend Delivery & Pickup</h1>
+
         <p class="text-xs text-gray-500 mt-1">မိမိအမည်ကို ရွေးချယ်ပြီး PIN နံပါတ် ရိုက်ထည့်ပါ</p>
+
       </div>
+
       <form onsubmit="handleRiderLogin(event)" class="space-y-3.5">
+
         <div>
+
           <label class="block text-xs font-bold text-gray-700 mb-1">👤 ဝန်ထမ်းအမည် ရွေးချယ်ပါ</label>
+
           <select id="rider-login-select" required class="w-full border-2 border-blue-200 rounded-xl px-3 py-2.5 text-base font-bold bg-gray-50 focus:outline-none focus:border-blue-600">
+
             <option value="">⏳ ဝန်ထမ်းစာရင်း ရယူနေပါသည်...</option>
+
           </select>
+
         </div>
+
         <div>
+
           <label class="block text-xs font-bold text-gray-700 mb-1">🔑 ဝန်ထမ်း PIN နံပါတ်</label>
+
           <input type="password" inputmode="numeric" id="rider-login-pin" required placeholder="ဥပမာ - 1001" class="w-full border-2 border-blue-200 rounded-xl px-3.5 py-2.5 text-base font-bold focus:outline-none focus:border-blue-600">
+
         </div>
+
         <p id="rider-login-error" class="hidden text-xs font-bold text-red-600 bg-red-50 border border-red-200 rounded-xl p-2.5">❌ PIN နံပါတ် မှားယွင်းနေပါသည်၊ ပြန်လည်စစ်ဆေးပါ။</p>
+
         <button type="submit" id="btn-rider-login" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-3 rounded-xl shadow text-sm">🔓 ဝန်ထမ်း App သို့ ဝင်ရောက်မည်</button>
+
       </form>
+
       <div class="mt-4 pt-3 border-t border-gray-100 text-center">
+
         <button type="button" id="btn-del-install-login" onclick="triggerInstall()" class="hidden text-xs font-extrabold text-blue-700 bg-blue-50 border border-blue-200 px-3.5 py-2 rounded-xl">
+
           📲 ဤဖုန်းတွင် Delivery App ထည့်သွင်းမည်
+
         </button>
+
       </div>
+
     </div>
+
+
 
     <!-- DASHBOARD -->
+
     <div id="delivery-dashboard" class="hidden space-y-4">
 
+
+
       <div class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-4 sm:p-5 rounded-2xl shadow-md flex flex-wrap justify-between items-center gap-3">
+
         <div>
+
           <p class="text-[11px] text-blue-100 font-bold">🚚 MiniTrend Kids — Pickup & Delivery</p>
+
           <h2 id="rider-header-name" class="text-lg sm:text-xl font-extrabold mt-0.5">ဝန်ထမ်းအမည်</h2>
+
         </div>
+
         <div class="flex flex-wrap gap-1.5">
+
           <button type="button" id="btn-del-install" onclick="triggerInstall()" class="hidden bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-extrabold px-3 py-2 rounded-xl shadow-sm">📲 App သွင်း</button>
+
           <button type="button" onclick="connectRiderFirebase()" id="btn-rider-fcm" class="bg-amber-400 hover:bg-amber-300 text-gray-900 text-xs font-extrabold px-3 py-2 rounded-xl shadow-sm">🔔 Noti ချိတ်မည်</button>
+
           <button type="button" onclick="loadDeliveryDashboard(false)" id="btn-rider-refresh" class="bg-white/20 hover:bg-white/30 text-white text-xs font-bold px-3 py-2 rounded-xl">🔄 ပြန်စစ်</button>
+
           <button type="button" onclick="logoutRider()" class="bg-red-500/90 hover:bg-red-600 text-white text-xs font-bold px-3 py-2 rounded-xl">🔒 ထွက်</button>
+
         </div>
+
       </div>
+
+
 
       <!-- 4 Stat Cards -->
+
       <div class="grid grid-cols-4 gap-2 sm:gap-3">
+
         <button type="button" onclick="switchRiderTab('pickup')" class="bg-white border-2 border-purple-200 p-2.5 sm:p-3 rounded-2xl shadow-sm text-center hover:border-purple-400 transition">
+
           <p class="text-[10px] sm:text-[11px] font-bold text-gray-500">📦 ကောက်ရန်</p>
+
           <p id="rider-stat-pickup" class="text-xl sm:text-2xl font-extrabold text-purple-700 mt-0.5">0</p>
+
         </button>
+
         <button type="button" onclick="switchRiderTab('delivery')" class="bg-white border-2 border-blue-200 p-2.5 sm:p-3 rounded-2xl shadow-sm text-center hover:border-blue-400 transition">
+
           <p class="text-[10px] sm:text-[11px] font-bold text-gray-500">🚚 ပို့ရန်ကျန်</p>
+
           <p id="rider-stat-pending" class="text-xl sm:text-2xl font-extrabold text-blue-600 mt-0.5">0</p>
+
         </button>
+
         <div class="bg-white border border-emerald-200 p-2.5 sm:p-3 rounded-2xl shadow-sm text-center">
+
           <p class="text-[10px] sm:text-[11px] font-bold text-gray-500">✅ ယနေ့ပြီး</p>
+
           <p id="rider-stat-done" class="text-xl sm:text-2xl font-extrabold text-emerald-600 mt-0.5">0</p>
+
         </div>
+
         <div class="bg-emerald-600 text-white p-2.5 sm:p-3 rounded-2xl shadow-sm text-center">
+
           <p class="text-[10px] sm:text-[11px] font-bold text-emerald-100">💰 ယနေ့ COD</p>
+
           <p id="rider-stat-cod" class="text-xs sm:text-base font-extrabold mt-1.5 leading-tight">0 Ks</p>
+
         </div>
+
       </div>
+
+
 
       <!-- REQ 1: PROMINENT CANCEL / RETURN TO SHOP BOX (VISIBLE FROM ANY TAB) -->
+
       <div id="rider-return-to-shop-box" class="hidden bg-white rounded-2xl shadow-md border-2 border-orange-400 p-4 space-y-3">
+
         <div class="flex flex-wrap justify-between items-center gap-2 border-b border-orange-100 pb-2">
+
           <div>
+
             <h3 class="font-extrabold text-sm sm:text-base text-orange-800">↩️ Return / Cancel ပစ္စည်း ဆိုင်သို့ပြန်အပ်ရန်</h3>
+
             <p class="text-[11px] text-gray-600 mt-0.5">ဆိုင်သို့ ပစ္စည်းပြန်အပ်ပြီးပါက သက်ဆိုင်ရာ Order အကွက်ရှိ <b>"✅ Return / Cancel ပစ္စည်း ဆိုင်ကိုပြန်အပ်ပြီး"</b> ခလုတ်ကို နှိပ်ပေးပါ။</p>
+
           </div>
+
           <span id="rider-rts-badge" class="bg-orange-600 text-white text-xs font-extrabold px-2.5 py-0.5 rounded-full">0</span>
+
         </div>
+
         <div id="rider-return-to-shop-list" class="space-y-3"></div>
+
       </div>
+
+
 
       <!-- 2 Navigation Tabs -->
+
       <div class="grid grid-cols-2 gap-2 bg-white p-1.5 rounded-2xl border border-blue-200 shadow-sm">
+
         <button type="button" onclick="switchRiderTab('pickup')" id="tab-btn-pickup" class="py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold text-gray-700 hover:bg-gray-100 transition">
+
           📦 ဆိုင်မှကောက်ရန် <span id="tab-badge-pickup" class="ml-1 bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full text-[11px] font-extrabold">0</span>
+
         </button>
+
         <button type="button" onclick="switchRiderTab('delivery')" id="tab-btn-delivery" class="py-2.5 px-3 rounded-xl text-xs sm:text-sm font-extrabold bg-blue-600 text-white shadow-sm transition">
+
           🚚 ဝယ်သူထံပို့ရန် <span id="tab-badge-delivery" class="ml-1 bg-white/25 px-2 py-0.5 rounded-full text-[11px] font-extrabold">0</span>
+
         </button>
+
       </div>
+
+
 
       <!-- TAB 1: PICKUP -->
+
       <div id="tab-panel-pickup" class="hidden space-y-4">
+
         <div class="bg-white rounded-2xl shadow-sm border-2 border-purple-200 p-4">
+
           <div class="mb-3">
+
             <h3 class="font-extrabold text-sm sm:text-base text-gray-900">📦 ဆိုင်များမှ ပစ္စည်းသွားကောက်ရန် (ပုံတိုက်စစ်ကောက်ယူပါ)</h3>
+
             <p class="text-[11px] text-gray-500 mt-0.5">ဝယ်သူမှာထားသော ပစ္စည်းပုံ (နှိပ်၍ အကြီးချဲ့ကြည့်နိုင်သည်)၊ အရောင်နှင့် Size ကို ဆိုင်ရှေ့တွင် တိုက်စစ်ပြီး <b>☑ အမှန်ခြစ်</b> ခြစ်၍ ကောက်ယူပါ။</p>
+
           </div>
+
           <div id="rider-pickup-list" class="space-y-4">
+
             <p class="text-xs text-gray-400 py-6 text-center">⏳ ကောက်ယူရန်စာရင်း စစ်ဆေးနေပါသည်...</p>
+
           </div>
+
         </div>
+
       </div>
+
+
 
       <!-- TAB 2: DELIVERY -->
+
       <div id="tab-panel-delivery" class="space-y-4">
+
         <div class="bg-white rounded-2xl shadow-sm border border-blue-200 p-4">
+
           <h3 class="font-extrabold text-sm sm:text-base text-gray-900 mb-3">🚚 ဝယ်သူထံ ပို့ဆောင်ရန် အော်ဒါများ</h3>
+
           <div id="rider-pending-list" class="space-y-3.5">
+
             <p class="text-xs text-gray-400 py-6 text-center">⏳ အော်ဒါစာရင်း ရယူနေပါသည်...</p>
+
           </div>
+
         </div>
+
+
 
         <div id="rider-today-returns-box" class="hidden bg-white rounded-2xl shadow-sm border-2 border-red-200 p-4">
+
           <h3 class="font-extrabold text-sm sm:text-base text-red-700 mb-2">🔄 ယနေ့ Cancel / Return မှတ်တမ်း</h3>
+
           <div id="rider-today-returns-list" class="divide-y text-xs"></div>
+
         </div>
+
+
 
         <div class="bg-white rounded-2xl shadow-sm border border-emerald-200 p-4">
+
           <h3 class="font-extrabold text-sm sm:text-base text-gray-900 mb-2.5">🧾 ယနေ့ COD ငွေပေးချေပြီး မှတ်တမ်း</h3>
+
           <div id="rider-done-list" class="divide-y text-xs">
+
             <p class="text-gray-400 py-3">ယနေ့ COD ငွေပေးချေပြီးသော အော်ဒါ မရှိသေးပါ။</p>
+
           </div>
+
         </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- CANCEL / RETURN MODAL (REPORTS TO ADMIN ONLY) -->
-  <div id="return-modal" onclick="closeReturnModal()" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
-    <div onclick="event.stopPropagation()" class="bg-white rounded-2xl max-w-md w-full p-5 shadow-2xl border-2 border-red-300 space-y-3.5">
-      <div class="flex justify-between items-center border-b pb-2.5">
-        <h3 class="text-sm sm:text-base font-extrabold text-red-700">❌ Cancel / Return မှတ်တမ်းတင်ရန် (Admin ထံပို့မည်)</h3>
-        <button type="button" onclick="closeReturnModal()" class="text-gray-400 hover:text-gray-800 font-bold text-xl px-1">✕</button>
       </div>
-      <p id="return-modal-order-label" class="text-xs font-extrabold text-gray-800"></p>
-      <div class="space-y-1.5 text-xs">
-        <p class="font-bold text-gray-600">အကြောင်းရင်း ရွေးချယ်ပါ:</p>
-        <label class="flex items-center gap-2 p-2.5 rounded-xl border border-gray-200 bg-gray-50 cursor-pointer">
-          <input type="radio" name="ret_reason" value="ဝယ်သူမယူတော့ (COD ငြင်း / Cancel)" checked class="w-4 h-4 accent-red-600">
-          <span class="font-bold text-gray-800">❌ ဝယ်သူမယူတော့ / စိတ်ပြောင်းသွား (Cancel / COD ငြင်း)</span>
-        </label>
-        <label class="flex items-center gap-2 p-2.5 rounded-xl border border-gray-200 bg-gray-50 cursor-pointer">
-          <input type="radio" name="ret_reason" value="ဖုန်းလုံးဝမကိုင် / ဖုန်းပိတ်ထား" class="w-4 h-4 accent-red-600">
-          <span class="font-bold text-gray-800">📵 ဖုန်းလုံးဝမကိုင် / ဖုန်းပိတ်ထား</span>
-        </label>
-        <label class="flex items-center gap-2 p-2.5 rounded-xl border border-gray-200 bg-gray-50 cursor-pointer">
-          <input type="radio" name="ret_reason" value="လိပ်စာမှား / ဆက်သွယ်၍မရ" class="w-4 h-4 accent-red-600">
-          <span class="font-bold text-gray-800">📍 လိပ်စာမှား / ဆက်သွယ်၍မရ</span>
-        </label>
-        <label class="flex items-center gap-2 p-2.5 rounded-xl border border-gray-200 bg-gray-50 cursor-pointer">
-          <input type="radio" name="ret_reason" value="ပစ္စည်းအနာပါ / အရောင်-Size မှား" class="w-4 h-4 accent-red-600">
-          <span class="font-bold text-gray-800">⚠️ ပစ္စည်းအနာပါ / အရောင်-Size မှား</span>
-        </label>
-      </div>
-      <div>
-        <input type="text" id="return-extra-note" placeholder="📝 အခြားမှတ်ချက် (ရှိပါက ထည့်ရေးနိုင်သည်)" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-base">
-      </div>
-      <div class="bg-amber-50 border border-amber-200 rounded-xl p-2.5 text-[11px] font-bold text-amber-900">
-        📌 ဤခလုတ်နှိပ်ပါက <b>Admin Panel ဆီသို့သာ</b> ချက်ချင်း အကြောင်းကြားသွားမည်ဖြစ်ပြီး ချိတ်ဆိုင်ပစ္စည်းဖြစ်ပါက ဆိုင်သို့ပြန်အပ်ရန် Order အကွက် ပေါ်လာပါမည်။
-      </div>
-      <div class="grid grid-cols-2 gap-2">
-        <button type="button" onclick="closeReturnModal()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2.5 rounded-xl text-xs">မလုပ်တော့ပါ</button>
-        <button type="button" id="btn-submit-return" onclick="submitCodReturn()" class="bg-red-600 hover:bg-red-700 text-white font-extrabold py-2.5 rounded-xl text-xs shadow">📤 Admin ထံ ပို့မည်</button>
-      </div>
-    </div>
-  </div>
 
-  <!-- IMAGE LIGHTBOX -->
-  <div id="image-lightbox-modal" onclick="closeImageLightbox()" class="fixed inset-0 bg-black/90 z-50 hidden flex flex-col items-center justify-center p-4 backdrop-blur-sm">
-    <button type="button" onclick="closeImageLightbox()" class="fixed noti-safe-top right-3 z-50 bg-white/20 hover:bg-white/35 text-white w-10 h-10 rounded-full flex items-center justify-center text-xl font-bold shadow-lg">✕</button>
-    <div onclick="event.stopPropagation()" class="max-w-md w-full flex flex-col items-center">
-      <img id="lightbox-img" src="" alt="" class="max-h-[65vh] w-auto max-w-full object-contain rounded-2xl shadow-2xl border border-white/15 bg-black/40">
-      <div class="mt-3 w-full bg-white rounded-2xl p-3.5 shadow-xl text-left">
-        <p id="lightbox-title" class="text-sm font-extrabold text-gray-900"></p>
-        <p id="lightbox-meta" class="text-xs font-bold text-purple-700 mt-1"></p>
-      </div>
     </div>
-  </div>
 
-  <!-- INSTALL GUIDE MODAL -->
-  <div id="install-guide-modal" onclick="closeInstallGuide()" class="fixed inset-0 bg-black/75 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
-    <div onclick="event.stopPropagation()" class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl border-2 border-blue-300 space-y-3">
-      <div class="flex justify-between items-center border-b pb-2.5">
-        <h3 class="text-sm font-extrabold text-gray-900">📲 Delivery App ထည့်သွင်းနည်း</h3>
-        <button type="button" onclick="closeInstallGuide()" class="text-gray-400 font-bold text-xl px-1">✕</button>
-      </div>
-      <div class="space-y-2 text-xs text-gray-700 leading-relaxed">
-        <p><b>🤖 Android (Chrome):</b> အပေါ်ညာဘက် <b>အစက် ၃ စက် (⋮)</b> → <b>Install app / Add to Home screen</b> နှိပ်ပါ။</p>
-        <p><b>🍎 iPhone (Safari):</b> အောက်ခြေ <b>Share (⬆️)</b> → <b>Add to Home Screen (➕)</b> → <b>Add</b> နှိပ်ပါ။</p>
-      </div>
-      <button type="button" onclick="closeInstallGuide()" class="w-full bg-gray-900 text-white font-extrabold py-2.5 rounded-xl text-xs">နားလည်ပါပြီ</button>
-    </div>
-  </div>
+  &lt;/div&gt;
 
-  <script>
-    let currentRiderTab = 'delivery';
+
+
+  &lt;!-- CANCEL / RETURN MODAL (REPORTS TO ADMIN ONLY) --&gt;
+
+  &lt;div id=&quot;return-modal&quot; onclick=&quot;closeReturnModal()&quot; class=&quot;fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm&quot;&gt;
+
+    &lt;div onclick=&quot;event.stopPropagation()&quot; class=&quot;bg-white rounded-2xl max-w-md w-full p-5 shadow-2xl border-2 border-red-300 space-y-3.5&quot;&gt;
+
+      &lt;div class=&quot;flex justify-between items-center border-b pb-2.5&quot;&gt;
+
+        &lt;h3 class=&quot;text-sm sm:text-base font-extrabold text-red-700&quot;&gt;❌ Cancel / Return မှတ်တမ်းတင်ရန် (Admin ထံပို့မည်)&lt;/h3&gt;
+
+        &lt;button type=&quot;button&quot; onclick=&quot;closeReturnModal()&quot; class=&quot;text-gray-400 hover:text-gray-800 font-bold text-xl px-1&quot;&gt;✕&lt;/button&gt;
+
+      &lt;/div&gt;
+
+      &lt;p id=&quot;return-modal-order-label&quot; class=&quot;text-xs font-extrabold text-gray-800&quot;&gt;&lt;/p&gt;
+
+      &lt;div class=&quot;space-y-1.5 text-xs&quot;&gt;
+
+        &lt;p class=&quot;font-bold text-gray-600&quot;&gt;အကြောင်းရင်း ရွေးချယ်ပါ:&lt;/p&gt;
+
+        &lt;label class=&quot;flex items-center gap-2 p-2.5 rounded-xl border border-gray-200 bg-gray-50 cursor-pointer&quot;&gt;
+
+          &lt;input type=&quot;radio&quot; name=&quot;ret_reason&quot; value=&quot;ဝယ်သူမယူတော့ (COD ငြင်း / Cancel)&quot; checked class=&quot;w-4 h-4 accent-red-600&quot;&gt;
+
+          &lt;span class=&quot;font-bold text-gray-800&quot;&gt;❌ ဝယ်သူမယူတော့ / စိတ်ပြောင်းသွား (Cancel / COD ငြင်း)&lt;/span&gt;
+
+        &lt;/label&gt;
+
+        &lt;label class=&quot;flex items-center gap-2 p-2.5 rounded-xl border border-gray-200 bg-gray-50 cursor-pointer&quot;&gt;
+
+          &lt;input type=&quot;radio&quot; name=&quot;ret_reason&quot; value=&quot;ဖုန်းလုံးဝမကိုင် / ဖုန်းပိတ်ထား&quot; class=&quot;w-4 h-4 accent-red-600&quot;&gt;
+
+          &lt;span class=&quot;font-bold text-gray-800&quot;&gt;📵 ဖုန်းလုံးဝမကိုင် / ဖုန်းပိတ်ထား&lt;/span&gt;
+
+        &lt;/label&gt;
+
+        &lt;label class=&quot;flex items-center gap-2 p-2.5 rounded-xl border border-gray-200 bg-gray-50 cursor-pointer&quot;&gt;
+
+          &lt;input type=&quot;radio&quot; name=&quot;ret_reason&quot; value=&quot;လိပ်စာမှား / ဆက်သွယ်၍မရ&quot; class=&quot;w-4 h-4 accent-red-600&quot;&gt;
+
+          &lt;span class=&quot;font-bold text-gray-800&quot;&gt;📍 လိပ်စာမှား / ဆက်သွယ်၍မရ&lt;/span&gt;
+
+        &lt;/label&gt;
+
+        &lt;label class=&quot;flex items-center gap-2 p-2.5 rounded-xl border border-gray-200 bg-gray-50 cursor-pointer&quot;&gt;
+
+          &lt;input type=&quot;radio&quot; name=&quot;ret_reason&quot; value=&quot;ပစ္စည်းအနာပါ / အရောင်-Size မှား&quot; class=&quot;w-4 h-4 accent-red-600&quot;&gt;
+
+          &lt;span class=&quot;font-bold text-gray-800&quot;&gt;⚠️ ပစ္စည်းအနာပါ / အရောင်-Size မှား&lt;/span&gt;
+
+        &lt;/label&gt;
+
+      &lt;/div&gt;
+
+      &lt;div&gt;
+
+        &lt;input type=&quot;text&quot; id=&quot;return-extra-note&quot; placeholder=&quot;📝 အခြားမှတ်ချက် (ရှိပါက ထည့်ရေးနိုင်သည်)&quot; class=&quot;w-full border border-gray-300 rounded-xl px-3 py-2 text-base&quot;&gt;
+
+      &lt;/div&gt;
+
+      &lt;div class=&quot;bg-amber-50 border border-amber-200 rounded-xl p-2.5 text-[11px] font-bold text-amber-900&quot;&gt;
+
+        📌 ဤခလုတ်နှိပ်ပါက &lt;b&gt;Admin Panel ဆီသို့သာ&lt;/b&gt; ချက်ချင်း အကြောင်းကြားသွားမည်ဖြစ်ပြီး ချိတ်ဆိုင်ပစ္စည်းဖြစ်ပါက ဆိုင်သို့ပြန်အပ်ရန် Order အကွက် ပေါ်လာပါမည်။
+
+      &lt;/div&gt;
+
+      &lt;div class=&quot;grid grid-cols-2 gap-2&quot;&gt;
+
+        &lt;button type=&quot;button&quot; onclick=&quot;closeReturnModal()&quot; class=&quot;bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2.5 rounded-xl text-xs&quot;&gt;မလုပ်တော့ပါ&lt;/button&gt;
+
+        &lt;button type=&quot;button&quot; id=&quot;btn-submit-return&quot; onclick=&quot;submitCodReturn()&quot; class=&quot;bg-red-600 hover:bg-red-700 text-white font-extrabold py-2.5 rounded-xl text-xs shadow&quot;&gt;📤 Admin ထံ ပို့မည်&lt;/button&gt;
+
+      &lt;/div&gt;
+
+    &lt;/div&gt;
+
+  &lt;/div&gt;
+
+
+
+  &lt;!-- IMAGE LIGHTBOX --&gt;
+
+  &lt;div id=&quot;image-lightbox-modal&quot; onclick=&quot;closeImageLightbox()&quot; class=&quot;fixed inset-0 bg-black/90 z-50 hidden flex flex-col items-center justify-center p-4 backdrop-blur-sm&quot;&gt;
+
+    &lt;button type=&quot;button&quot; onclick=&quot;closeImageLightbox()&quot; class=&quot;fixed noti-safe-top right-3 z-50 bg-white/20 hover:bg-white/35 text-white w-10 h-10 rounded-full flex items-center justify-center text-xl font-bold shadow-lg&quot;&gt;✕&lt;/button&gt;
+
+    &lt;div onclick=&quot;event.stopPropagation()&quot; class=&quot;max-w-md w-full flex flex-col items-center&quot;&gt;
+
+      &lt;img id=&quot;lightbox-img&quot; src=&quot;&quot; alt=&quot;&quot; class=&quot;max-h-[65vh] w-auto max-w-full object-contain rounded-2xl shadow-2xl border border-white/15 bg-black/40&quot;&gt;
+
+      &lt;div class=&quot;mt-3 w-full bg-white rounded-2xl p-3.5 shadow-xl text-left&quot;&gt;
+
+        &lt;p id=&quot;lightbox-title&quot; class=&quot;text-sm font-extrabold text-gray-900&quot;&gt;&lt;/p&gt;
+
+        &lt;p id=&quot;lightbox-meta&quot; class=&quot;text-xs font-bold text-purple-700 mt-1&quot;&gt;&lt;/p&gt;
+
+      &lt;/div&gt;
+
+    &lt;/div&gt;
+
+  &lt;/div&gt;
+
+
+
+  &lt;!-- INSTALL GUIDE MODAL --&gt;
+
+  &lt;div id=&quot;install-guide-modal&quot; onclick=&quot;closeInstallGuide()&quot; class=&quot;fixed inset-0 bg-black/75 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm&quot;&gt;
+
+    &lt;div onclick=&quot;event.stopPropagation()&quot; class=&quot;bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl border-2 border-blue-300 space-y-3&quot;&gt;
+
+      &lt;div class=&quot;flex justify-between items-center border-b pb-2.5&quot;&gt;
+
+        &lt;h3 class=&quot;text-sm font-extrabold text-gray-900&quot;&gt;📲 Delivery App ထည့်သွင်းနည်း&lt;/h3&gt;
+
+        &lt;button type=&quot;button&quot; onclick=&quot;closeInstallGuide()&quot; class=&quot;text-gray-400 font-bold text-xl px-1&quot;&gt;✕&lt;/button&gt;
+
+      &lt;/div&gt;
+
+      &lt;div class=&quot;space-y-2 text-xs text-gray-700 leading-relaxed&quot;&gt;
+
+        &lt;p&gt;&lt;b&gt;🤖 Android (Chrome):&lt;/b&gt; အပေါ်ညာဘက် &lt;b&gt;အစက် ၃ စက် (⋮)&lt;/b&gt; → &lt;b&gt;Install app / Add to Home screen&lt;/b&gt; နှိပ်ပါ။&lt;/p&gt;
+
+        &lt;p&gt;&lt;b&gt;🍎 iPhone (Safari):&lt;/b&gt; အောက်ခြေ &lt;b&gt;Share (⬆️)&lt;/b&gt; → &lt;b&gt;Add to Home Screen (➕)&lt;/b&gt; → &lt;b&gt;Add&lt;/b&gt; နှိပ်ပါ။&lt;/p&gt;
+
+      &lt;/div&gt;
+
+      &lt;button type=&quot;button&quot; onclick=&quot;closeInstallGuide()&quot; class=&quot;w-full bg-gray-900 text-white font-extrabold py-2.5 rounded-xl text-xs&quot;&gt;နားလည်ပါပြီ&lt;/button&gt;
+
+    &lt;/div&gt;
+
+  &lt;/div&gt;
+
+
+
+  &lt;script&gt;
+
+    let currentRiderTab = &#39;delivery&#39;;
+
     let hasAutoSelectedTab = false;
-    let returnTargetOrderId = "";
+
+    let returnTargetOrderId = &quot;&quot;;
+
     let pushPopupTimer = null;
+
     let lastLoadedData = null;
+
     let isHandlingPopState = false;
+
     window.__pickupImgMap = {};
 
+
+
     // ==================== BACK BUTTON GUARD (STAYS INSIDE DELIVERY APP) ====================
+
     function pushRiderHistoryState(name) {
+
       if (isHandlingPopState) return;
-      try { history.pushState({ riderOverlay: name, ts: Date.now() }, ''); } catch (e) {}
+
+      try { history.pushState({ riderOverlay: name, ts: Date.now() }, &#39;&#39;); } catch (e) {}
+
     }
 
-    window.addEventListener('popstate', function() {
+
+
+    window.addEventListener(&#39;popstate&#39;, function() {
+
       isHandlingPopState = true;
+
       try {
-        const lb = document.getElementById('image-lightbox-modal');
-        if (lb && !lb.classList.contains('hidden')) {
-          lb.classList.add('hidden');
+
+        const lb = document.getElementById(&#39;image-lightbox-modal&#39;);
+
+        if (lb &amp;&amp; !lb.classList.contains(&#39;hidden&#39;)) {
+
+          lb.classList.add(&#39;hidden&#39;);
+
           return;
+
         }
-        const retM = document.getElementById('return-modal');
-        if (retM && !retM.classList.contains('hidden')) {
-          retM.classList.add('hidden');
-          returnTargetOrderId = "";
+
+        const retM = document.getElementById(&#39;return-modal&#39;);
+
+        if (retM &amp;&amp; !retM.classList.contains(&#39;hidden&#39;)) {
+
+          retM.classList.add(&#39;hidden&#39;);
+
+          returnTargetOrderId = &quot;&quot;;
+
           return;
+
         }
-        const instM = document.getElementById('install-guide-modal');
-        if (instM && !instM.classList.contains('hidden')) {
-          instM.classList.add('hidden');
+
+        const instM = document.getElementById(&#39;install-guide-modal&#39;);
+
+        if (instM &amp;&amp; !instM.classList.contains(&#39;hidden&#39;)) {
+
+          instM.classList.add(&#39;hidden&#39;);
+
           return;
+
         }
-        if (currentRiderTab === 'pickup') {
-          switchRiderTab('delivery', true);
+
+        if (currentRiderTab === &#39;pickup&#39;) {
+
+          switchRiderTab(&#39;delivery&#39;, true);
+
           return;
+
         }
+
       } finally {
+
         isHandlingPopState = false;
+
       }
+
     });
 
+
+
     function escapeHtml(str) {
-      return (str || '').toString()
-        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+
+      return (str || &#39;&#39;).toString()
+
+        .replace(/&amp;/g, &#39;&amp;amp;&#39;).replace(/&lt;/g, &#39;&amp;lt;&#39;).replace(/&gt;/g, &#39;&amp;gt;&#39;)
+
+        .replace(/&quot;/g, &#39;&amp;quot;&#39;).replace(/&#39;/g, &#39;&amp;#39;&#39;);
+
     }
+
+
 
     function isIOSDevice() {
-      const ua = navigator.userAgent || '';
-      return /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+      const ua = navigator.userAgent || &#39;&#39;;
+
+      return /iPad|iPhone|iPod/.test(ua) || (navigator.platform === &#39;MacIntel&#39; &amp;&amp; navigator.maxTouchPoints &gt; 1);
+
     }
+
+
 
     function getSavedRiderSession() {
-      try { return JSON.parse(localStorage.getItem('mt_rider_session') || 'null'); } catch (e) { return null; }
+
+      try { return JSON.parse(localStorage.getItem(&#39;mt_rider_session&#39;) || &#39;null&#39;); } catch (e) { return null; }
+
     }
+
+
 
     function saveRiderSession(obj) {
-      try { localStorage.setItem('mt_rider_session', JSON.stringify(obj)); } catch (e) {}
+
+      try { localStorage.setItem(&#39;mt_rider_session&#39;, JSON.stringify(obj)); } catch (e) {}
+
     }
+
+
 
     function getPickupChecks() {
-      try { return JSON.parse(localStorage.getItem('mt_rider_pickup_checks') || '{}'); } catch (e) { return {}; }
+
+      try { return JSON.parse(localStorage.getItem(&#39;mt_rider_pickup_checks&#39;) || &#39;{}&#39;); } catch (e) { return {}; }
+
     }
+
+
 
     function togglePickupCheck(key) {
+
       const checks = getPickupChecks();
+
       if (checks[key]) delete checks[key];
+
       else checks[key] = true;
-      try { localStorage.setItem('mt_rider_pickup_checks', JSON.stringify(checks)); } catch (e) {}
+
+      try { localStorage.setItem(&#39;mt_rider_pickup_checks&#39;, JSON.stringify(checks)); } catch (e) {}
+
       if (lastLoadedData) renderRiderDashboardData(lastLoadedData, true);
+
     }
 
-    function closeInstallGuide() { document.getElementById('install-guide-modal').classList.add('hidden'); }
+
+
+    function closeInstallGuide() { document.getElementById(&#39;install-guide-modal&#39;).classList.add(&#39;hidden&#39;); }
+
+
 
     async function triggerInstall() {
+
       if (window.__deferredInstallPrompt) {
+
         try {
+
           window.__deferredInstallPrompt.prompt();
+
           await window.__deferredInstallPrompt.userChoice;
+
           window.__deferredInstallPrompt = null;
+
         } catch (e) {}
+
         return;
+
       }
-      document.getElementById('install-guide-modal').classList.remove('hidden');
-      pushRiderHistoryState('install_guide');
+
+      document.getElementById(&#39;install-guide-modal&#39;).classList.remove(&#39;hidden&#39;);
+
+      pushRiderHistoryState(&#39;install_guide&#39;);
+
     }
+
+
 
     function playNotiChime() {
+
       try {
+
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
+
         if (!AudioCtx) return;
+
         const ctx = new AudioCtx();
+
         const osc = ctx.createOscillator();
+
         const gain = ctx.createGain();
-        osc.type = 'sine';
+
+        osc.type = &#39;sine&#39;;
+
         osc.frequency.setValueAtTime(880, ctx.currentTime);
+
         osc.frequency.setValueAtTime(1174.66, ctx.currentTime + 0.14);
+
         gain.gain.setValueAtTime(0.25, ctx.currentTime);
+
         gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+
         osc.connect(gain); gain.connect(ctx.destination);
+
         osc.start(); osc.stop(ctx.currentTime + 0.5);
+
       } catch (e) {}
+
     }
+
+
 
     function showRiderBannerNoti(title, bodyText) {
-      const popup = document.getElementById('push-noti-popup');
-      document.getElementById('push-noti-title').innerText = "🔔 " + (title || "MiniTrend Delivery");
-      document.getElementById('push-noti-body').innerText = bodyText || "";
-      popup.classList.remove('hidden');
+
+      const popup = document.getElementById(&#39;push-noti-popup&#39;);
+
+      document.getElementById(&#39;push-noti-title&#39;).innerText = &quot;🔔 &quot; + (title || &quot;MiniTrend Delivery&quot;);
+
+      document.getElementById(&#39;push-noti-body&#39;).innerText = bodyText || &quot;&quot;;
+
+      popup.classList.remove(&#39;hidden&#39;);
+
       playNotiChime();
+
       if (navigator.vibrate) navigator.vibrate([250, 100, 250]);
+
       if (pushPopupTimer) clearTimeout(pushPopupTimer);
-      pushPopupTimer = setTimeout(() => { popup.classList.add('hidden'); }, 9000);
+
+      pushPopupTimer = setTimeout(() =&gt; { popup.classList.add(&#39;hidden&#39;); }, 9000);
+
     }
 
-    function closePushPopup() { document.getElementById('push-noti-popup').classList.add('hidden'); }
+
+
+    function closePushPopup() { document.getElementById(&#39;push-noti-popup&#39;).classList.add(&#39;hidden&#39;); }
+
+
 
     function buildSmartMapsInfo(order) {
-      const rawLoc = (order.mapLocation || "").toString().trim();
-      const rawQuery = (order.mapQuery || "").toString().trim();
+
+      const rawLoc = (order.mapLocation || &quot;&quot;).toString().trim();
+
+      const rawQuery = (order.mapQuery || &quot;&quot;).toString().trim();
+
       if (rawLoc) {
-        if (/^https?:\/\//i.test(rawLoc)) return { url: rawLoc, isExact: true, label: "📍 Map Link အတိအကျ" };
+
+        if (/^https?:\/\//i.test(rawLoc)) return { url: rawLoc, isExact: true, label: &quot;📍 Map Link အတိအကျ&quot; };
+
         const m = rawLoc.match(/(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/);
-        if (m) return { url: `https://www.google.com/maps/search/?api=1&query=${m[1]},${m[2]}`, isExact: true, label: "📍 GPS အတိအကျ" };
+
+        if (m) return { url: `https://www.google.com/maps/search/?api=1&amp;query=${m[1]},${m[2]}`, isExact: true, label: &quot;📍 GPS အတိအကျ&quot; };
+
       }
-      if (rawQuery) return { url: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(rawQuery)}`, isExact: false, label: "🔍 လမ်းနှင့်မြို့နယ်" };
-      return { url: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((order.address || '') + ' Yangon')}`, isExact: false, label: "🔍 စာသားလိပ်စာ" };
+
+      if (rawQuery) return { url: `https://www.google.com/maps/search/?api=1&amp;query=${encodeURIComponent(rawQuery)}`, isExact: false, label: &quot;🔍 လမ်းနှင့်မြို့နယ်&quot; };
+
+      return { url: `https://www.google.com/maps/search/?api=1&amp;query=${encodeURIComponent((order.address || &#39;&#39;) + &#39; Yangon&#39;)}`, isExact: false, label: &quot;🔍 စာသားလိပ်စာ&quot; };
+
     }
+
+
 
     function buildShopMapUrl(mapLoc, address, shopName) {
-      const raw = (mapLoc || "").toString().trim();
+
+      const raw = (mapLoc || &quot;&quot;).toString().trim();
+
       if (raw) {
+
         if (/^https?:\/\//i.test(raw)) return raw;
+
         const m = raw.match(/(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/);
-        if (m) return `https://www.google.com/maps/search/?api=1&query=${m[1]},${m[2]}`;
+
+        if (m) return `https://www.google.com/maps/search/?api=1&amp;query=${m[1]},${m[2]}`;
+
       }
-      const q = (address || shopName || 'Yangon') + ' Yangon';
-      return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
+
+      const q = (address || shopName || &#39;Yangon&#39;) + &#39; Yangon&#39;;
+
+      return `https://www.google.com/maps/search/?api=1&amp;query=${encodeURIComponent(q)}`;
+
     }
+
+
 
     function openImageLightbox(imgKey) {
+
       const info = window.__pickupImgMap[imgKey];
+
       if (!info) return;
-      document.getElementById('lightbox-img').src = info.image || '../icon.png?v=3';
-      document.getElementById('lightbox-title').innerText = info.name || '';
-      const szPart = info.size && info.size !== 'အသက်မလို' ? ` | 📏 ${info.size}` : '';
-      document.getElementById('lightbox-meta').innerText = `🧾 ${info.orderId} | 🎨 ${info.colorName || '-'}${szPart} | 📦 x ${info.qty || 1} ခု`;
-      document.getElementById('image-lightbox-modal').classList.remove('hidden');
-      pushRiderHistoryState('lightbox');
+
+      document.getElementById(&#39;lightbox-img&#39;).src = info.image || &#39;../icon.png?v=3&#39;;
+
+      document.getElementById(&#39;lightbox-title&#39;).innerText = info.name || &#39;&#39;;
+
+      const szPart = info.size &amp;&amp; info.size !== &#39;အသက်မလို&#39; ? ` | 📏 ${info.size}` : &#39;&#39;;
+
+      document.getElementById(&#39;lightbox-meta&#39;).innerText = `🧾 ${info.orderId} | 🎨 ${info.colorName || &#39;-&#39;}${szPart} | 📦 x ${info.qty || 1} ခု`;
+
+      document.getElementById(&#39;image-lightbox-modal&#39;).classList.remove(&#39;hidden&#39;);
+
+      pushRiderHistoryState(&#39;lightbox&#39;);
+
     }
+
+
 
     function closeImageLightbox() {
-      document.getElementById('image-lightbox-modal').classList.add('hidden');
+
+      document.getElementById(&#39;image-lightbox-modal&#39;).classList.add(&#39;hidden&#39;);
+
     }
+
+
 
     function switchRiderTab(tabName, fromBack = false) {
-      const prevTab = currentRiderTab;
-      currentRiderTab = tabName;
-      document.getElementById('tab-panel-pickup').classList.toggle('hidden', tabName !== 'pickup');
-      document.getElementById('tab-panel-delivery').classList.toggle('hidden', tabName !== 'delivery');
 
-      const btnP = document.getElementById('tab-btn-pickup');
-      const btnD = document.getElementById('tab-btn-delivery');
-      if (tabName === 'pickup') {
-        btnP.className = 'py-2.5 px-3 rounded-xl text-xs sm:text-sm font-extrabold bg-purple-600 text-white shadow-sm transition';
-        btnD.className = 'py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold text-gray-700 hover:bg-gray-100 transition';
+      const prevTab = currentRiderTab;
+
+      currentRiderTab = tabName;
+
+      document.getElementById(&#39;tab-panel-pickup&#39;).classList.toggle(&#39;hidden&#39;, tabName !== &#39;pickup&#39;);
+
+      document.getElementById(&#39;tab-panel-delivery&#39;).classList.toggle(&#39;hidden&#39;, tabName !== &#39;delivery&#39;);
+
+
+
+      const btnP = document.getElementById(&#39;tab-btn-pickup&#39;);
+
+      const btnD = document.getElementById(&#39;tab-btn-delivery&#39;);
+
+      if (tabName === &#39;pickup&#39;) {
+
+        btnP.className = &#39;py-2.5 px-3 rounded-xl text-xs sm:text-sm font-extrabold bg-purple-600 text-white shadow-sm transition&#39;;
+
+        btnD.className = &#39;py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold text-gray-700 hover:bg-gray-100 transition&#39;;
+
       } else {
-        btnD.className = 'py-2.5 px-3 rounded-xl text-xs sm:text-sm font-extrabold bg-blue-600 text-white shadow-sm transition';
-        btnP.className = 'py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold text-gray-700 hover:bg-gray-100 transition';
+
+        btnD.className = &#39;py-2.5 px-3 rounded-xl text-xs sm:text-sm font-extrabold bg-blue-600 text-white shadow-sm transition&#39;;
+
+        btnP.className = &#39;py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold text-gray-700 hover:bg-gray-100 transition&#39;;
+
       }
-      if (!fromBack && prevTab !== tabName && tabName === 'pickup') {
-        pushRiderHistoryState('tab_pickup');
+
+      if (!fromBack &amp;&amp; prevTab !== tabName &amp;&amp; tabName === &#39;pickup&#39;) {
+
+        pushRiderHistoryState(&#39;tab_pickup&#39;);
+
       }
+
     }
 
+
+
     async function initRiderFirebasePush(riderId, allowPrompt = false) {
+
       try {
-        if (!('Notification' in window) || !('serviceWorker' in navigator) || typeof firebase === 'undefined') return null;
+
+        if (isIOSDevice() &amp;&amp; !isStandaloneApp()) {
+
+          return { ok: false, message: &#39;🍎 iPhone တွင် Notification ရရန် Safari အောက်ခြေ Share (⬆️) → Add to Home Screen လုပ်ပြီး Home Screen မှ Delivery App ကို ဖွင့်ပေးပါ။&#39; };
+
+        }
+
+        if (!(&#39;Notification&#39; in window) || !(&#39;serviceWorker&#39; in navigator) || !(&#39;PushManager&#39; in window)) {
+
+          return { ok: false, message: &#39;⚠️ ဤ Browser သည် Push Notification မပံ့ပိုးပါ။ Android ဆိုရင် Chrome ဖြင့်ဖွင့်ပါ။&#39; };
+
+        }
+
+
+
+        let perm = Notification.permission;
+
+        if (perm === &#39;default&#39; &amp;&amp; allowPrompt) {
+
+          perm = await Notification.requestPermission();
+
+        }
+
+        if (perm === &#39;denied&#39;) {
+
+          return { ok: false, message: &#39;⚠️ Notification ကို Block ထားပါသည်။ Browser/Phone Settings → Notifications တွင် Allow ပြန်ဖွင့်ပေးပါ။&#39; };
+
+        }
+
+        if (perm !== &#39;granted&#39;) {
+
+          return { ok: false, message: &#39;⚠️ Notification popup ပေါ်လာလျှင် Allow ကို နှိပ်ပေးပါ။&#39; };
+
+        }
+
+
+
         if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
 
         const messaging = firebase.messaging();
+
         if (!window.__riderFcmBound) {
+
           window.__riderFcmBound = true;
-          messaging.onMessage((payload) => {
+
+          messaging.onMessage((payload) =&gt; {
+
             const d = payload.data || {};
+
             const n = payload.notification || {};
-            showRiderBannerNoti(d.title || n.title || "MiniTrend Delivery", d.body || n.body || "");
+
+            showRiderBannerNoti(d.title || n.title || &quot;MiniTrend Delivery&quot;, d.body || n.body || &quot;&quot;);
+
             loadDeliveryDashboard(true);
+
           });
+
         }
 
-        if (Notification.permission === 'default' && allowPrompt) await Notification.requestPermission();
-        if (Notification.permission !== 'granted') return null;
 
-        const reg = (await window.__swRegistrationPromise) || (await navigator.serviceWorker.ready);
+
+        await navigator.serviceWorker.register(&#39;/sw.js&#39;, { scope: &#39;/&#39; });
+
+        const reg = await navigator.serviceWorker.ready;
+
         const token = await messaging.getToken({ vapidKey: FIREBASE_VAPID_KEY, serviceWorkerRegistration: reg });
-        if (token) {
-          window.__currentFcmToken = token;
-          const roleKey = "rider:" + riderId;
-          if (!sessionStorage.getItem("mt_fcm_synced_" + roleKey)) {
-            await fetch(APPS_SCRIPT_URL, {
-              method: "POST", mode: "no-cors",
-              headers: { "Content-Type": "text/plain;charset=utf-8" },
-              body: JSON.stringify({ action: "saveFcmToken", token, role: roleKey, device: navigator.userAgent.substring(0, 80) })
-            });
-            sessionStorage.setItem("mt_fcm_synced_" + roleKey, "1");
-          }
-          const btn = document.getElementById('btn-rider-fcm');
-          if (btn) btn.innerText = "✅ Noti ချိတ်ပြီး";
-          return token;
-        }
-      } catch (e) {}
-      return null;
+
+
+
+        if (!token) return { ok: false, message: &#39;⚠️ FCM Token မထွက်ပါ။ ထပ်စမ်းပေးပါ။&#39; };
+
+
+
+        window.__currentFcmToken = token;
+
+        await fetch(APPS_SCRIPT_URL, {
+
+          method: &quot;POST&quot;, mode: &quot;no-cors&quot;,
+
+          headers: { &quot;Content-Type&quot;: &quot;text/plain;charset=utf-8&quot; },
+
+          body: JSON.stringify({
+
+            action: &quot;saveFcmToken&quot;,
+
+            token,
+
+            role: &quot;rider:&quot; + riderId,
+
+            device: (isIOSDevice() ? &quot;iOS PWA &quot; : &quot;&quot;) + navigator.userAgent.substring(0, 70)
+
+          })
+
+        });
+
+
+
+        const btn = document.getElementById(&#39;btn-rider-fcm&#39;);
+
+        if (btn) btn.innerText = &quot;✅ Noti ချိတ်ပြီး&quot;;
+
+        return { ok: true, token };
+
+      } catch (e) {
+
+        return { ok: false, message: &#39;⚠️ Delivery Noti Error: &#39; + (e &amp;&amp; e.message ? e.message : String(e)) };
+
+      }
+
     }
+
+
 
     async function connectRiderFirebase() {
+
       const saved = getSavedRiderSession();
+
       if (!saved || !saved.id) return;
-      const btn = document.getElementById('btn-rider-fcm');
-      if (btn) btn.innerText = "⏳ ချိတ်ဆက်နေ...";
-      sessionStorage.removeItem("mt_fcm_synced_rider:" + saved.id);
-      const tk = await initRiderFirebasePush(saved.id, true);
-      if (tk) alert(`✅ ${saved.name} ဖုန်းကို Notification စနစ်နှင့် ချိတ်ဆက်ပြီးပါပြီ!`);
-      else {
-        if (btn) btn.innerText = "🔔 Noti ချိတ်မည်";
-        alert("⚠️ Browser Settings တွင် Notification ကို Allow ပေးထားကြောင်း စစ်ဆေးပါ။");
+
+      const btn = document.getElementById(&#39;btn-rider-fcm&#39;);
+
+      if (btn) btn.innerText = &quot;⏳ ချိတ်ဆက်နေ...&quot;;
+
+      const res = await initRiderFirebasePush(saved.id, true);
+
+      if (res &amp;&amp; res.ok) {
+
+        alert(`✅ ${saved.name} ဖုန်းကို Notification ချိတ်ဆက်ပြီးပါပြီ!`);
+
+      } else {
+
+        if (btn) btn.innerText = &quot;🔔 Noti ချိတ်မည်&quot;;
+
+        alert((res &amp;&amp; res.message) || &quot;⚠️ Notification ချိတ်မရပါ။&quot;);
+
       }
+
     }
+
+
 
     async function loadRiderLoginDropdown() {
-      const sel = document.getElementById('rider-login-select');
+
+      const sel = document.getElementById(&#39;rider-login-select&#39;);
+
       if (!sel) return;
+
       try {
-        const res = await fetch(`${APPS_SCRIPT_URL}?action=getDeliveryData&t=${Date.now()}`, { cache: "no-store" });
+
+        const res = await fetch(`${APPS_SCRIPT_URL}?action=getDeliveryData&amp;t=${Date.now()}`, { cache: &quot;no-store&quot; });
+
         const data = await res.json();
-        if (data && Array.isArray(data.riders) && data.riders.length > 0) {
-          sel.innerHTML = `<option value="">-- ဝန်ထမ်းအမည် ရွေးချယ်ပါ --</option>` +
-            data.riders.map(r => `<option value="${escapeHtml(r.id)}">${escapeHtml(r.id)} — ${escapeHtml(r.name)}</option>`).join('');
+
+        if (data &amp;&amp; Array.isArray(data.riders) &amp;&amp; data.riders.length &gt; 0) {
+
+          sel.innerHTML = `&lt;option value=&quot;&quot;&gt;-- ဝန်ထမ်းအမည် ရွေးချယ်ပါ --&lt;/option&gt;` +
+
+            data.riders.map(r =&gt; `&lt;option value=&quot;${escapeHtml(r.id)}&quot;&gt;${escapeHtml(r.id)} — ${escapeHtml(r.name)}&lt;/option&gt;`).join(&#39;&#39;);
+
         } else {
-          sel.innerHTML = `<option value="">ဝန်ထမ်းစာရင်း မရှိသေးပါ</option>`;
+
+          sel.innerHTML = `&lt;option value=&quot;&quot;&gt;ဝန်ထမ်းစာရင်း မရှိသေးပါ&lt;/option&gt;`;
+
         }
+
       } catch (e) {
-        sel.innerHTML = `<option value="">⚠️ ချိတ်ဆက်မှု မအောင်မြင်ပါ</option>`;
+
+        sel.innerHTML = `&lt;option value=&quot;&quot;&gt;⚠️ ချိတ်ဆက်မှု မအောင်မြင်ပါ&lt;/option&gt;`;
+
       }
+
     }
+
+
 
     async function handleRiderLogin(e) {
+
       e.preventDefault();
-      const riderId = document.getElementById('rider-login-select').value.trim();
-      const pin = document.getElementById('rider-login-pin').value.trim();
-      const errEl = document.getElementById('rider-login-error');
-      const btn = document.getElementById('btn-rider-login');
+
+      const riderId = document.getElementById(&#39;rider-login-select&#39;).value.trim();
+
+      const pin = document.getElementById(&#39;rider-login-pin&#39;).value.trim();
+
+      const errEl = document.getElementById(&#39;rider-login-error&#39;);
+
+      const btn = document.getElementById(&#39;btn-rider-login&#39;);
+
       if (!riderId || !pin) return;
 
-      btn.disabled = true; btn.innerText = "⏳ စစ်ဆေးနေပါသည်...";
-      errEl.classList.add('hidden');
+
+
+      btn.disabled = true; btn.innerText = &quot;⏳ စစ်ဆေးနေပါသည်...&quot;;
+
+      errEl.classList.add(&#39;hidden&#39;);
+
+
 
       try {
-        const res = await fetch(`${APPS_SCRIPT_URL}?action=getDeliveryData&riderId=${encodeURIComponent(riderId)}&pin=${encodeURIComponent(pin)}&t=${Date.now()}`, { cache: "no-store" });
+
+        const res = await fetch(`${APPS_SCRIPT_URL}?action=getDeliveryData&amp;riderId=${encodeURIComponent(riderId)}&amp;pin=${encodeURIComponent(pin)}&amp;t=${Date.now()}`, { cache: &quot;no-store&quot; });
+
         const data = await res.json();
-        if (data && data.status === 'ok' && data.rider) {
+
+        if (data &amp;&amp; data.status === &#39;ok&#39; &amp;&amp; data.rider) {
+
           saveRiderSession({ id: data.rider.id, name: data.rider.name, pin: pin });
-          document.getElementById('rider-login-pin').value = '';
+
+          document.getElementById(&#39;rider-login-pin&#39;).value = &#39;&#39;;
+
           hasAutoSelectedTab = false;
+
           showDashboardScreen();
+
           renderRiderDashboardData(data, false);
+
         } else {
-          errEl.classList.remove('hidden');
+
+          errEl.classList.remove(&#39;hidden&#39;);
+
         }
+
       } catch (err) {
-        errEl.innerText = "⚠️ အင်တာနက်ချိတ်ဆက်မှု စစ်ဆေးပေးပါ။";
-        errEl.classList.remove('hidden');
+
+        errEl.innerText = &quot;⚠️ အင်တာနက်ချိတ်ဆက်မှု စစ်ဆေးပေးပါ။&quot;;
+
+        errEl.classList.remove(&#39;hidden&#39;);
+
       }
 
-      btn.disabled = false; btn.innerText = "🔓 ဝန်ထမ်း App သို့ ဝင်ရောက်မည်";
+
+
+      btn.disabled = false; btn.innerText = &quot;🔓 ဝန်ထမ်း App သို့ ဝင်ရောက်မည်&quot;;
+
     }
+
+
 
     function logoutRider() {
-      try { localStorage.removeItem('mt_rider_session'); } catch (e) {}
-      document.getElementById('delivery-dashboard').classList.add('hidden');
-      document.getElementById('delivery-login-card').classList.remove('hidden');
+
+      try { localStorage.removeItem(&#39;mt_rider_session&#39;); } catch (e) {}
+
+      document.getElementById(&#39;delivery-dashboard&#39;).classList.add(&#39;hidden&#39;);
+
+      document.getElementById(&#39;delivery-login-card&#39;).classList.remove(&#39;hidden&#39;);
+
       loadRiderLoginDropdown();
+
     }
+
+
 
     function showDashboardScreen() {
+
       const saved = getSavedRiderSession();
+
       if (!saved) return;
-      document.getElementById('delivery-login-card').classList.add('hidden');
-      document.getElementById('delivery-dashboard').classList.remove('hidden');
-      document.getElementById('rider-header-name').innerText = `${saved.name} (${saved.id})`;
-      if ('Notification' in window && Notification.permission === 'granted') {
+
+      document.getElementById(&#39;delivery-login-card&#39;).classList.add(&#39;hidden&#39;);
+
+      document.getElementById(&#39;delivery-dashboard&#39;).classList.remove(&#39;hidden&#39;);
+
+      document.getElementById(&#39;rider-header-name&#39;).innerText = `${saved.name} (${saved.id})`;
+
+      if (&#39;Notification&#39; in window &amp;&amp; Notification.permission === &#39;granted&#39;) {
+
         initRiderFirebasePush(saved.id, false);
+
       }
+
     }
+
+
 
     async function loadDeliveryDashboard(silent = false) {
+
       const saved = getSavedRiderSession();
+
       if (!saved || !saved.id || !saved.pin) return;
-      const btn = document.getElementById('btn-rider-refresh');
-      if (btn && !silent) btn.innerText = "⏳...";
+
+      const btn = document.getElementById(&#39;btn-rider-refresh&#39;);
+
+      if (btn &amp;&amp; !silent) btn.innerText = &quot;⏳...&quot;;
+
+
 
       try {
-        const res = await fetch(`${APPS_SCRIPT_URL}?action=getDeliveryData&riderId=${encodeURIComponent(saved.id)}&pin=${encodeURIComponent(saved.pin)}&t=${Date.now()}`, { cache: "no-store" });
+
+        const res = await fetch(`${APPS_SCRIPT_URL}?action=getDeliveryData&amp;riderId=${encodeURIComponent(saved.id)}&amp;pin=${encodeURIComponent(saved.pin)}&amp;t=${Date.now()}`, { cache: &quot;no-store&quot; });
+
         const data = await res.json();
-        if (data && data.status === 'unauthorized') { logoutRider(); return; }
-        if (data && data.status === 'ok') renderRiderDashboardData(data, silent);
+
+        if (data &amp;&amp; data.status === &#39;unauthorized&#39;) { logoutRider(); return; }
+
+        if (data &amp;&amp; data.status === &#39;ok&#39;) renderRiderDashboardData(data, silent);
+
       } catch (e) {}
 
-      if (btn && !silent) btn.innerText = "🔄 ပြန်စစ်";
+
+
+      if (btn &amp;&amp; !silent) btn.innerText = &quot;🔄 ပြန်စစ်&quot;;
+
     }
+
+
 
     function renderRiderDashboardData(data, silent) {
+
       lastLoadedData = data;
+
       const pickupTasks = data.pickupTasks || [];
+
       const returnToShopTasks = data.returnToShopTasks || [];
+
       const pending = data.pendingOrders || [];
+
       const done = data.todayDelivered || [];
+
       const todayReturns = data.todayReturns || [];
+
       const codTotal = Number(data.todayCodTotal || 0);
 
-      document.getElementById('rider-stat-pickup').innerText = pickupTasks.length;
-      document.getElementById('rider-stat-pending').innerText = pending.length;
-      document.getElementById('rider-stat-done').innerText = done.length;
-      document.getElementById('rider-stat-cod').innerText = codTotal.toLocaleString() + " Ks";
-      document.getElementById('tab-badge-pickup').innerText = pickupTasks.length;
-      document.getElementById('tab-badge-delivery').innerText = pending.length;
+
+
+      document.getElementById(&#39;rider-stat-pickup&#39;).innerText = pickupTasks.length;
+
+      document.getElementById(&#39;rider-stat-pending&#39;).innerText = pending.length;
+
+      document.getElementById(&#39;rider-stat-done&#39;).innerText = done.length;
+
+      document.getElementById(&#39;rider-stat-cod&#39;).innerText = codTotal.toLocaleString() + &quot; Ks&quot;;
+
+      document.getElementById(&#39;tab-badge-pickup&#39;).innerText = pickupTasks.length;
+
+      document.getElementById(&#39;tab-badge-delivery&#39;).innerText = pending.length;
+
+
 
       if (!hasAutoSelectedTab) {
+
         hasAutoSelectedTab = true;
-        if (pickupTasks.length > 0 && pending.length === 0) switchRiderTab('pickup', true);
-        else switchRiderTab('delivery', true);
+
+        if (pickupTasks.length &gt; 0 &amp;&amp; pending.length === 0) switchRiderTab(&#39;pickup&#39;, true);
+
+        else switchRiderTab(&#39;delivery&#39;, true);
+
       }
 
-      const rId = data.rider ? data.rider.id : '';
-      if (pending.length > 0 && rId) {
+
+
+      const rId = data.rider ? data.rider.id : &#39;&#39;;
+
+      if (pending.length &gt; 0 &amp;&amp; rId) {
+
         const newestDel = pending[0].orderId;
-        const delKey = 'mt_rider_last_del_' + rId;
+
+        const delKey = &#39;mt_rider_last_del_&#39; + rId;
+
         const prevDel = localStorage.getItem(delKey);
-        if (prevDel && prevDel !== newestDel && silent) {
+
+        if (prevDel &amp;&amp; prevDel !== newestDel &amp;&amp; silent) {
+
           showRiderBannerNoti(`🚚 ပို့ဆောင်ရန် အော်ဒါအသစ် (${newestDel})`, `${pending[0].name} — 📍 ${pending[0].address}`);
+
         }
+
         localStorage.setItem(delKey, newestDel);
+
       }
-      if (pickupTasks.length > 0 && rId) {
+
+      if (pickupTasks.length &gt; 0 &amp;&amp; rId) {
+
         const newestPick = pickupTasks[0].orderId;
-        const pickKey = 'mt_rider_last_pick_' + rId;
+
+        const pickKey = &#39;mt_rider_last_pick_&#39; + rId;
+
         const prevPick = localStorage.getItem(pickKey);
-        if (prevPick && prevPick !== newestPick && silent) {
-          showRiderBannerNoti(`📦 ဆိုင်မှ ပစ္စည်းသွားကောက်ရန် (${newestPick})`, "Pickup Tab တွင် ပစ္စည်းပုံတိုက်စစ်ပြီး သွားကောက်ပေးပါ။");
+
+        if (prevPick &amp;&amp; prevPick !== newestPick &amp;&amp; silent) {
+
+          showRiderBannerNoti(`📦 ဆိုင်မှ ပစ္စည်းသွားကောက်ရန် (${newestPick})`, &quot;Pickup Tab တွင် ပစ္စည်းပုံတိုက်စစ်ပြီး သွားကောက်ပေးပါ။&quot;);
+
         }
+
         localStorage.setItem(pickKey, newestPick);
+
       }
+
+
 
       window.__pickupImgMap = {};
+
       const checks = getPickupChecks();
 
-      // ---- REQ 1: PROMINENT RETURN / CANCEL TO SHOP TASKS (ALWAYS VISIBLE AT TOP) ----
-      const rtsBox = document.getElementById('rider-return-to-shop-box');
-      const rtsList = document.getElementById('rider-return-to-shop-list');
-      const rtsBadge = document.getElementById('rider-rts-badge');
-      if (returnToShopTasks.length === 0) {
-        rtsBox.classList.add('hidden');
-      } else {
-        rtsBox.classList.remove('hidden');
-        if (rtsBadge) rtsBadge.innerText = returnToShopTasks.length;
-        rtsList.innerHTML = returnToShopTasks.map(t => {
-          const shopMapUrl = buildShopMapUrl(t.shopMap, t.shopAddress, t.shopName);
-          const typeBadge = t.isCancelReturn
-            ? `<span class="bg-red-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">❌ Cancel Return</span>`
-            : `<span class="bg-orange-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">↩️ Return ပြန်အပ်ရန်</span>`;
 
-          const itemsHtml = (t.items || []).map((it, idx) => {
+
+      // ---- REQ 1: PROMINENT RETURN / CANCEL TO SHOP TASKS (ALWAYS VISIBLE AT TOP) ----
+
+      const rtsBox = document.getElementById(&#39;rider-return-to-shop-box&#39;);
+
+      const rtsList = document.getElementById(&#39;rider-return-to-shop-list&#39;);
+
+      const rtsBadge = document.getElementById(&#39;rider-rts-badge&#39;);
+
+      if (returnToShopTasks.length === 0) {
+
+        rtsBox.classList.add(&#39;hidden&#39;);
+
+      } else {
+
+        rtsBox.classList.remove(&#39;hidden&#39;);
+
+        if (rtsBadge) rtsBadge.innerText = returnToShopTasks.length;
+
+        rtsList.innerHTML = returnToShopTasks.map(t =&gt; {
+
+          const shopMapUrl = buildShopMapUrl(t.shopMap, t.shopAddress, t.shopName);
+
+          const typeBadge = t.isCancelReturn
+
+            ? `&lt;span class=&quot;bg-red-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full&quot;&gt;❌ Cancel Return&lt;/span&gt;`
+
+            : `&lt;span class=&quot;bg-orange-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full&quot;&gt;↩️ Return ပြန်အပ်ရန်&lt;/span&gt;`;
+
+
+
+          const itemsHtml = (t.items || []).map((it, idx) =&gt; {
+
             const imgKey = `rts_${t.orderId}_${t.shopId}_${idx}`;
+
             window.__pickupImgMap[imgKey] = {
+
               orderId: t.orderId, name: it.name, colorName: it.colorName, size: it.size, qty: it.qty, image: it.image
+
             };
+
             const thumb = it.image
-              ? `<button type="button" onclick="openImageLightbox('${imgKey}')" class="w-14 h-14 rounded-xl overflow-hidden border border-orange-200 shrink-0 bg-gray-100 cursor-zoom-in"><img src="${escapeHtml(it.image)}" class="w-full h-full object-cover object-top"></button>`
-              : `<div class="w-14 h-14 rounded-xl border bg-gray-100 flex items-center justify-center text-[10px] text-gray-400 shrink-0">ပုံမရှိ</div>`;
-            const szHtml = it.size && it.size !== 'အသက်မလို' ? ` | 📏 ${escapeHtml(it.size)}` : '';
+
+              ? `&lt;button type=&quot;button&quot; onclick=&quot;openImageLightbox(&#39;${imgKey}&#39;)&quot; class=&quot;w-14 h-14 rounded-xl overflow-hidden border border-orange-200 shrink-0 bg-gray-100 cursor-zoom-in&quot;&gt;&lt;img src=&quot;${escapeHtml(it.image)}&quot; class=&quot;w-full h-full object-cover object-top&quot;&gt;&lt;/button&gt;`
+
+              : `&lt;div class=&quot;w-14 h-14 rounded-xl border bg-gray-100 flex items-center justify-center text-[10px] text-gray-400 shrink-0&quot;&gt;ပုံမရှိ&lt;/div&gt;`;
+
+            const szHtml = it.size &amp;&amp; it.size !== &#39;အသက်မလို&#39; ? ` | 📏 ${escapeHtml(it.size)}` : &#39;&#39;;
+
             return `
-              <div class="flex items-center gap-2 bg-white border border-orange-200 rounded-xl p-2">
+
+              &lt;div class=&quot;flex items-center gap-2 bg-white border border-orange-200 rounded-xl p-2&quot;&gt;
+
                 ${thumb}
-                <div class="min-w-0 flex-1">
-                  <p class="font-extrabold text-xs text-gray-900 truncate">${escapeHtml(it.name)}</p>
-                  <p class="text-[11px] font-bold text-gray-600">🎨 ${escapeHtml(it.colorName || '-')}${szHtml} | <b>x ${it.qty} ခု</b></p>
-                </div>
-              </div>
+
+                &lt;div class=&quot;min-w-0 flex-1&quot;&gt;
+
+                  &lt;p class=&quot;font-extrabold text-xs text-gray-900 truncate&quot;&gt;${escapeHtml(it.name)}&lt;/p&gt;
+
+                  &lt;p class=&quot;text-[11px] font-bold text-gray-600&quot;&gt;🎨 ${escapeHtml(it.colorName || &#39;-&#39;)}${szHtml} | &lt;b&gt;x ${it.qty} ခု&lt;/b&gt;&lt;/p&gt;
+
+                &lt;/div&gt;
+
+              &lt;/div&gt;
+
             `;
-          }).join('');
+
+          }).join(&#39;&#39;);
+
+
 
           return `
-            <div class="bg-orange-50/75 border-2 border-orange-300 rounded-2xl p-3.5 space-y-2.5">
-              <div class="flex flex-wrap justify-between items-center gap-1.5">
-                <span class="font-extrabold text-sm text-gray-900">🧾 ${escapeHtml(t.orderId)} → 🏪 ${escapeHtml(t.shopId)} (${escapeHtml(t.shopName)})</span>
+
+            &lt;div class=&quot;bg-orange-50/75 border-2 border-orange-300 rounded-2xl p-3.5 space-y-2.5&quot;&gt;
+
+              &lt;div class=&quot;flex flex-wrap justify-between items-center gap-1.5&quot;&gt;
+
+                &lt;span class=&quot;font-extrabold text-sm text-gray-900&quot;&gt;🧾 ${escapeHtml(t.orderId)} → 🏪 ${escapeHtml(t.shopId)} (${escapeHtml(t.shopName)})&lt;/span&gt;
+
                 ${typeBadge}
-              </div>
-              <p class="text-xs text-gray-700">📍 <b>ဆိုင်လိပ်စာ:</b> ${escapeHtml(t.shopAddress || '-')}</p>
-              <p class="text-[11px] font-bold text-red-700">📝 အကြောင်းရင်း: ${escapeHtml(t.reason || 'Cancel / Return')}</p>
-              <div class="space-y-1.5">${itemsHtml}</div>
-              <div class="grid grid-cols-2 gap-2">
-                ${t.shopPhone ? `<a href="tel:${escapeHtml(t.shopPhone)}" class="bg-white border border-orange-300 text-orange-800 font-extrabold py-2 rounded-xl text-xs text-center">📞 ဆိုင်ဖုန်းခေါ်</a>` : `<span></span>`}
-                <a href="${shopMapUrl}" target="_blank" class="bg-white border border-orange-300 text-emerald-700 font-extrabold py-2 rounded-xl text-xs text-center">🗺️ ဆိုင် Map</a>
-              </div>
-              <button type="button" onclick="markReturnedToShop('${escapeHtml(t.orderId)}', '${escapeHtml(t.shopId)}', this)" class="w-full bg-orange-600 hover:bg-orange-700 active:scale-95 text-white font-extrabold py-3 rounded-xl text-xs sm:text-sm shadow transition">
+
+              &lt;/div&gt;
+
+              &lt;p class=&quot;text-xs text-gray-700&quot;&gt;📍 &lt;b&gt;ဆိုင်လိပ်စာ:&lt;/b&gt; ${escapeHtml(t.shopAddress || &#39;-&#39;)}&lt;/p&gt;
+
+              &lt;p class=&quot;text-[11px] font-bold text-red-700&quot;&gt;📝 အကြောင်းရင်း: ${escapeHtml(t.reason || &#39;Cancel / Return&#39;)}&lt;/p&gt;
+
+              &lt;div class=&quot;space-y-1.5&quot;&gt;${itemsHtml}&lt;/div&gt;
+
+              &lt;div class=&quot;grid grid-cols-2 gap-2&quot;&gt;
+
+                ${t.shopPhone ? `&lt;a href=&quot;tel:${escapeHtml(t.shopPhone)}&quot; class=&quot;bg-white border border-orange-300 text-orange-800 font-extrabold py-2 rounded-xl text-xs text-center&quot;&gt;📞 ဆိုင်ဖုန်းခေါ်&lt;/a&gt;` : `&lt;span&gt;&lt;/span&gt;`}
+
+                &lt;a href=&quot;${shopMapUrl}&quot; target=&quot;_blank&quot; class=&quot;bg-white border border-orange-300 text-emerald-700 font-extrabold py-2 rounded-xl text-xs text-center&quot;&gt;🗺️ ဆိုင် Map&lt;/a&gt;
+
+              &lt;/div&gt;
+
+              &lt;button type=&quot;button&quot; onclick=&quot;markReturnedToShop(&#39;${escapeHtml(t.orderId)}&#39;, &#39;${escapeHtml(t.shopId)}&#39;, this)&quot; class=&quot;w-full bg-orange-600 hover:bg-orange-700 active:scale-95 text-white font-extrabold py-3 rounded-xl text-xs sm:text-sm shadow transition&quot;&gt;
+
                 ✅ Return / Cancel ပစ္စည်း ဆိုင်ကိုပြန်အပ်ပြီး
-              </button>
-            </div>
+
+              &lt;/button&gt;
+
+            &lt;/div&gt;
+
           `;
-        }).join('');
+
+        }).join(&#39;&#39;);
+
       }
+
+
 
       // ---- TAB 1: PICKUP TASKS ----
-      const pickupEl = document.getElementById('rider-pickup-list');
-      if (pickupTasks.length === 0) {
-        pickupEl.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs sm:text-sm">🎉 လက်ရှိ ဆိုင်မှသွားကောက်ရန် ပစ္စည်း မရှိသေးပါ</div>`;
-      } else {
-        const shopGroups = {};
-        pickupTasks.forEach(task => {
-          const shopsInTask = (task.pickupShops && task.pickupShops.length > 0)
-            ? task.pickupShops
-            : [{ shopId: 'PARTNER', name: 'ချိတ်ဆက်ဆိုင်', phone: '', address: '', mapLocation: '' }];
 
-          shopsInTask.forEach(sh => {
+      const pickupEl = document.getElementById(&#39;rider-pickup-list&#39;);
+
+      if (pickupTasks.length === 0) {
+
+        pickupEl.innerHTML = `&lt;div class=&quot;text-center py-8 text-gray-400 text-xs sm:text-sm&quot;&gt;🎉 လက်ရှိ ဆိုင်မှသွားကောက်ရန် ပစ္စည်း မရှိသေးပါ&lt;/div&gt;`;
+
+      } else {
+
+        const shopGroups = {};
+
+        pickupTasks.forEach(task =&gt; {
+
+          const shopsInTask = (task.pickupShops &amp;&amp; task.pickupShops.length &gt; 0)
+
+            ? task.pickupShops
+
+            : [{ shopId: &#39;PARTNER&#39;, name: &#39;ချိတ်ဆက်ဆိုင်&#39;, phone: &#39;&#39;, address: &#39;&#39;, mapLocation: &#39;&#39; }];
+
+
+
+          shopsInTask.forEach(sh =&gt; {
+
             const sid = sh.shopId;
+
             if (!shopGroups[sid]) shopGroups[sid] = { shop: sh, orders: [] };
-            const itemsForThisShop = (task.items || []).filter(it => (it.shopId || '').toUpperCase() === sid.toUpperCase());
+
+            const itemsForThisShop = (task.items || []).filter(it =&gt; (it.shopId || &#39;&#39;).toUpperCase() === sid.toUpperCase());
+
             shopGroups[sid].orders.push({
+
               orderId: task.orderId,
+
               dateTime: task.dateTime,
+
               pickupStatus: task.pickupStatus,
+
               multiShopCount: shopsInTask.length,
-              items: itemsForThisShop.length > 0 ? itemsForThisShop : task.items
+
+              items: itemsForThisShop.length &gt; 0 ? itemsForThisShop : task.items
+
             });
+
           });
+
         });
 
-        pickupEl.innerHTML = Object.keys(shopGroups).map(sid => {
+
+
+        pickupEl.innerHTML = Object.keys(shopGroups).map(sid =&gt; {
+
           const grp = shopGroups[sid];
+
           const sh = grp.shop;
+
           const shopMapUrl = buildShopMapUrl(sh.mapLocation, sh.address, sh.name);
 
-          const ordersCardsHtml = grp.orders.map(ord => {
-            const isGoing = ord.pickupStatus === 'ဆိုင်သို့ သွားနေပါသည်';
-            let statusBadge = `<span class="bg-purple-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">📋 ဆိုင်မှ ပစ္စည်းသွားကောက်ရန်</span>`;
-            if (isGoing) statusBadge = `<span class="bg-amber-500 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full animate-pulse">🛵 သွားနေပါပြီ</span>`;
 
-            const itemsHtml = (ord.items || []).map((it, idx) => {
+
+          const ordersCardsHtml = grp.orders.map(ord =&gt; {
+
+            const isGoing = ord.pickupStatus === &#39;ဆိုင်သို့ သွားနေပါသည်&#39;;
+
+            let statusBadge = `&lt;span class=&quot;bg-purple-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full&quot;&gt;📋 ဆိုင်မှ ပစ္စည်းသွားကောက်ရန်&lt;/span&gt;`;
+
+            if (isGoing) statusBadge = `&lt;span class=&quot;bg-amber-500 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full animate-pulse&quot;&gt;🛵 သွားနေပါပြီ&lt;/span&gt;`;
+
+
+
+            const itemsHtml = (ord.items || []).map((it, idx) =&gt; {
+
               const chkKey = `pu_${ord.orderId}_${sid}_${idx}`;
+
               const isChecked = !!checks[chkKey];
+
               window.__pickupImgMap[chkKey] = {
+
                 orderId: ord.orderId, name: it.name, colorName: it.colorName, size: it.size, qty: it.qty, image: it.image
+
               };
+
               const thumbHtml = it.image
-                ? `<button type="button" onclick="openImageLightbox('${chkKey}')" class="relative w-16 h-16 rounded-xl overflow-hidden border-2 ${isChecked ? 'border-emerald-400' : 'border-purple-200'} shrink-0 bg-gray-100 cursor-zoom-in">
-                     <img src="${escapeHtml(it.image)}" alt="" class="w-full h-full object-cover object-top">
-                     <span class="absolute bottom-0.5 right-0.5 bg-black/70 text-white text-[9px] px-1 rounded">🔍</span>
-                   </button>`
-                : `<div class="w-16 h-16 rounded-xl border border-dashed border-gray-300 bg-gray-100 flex items-center justify-center text-[10px] text-gray-400 shrink-0">ပုံမရှိ</div>`;
+
+                ? `&lt;button type=&quot;button&quot; onclick=&quot;openImageLightbox(&#39;${chkKey}&#39;)&quot; class=&quot;relative w-16 h-16 rounded-xl overflow-hidden border-2 ${isChecked ? &#39;border-emerald-400&#39; : &#39;border-purple-200&#39;} shrink-0 bg-gray-100 cursor-zoom-in&quot;&gt;
+
+                     &lt;img src=&quot;${escapeHtml(it.image)}&quot; alt=&quot;&quot; class=&quot;w-full h-full object-cover object-top&quot;&gt;
+
+                     &lt;span class=&quot;absolute bottom-0.5 right-0.5 bg-black/70 text-white text-[9px] px-1 rounded&quot;&gt;🔍&lt;/span&gt;
+
+                   &lt;/button&gt;`
+
+                : `&lt;div class=&quot;w-16 h-16 rounded-xl border border-dashed border-gray-300 bg-gray-100 flex items-center justify-center text-[10px] text-gray-400 shrink-0&quot;&gt;ပုံမရှိ&lt;/div&gt;`;
+
+
 
               return `
-                <div class="flex items-center gap-2.5 p-2 rounded-xl border ${isChecked ? 'bg-emerald-50 border-emerald-300' : 'bg-white border-gray-200'}">
-                  <label class="p-1 cursor-pointer shrink-0">
-                    <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="togglePickupCheck('${chkKey}')" class="w-5 h-5 accent-emerald-600 rounded cursor-pointer">
-                  </label>
-                  ${thumbHtml}
-                  <div class="flex-1 min-w-0 space-y-1">
-                    <p class="font-extrabold text-xs sm:text-sm ${isChecked ? 'line-through text-gray-400' : 'text-gray-900'} leading-snug">${idx + 1}. ${escapeHtml(it.name)}</p>
-                    <div class="flex flex-wrap gap-1">
-                      <span class="bg-purple-100 text-purple-800 px-1.5 py-0.5 rounded-md text-[10px] font-extrabold">🎨 ${escapeHtml(it.colorName || 'မူရင်း')}</span>
-                      ${it.size && it.size !== 'အသက်မလို' ? `<span class="bg-pink-100 text-pink-800 px-1.5 py-0.5 rounded-md text-[10px] font-extrabold">📏 ${escapeHtml(it.size)}</span>` : ''}
-                      <span class="bg-gray-900 text-white px-2 py-0.5 rounded-md text-[10px] font-extrabold">x ${it.qty} ခု</span>
-                    </div>
-                  </div>
-                </div>
-              `;
-            }).join('');
 
-            const multiShopNote = ord.multiShopCount > 1
-              ? `<p class="text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-2 py-1">⚠️ ဤအော်ဒါတွင် ဆိုင် (${ord.multiShopCount}) ဆိုင် တွဲပါနေပါသည် — ဆိုင်အားလုံးကောက်ပြီးမှ "✅ ကောက်ပြီးပြီ" နှိပ်ပါ။</p>`
-              : '';
+                &lt;div class=&quot;flex items-center gap-2.5 p-2 rounded-xl border ${isChecked ? &#39;bg-emerald-50 border-emerald-300&#39; : &#39;bg-white border-gray-200&#39;}&quot;&gt;
+
+                  &lt;label class=&quot;p-1 cursor-pointer shrink-0&quot;&gt;
+
+                    &lt;input type=&quot;checkbox&quot; ${isChecked ? &#39;checked&#39; : &#39;&#39;} onchange=&quot;togglePickupCheck(&#39;${chkKey}&#39;)&quot; class=&quot;w-5 h-5 accent-emerald-600 rounded cursor-pointer&quot;&gt;
+
+                  &lt;/label&gt;
+
+                  ${thumbHtml}
+
+                  &lt;div class=&quot;flex-1 min-w-0 space-y-1&quot;&gt;
+
+                    &lt;p class=&quot;font-extrabold text-xs sm:text-sm ${isChecked ? &#39;line-through text-gray-400&#39; : &#39;text-gray-900&#39;} leading-snug&quot;&gt;${idx + 1}. ${escapeHtml(it.name)}&lt;/p&gt;
+
+                    &lt;div class=&quot;flex flex-wrap gap-1&quot;&gt;
+
+                      &lt;span class=&quot;bg-purple-100 text-purple-800 px-1.5 py-0.5 rounded-md text-[10px] font-extrabold&quot;&gt;🎨 ${escapeHtml(it.colorName || &#39;မူရင်း&#39;)}&lt;/span&gt;
+
+                      ${it.size &amp;&amp; it.size !== &#39;အသက်မလို&#39; ? `&lt;span class=&quot;bg-pink-100 text-pink-800 px-1.5 py-0.5 rounded-md text-[10px] font-extrabold&quot;&gt;📏 ${escapeHtml(it.size)}&lt;/span&gt;` : &#39;&#39;}
+
+                      &lt;span class=&quot;bg-gray-900 text-white px-2 py-0.5 rounded-md text-[10px] font-extrabold&quot;&gt;x ${it.qty} ခု&lt;/span&gt;
+
+                    &lt;/div&gt;
+
+                  &lt;/div&gt;
+
+                &lt;/div&gt;
+
+              `;
+
+            }).join(&#39;&#39;);
+
+
+
+            const multiShopNote = ord.multiShopCount &gt; 1
+
+              ? `&lt;p class=&quot;text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-2 py-1&quot;&gt;⚠️ ဤအော်ဒါတွင် ဆိုင် (${ord.multiShopCount}) ဆိုင် တွဲပါနေပါသည် — ဆိုင်အားလုံးကောက်ပြီးမှ &quot;✅ ကောက်ပြီးပြီ&quot; နှိပ်ပါ။&lt;/p&gt;`
+
+              : &#39;&#39;;
+
+
 
             return `
-              <div class="bg-gray-50/90 border-2 ${isGoing ? 'border-amber-400 bg-amber-50/40' : 'border-purple-200'} rounded-xl p-3 space-y-2.5 transition">
-                <div class="flex flex-wrap justify-between items-center gap-1.5">
-                  <div>
-                    <span class="font-extrabold text-xs sm:text-sm text-gray-900">🧾 ${escapeHtml(ord.orderId)}</span>
-                    <span class="text-[10px] text-gray-500 ml-1">⏰ ${escapeHtml(ord.dateTime)}</span>
-                  </div>
+
+              &lt;div class=&quot;bg-gray-50/90 border-2 ${isGoing ? &#39;border-amber-400 bg-amber-50/40&#39; : &#39;border-purple-200&#39;} rounded-xl p-3 space-y-2.5 transition&quot;&gt;
+
+                &lt;div class=&quot;flex flex-wrap justify-between items-center gap-1.5&quot;&gt;
+
+                  &lt;div&gt;
+
+                    &lt;span class=&quot;font-extrabold text-xs sm:text-sm text-gray-900&quot;&gt;🧾 ${escapeHtml(ord.orderId)}&lt;/span&gt;
+
+                    &lt;span class=&quot;text-[10px] text-gray-500 ml-1&quot;&gt;⏰ ${escapeHtml(ord.dateTime)}&lt;/span&gt;
+
+                  &lt;/div&gt;
+
                   ${statusBadge}
-                </div>
+
+                &lt;/div&gt;
+
                 ${multiShopNote}
-                <div class="space-y-1.5">${itemsHtml}</div>
-                <div class="grid grid-cols-2 gap-2 pt-1">
-                  <button type="button" onclick="riderUpdatePickup('${ord.orderId}', 'ဆိုင်သို့ သွားနေပါသည်', this)" ${isGoing ? 'disabled' : ''} class="${isGoing ? 'bg-emerald-100 text-emerald-800 border-2 border-emerald-400 cursor-not-allowed' : 'bg-amber-500 hover:bg-amber-600 text-white active:scale-95'} font-extrabold py-2.5 rounded-xl text-xs shadow-sm transition">
-                    ${isGoing ? '✅ သွားနေပါပြီ (နှိပ်ပြီး)' : '🛵 သွားနေပါပြီ'}
-                  </button>
-                  <button type="button" onclick="riderUpdatePickup('${ord.orderId}', 'ဆိုင်မှ ပစ္စည်းကောက်ပြီးပြီ', this)" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-extrabold py-2.5 rounded-xl text-xs shadow-sm transition">
+
+                &lt;div class=&quot;space-y-1.5&quot;&gt;${itemsHtml}&lt;/div&gt;
+
+                &lt;div class=&quot;grid grid-cols-2 gap-2 pt-1&quot;&gt;
+
+                  &lt;button type=&quot;button&quot; onclick=&quot;riderUpdatePickup(&#39;${ord.orderId}&#39;, &#39;ဆိုင်သို့ သွားနေပါသည်&#39;, this)&quot; ${isGoing ? &#39;disabled&#39; : &#39;&#39;} class=&quot;${isGoing ? &#39;bg-emerald-100 text-emerald-800 border-2 border-emerald-400 cursor-not-allowed&#39; : &#39;bg-amber-500 hover:bg-amber-600 text-white active:scale-95&#39;} font-extrabold py-2.5 rounded-xl text-xs shadow-sm transition&quot;&gt;
+
+                    ${isGoing ? &#39;✅ သွားနေပါပြီ (နှိပ်ပြီး)&#39; : &#39;🛵 သွားနေပါပြီ&#39;}
+
+                  &lt;/button&gt;
+
+                  &lt;button type=&quot;button&quot; onclick=&quot;riderUpdatePickup(&#39;${ord.orderId}&#39;, &#39;ဆိုင်မှ ပစ္စည်းကောက်ပြီးပြီ&#39;, this)&quot; class=&quot;bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-extrabold py-2.5 rounded-xl text-xs shadow-sm transition&quot;&gt;
+
                     ✅ ဆိုင်မှ ပစ္စည်းကောက်ပြီးပြီ
-                  </button>
-                </div>
-              </div>
+
+                  &lt;/button&gt;
+
+                &lt;/div&gt;
+
+              &lt;/div&gt;
+
             `;
-          }).join('');
+
+          }).join(&#39;&#39;);
+
+
 
           return `
-            <div class="border-2 border-purple-300 rounded-2xl overflow-hidden shadow-sm">
-              <div class="bg-purple-700 text-white p-3.5 space-y-2">
-                <div>
-                  <p class="text-[10px] text-purple-200 font-bold">🏪 ပစ္စည်းသွားကောက်ရမည့် ဆိုင် (${grp.orders.length} အော်ဒါ)</p>
-                  <h4 class="font-extrabold text-sm sm:text-base">${escapeHtml(sh.shopId)} — ${escapeHtml(sh.name)}</h4>
-                </div>
-                ${sh.address ? `<p class="text-xs text-purple-100">📍 ${escapeHtml(sh.address)}</p>` : ''}
-                <div class="grid grid-cols-2 gap-2 pt-0.5">
-                  ${sh.phone ? `<a href="tel:${escapeHtml(sh.phone)}" class="bg-white/20 hover:bg-white/30 text-white font-extrabold py-1.5 rounded-xl text-xs text-center">📞 ဆိုင်ဖုန်းခေါ် (${escapeHtml(sh.phone)})</a>` : `<span class="bg-white/10 text-purple-200 py-1.5 rounded-xl text-xs text-center">📞 ဖုန်းမထည့်ရသေး</span>`}
-                  <a href="${shopMapUrl}" target="_blank" class="bg-amber-400 hover:bg-amber-300 text-gray-900 font-extrabold py-1.5 rounded-xl text-xs text-center shadow-sm">🗺️ ဆိုင် Google Maps</a>
-                </div>
-              </div>
-              <div class="p-3 space-y-3 bg-white">${ordersCardsHtml}</div>
-            </div>
+
+            &lt;div class=&quot;border-2 border-purple-300 rounded-2xl overflow-hidden shadow-sm&quot;&gt;
+
+              &lt;div class=&quot;bg-purple-700 text-white p-3.5 space-y-2&quot;&gt;
+
+                &lt;div&gt;
+
+                  &lt;p class=&quot;text-[10px] text-purple-200 font-bold&quot;&gt;🏪 ပစ္စည်းသွားကောက်ရမည့် ဆိုင် (${grp.orders.length} အော်ဒါ)&lt;/p&gt;
+
+                  &lt;h4 class=&quot;font-extrabold text-sm sm:text-base&quot;&gt;${escapeHtml(sh.shopId)} — ${escapeHtml(sh.name)}&lt;/h4&gt;
+
+                &lt;/div&gt;
+
+                ${sh.address ? `&lt;p class=&quot;text-xs text-purple-100&quot;&gt;📍 ${escapeHtml(sh.address)}&lt;/p&gt;` : &#39;&#39;}
+
+                &lt;div class=&quot;grid grid-cols-2 gap-2 pt-0.5&quot;&gt;
+
+                  ${sh.phone ? `&lt;a href=&quot;tel:${escapeHtml(sh.phone)}&quot; class=&quot;bg-white/20 hover:bg-white/30 text-white font-extrabold py-1.5 rounded-xl text-xs text-center&quot;&gt;📞 ဆိုင်ဖုန်းခေါ် (${escapeHtml(sh.phone)})&lt;/a&gt;` : `&lt;span class=&quot;bg-white/10 text-purple-200 py-1.5 rounded-xl text-xs text-center&quot;&gt;📞 ဖုန်းမထည့်ရသေး&lt;/span&gt;`}
+
+                  &lt;a href=&quot;${shopMapUrl}&quot; target=&quot;_blank&quot; class=&quot;bg-amber-400 hover:bg-amber-300 text-gray-900 font-extrabold py-1.5 rounded-xl text-xs text-center shadow-sm&quot;&gt;🗺️ ဆိုင် Google Maps&lt;/a&gt;
+
+                &lt;/div&gt;
+
+              &lt;/div&gt;
+
+              &lt;div class=&quot;p-3 space-y-3 bg-white&quot;&gt;${ordersCardsHtml}&lt;/div&gt;
+
+            &lt;/div&gt;
+
           `;
-        }).join('');
+
+        }).join(&#39;&#39;);
+
       }
+
+
 
       // ---- TAB 2: DELIVERY PENDING ORDERS ----
-      const pendingEl = document.getElementById('rider-pending-list');
-      if (pending.length === 0) {
-        pendingEl.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs sm:text-sm">🎉 လက်ရှိ ဝယ်သူထံ ပို့ဆောင်ရန် အော်ဒါ မရှိသေးပါ</div>`;
-      } else {
-        pendingEl.innerHTML = pending.map(o => {
-          const isOnWay = o.status === 'ပို့ဆောင်နေပြီ';
-          const isNoAnswer = o.status === 'ဖုန်းမကိုင် (နောက်နေ့ပြန်ပို့)';
-          const isCustCancelReq = o.status === 'ဝယ်သူ Cancel တောင်းဆိုထားသည်';
-          const mapInfo = buildSmartMapsInfo(o);
-          const detailBlock = o.addressDetail
-            ? `<p class="text-gray-800 bg-amber-50 border border-amber-200 rounded-lg px-2.5 py-1.5">🏠 <b>အိမ်နံပါတ်/မှတ်ချက်:</b> ${escapeHtml(o.addressDetail)}</p>`
-            : '';
 
-          let statusPill = `<span class="bg-blue-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">📌 တာဝန်ပေးထားသည်</span>`;
-          let borderCls = 'border-blue-100 bg-gray-50/50';
+      const pendingEl = document.getElementById(&#39;rider-pending-list&#39;);
+
+      if (pending.length === 0) {
+
+        pendingEl.innerHTML = `&lt;div class=&quot;text-center py-8 text-gray-400 text-xs sm:text-sm&quot;&gt;🎉 လက်ရှိ ဝယ်သူထံ ပို့ဆောင်ရန် အော်ဒါ မရှိသေးပါ&lt;/div&gt;`;
+
+      } else {
+
+        pendingEl.innerHTML = pending.map(o =&gt; {
+
+          const isOnWay = o.status === &#39;ပို့ဆောင်နေပြီ&#39;;
+
+          const isNoAnswer = o.status === &#39;ဖုန်းမကိုင် (နောက်နေ့ပြန်ပို့)&#39;;
+
+          const isCustCancelReq = o.status === &#39;ဝယ်သူ Cancel တောင်းဆိုထားသည်&#39;;
+
+          const mapInfo = buildSmartMapsInfo(o);
+
+          const detailBlock = o.addressDetail
+
+            ? `&lt;p class=&quot;text-gray-800 bg-amber-50 border border-amber-200 rounded-lg px-2.5 py-1.5&quot;&gt;🏠 &lt;b&gt;အိမ်နံပါတ်/မှတ်ချက်:&lt;/b&gt; ${escapeHtml(o.addressDetail)}&lt;/p&gt;`
+
+            : &#39;&#39;;
+
+
+
+          let statusPill = `&lt;span class=&quot;bg-blue-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full&quot;&gt;📌 တာဝန်ပေးထားသည်&lt;/span&gt;`;
+
+          let borderCls = &#39;border-blue-100 bg-gray-50/50&#39;;
+
           if (isCustCancelReq) {
-            statusPill = `<span class="bg-red-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full animate-pulse">⚠️ Cancel တောင်းဆိုထား (Admin စစ်နေ)</span>`;
-            borderCls = 'border-red-300 bg-red-50/40';
+
+            statusPill = `&lt;span class=&quot;bg-red-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full animate-pulse&quot;&gt;⚠️ Cancel တောင်းဆိုထား (Admin စစ်နေ)&lt;/span&gt;`;
+
+            borderCls = &#39;border-red-300 bg-red-50/40&#39;;
+
           } else if (isOnWay) {
-            statusPill = `<span class="bg-amber-500 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full animate-pulse">🚚 သွားနေပါပြီ</span>`;
-            borderCls = 'border-amber-400 bg-amber-50/40';
+
+            statusPill = `&lt;span class=&quot;bg-amber-500 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full animate-pulse&quot;&gt;🚚 သွားနေပါပြီ&lt;/span&gt;`;
+
+            borderCls = &#39;border-amber-400 bg-amber-50/40&#39;;
+
           } else if (isNoAnswer) {
-            statusPill = `<span class="bg-orange-500 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">📞 ဖုန်းမကိုင် (Admin ထံပို့ပြီး)</span>`;
-            borderCls = 'border-orange-300 bg-orange-50/40';
+
+            statusPill = `&lt;span class=&quot;bg-orange-500 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full&quot;&gt;📞 ဖုန်းမကိုင် (Admin ထံပို့ပြီး)&lt;/span&gt;`;
+
+            borderCls = &#39;border-orange-300 bg-orange-50/40&#39;;
+
           }
 
+
+
           return `
-            <div class="border-2 ${borderCls} rounded-2xl p-3.5 space-y-2.5 transition">
-              <div class="flex flex-wrap justify-between items-center gap-1.5">
-                <span class="font-extrabold text-gray-900 text-sm">🧾 ${escapeHtml(o.orderId)}</span>
-                <div class="flex items-center gap-1">
-                  <span class="${mapInfo.isExact ? 'bg-emerald-100 text-emerald-800 border-emerald-300' : 'bg-gray-100 text-gray-600 border-gray-300'} border text-[10px] font-extrabold px-2 py-0.5 rounded-full">
+
+            &lt;div class=&quot;border-2 ${borderCls} rounded-2xl p-3.5 space-y-2.5 transition&quot;&gt;
+
+              &lt;div class=&quot;flex flex-wrap justify-between items-center gap-1.5&quot;&gt;
+
+                &lt;span class=&quot;font-extrabold text-gray-900 text-sm&quot;&gt;🧾 ${escapeHtml(o.orderId)}&lt;/span&gt;
+
+                &lt;div class=&quot;flex items-center gap-1&quot;&gt;
+
+                  &lt;span class=&quot;${mapInfo.isExact ? &#39;bg-emerald-100 text-emerald-800 border-emerald-300&#39; : &#39;bg-gray-100 text-gray-600 border-gray-300&#39;} border text-[10px] font-extrabold px-2 py-0.5 rounded-full&quot;&gt;
+
                     ${mapInfo.label}
-                  </span>
+
+                  &lt;/span&gt;
+
                   ${statusPill}
-                </div>
-              </div>
-              <div class="text-xs space-y-1.5">
-                <p class="font-extrabold text-gray-900 text-sm">👤 ${escapeHtml(o.name)} — <span class="text-blue-700">${escapeHtml(o.phone)}</span></p>
-                <p class="text-gray-700 leading-relaxed">📍 <b>လိပ်စာ:</b> ${escapeHtml(o.address)}</p>
+
+                &lt;/div&gt;
+
+              &lt;/div&gt;
+
+              &lt;div class=&quot;text-xs space-y-1.5&quot;&gt;
+
+                &lt;p class=&quot;font-extrabold text-gray-900 text-sm&quot;&gt;👤 ${escapeHtml(o.name)} — &lt;span class=&quot;text-blue-700&quot;&gt;${escapeHtml(o.phone)}&lt;/span&gt;&lt;/p&gt;
+
+                &lt;p class=&quot;text-gray-700 leading-relaxed&quot;&gt;📍 &lt;b&gt;လိပ်စာ:&lt;/b&gt; ${escapeHtml(o.address)}&lt;/p&gt;
+
                 ${detailBlock}
-                <p class="text-pink-700 font-bold whitespace-pre-line bg-white p-2 rounded-xl border border-pink-100">${escapeHtml(o.itemsText)}</p>
-                <div class="flex justify-between items-center pt-1">
-                  <span class="text-[11px] text-gray-500">⏰ ${escapeHtml(o.dateTime)}</span>
-                  <span class="text-sm font-extrabold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-lg">💰 COD: ${Number(o.grandTotal).toLocaleString()} ကျပ်</span>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 gap-2 pt-1">
-                <a href="tel:${escapeHtml(o.phone)}" class="bg-white border-2 border-blue-200 text-blue-700 font-extrabold py-2 rounded-xl text-xs text-center">📞 ဖုန်းခေါ်မည်</a>
-                <a href="${mapInfo.url}" target="_blank" class="${mapInfo.isExact ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-emerald-700 border-emerald-300'} border-2 font-extrabold py-2 rounded-xl text-xs text-center shadow-sm">
-                  ${mapInfo.isExact ? '📍 Google Maps (GPS)' : '🗺️ Google Maps ရှာမည်'}
-                </a>
-              </div>
-              <div class="grid grid-cols-2 gap-2">
-                <button type="button" onclick="riderUpdateOrder('${o.orderId}', 'ပို့ဆောင်နေပြီ', this)" ${isOnWay ? 'disabled' : ''} class="${isOnWay ? 'bg-emerald-100 text-emerald-800 border-2 border-emerald-400 cursor-not-allowed' : 'bg-amber-500 hover:bg-amber-600 active:scale-95 text-white'} font-extrabold py-2.5 rounded-xl text-xs shadow-sm transition">
-                  ${isOnWay ? '✅ သွားနေပါပြီ (နှိပ်ပြီး)' : '🚚 သွားနေပါပြီ'}
-                </button>
-                <button type="button" onclick="riderUpdateOrder('${o.orderId}', 'COD ငွေပေးချေပြီး', this)" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-extrabold py-2.5 rounded-xl text-xs shadow-sm transition">
+
+                &lt;p class=&quot;text-pink-700 font-bold whitespace-pre-line bg-white p-2 rounded-xl border border-pink-100&quot;&gt;${escapeHtml(o.itemsText)}&lt;/p&gt;
+
+                &lt;div class=&quot;flex justify-between items-center pt-1&quot;&gt;
+
+                  &lt;span class=&quot;text-[11px] text-gray-500&quot;&gt;⏰ ${escapeHtml(o.dateTime)}&lt;/span&gt;
+
+                  &lt;span class=&quot;text-sm font-extrabold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-lg&quot;&gt;💰 COD: ${Number(o.grandTotal).toLocaleString()} ကျပ်&lt;/span&gt;
+
+                &lt;/div&gt;
+
+              &lt;/div&gt;
+
+              &lt;div class=&quot;grid grid-cols-2 gap-2 pt-1&quot;&gt;
+
+                &lt;a href=&quot;tel:${escapeHtml(o.phone)}&quot; class=&quot;bg-white border-2 border-blue-200 text-blue-700 font-extrabold py-2 rounded-xl text-xs text-center&quot;&gt;📞 ဖုန်းခေါ်မည်&lt;/a&gt;
+
+                &lt;a href=&quot;${mapInfo.url}&quot; target=&quot;_blank&quot; class=&quot;${mapInfo.isExact ? &#39;bg-emerald-600 text-white border-emerald-600&#39; : &#39;bg-white text-emerald-700 border-emerald-300&#39;} border-2 font-extrabold py-2 rounded-xl text-xs text-center shadow-sm&quot;&gt;
+
+                  ${mapInfo.isExact ? &#39;📍 Google Maps (GPS)&#39; : &#39;🗺️ Google Maps ရှာမည်&#39;}
+
+                &lt;/a&gt;
+
+              &lt;/div&gt;
+
+              &lt;div class=&quot;grid grid-cols-2 gap-2&quot;&gt;
+
+                &lt;button type=&quot;button&quot; onclick=&quot;riderUpdateOrder(&#39;${o.orderId}&#39;, &#39;ပို့ဆောင်နေပြီ&#39;, this)&quot; ${isOnWay ? &#39;disabled&#39; : &#39;&#39;} class=&quot;${isOnWay ? &#39;bg-emerald-100 text-emerald-800 border-2 border-emerald-400 cursor-not-allowed&#39; : &#39;bg-amber-500 hover:bg-amber-600 active:scale-95 text-white&#39;} font-extrabold py-2.5 rounded-xl text-xs shadow-sm transition&quot;&gt;
+
+                  ${isOnWay ? &#39;✅ သွားနေပါပြီ (နှိပ်ပြီး)&#39; : &#39;🚚 သွားနေပါပြီ&#39;}
+
+                &lt;/button&gt;
+
+                &lt;button type=&quot;button&quot; onclick=&quot;riderUpdateOrder(&#39;${o.orderId}&#39;, &#39;COD ငွေပေးချေပြီး&#39;, this)&quot; class=&quot;bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-extrabold py-2.5 rounded-xl text-xs shadow-sm transition&quot;&gt;
+
                   💰 COD ပြီး
-                </button>
-              </div>
-              <div class="grid grid-cols-2 gap-2">
-                <button type="button" onclick="riderUpdateOrder('${o.orderId}', 'ဖုန်းမကိုင် (နောက်နေ့ပြန်ပို့)', this)" class="bg-orange-50 hover:bg-orange-100 text-orange-800 border border-orange-300 font-extrabold py-2 rounded-xl text-[11px]">
+
+                &lt;/button&gt;
+
+              &lt;/div&gt;
+
+              &lt;div class=&quot;grid grid-cols-2 gap-2&quot;&gt;
+
+                &lt;button type=&quot;button&quot; onclick=&quot;riderUpdateOrder(&#39;${o.orderId}&#39;, &#39;ဖုန်းမကိုင် (နောက်နေ့ပြန်ပို့)&#39;, this)&quot; class=&quot;bg-orange-50 hover:bg-orange-100 text-orange-800 border border-orange-300 font-extrabold py-2 rounded-xl text-[11px]&quot;&gt;
+
                   📞 ဖုန်းမကိုင် (Admin ပို့)
-                </button>
-                <button type="button" onclick="openReturnModal('${o.orderId}', '${escapeHtml(o.name)}')" class="bg-red-50 hover:bg-red-100 text-red-700 border border-red-300 font-extrabold py-2 rounded-xl text-[11px]">
+
+                &lt;/button&gt;
+
+                &lt;button type=&quot;button&quot; onclick=&quot;openReturnModal(&#39;${o.orderId}&#39;, &#39;${escapeHtml(o.name)}&#39;)&quot; class=&quot;bg-red-50 hover:bg-red-100 text-red-700 border border-red-300 font-extrabold py-2 rounded-xl text-[11px]&quot;&gt;
+
                   ❌ Cancel / Return
-                </button>
-              </div>
-            </div>
+
+                &lt;/button&gt;
+
+              &lt;/div&gt;
+
+            &lt;/div&gt;
+
           `;
-        }).join('');
+
+        }).join(&#39;&#39;);
+
       }
 
-      const retBox = document.getElementById('rider-today-returns-box');
-      const retList = document.getElementById('rider-today-returns-list');
+
+
+      const retBox = document.getElementById(&#39;rider-today-returns-box&#39;);
+
+      const retList = document.getElementById(&#39;rider-today-returns-list&#39;);
+
       if (todayReturns.length === 0) {
-        retBox.classList.add('hidden');
+
+        retBox.classList.add(&#39;hidden&#39;);
+
       } else {
-        retBox.classList.remove('hidden');
-        retList.innerHTML = todayReturns.map(r => {
-          const isHandedShop = r.returnStatus === 'delivered_to_shop' || r.returnStatus === 'closed';
-          const isHubGot = r.returnStatus && r.returnStatus !== 'rider_returning_to_hub';
-          let stText = '📦 Hub / ဆိုင် ပြန်အပ်ရန်';
-          let stCls = 'bg-red-100 text-red-800';
-          if (isHandedShop) { stText = '✅ ဆိုင်သို့ ပြန်အပ်ပြီး'; stCls = 'bg-emerald-100 text-emerald-800'; }
-          else if (isHubGot) { stText = '✅ Hub အပ်ပြီး'; stCls = 'bg-blue-100 text-blue-800'; }
+
+        retBox.classList.remove(&#39;hidden&#39;);
+
+        retList.innerHTML = todayReturns.map(r =&gt; {
+
+          const isHandedShop = r.returnStatus === &#39;delivered_to_shop&#39; || r.returnStatus === &#39;closed&#39;;
+
+          const isHubGot = r.returnStatus &amp;&amp; r.returnStatus !== &#39;rider_returning_to_hub&#39;;
+
+          let stText = &#39;📦 Hub / ဆိုင် ပြန်အပ်ရန်&#39;;
+
+          let stCls = &#39;bg-red-100 text-red-800&#39;;
+
+          if (isHandedShop) { stText = &#39;✅ ဆိုင်သို့ ပြန်အပ်ပြီး&#39;; stCls = &#39;bg-emerald-100 text-emerald-800&#39;; }
+
+          else if (isHubGot) { stText = &#39;✅ Hub အပ်ပြီး&#39;; stCls = &#39;bg-blue-100 text-blue-800&#39;; }
+
+
 
           return `
-            <div class="py-2.5 flex justify-between items-center gap-2">
-              <div>
-                <p class="font-extrabold text-gray-900">🔄 ${escapeHtml(r.orderId)} — ${escapeHtml(r.name)}</p>
-                <p class="text-[11px] text-red-700 font-bold">❌ ${escapeHtml(r.returnReason || 'Cancel / Return')}</p>
-              </div>
-              <span class="${stCls} text-[10px] font-extrabold px-2 py-0.5 rounded-full shrink-0">${stText}</span>
-            </div>
+
+            &lt;div class=&quot;py-2.5 flex justify-between items-center gap-2&quot;&gt;
+
+              &lt;div&gt;
+
+                &lt;p class=&quot;font-extrabold text-gray-900&quot;&gt;🔄 ${escapeHtml(r.orderId)} — ${escapeHtml(r.name)}&lt;/p&gt;
+
+                &lt;p class=&quot;text-[11px] text-red-700 font-bold&quot;&gt;❌ ${escapeHtml(r.returnReason || &#39;Cancel / Return&#39;)}&lt;/p&gt;
+
+              &lt;/div&gt;
+
+              &lt;span class=&quot;${stCls} text-[10px] font-extrabold px-2 py-0.5 rounded-full shrink-0&quot;&gt;${stText}&lt;/span&gt;
+
+            &lt;/div&gt;
+
           `;
-        }).join('');
+
+        }).join(&#39;&#39;);
+
       }
 
-      const doneEl = document.getElementById('rider-done-list');
+
+
+      const doneEl = document.getElementById(&#39;rider-done-list&#39;);
+
       if (done.length === 0) {
-        doneEl.innerHTML = `<p class="text-gray-400 py-3">ယနေ့ COD ငွေပေးချေပြီးသော အော်ဒါ မရှိသေးပါ။</p>`;
+
+        doneEl.innerHTML = `&lt;p class=&quot;text-gray-400 py-3&quot;&gt;ယနေ့ COD ငွေပေးချေပြီးသော အော်ဒါ မရှိသေးပါ။&lt;/p&gt;`;
+
       } else {
-        doneEl.innerHTML = done.map(o => {
-          const isAdminConfirmed = o.status === 'ပို့ပြီး';
+
+        doneEl.innerHTML = done.map(o =&gt; {
+
+          const isAdminConfirmed = o.status === &#39;ပို့ပြီး&#39;;
+
           return `
-            <div class="py-2.5 flex justify-between items-center gap-2">
-              <div>
-                <p class="font-bold text-gray-800">${isAdminConfirmed ? '✅' : '💰'} ${escapeHtml(o.orderId)} — ${escapeHtml(o.name)}</p>
-                <div class="flex flex-wrap items-center gap-1.5 mt-0.5">
-                  <span class="${isAdminConfirmed ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'} text-[10px] font-extrabold px-2 py-0.5 rounded-full">
-                    ${isAdminConfirmed ? '✅ Admin (COD Confirm) ပြီး' : '⏳ Admin COD Confirm စောင့်ဆိုင်းဆဲ'}
-                  </span>
-                  <span class="text-[11px] text-gray-500">⏰ ${escapeHtml(o.deliveredAt || o.dateTime)}</span>
-                </div>
-              </div>
-              <span class="font-extrabold text-emerald-700 shrink-0">${Number(o.grandTotal).toLocaleString()} Ks</span>
-            </div>
+
+            &lt;div class=&quot;py-2.5 flex justify-between items-center gap-2&quot;&gt;
+
+              &lt;div&gt;
+
+                &lt;p class=&quot;font-bold text-gray-800&quot;&gt;${isAdminConfirmed ? &#39;✅&#39; : &#39;💰&#39;} ${escapeHtml(o.orderId)} — ${escapeHtml(o.name)}&lt;/p&gt;
+
+                &lt;div class=&quot;flex flex-wrap items-center gap-1.5 mt-0.5&quot;&gt;
+
+                  &lt;span class=&quot;${isAdminConfirmed ? &#39;bg-emerald-100 text-emerald-800&#39; : &#39;bg-amber-100 text-amber-800&#39;} text-[10px] font-extrabold px-2 py-0.5 rounded-full&quot;&gt;
+
+                    ${isAdminConfirmed ? &#39;✅ Admin (COD Confirm) ပြီး&#39; : &#39;⏳ Admin COD Confirm စောင့်ဆိုင်းဆဲ&#39;}
+
+                  &lt;/span&gt;
+
+                  &lt;span class=&quot;text-[11px] text-gray-500&quot;&gt;⏰ ${escapeHtml(o.deliveredAt || o.dateTime)}&lt;/span&gt;
+
+                &lt;/div&gt;
+
+              &lt;/div&gt;
+
+              &lt;span class=&quot;font-extrabold text-emerald-700 shrink-0&quot;&gt;${Number(o.grandTotal).toLocaleString()} Ks&lt;/span&gt;
+
+            &lt;/div&gt;
+
           `;
-        }).join('');
+
+        }).join(&#39;&#39;);
+
       }
+
     }
+
+
 
     async function riderUpdatePickup(orderId, pickupStatus, btnEl) {
+
       const saved = getSavedRiderSession();
+
       if (!saved || !saved.id) return;
-      if (pickupStatus === 'ဆိုင်မှ ပစ္စည်းကောက်ပြီးပြီ') {
+
+      if (pickupStatus === &#39;ဆိုင်မှ ပစ္စည်းကောက်ပြီးပြီ&#39;) {
+
         if (!confirm(`အော်ဒါ #${orderId} ၏ ပစ္စည်းများကို ပုံနှင့်တိုက်စစ်ပြီး ဆိုင်မှကောက်ယူပြီးကြောင်း Admin ထံ အကြောင်းကြားပါမည်လား?`)) return;
+
       }
+
       if (btnEl) {
+
         btnEl.disabled = true;
-        if (pickupStatus === 'ဆိုင်သို့ သွားနေပါသည်') {
-          btnEl.className = 'bg-emerald-100 text-emerald-800 border-2 border-emerald-400 font-extrabold py-2.5 rounded-xl text-xs shadow-sm';
-          btnEl.innerText = '✅ သွားနေပါပြီ (နှိပ်ပြီး)';
+
+        if (pickupStatus === &#39;ဆိုင်သို့ သွားနေပါသည်&#39;) {
+
+          btnEl.className = &#39;bg-emerald-100 text-emerald-800 border-2 border-emerald-400 font-extrabold py-2.5 rounded-xl text-xs shadow-sm&#39;;
+
+          btnEl.innerText = &#39;✅ သွားနေပါပြီ (နှိပ်ပြီး)&#39;;
+
           if (navigator.vibrate) navigator.vibrate(100);
+
         } else {
-          btnEl.innerText = '⏳...';
+
+          btnEl.innerText = &#39;⏳...&#39;;
+
         }
+
       }
+
       try {
+
         await fetch(APPS_SCRIPT_URL, {
-          method: "POST", mode: "no-cors",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
+
+          method: &quot;POST&quot;, mode: &quot;no-cors&quot;,
+
+          headers: { &quot;Content-Type&quot;: &quot;text/plain;charset=utf-8&quot; },
+
           body: JSON.stringify({
-            action: "updatePickupStatus", orderId: orderId, pickupStatus: pickupStatus, riderId: saved.id, riderName: saved.name
+
+            action: &quot;updatePickupStatus&quot;, orderId: orderId, pickupStatus: pickupStatus, riderId: saved.id, riderName: saved.name
+
           })
+
         });
-        setTimeout(() => loadDeliveryDashboard(false), 900);
+
+        setTimeout(() =&gt; loadDeliveryDashboard(false), 900);
+
       } catch (e) {
-        alert("အခြေအနေ ပြောင်းလဲရာတွင် အမှားရှိနေပါသည်။");
+
+        alert(&quot;အခြေအနေ ပြောင်းလဲရာတွင် အမှားရှိနေပါသည်။&quot;);
+
       }
+
     }
+
+
 
     async function markReturnedToShop(orderId, shopId, btnEl) {
+
       const saved = getSavedRiderSession();
+
       if (!saved || !saved.id) return;
+
       if (!confirm(`အော်ဒါ #${orderId} ၏ Return / Cancel ပစ္စည်းကို ဆိုင် (${shopId}) သို့ ပြန်အပ်ပြီးကြောင်း Admin ထံ အကြောင်းကြားပါမည်လား?`)) return;
+
       if (btnEl) {
+
         btnEl.disabled = true;
-        btnEl.className = 'w-full bg-emerald-600 text-white font-extrabold py-3 rounded-xl text-xs sm:text-sm shadow';
-        btnEl.innerText = '✅ ဆိုင်သို့ ပြန်အပ်ပြီး (Admin ထံပို့နေသည်...)';
+
+        btnEl.className = &#39;w-full bg-emerald-600 text-white font-extrabold py-3 rounded-xl text-xs sm:text-sm shadow&#39;;
+
+        btnEl.innerText = &#39;✅ ဆိုင်သို့ ပြန်အပ်ပြီး (Admin ထံပို့နေသည်...)&#39;;
+
         if (navigator.vibrate) navigator.vibrate(120);
+
       }
+
       try {
+
         await fetch(APPS_SCRIPT_URL, {
-          method: "POST", mode: "no-cors",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
+
+          method: &quot;POST&quot;, mode: &quot;no-cors&quot;,
+
+          headers: { &quot;Content-Type&quot;: &quot;text/plain;charset=utf-8&quot; },
+
           body: JSON.stringify({
-            action: "markReturnDeliveredToShop", orderId: orderId, shopId: shopId, riderName: saved.name
+
+            action: &quot;markReturnDeliveredToShop&quot;, orderId: orderId, shopId: shopId, riderName: saved.name
+
           })
+
         });
-        showRiderBannerNoti(`✅ ဆိုင်သို့ ပြန်အပ်ပြီး (${orderId})`, "Admin ထံ အကြောင်းကြားပြီး ဆိုင် App တွင် Cancel/Return History သို့ ပြောင်းပြီးပါပြီ။");
-        setTimeout(() => loadDeliveryDashboard(false), 1000);
+
+        showRiderBannerNoti(`✅ ဆိုင်သို့ ပြန်အပ်ပြီး (${orderId})`, &quot;Admin ထံ အကြောင်းကြားပြီး ဆိုင် App တွင် Cancel/Return History သို့ ပြောင်းပြီးပါပြီ။&quot;);
+
+        setTimeout(() =&gt; loadDeliveryDashboard(false), 1000);
+
       } catch (e) {
+
         if (btnEl) {
+
           btnEl.disabled = false;
-          btnEl.className = 'w-full bg-orange-600 hover:bg-orange-700 text-white font-extrabold py-3 rounded-xl text-xs sm:text-sm shadow';
-          btnEl.innerText = '✅ Return / Cancel ပစ္စည်း ဆိုင်ကိုပြန်အပ်ပြီး';
+
+          btnEl.className = &#39;w-full bg-orange-600 hover:bg-orange-700 text-white font-extrabold py-3 rounded-xl text-xs sm:text-sm shadow&#39;;
+
+          btnEl.innerText = &#39;✅ Return / Cancel ပစ္စည်း ဆိုင်ကိုပြန်အပ်ပြီး&#39;;
+
         }
+
       }
+
     }
+
+
 
     async function riderUpdateOrder(orderId, newStatus, btnEl) {
+
       const saved = getSavedRiderSession();
+
       if (!saved || !saved.id) return;
-      if (newStatus === 'COD ငွေပေးချေပြီး') {
+
+      if (newStatus === &#39;COD ငွေပေးချေပြီး&#39;) {
+
         if (!confirm(`အော်ဒါ #${orderId} အတွက် ဝယ်သူထံမှ COD ငွေကောက်ခံပြီးဖြစ်ကြောင်း Admin ထံ အကြောင်းကြားပါမည်လား?`)) return;
-      } else if (newStatus === 'ဖုန်းမကိုင် (နောက်နေ့ပြန်ပို့)') {
+
+      } else if (newStatus === &#39;ဖုန်းမကိုင် (နောက်နေ့ပြန်ပို့)&#39;) {
+
         if (!confirm(`အော်ဒါ #${orderId} ဝယ်သူ ဖုန်းမကိုင်ကြောင်း Admin ထံ အကြောင်းကြားပါမည်လား?`)) return;
+
       }
+
       if (btnEl) {
+
         btnEl.disabled = true;
-        if (newStatus === 'ပို့ဆောင်နေပြီ') {
-          btnEl.className = 'bg-emerald-100 text-emerald-800 border-2 border-emerald-400 font-extrabold py-2.5 rounded-xl text-xs shadow-sm';
-          btnEl.innerText = '✅ သွားနေပါပြီ (နှိပ်ပြီး)';
+
+        if (newStatus === &#39;ပို့ဆောင်နေပြီ&#39;) {
+
+          btnEl.className = &#39;bg-emerald-100 text-emerald-800 border-2 border-emerald-400 font-extrabold py-2.5 rounded-xl text-xs shadow-sm&#39;;
+
+          btnEl.innerText = &#39;✅ သွားနေပါပြီ (နှိပ်ပြီး)&#39;;
+
           if (navigator.vibrate) navigator.vibrate(100);
+
         } else {
-          btnEl.innerText = '⏳...';
+
+          btnEl.innerText = &#39;⏳...&#39;;
+
         }
+
       }
+
       try {
+
         await fetch(APPS_SCRIPT_URL, {
-          method: "POST", mode: "no-cors",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
+
+          method: &quot;POST&quot;, mode: &quot;no-cors&quot;,
+
+          headers: { &quot;Content-Type&quot;: &quot;text/plain;charset=utf-8&quot; },
+
           body: JSON.stringify({
-            action: "updateOrderStatus", orderId: orderId, status: newStatus, riderId: saved.id, riderName: saved.name, byRider: true
+
+            action: &quot;updateOrderStatus&quot;, orderId: orderId, status: newStatus, riderId: saved.id, riderName: saved.name, byRider: true
+
           })
+
         });
-        setTimeout(() => loadDeliveryDashboard(false), 900);
+
+        setTimeout(() =&gt; loadDeliveryDashboard(false), 900);
+
       } catch (e) {
-        alert("အခြေအနေ ပြောင်းလဲရာတွင် အမှားရှိနေပါသည်။");
+
+        alert(&quot;အခြေအနေ ပြောင်းလဲရာတွင် အမှားရှိနေပါသည်။&quot;);
+
       }
+
     }
+
+
 
     function openReturnModal(orderId, custName) {
+
       returnTargetOrderId = orderId;
-      document.getElementById('return-modal-order-label').innerText = `🧾 ${orderId} — ${custName}`;
-      document.getElementById('return-extra-note').value = '';
-      document.getElementById('return-modal').classList.remove('hidden');
-      pushRiderHistoryState('return_modal');
+
+      document.getElementById(&#39;return-modal-order-label&#39;).innerText = `🧾 ${orderId} — ${custName}`;
+
+      document.getElementById(&#39;return-extra-note&#39;).value = &#39;&#39;;
+
+      document.getElementById(&#39;return-modal&#39;).classList.remove(&#39;hidden&#39;);
+
+      pushRiderHistoryState(&#39;return_modal&#39;);
+
     }
+
+
 
     function closeReturnModal() {
-      document.getElementById('return-modal').classList.add('hidden');
-      returnTargetOrderId = "";
+
+      document.getElementById(&#39;return-modal&#39;).classList.add(&#39;hidden&#39;);
+
+      returnTargetOrderId = &quot;&quot;;
+
     }
+
+
 
     async function submitCodReturn() {
-      const saved = getSavedRiderSession();
-      if (!saved || !returnTargetOrderId) return;
-      const checkedRadio = document.querySelector('input[name="ret_reason"]:checked');
-      let reason = checkedRadio ? checkedRadio.value : 'ဝယ်သူ COD ငြင်း / Cancel';
-      const extra = document.getElementById('return-extra-note').value.trim();
-      if (extra) reason += " — " + extra;
 
-      const btn = document.getElementById('btn-submit-return');
-      btn.disabled = true; btn.innerText = "⏳ ပို့နေသည်...";
+      const saved = getSavedRiderSession();
+
+      if (!saved || !returnTargetOrderId) return;
+
+      const checkedRadio = document.querySelector(&#39;input[name=&quot;ret_reason&quot;]:checked&#39;);
+
+      let reason = checkedRadio ? checkedRadio.value : &#39;ဝယ်သူ COD ငြင်း / Cancel&#39;;
+
+      const extra = document.getElementById(&#39;return-extra-note&#39;).value.trim();
+
+      if (extra) reason += &quot; — &quot; + extra;
+
+
+
+      const btn = document.getElementById(&#39;btn-submit-return&#39;);
+
+      btn.disabled = true; btn.innerText = &quot;⏳ ပို့နေသည်...&quot;;
+
+
 
       try {
+
         await fetch(APPS_SCRIPT_URL, {
-          method: "POST", mode: "no-cors",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
+
+          method: &quot;POST&quot;, mode: &quot;no-cors&quot;,
+
+          headers: { &quot;Content-Type&quot;: &quot;text/plain;charset=utf-8&quot; },
+
           body: JSON.stringify({
-            action: "reportCodReturn",
+
+            action: &quot;reportCodReturn&quot;,
+
             orderId: returnTargetOrderId,
+
             reason: reason,
+
             riderId: saved.id,
+
             riderName: saved.name
+
           })
+
         });
+
         closeReturnModal();
-        setTimeout(() => loadDeliveryDashboard(false), 900);
+
+        setTimeout(() =&gt; loadDeliveryDashboard(false), 900);
+
       } catch (e) {
-        alert("မှတ်တမ်းတင်ရာတွင် အမှားရှိနေပါသည်။");
+
+        alert(&quot;မှတ်တမ်းတင်ရာတွင် အမှားရှိနေပါသည်။&quot;);
+
       }
-      btn.disabled = false; btn.innerText = "📤 Admin ထံ ပို့မည်";
+
+      btn.disabled = false; btn.innerText = &quot;📤 Admin ထံ ပို့မည်&quot;;
+
     }
+
+
 
     function initDeliveryApp() {
-      try { history.replaceState({ riderHome: true }, ''); } catch (e) {}
 
-      if (!isStandaloneApp() && isIOSDevice()) {
-        document.getElementById('btn-del-install').classList.remove('hidden');
-        document.getElementById('btn-del-install-login').classList.remove('hidden');
+      try { history.replaceState({ riderHome: true }, &#39;&#39;); } catch (e) {}
+
+
+
+      if (!isStandaloneApp() &amp;&amp; isIOSDevice()) {
+
+        document.getElementById(&#39;btn-del-install&#39;).classList.remove(&#39;hidden&#39;);
+
+        document.getElementById(&#39;btn-del-install-login&#39;).classList.remove(&#39;hidden&#39;);
+
       }
+
+
 
       const saved = getSavedRiderSession();
-      if (saved && saved.id && saved.pin) {
+
+      if (saved &amp;&amp; saved.id &amp;&amp; saved.pin) {
+
         showDashboardScreen();
+
         loadDeliveryDashboard(false);
+
       } else {
+
         loadRiderLoginDropdown();
+
       }
 
-      setInterval(() => {
-        if (!document.getElementById('delivery-dashboard').classList.contains('hidden')) {
+
+
+      setInterval(() =&gt; {
+
+        if (!document.getElementById(&#39;delivery-dashboard&#39;).classList.contains(&#39;hidden&#39;)) {
+
           loadDeliveryDashboard(true);
+
         }
+
       }, 20000);
+
     }
 
+
+
     initDeliveryApp();
-  </script>
-</body>
-</html>
+
+  &lt;/script&gt;
+
+&lt;/body&gt;
+
+&lt;/html&gt;
+
