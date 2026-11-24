@@ -1,12 +1,12 @@
 {
-  "id": "/delivery/",
-  "name": "MiniTrend Delivery",
-  "short_name": "MiniTrend Delivery",
-  "start_url": "/delivery/",
-  "scope": "/delivery/",
+  "id": "/shop/",
+  "name": "MiniTrend Shop",
+  "short_name": "MiniTrend Shop",
+  "start_url": "/shop/",
+  "scope": "/shop/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#1d4ed8",
+  "theme_color": "#d97706",
   "icons": [
     {
       "src": "/icon.png?v=3",
