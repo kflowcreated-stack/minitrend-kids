@@ -1,11 +1,11 @@
 {
-  "id": "/shop/?v=2",
-  "name": "MiniTrend Shop — ချိတ်ဆက်ဆိုင်",
+  "id": "/shop/",
+  "name": "MiniTrend Shop",
   "short_name": "MiniTrend Shop",
   "start_url": "/shop/",
   "scope": "/shop/",
   "display": "standalone",
-  "background_color": "#fffbeb",
+  "background_color": "#ffffff",
   "theme_color": "#d97706",
   "icons": [
     {
@@ -18,7 +18,7 @@
       "src": "/icon.png?v=3",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ]
 }
