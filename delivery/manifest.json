@@ -1,24 +1,24 @@
 {
-  "id": "./",
+  "id": "/delivery/",
   "name": "MiniTrend Delivery",
   "short_name": "MiniTrend Delivery",
-  "start_url": "./",
-  "scope": "./",
+  "start_url": "/delivery/",
+  "scope": "/delivery/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#1d4ed8",
   "icons": [
     {
-      "src": "../icon.png?v=3",
+      "src": "/icon.png?v=3",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
-      "src": "../icon.png?v=3",
+      "src": "/icon.png?v=3",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ]
 }
