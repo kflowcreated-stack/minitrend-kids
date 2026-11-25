@@ -442,38 +442,38 @@
     <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl border-2 border-amber-300 overflow-hidden my-auto">
       <div class="bg-gradient-to-r from-amber-600 to-orange-600 text-white px-4 py-3.5 flex justify-between items-center">
         <div>
-          <p class="text-[10px] font-bold text-amber-100">MiniTrend Kids Partner Shop</p>
-          <h3 class="text-sm sm:text-base font-extrabold">📜 ဆိုင်အချက်အလက်နှင့် သဘောတူညီချက်</h3>
+          <p class="text-xs font-bold text-amber-100">MiniTrend Kids Partner Shop</p>
+          <h3 class="text-base sm:text-lg font-extrabold">📜 ဆိုင်အချက်အလက်နှင့် သဘောတူညီချက်</h3>
         </div>
-        <button type="button" onclick="logoutShop()" class="bg-white/20 hover:bg-white/30 text-white text-[11px] font-bold px-2.5 py-1.5 rounded-lg">🔒 ထွက်</button>
+        <button type="button" onclick="logoutShop()" class="bg-white/20 hover:bg-white/30 text-white text-xs font-bold px-2.5 py-1.5 rounded-lg">🔒 ထွက်</button>
       </div>
 
       <!-- STEP A: FILL SHOP NAME & READ AGREEMENT -->
-      <form id="gate-form-view" onsubmit="submitShopAgreement(event)" class="p-4 space-y-3 max-h-[80vh] overflow-y-auto">
-        <div class="bg-amber-50 border border-amber-200 rounded-xl p-2.5 text-[11px] font-bold text-amber-950">
+      <form id="gate-form-view" onsubmit="submitShopAgreement(event)" class="p-4 space-y-3.5 max-h-[82vh] overflow-y-auto">
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-sm font-bold text-amber-950 leading-relaxed">
           App စတင်အသုံးပြုရန် ဆိုင်နာမည်နှင့် လုပ်ငန်းအမည် အပြည့်အစုံဖြည့်ပြီး သဘောတူညီချက်ကို အတည်ပြုပေးပါ။
         </div>
 
         <div>
-          <label class="block text-xs font-extrabold text-gray-700 mb-1">🏪 ဆိုင်နာမည်</label>
-          <input type="text" id="gate-shop-name" required placeholder="ဥပမာ - Baby Store 3" class="w-full border-2 border-amber-200 rounded-xl px-3 py-2 font-bold focus:outline-none focus:border-amber-500">
+          <label class="block text-sm font-extrabold text-gray-700 mb-1">🏪 ဆိုင်နာမည်</label>
+          <input type="text" id="gate-shop-name" required placeholder="ဥပမာ - Baby Store 3" class="w-full border-2 border-amber-200 rounded-xl px-3 py-2.5 font-bold focus:outline-none focus:border-amber-500">
         </div>
         <div>
-          <label class="block text-xs font-extrabold text-gray-700 mb-1">🏢 လုပ်ငန်းအမည် အပြည့်အစုံ</label>
-          <input type="text" id="gate-biz-name" required placeholder="ဥပမာ - Baby Store 3 ကလေးအသုံးအဆောင်ဆိုင်" class="w-full border-2 border-amber-200 rounded-xl px-3 py-2 font-bold focus:outline-none focus:border-amber-500">
+          <label class="block text-sm font-extrabold text-gray-700 mb-1">🏢 လုပ်ငန်းအမည် အပြည့်အစုံ</label>
+          <input type="text" id="gate-biz-name" required placeholder="ဥပမာ - Baby Store 3 ကလေးအသုံးအဆောင်ဆိုင်" class="w-full border-2 border-amber-200 rounded-xl px-3 py-2.5 font-bold focus:outline-none focus:border-amber-500">
         </div>
 
-        <div class="bg-gray-50 border border-gray-200 rounded-xl p-3 space-y-2 text-xs text-gray-700 leading-relaxed max-h-56 overflow-y-auto">
-          <p class="font-extrabold text-amber-800 text-xs">📜 MiniTrend Kids နှင့် ချိတ်ဆက်ဆိုင် သဘောတူညီချက်</p>
+        <div class="bg-gray-50 border border-gray-200 rounded-xl p-3.5 space-y-3 text-sm sm:text-base text-gray-800 leading-relaxed max-h-64 overflow-y-auto">
+          <p class="font-extrabold text-amber-800 text-base">📜 MiniTrend Kids နှင့် ချိတ်ဆက်ဆိုင် သဘောတူညီချက်</p>
           <p><b>၁။ ဆိုင်အလုပ်ရှုပ်သက်သာစေရန် ကူညီပေးခြင်း:</b> ဝယ်သူရှာဖွေခြင်း၊ စာပြန်ဖြေကြားခြင်းနှင့် Delivery ပို့ဆောင်ခြင်းများကို MiniTrend Kids မှ အပြည့်အစုံ တာဝန်ယူ ဆောင်ရွက်ပေးပါမည်။</p>
           <p><b>၂။ ပစ္စည်းထုပ်ပိုးခြင်း (`📦 ထုပ်ပိုးပြီး` စနစ်):</b> အော်ဒါအသစ်ဝင်လာပါက ဆိုင်ဘက်မှ ပစ္စည်းမှန်ကန်စွာ စစ်ဆေးထုပ်ပိုးပြီး <b>"📦 ထုပ်ပိုးပြီး"</b> ခလုတ်ကို နှိပ်ပေးရုံသာ ဖြစ်ပါသည်။</p>
           <p><b>၃။ တစ်နေ့တာရောင်းရစာရင်း:</b> နေ့စဉ်အော်ဒါများကို App ထဲရှိ <b>"MiniTrend Kids မှ တစ်နေ့တာရောင်းရသော"</b> စာရင်းတွင် အချိန်မရွေး တိုက်ဆိုင်စစ်ဆေးနိုင်ပါသည်။</p>
           <p><b>၄။ ဝန်ဆောင်ခ (၅%) နှင့် ဆိုင်ရငွေ (၉၅%):</b> အောင်မြင်စွာ ရောင်းချပြီးသော ပစ္စည်းတန်ဖိုးအပေါ် MiniTrend Kids ဝန်ဆောင်ခ <b>၅%</b> နှုတ်ယူပြီး ဆိုင်ဘက်မှ <b>၉၅%</b> ရရှိပါမည်။</p>
           <p><b>၅။ ငွေရှင်းပေးမည့်အချိန်:</b> ဝယ်သူထံ ပစ္စည်းရောက်ရှိပြီး ငွေချေပြီးသည့် <b>နောက်နေ့ (အော်ဒါတင်ပြီး ခန့်မှန်း ၄ ရက်မြောက်)</b> တွင် ဆိုင်ထံသို့ ငွေလွှဲရှင်းပေးပါမည်။</p>
-          <p class="bg-amber-100/70 border border-amber-300 rounded-lg px-2.5 py-1.5 font-extrabold text-amber-950">📞 ဆက်သွယ်ရန် MiniTrend Kids Admin ဖုန်း — <a href="tel:09942739543" class="shop-admin-phone-link underline text-amber-800">09-942739543</a></p>
+          <p class="bg-amber-100/70 border border-amber-300 rounded-lg px-3 py-2 font-extrabold text-amber-950">📞 ဆက်သွယ်ရန် MiniTrend Kids Admin ဖုန်း — <a href="tel:09942739543" class="shop-admin-phone-link underline text-amber-800">09-942739543</a></p>
         </div>
 
-        <button type="submit" id="btn-submit-agreement" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3 rounded-xl shadow text-sm">
+        <button type="submit" id="btn-submit-agreement" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3 rounded-xl shadow text-sm sm:text-base">
           ✅ သဘောတူညီပါသည် (Admin အတည်ပြုချက်တောင်းမည်)
         </button>
       </form>
@@ -482,13 +482,13 @@
       <div id="gate-pending-view" class="hidden p-5 text-center space-y-3.5">
         <div class="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center text-3xl mx-auto animate-pulse">⏳</div>
         <h4 class="text-base font-extrabold text-gray-900">Admin အတည်ပြုချက် စောင့်ဆိုင်းနေပါသည်</h4>
-        <p class="text-xs text-gray-600 leading-relaxed">
+        <p class="text-sm text-gray-600 leading-relaxed">
           သဘောတူညီချက်ကို MiniTrend Kids Admin ထံ ပေးပို့ပြီးပါပြီ။ Admin မှ အတည်ပြုပေးပြီးသည်နှင့် ဤ App ကို အလိုအလျောက် စတင်အသုံးပြုနိုင်ပါမည်။
         </p>
-        <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs font-bold text-amber-950">
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-sm font-bold text-amber-950">
           အမြန်အတည်ပြုလိုပါက Admin ဖုန်း <a href="tel:09942739543" class="shop-admin-phone-link underline text-amber-700 font-extrabold">09-942739543</a> သို့ ဆက်သွယ်နိုင်ပါသည်။
         </div>
-        <button type="button" onclick="loadShopDashboard(false)" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-extrabold py-2.5 rounded-xl text-xs shadow-sm">
+        <button type="button" onclick="loadShopDashboard(false)" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-extrabold py-2.5 rounded-xl text-sm shadow-sm">
           🔄 အတည်ပြုပြီး/မပြီး ပြန်စစ်မည်
         </button>
       </div>
@@ -496,23 +496,23 @@
   </div>
 
   <!-- ================= READ-ONLY AGREEMENT MODAL (FROM HEADER BUTTON) ================= -->
-  <div id="agreement-view-modal" onclick="closeAgreementViewModal()" class="fixed inset-0 bg-black/75 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+  <div id="agreement-view-modal" onclick="closeAgreementViewModal()" class="fixed inset-0 bg-black/75 z-50 hidden flex items-center justify-center p-3.5 backdrop-blur-sm">
     <div onclick="event.stopPropagation()" class="bg-white rounded-2xl max-w-md w-full shadow-2xl border-2 border-amber-300 overflow-hidden">
-      <div class="bg-gradient-to-r from-amber-600 to-orange-600 text-white px-4 py-3 flex justify-between items-center">
-        <h3 class="text-sm font-extrabold">📜 MiniTrend Kids ချိတ်ဆက်ဆိုင် သဘောတူညီချက်</h3>
+      <div class="bg-gradient-to-r from-amber-600 to-orange-600 text-white px-4 py-3.5 flex justify-between items-center">
+        <h3 class="text-base font-extrabold">📜 MiniTrend Kids ချိတ်ဆက်ဆိုင် သဘောတူညီချက်</h3>
         <button type="button" onclick="closeAgreementViewModal()" class="text-white/90 hover:text-white font-bold text-xl px-1">✕</button>
       </div>
-      <div class="p-4 space-y-2.5 text-xs text-gray-700 leading-relaxed max-h-[70vh] overflow-y-auto">
-        <div id="agreement-modal-shop-info" class="bg-emerald-50 border border-emerald-200 rounded-xl p-2.5 text-emerald-900 font-bold"></div>
+      <div class="p-4 space-y-3.5 text-sm sm:text-base text-gray-800 leading-relaxed max-h-[72vh] overflow-y-auto">
+        <div id="agreement-modal-shop-info" class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-emerald-900 font-bold text-sm sm:text-base"></div>
         <p><b>၁။ ဆိုင်အလုပ်ရှုပ်သက်သာစေရန် ကူညီပေးခြင်း:</b> ဝယ်သူရှာဖွေခြင်း၊ စာပြန်ဖြေကြားခြင်းနှင့် Delivery ပို့ဆောင်ခြင်းများကို MiniTrend Kids မှ အပြည့်အစုံ တာဝန်ယူ ဆောင်ရွက်ပေးပါမည်။</p>
         <p><b>၂။ ပစ္စည်းထုပ်ပိုးခြင်း (`📦 ထုပ်ပိုးပြီး` စနစ်):</b> အော်ဒါအသစ်ဝင်လာပါက ဆိုင်ဘက်မှ ပစ္စည်းမှန်ကန်စွာ စစ်ဆေးထုပ်ပိုးပြီး <b>"📦 ထုပ်ပိုးပြီး"</b> ခလုတ်ကို နှိပ်ပေးရုံသာ ဖြစ်ပါသည်။</p>
         <p><b>၃။ တစ်နေ့တာရောင်းရစာရင်း:</b> နေ့စဉ်အော်ဒါများကို App ထဲရှိ <b>"MiniTrend Kids မှ တစ်နေ့တာရောင်းရသော"</b> စာရင်းတွင် အချိန်မရွေး တိုက်ဆိုင်စစ်ဆေးနိုင်ပါသည်။</p>
         <p><b>၄။ ဝန်ဆောင်ခ (၅%) နှင့် ဆိုင်ရငွေ (၉၅%):</b> အောင်မြင်စွာ ရောင်းချပြီးသော ပစ္စည်းတန်ဖိုးအပေါ် MiniTrend Kids ဝန်ဆောင်ခ <b>၅%</b> နှုတ်ယူပြီး ဆိုင်ဘက်မှ <b>၉၅%</b> ရရှိပါမည်။</p>
         <p><b>၅။ ငွေရှင်းပေးမည့်အချိန်:</b> ဝယ်သူထံ ပစ္စည်းရောက်ရှိပြီး ငွေချေပြီးသည့် <b>နောက်နေ့ (အော်ဒါတင်ပြီး ခန့်မှန်း ၄ ရက်မြောက်)</b> တွင် ဆိုင်ထံသို့ ငွေလွှဲရှင်းပေးပါမည်။</p>
-        <p class="bg-amber-50 border border-amber-200 rounded-xl p-2.5 font-extrabold text-amber-950">📞 ဆက်သွယ်ရန် MiniTrend Kids Admin ဖုန်း — <a href="tel:09942739543" class="shop-admin-phone-link underline text-amber-800">09-942739543</a></p>
+        <p class="bg-amber-50 border border-amber-200 rounded-xl p-3 font-extrabold text-amber-950">📞 ဆက်သွယ်ရန် MiniTrend Kids Admin ဖုန်း — <a href="tel:09942739543" class="shop-admin-phone-link underline text-amber-800">09-942739543</a></p>
       </div>
       <div class="p-3 border-t bg-gray-50">
-        <button type="button" onclick="closeAgreementViewModal()" class="w-full bg-gray-900 text-white font-extrabold py-2.5 rounded-xl text-xs">ပိတ်မည်</button>
+        <button type="button" onclick="closeAgreementViewModal()" class="w-full bg-gray-900 text-white font-extrabold py-3 rounded-xl text-sm sm:text-base">ပိတ်မည်</button>
       </div>
     </div>
   </div>
@@ -903,7 +903,7 @@
         infoEl.innerHTML = `
           <div>🏪 ဆိုင်အမည်: <b>${escapeHtml(sName)} (${escapeHtml(sId)})</b></div>
           ${bName ? `<div>🏢 လုပ်ငန်းအမည်: <b>${escapeHtml(bName)}</b></div>` : ''}
-          ${appAt ? `<div class="text-[11px] text-emerald-700 mt-0.5">✅ သဘောတူ/အတည်ပြုချိန်: ${escapeHtml(appAt)}</div>` : ''}
+          ${appAt ? `<div class="text-xs sm:text-sm text-emerald-700 mt-1">✅ သဘောတူ/အတည်ပြုချိန်: ${escapeHtml(appAt)}</div>` : ''}
         `;
       }
       document.getElementById('agreement-view-modal')?.classList.remove('hidden');
@@ -2151,4 +2151,3 @@
   </script>
 </body>
 </html>
-      
