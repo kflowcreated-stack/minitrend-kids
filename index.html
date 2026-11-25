@@ -203,6 +203,14 @@
       </div>
     </div>
 
+    <!-- HOME PROMO BANNER CAROUSEL (SWIPEABLE + AUTO-SLIDE) -->
+    <div id="home-banner-section" class="hidden max-w-5xl mx-auto px-3.5 pt-2.5">
+      <div class="relative rounded-2xl overflow-hidden shadow-sm border border-pink-200 bg-white">
+        <div id="home-banner-track" class="flex overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar"></div>
+        <div id="home-banner-dots" class="flex justify-center items-center gap-1.5 py-1.5 bg-white/90"></div>
+      </div>
+    </div>
+
     <!-- TOP GUARANTEE TRUST BANNER -->
     <div class="max-w-5xl mx-auto px-3.5 pt-2.5">
       <div class="bg-gradient-to-r from-emerald-50 via-teal-50 to-pink-50 border border-emerald-200 rounded-2xl px-3 py-2 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 text-[11px] sm:text-xs">
@@ -511,11 +519,11 @@
         <button type="button" id="adm-tab-returns" onclick="switchAdminTab('returns')" class="px-3 py-2 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 shrink-0">🔄 Return (<span id="adm-badge-returns">0</span>)</button>
         <button type="button" id="adm-tab-payouts" onclick="switchAdminTab('payouts')" class="px-3 py-2 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 shrink-0">💰 95% ရှင်း (<span id="adm-badge-payouts">0</span>)</button>
         <button type="button" id="adm-tab-stock" onclick="switchAdminTab('stock')" class="px-3 py-2 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 shrink-0">📊 Stock / OWN</button>
+        <button type="button" id="adm-tab-banners" onclick="switchAdminTab('banners')" class="px-3 py-2 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 shrink-0">🖼️ Banner ကြော်ငြာ</button>
         <button type="button" id="adm-tab-shops" onclick="switchAdminTab('shops')" class="px-3 py-2 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 shrink-0">🏪 ဆိုင်များ <span id="adm-badge-shops" class="hidden ml-1 bg-red-600 text-white px-1.5 py-0.5 rounded-full text-[10px] animate-pulse">0</span></button>
         <button type="button" id="adm-tab-riders" onclick="switchAdminTab('riders')" class="px-3 py-2 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 shrink-0">🚚 ဝန်ထမ်းများ</button>
         <button type="button" id="adm-tab-noti" onclick="switchAdminTab('noti')" class="px-3 py-2 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 shrink-0">📢 Noti / ဝယ်သူ</button>
       </div>
-
       <!-- TAB 1: ORDERS & PACKING (COMPACT) -->
       <div id="adm-panel-orders" class="space-y-2.5">
         <div id="adm-order-filters" class="flex gap-1.5 overflow-x-auto no-scrollbar pb-1">
@@ -734,7 +742,340 @@
           <div id="adm-stock-list" class="space-y-3"></div>
         </div>
       </div>
-      <!-- ================= ADMIN QUICK PROMO MODAL (FOR EXISTING ITEMS) ================= -->
+
+      <!-- TAB 6: HOME PROMO BANNERS MANAGER (UP TO 5 BANNERS) -->
+      <div id="adm-panel-banners" class="hidden space-y-4">
+        <div class="bg-white rounded-2xl shadow-sm border-2 border-pink-200 p-4 space-y-3.5">
+          <div class="flex flex-wrap justify-between items-center gap-2">
+            <div>
+              <h3 class="font-extrabold text-sm sm:text-base text-gray-900">🖼️ Home ကြော်ငြာ Banner စီမံခန့်ခွဲမှု (၄–၅ ခုအထိ)</h3>
+              <p class="text-[11px] text-gray-500 font-bold">ဝယ်သူ App Home တွင် ဘေးဘက်ဆွဲကြည့်နိုင်သော ကြော်ငြာပုံ၊ စာသားနှင့် နှိပ်ရင်သွားမည့်နေရာကို ပြင်ဆင်နိုင်ပါသည်။</p>
+            </div>
+            <span id="adm-banner-count-badge" class="bg-pink-100 text-pink-800 text-xs font-extrabold px-2.5 py-1 rounded-full">0 / 5 Banner</span>
+          </div>
+
+          <form id="banner-form" onsubmit="saveBannerAdmin(event)" class="bg-pink-50/60 border border-pink-200 rounded-2xl p-3.5 space-y-3 text-xs">
+            <input type="hidden" id="bf-id">
+            <input type="hidden" id="bf-image-data">
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <div>
+                <label class="block text-[11px] font-extrabold text-gray-700 mb-1">📌 ခေါင်းစဉ်စာသား (မထည့်လည်းရသည်)</label>
+                <input type="text" id="bf-title" placeholder="ဥပမာ - 🎁 အထူး Promotion လျှော့ဈေး" class="w-full border border-pink-300 rounded-xl px-3 py-2 bg-white font-bold">
+              </div>
+              <div>
+                <label class="block text-[11px] font-extrabold text-gray-700 mb-1">📝 စာတန်းအသေး (မထည့်လည်းရသည်)</label>
+                <input type="text" id="bf-subtitle" placeholder="ဥပမာ - ကလေးဝတ်ပစ္စည်းများ ၁၀% မှ ၃၀% အထိ" class="w-full border border-pink-300 rounded-xl px-3 py-2 bg-white">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <div>
+                <label class="block text-[11px] font-extrabold text-gray-700 mb-1">🔘 ခလုတ်စာသား (မထည့်လည်းရသည်)</label>
+                <input type="text" id="bf-cta" placeholder="ဥပမာ - အခုကြည့်မည်" class="w-full border border-pink-300 rounded-xl px-3 py-2 bg-white font-bold">
+              </div>
+              <div>
+                <label class="block text-[11px] font-extrabold text-gray-700 mb-1">🎯 နှိပ်လိုက်ရင် သွားမည့်နေရာ</label>
+                <select id="bf-target" class="w-full border border-pink-300 rounded-xl px-3 py-2 bg-white font-bold"></select>
+              </div>
+            </div>
+
+            <div class="space-y-2">
+              <label class="block text-[11px] font-extrabold text-gray-700">📷 Banner ပုံ (အလျားရှည်ပုံ ပိုလှပါသည်)</label>
+              <input type="file" id="bf-photo-file" accept="image/*" onchange="handleBannerPhotoSelect(event)" class="hidden">
+              <div class="flex items-center gap-3">
+                <div class="w-28 h-16 rounded-xl border-2 border-dashed border-pink-300 bg-white overflow-hidden flex items-center justify-center shrink-0">
+                  <img id="bf-photo-preview" src="./icon.png?v=3" alt="" class="w-full h-full object-cover">
+                </div>
+                <div class="space-y-1">
+                  <button type="button" onclick="document.getElementById('bf-photo-file').click()" class="bg-pink-600 hover:bg-pink-700 text-white font-extrabold px-3.5 py-2 rounded-xl text-xs shadow-sm">
+                    🖼️ Gallery မှ Banner ပုံရွေးမည်
+                  </button>
+                  <p id="bf-photo-status" class="text-[10px] font-bold text-gray-500">ပုံမရွေးရသေးလျှင် ယခင်ပုံ သို့မဟုတ် Default ပုံသုံးပါမည်။</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap gap-2 pt-1">
+              <button type="submit" id="btn-save-banner" class="bg-pink-600 hover:bg-pink-700 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs shadow-sm">💾 Banner သိမ်းမည်</button>
+              <button type="button" onclick="resetBannerForm()" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-extrabold px-3.5 py-2.5 rounded-xl text-xs">🔄 ရှင်းမည်</button>
+            </div>
+          </form>
+
+          <div id="adm-banners-list" class="space-y-2.5"></div>
+        </div>
+      </div>
+
+      <!-- TAB 7: SEPARATE SHOPS TAB (WITH APPROVAL REQUESTS) -->
+      <div id="adm-panel-shops" class="hidden space-y-4">
+        <div class="bg-white rounded-2xl shadow-sm border-2 border-amber-200 p-4 space-y-3">
+          <div class="flex flex-wrap justify-between items-center gap-2">
+            <h3 class="font-extrabold text-sm sm:text-base text-gray-900">🏪 ချိတ်ဆက်ဆိုင်များ စီမံခန့်ခွဲမှု (Partner Shops)</h3>
+            <button type="button" onclick="setupCategorySheetsAdmin()" class="bg-amber-100 hover:bg-amber-200 text-amber-900 text-[11px] font-extrabold px-3 py-1.5 rounded-xl">🛠️ Sheet အသစ်များ၊ မြန်မာအချိန်နှင့် 8AM Trigger တည်ဆောက်</button>
+          </div>
+          <form id="shop-form" onsubmit="saveShopAdmin(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 bg-amber-50/60 p-3 rounded-xl border border-amber-200">
+            <input type="hidden" id="sf-id">
+            <input type="text" id="sf-name" required placeholder="🏪 ဆိုင်အမည်" class="border rounded-xl px-3 py-2 text-xs bg-white">
+            <input type="tel" id="sf-phone" placeholder="📞 ဆိုင်ဖုန်း / Viber" class="border rounded-xl px-3 py-2 text-xs bg-white">
+            <input type="text" id="sf-pin" required placeholder="🔑 PIN (ဥပမာ- 2001)" class="border rounded-xl px-3 py-2 text-xs bg-white">
+            <input type="number" id="sf-comm" value="5" min="0" max="50" step="0.5" placeholder="ကော်မရှင် (%)" class="border rounded-xl px-3 py-2 text-xs bg-white">
+            <input type="text" id="sf-address" placeholder="📍 ဆိုင်လိပ်စာ (Pickup)" class="border rounded-xl px-3 py-2 text-xs bg-white sm:col-span-2">
+            <input type="text" id="sf-map" placeholder="🗺️ ဆိုင် GPS / Map Link" class="border rounded-xl px-3 py-2 text-xs bg-white">
+            <input type="text" id="sf-pay" placeholder="💳 KPay / WavePay နံပါတ်" class="border rounded-xl px-3 py-2 text-xs bg-white">
+            <div class="sm:col-span-2 lg:col-span-4 flex gap-2">
+              <button type="submit" id="btn-save-shop" class="bg-amber-600 hover:bg-amber-700 text-white font-extrabold px-4 py-2 rounded-xl text-xs">💾 ဆိုင်သိမ်းမည်</button>
+              <button type="button" onclick="resetShopForm()" class="bg-gray-200 text-gray-700 font-bold px-3 py-2 rounded-xl text-xs">ရှင်းမည်</button>
+            </div>
+          </form>
+          <div id="adm-shops-list" class="divide-y text-xs"></div>
+        </div>
+      </div>
+
+      <!-- TAB 8: SEPARATE RIDERS TAB -->
+      <div id="adm-panel-riders" class="hidden space-y-4">
+        <div class="bg-white rounded-2xl shadow-sm border-2 border-blue-200 p-4 space-y-3">
+          <h3 class="font-extrabold text-sm sm:text-base text-gray-900">🚚 Pickup & Delivery ဝန်ထမ်းများ စီမံခန့်ခွဲမှု</h3>
+          <form id="rider-form" onsubmit="saveRiderAdmin(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-2 bg-blue-50/60 p-3 rounded-xl border border-blue-200">
+            <input type="hidden" id="rf-id">
+            <input type="text" id="rf-name" required placeholder="👤 ဝန်ထမ်းအမည်" class="border rounded-xl px-3 py-2 text-xs bg-white">
+            <input type="tel" id="rf-phone" placeholder="📞 ဖုန်းနံပါတ်" class="border rounded-xl px-3 py-2 text-xs bg-white">
+            <input type="text" id="rf-pin" required placeholder="🔑 PIN (ဥပမာ- 1001)" class="border rounded-xl px-3 py-2 text-xs bg-white">
+            <div class="flex gap-1.5">
+              <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-2 rounded-xl text-xs">💾 သိမ်း</button>
+              <button type="button" onclick="resetRiderForm()" class="bg-gray-200 text-gray-700 font-bold px-3 py-2 rounded-xl text-xs">ရှင်း</button>
+            </div>
+          </form>
+          <div id="adm-riders-stats" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2"></div>
+          <div id="adm-riders-list" class="divide-y text-xs"></div>
+        </div>
+      </div>
+
+      <!-- TAB 9: SPLIT BROADCAST NOTI + CUSTOMERS LOGIN LIST -->
+      <div id="adm-panel-noti" class="hidden space-y-4">
+        <div class="bg-white rounded-2xl shadow-sm border-2 border-pink-200 p-4 space-y-3.5">
+          <div class="flex flex-wrap justify-between items-center gap-2">
+            <h3 class="font-extrabold text-sm sm:text-base text-gray-900">📢 Push Notification ခွဲပို့ရန်</h3>
+            <div class="flex flex-wrap gap-1.5 text-[11px] font-extrabold">
+              <span id="adm-fcm-cust" class="bg-pink-100 text-pink-700 px-2.5 py-0.5 rounded-full">🛍️ ဝယ်သူ: 0</span>
+              <span id="adm-fcm-rider" class="bg-blue-100 text-blue-700 px-2.5 py-0.5 rounded-full">🚚 Delivery: 0</span>
+              <span id="adm-fcm-shop" class="bg-amber-100 text-amber-800 px-2.5 py-0.5 rounded-full">🏪 ဆိုင်: 0</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-1.5 bg-gray-100 p-1.5 rounded-xl">
+            <button type="button" id="noti-aud-customer" onclick="switchNotiAudience('customer')" class="py-2.5 px-2 rounded-lg text-xs font-extrabold bg-pink-600 text-white shadow-sm transition">
+              🛍️ ဝယ်သူများ
+            </button>
+            <button type="button" id="noti-aud-rider" onclick="switchNotiAudience('rider')" class="py-2.5 px-2 rounded-lg text-xs font-bold text-gray-700 hover:bg-white transition">
+              🚚 Delivery App
+            </button>
+            <button type="button" id="noti-aud-shop" onclick="switchNotiAudience('shop')" class="py-2.5 px-2 rounded-lg text-xs font-bold text-gray-700 hover:bg-white transition">
+              🏪 ဆိုင် App
+            </button>
+          </div>
+
+          <!-- CUSTOMER ALL / INDIVIDUAL SELECTOR -->
+          <div id="noti-cust-select-wrap" class="bg-pink-50 border border-pink-200 rounded-xl p-2.5 space-y-2">
+            <div class="grid grid-cols-2 gap-1.5">
+              <button type="button" id="noti-cust-mode-all" onclick="switchCustNotiMode('all')" class="py-2 px-2 rounded-lg text-xs font-extrabold bg-pink-600 text-white shadow-sm">🛍️ ဝယ်သူအားလုံး</button>
+              <button type="button" id="noti-cust-mode-single" onclick="switchCustNotiMode('single')" class="py-2 px-2 rounded-lg text-xs font-bold bg-white text-pink-900 border border-pink-200">👤 တစ်ယောက်ချင်းစီ</button>
+            </div>
+            <div id="noti-cust-single-box" class="hidden space-y-1.5">
+              <input type="text" id="bc-cust-search" oninput="renderCustomerNotiDropdown()" placeholder="🔍 နာမည် သို့မဟုတ် ဖုန်းနံပါတ် ရိုက်ရှာပါ..." class="w-full border border-pink-300 rounded-xl px-3 py-2 text-xs bg-white">
+              <select id="bc-cust-target" class="w-full border border-pink-300 rounded-xl px-3 py-2 text-xs font-bold bg-white">
+                <option value="">-- ဝယ်သူ ရွေးချယ်ပါ (နာမည် - ဖုန်းနံပါတ်) --</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="noti-rider-select-wrap" class="hidden bg-blue-50 border border-blue-200 rounded-xl p-2.5 space-y-1">
+            <label class="block text-[11px] font-extrabold text-blue-900">🚚 ပေးပို့မည့် Delivery ဝန်ထမ်း ရွေးချယ်ပါ:</label>
+            <select id="bc-rider-target" class="w-full border border-blue-300 rounded-xl px-3 py-2 text-xs font-bold bg-white">
+              <option value="all_riders">🚚 Delivery ဝန်ထမ်းအားလုံးထံ ပို့မည်</option>
+            </select>
+          </div>
+
+          <div id="noti-shop-select-wrap" class="hidden bg-amber-50 border border-amber-200 rounded-xl p-2.5 space-y-1">
+            <label class="block text-[11px] font-extrabold text-amber-900">🏪 ပေးပို့မည့် ချိတ်ဆက်ဆိုင် ရွေးချယ်ပါ:</label>
+            <select id="bc-shop-target" class="w-full border border-amber-300 rounded-xl px-3 py-2 text-xs font-bold bg-white">
+              <option value="all_shops">🏪 ချိတ်ဆက်ဆိုင်အားလုံးထံ ပို့မည်</option>
+            </select>
+          </div>
+
+          <p id="noti-audience-hint" class="text-[11px] font-bold text-pink-700 bg-pink-50 border border-pink-200 rounded-xl px-3 py-2">
+            🛍️ ဝယ်သူ App (Customer) တွင် Notification ဖွင့်ထားသူအားလုံးထံ ရောက်ရှိပါမည်။
+          </p>
+
+          <form onsubmit="sendBroadcastAdmin(event)" class="space-y-2.5">
+            <input type="text" id="bc-title" required placeholder="ခေါင်းစဉ် (ဥပမာ - 🎁 ပစ္စည်းအသစ်များ ရောက်ပါပြီ!)" class="w-full border-2 border-gray-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-pink-400">
+            <textarea id="bc-msg" required rows="3" placeholder="ပေးပို့မည့် စာသား..." class="w-full border-2 border-gray-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-pink-400"></textarea>
+            <button type="submit" id="btn-send-bc" class="bg-pink-600 hover:bg-pink-700 text-white font-extrabold px-5 py-2.5 rounded-xl text-xs shadow-sm">🚀 ဝယ်သူအားလုံးထံ ပို့မည်</button>
+          </form>
+        </div>
+
+        <!-- CUSTOMERS LOGIN / ORDER LIST -->
+        <div class="bg-white rounded-2xl shadow-sm border border-pink-200 p-4 space-y-3">
+          <div class="flex flex-wrap justify-between items-center gap-2">
+            <h4 class="font-extrabold text-sm text-gray-900">👥 ဝယ်သူ Login / အော်ဒါစာရင်း (<span id="adm-customers-count">0</span>)</h4>
+            <input type="text" id="adm-customers-search" oninput="renderAdminCustomersList()" placeholder="🔍 နာမည် / ဖုန်းနံပါတ် ရှာရန်..." class="border border-gray-200 rounded-xl px-3 py-1.5 text-xs min-w-[180px]">
+          </div>
+          <div id="adm-customers-list" class="divide-y text-xs max-h-80 overflow-y-auto"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ADMIN ITEM IMAGE PREVIEW LIGHTBOX -->
+  <div id="admin-item-preview-modal" onclick="closeAdminItemPreview()" class="fixed inset-0 bg-black/90 z-50 hidden flex flex-col items-center justify-center p-4 backdrop-blur-sm">
+    <button type="button" onclick="closeAdminItemPreview()" class="fixed noti-safe-top right-3 z-50 bg-white/20 hover:bg-white/35 text-white w-10 h-10 rounded-full flex items-center justify-center text-xl font-bold">✕</button>
+    <div onclick="event.stopPropagation()" class="max-w-md w-full flex flex-col items-center">
+      <img id="aip-img" src="" alt="" class="max-h-[65vh] w-auto max-w-full object-contain rounded-2xl shadow-2xl border border-white/15 bg-black/40">
+      <div class="mt-3 w-full bg-white rounded-2xl p-3.5 shadow-xl space-y-2">
+        <p id="aip-title" class="text-sm font-extrabold text-gray-900"></p>
+        <p id="aip-meta" class="text-xs font-bold text-pink-600"></p>
+        <button type="button" id="aip-download-btn" onclick="downloadFromPreviewModal(this)" class="hidden bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs px-3.5 py-2 rounded-xl shadow-sm">⬇️ ပုံ Download ဆွဲမည်</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN RESTOCK FULL EDIT MODAL -->
+  <div id="admin-restock-edit-modal" onclick="closeRestockEditModal()" class="fixed inset-0 bg-black/75 z-50 hidden flex items-end sm:items-center justify-center sm:p-4 backdrop-blur-sm">
+    <div onclick="event.stopPropagation()" class="bg-white rounded-t-3xl sm:rounded-3xl max-w-xl w-full max-h-[92vh] overflow-y-auto p-4 sm:p-5 shadow-2xl border-2 border-amber-300 space-y-3.5">
+      <div class="flex justify-between items-center border-b pb-2.5 sticky top-0 bg-white z-10">
+        <div>
+          <h3 class="text-sm sm:text-base font-extrabold text-gray-900">✏️ Stock Request ပြင်ဆင်ရန် (Approve မလုပ်မီ)</h3>
+          <p id="re-product-title" class="text-xs font-extrabold text-amber-700 mt-0.5"></p>
+        </div>
+        <button type="button" onclick="closeRestockEditModal()" class="text-gray-400 hover:text-gray-800 text-xl font-bold px-1">✕</button>
+      </div>
+
+      <div class="bg-amber-50/70 border border-amber-200 rounded-2xl p-3 space-y-2.5 text-xs">
+        <p class="font-extrabold text-amber-900">📝 ပစ္စည်းအချက်အလက် ပြင်ဆင်ရန်</p>
+        <div>
+          <label class="block text-[11px] font-bold text-gray-600 mb-0.5">🧸 ပစ္စည်းအမည်</label>
+          <input type="text" id="re-edit-name" class="w-full border border-amber-300 rounded-xl px-3 py-2 bg-white font-bold">
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-[11px] font-bold text-gray-600 mb-0.5">📂 အမျိုးအစား</label>
+            <select id="re-edit-category" onchange="updateAdminRestockEditSizes()" class="w-full border border-amber-300 rounded-xl px-2.5 py-2 bg-white font-bold"></select>
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-gray-600 mb-0.5">📏 Size / အသက်</label>
+            <select id="re-edit-size" class="w-full border border-amber-300 rounded-xl px-2.5 py-2 bg-white font-bold"></select>
+          </div>
+        </div>
+        <div class="grid grid-cols-3 gap-2">
+          <div>
+            <label class="block text-[11px] font-bold text-gray-600 mb-0.5">📦 အရေအတွက်</label>
+            <input type="number" id="re-edit-qty" min="1" class="w-full border border-amber-300 rounded-xl px-2.5 py-2 bg-white font-extrabold">
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-gray-600 mb-0.5">💰 ဈေး (ကျပ်)</label>
+            <input type="number" id="re-edit-price" min="0" step="100" class="w-full border border-emerald-300 rounded-xl px-2.5 py-2 bg-white font-extrabold text-emerald-700">
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-gray-600 mb-0.5">🎨 အရောင်</label>
+            <input type="text" id="re-edit-color" class="w-full border border-amber-300 rounded-xl px-2.5 py-2 bg-white font-bold">
+          </div>
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold text-gray-600 mb-0.5">📝 Description</label>
+          <textarea id="re-edit-desc" rows="2" class="w-full border border-amber-300 rounded-xl px-3 py-1.5 bg-white"></textarea>
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <div class="flex justify-between items-center">
+          <p class="text-xs font-extrabold text-gray-800">📷 ပစ္စည်းပုံများ ပြင်ဆင်ရန် (၁ မှ ၃ ပုံ)</p>
+          <span id="re-photo-count" class="text-[10px] font-extrabold bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full">0 / 3 ပုံ</span>
+        </div>
+        <input type="file" id="re-add-photo-file" accept="image/*" multiple onchange="handleAdminAddRestockPhotos(event)" class="hidden">
+        <input type="file" id="re-replace-photo-file" accept="image/*" onchange="handleAdminReplaceRestockPhoto(event)" class="hidden">
+
+        <div id="re-photo-slots" class="space-y-2.5"></div>
+
+        <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+          <button type="button" id="btn-re-add-photo" onclick="document.getElementById('re-add-photo-file').click()" class="bg-amber-100 hover:bg-amber-200 text-amber-900 font-extrabold text-xs px-3.5 py-2 rounded-xl border border-amber-300">
+            ➕ Gallery မှ ပုံထပ်ထည့်မည် (၃ ပုံအထိ)
+          </button>
+          <p id="re-edit-status" class="text-[11px] font-bold text-emerald-700"></p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 border-t">
+        <button type="button" id="btn-re-save-only" onclick="saveEditedRestockRequest(false, this)" class="bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-2.5 px-4 rounded-xl text-xs shadow-sm">
+          💾 ပြင်ဆင်မှု သိမ်းမည်
+        </button>
+        <button type="button" id="btn-re-save-approve" onclick="saveEditedRestockRequest(true, this)" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-2.5 px-4 rounded-xl text-xs shadow-sm">
+          ✅ သိမ်းပြီး ဝယ်သူ App ထဲ Approve ထည့်မည်
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN REJECT RESTOCK REASON MODAL -->
+  <div id="admin-reject-restock-modal" onclick="closeRejectRestockModal()" class="fixed inset-0 bg-black/75 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+    <div onclick="event.stopPropagation()" class="bg-white rounded-2xl max-w-md w-full p-5 shadow-2xl border-2 border-red-300 space-y-3">
+      <div class="flex justify-between items-center border-b pb-2.5">
+        <h3 class="text-sm sm:text-base font-extrabold text-red-700">❌ Stock Request ပယ်ချရန်</h3>
+        <button type="button" onclick="closeRejectRestockModal()" class="text-gray-400 hover:text-gray-800 text-xl font-bold px-1">✕</button>
+      </div>
+      <div id="rej-modal-info" class="bg-red-50 border border-red-200 rounded-xl p-2.5 text-xs font-bold text-gray-800"></div>
+      <div class="space-y-1.5">
+        <p class="text-[11px] font-extrabold text-gray-600">⚡ အမြန်ရွေးရန် (သို့မဟုတ် အောက်တွင် ကိုယ်တိုင်ရေးပါ):</p>
+        <div class="flex flex-wrap gap-1.5">
+          <button type="button" onclick="setQuickRejectReason('ပုံမကြည်လင်ပါ — ပုံအသစ်ပြန်ရိုက်ပို့ပေးပါ။')" class="bg-gray-100 hover:bg-red-50 text-gray-700 border border-gray-200 px-2.5 py-1 rounded-lg text-[11px] font-bold">📷 ပုံမကြည်လင်ပါ</button>
+          <button type="button" onclick="setQuickRejectReason('ဈေးနှုန်း ပြန်လည်စစ်ဆေးပေးပါ။')" class="bg-gray-100 hover:bg-red-50 text-gray-700 border border-gray-200 px-2.5 py-1 rounded-lg text-[11px] font-bold">💰 ဈေးနှုန်းပြန်စစ်ပါ</button>
+          <button type="button" onclick="setQuickRejectReason('ပစ္စည်းအချက်အလက် / Size မပြည့်စုံပါ။')" class="bg-gray-100 hover:bg-red-50 text-gray-700 border border-gray-200 px-2.5 py-1 rounded-lg text-[11px] font-bold">📝 အချက်အလက်မပြည့်စုံ</button>
+          <button type="button" onclick="setQuickRejectReason('ပစ္စည်းအမည် သို့မဟုတ် အမျိုးအစား မှားယွင်းနေပါသည်။')" class="bg-gray-100 hover:bg-red-50 text-gray-700 border border-gray-200 px-2.5 py-1 rounded-lg text-[11px] font-bold">📂 အမျိုးအစားမှား</button>
+        </div>
+      </div>
+      <div>
+        <label class="block text-xs font-extrabold text-gray-700 mb-1">✍️ ပယ်ချရသည့် အကြောင်းပြချက် (ဆိုင် App တွင် ပေါ်ပါမည်)</label>
+        <textarea id="rej-reason-input" rows="3" placeholder="ပယ်ချရသည့် အကြောင်းပြချက်ကို ရေးသားပါ..." class="w-full border-2 border-red-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-red-500"></textarea>
+        <p id="rej-reason-err" class="hidden text-[11px] font-extrabold text-red-600 mt-1">⚠️ ပယ်ချရသည့် အကြောင်းပြချက် ရေးထည့်ပေးပါ။</p>
+      </div>
+      <div class="flex gap-2 pt-1">
+        <button type="button" onclick="closeRejectRestockModal()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-extrabold py-2.5 rounded-xl text-xs">မလုပ်တော့ပါ</button>
+        <button type="button" id="btn-confirm-reject-restock" onclick="confirmAdminRejectRestock()" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-extrabold py-2.5 rounded-xl text-xs shadow-sm">❌ ပယ်ချပြီး ဆိုင်ထံပို့မည်</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN WHITE ERASER BRUSH MODAL -->
+  <div id="admin-photo-eraser-modal" class="fixed inset-0 bg-black/85 z-50 hidden flex items-center justify-center p-3 backdrop-blur-sm">
+    <div onclick="event.stopPropagation()" class="bg-white rounded-2xl max-w-lg w-full p-4 shadow-2xl border-2 border-emerald-300 space-y-3">
+      <div class="flex justify-between items-center border-b pb-2">
+        <div>
+          <h3 class="text-sm font-extrabold text-gray-900">🖌️ အဖြူရောင်ခဲဖျက် (မလိုသောအရာ ဖျက်ရန်)</h3>
+          <p class="text-[11px] text-gray-500 font-bold">မလိုချင်သော အစွန်းအစ သို့မဟုတ် ပစ္စည်းပေါ် လက်/မောက်စ်ဖြင့် ပွတ်ဖျက်ပါ</p>
+        </div>
+        <button type="button" onclick="closeWhiteEraserModal()" class="text-gray-400 hover:text-gray-800 text-xl font-bold px-1">✕</button>
+      </div>
+
+      <div class="bg-gray-100 rounded-xl p-2 flex items-center justify-center border border-gray-200 overflow-hidden">
+        <canvas id="eraser-canvas" class="max-w-full max-h-[55vh] w-auto h-auto rounded-lg shadow bg-white cursor-crosshair" style="touch-action:none;"></canvas>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between gap-2 bg-gray-50 border rounded-xl px-3 py-2 text-xs">
+        <label class="flex items-center gap-2 font-extrabold text-gray-700 flex-1 min-w-[160px]">
+          <span>⚪ ခဲဖျက်အရွယ်:</span>
+          <input type="range" id="eraser-brush-size" min="10" max="80" value="30" oninput="document.getElementById('eraser-size-val').innerText = this.value + 'px'" class="flex-1 accent-emerald-600">
+          <span id="eraser-size-val" class="w-10 text-right text-emerald-700">30px</span>
+        </label>
+        <button type="button" onclick="undoWhiteEraser()" class="bg-amber-100 hover:bg-amber-200 text-amber-900 font-extrabold px-3 py-1.5 rounded-lg">↩️ Undo</button>
+      </div>
+
+      <div class="flex gap-2">
+        <button type="button" onclick="closeWhiteEraserModal()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-extrabold py-2.5 rounded-xl text-xs">မသိမ်းတော့ပါ</button>
+        <button type="button" onclick="saveWhiteEraserPhoto()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-2.5 rounded-xl text-xs shadow-sm">💾 ဖျက်ပြီးပုံ သိမ်းမည်</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= ADMIN QUICK PROMO MODAL (FOR EXISTING ITEMS) ================= -->
   <div id="admin-quick-promo-modal" onclick="closeQuickPromoModal()" class="fixed inset-0 bg-black/75 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
     <div onclick="event.stopPropagation()" class="bg-white rounded-2xl max-w-md w-full p-5 shadow-2xl border-2 border-rose-300 space-y-3.5">
       <div class="flex justify-between items-center border-b pb-2.5">
@@ -814,6 +1155,11 @@
     let promoOverridesMap = {};
     let quickPromoTargetName = '';
 
+    // Home Banners (up to 5)
+    let homeBanners = [];
+    let activeBannerIdx = 0;
+    let bannerAutoTimer = null;
+
     window.__adminPreviewMap = {};
     window.__custOrderImgMap = {};
     window.__b64ImgCache = {};
@@ -860,6 +1206,319 @@
       };
     }
 
+    // ==================== HOME PROMO BANNER SLIDER & ADMIN MANAGER ====================
+    const DEFAULT_HOME_BANNERS = [
+      {
+        id: 'bn_1',
+        title: '🏷️ အထူး Promotion လျှော့ဈေး',
+        subtitle: 'ကလေးဝတ်ပစ္စည်းများကို အထူးဈေးနှုန်းဖြင့် ရွေးချယ်ဝယ်ယူနိုင်ပါပြီ',
+        cta: 'ကြည့်မည်',
+        target: 'cat:🏷️ Promotion',
+        image: './icon.png?v=3',
+        active: true
+      },
+      {
+        id: 'bn_2',
+        title: '🔥 Trending ပစ္စည်းအသစ်များ',
+        subtitle: 'မိဘများ အကြိုက်အများဆုံး ဖက်ရှင်နှင့် ကလေးပစ္စည်းများ',
+        cta: 'အခုကြည့်မည်',
+        target: 'cat:🔥 Trending',
+        image: './icon.png?v=3',
+        active: true
+      },
+      {
+        id: 'bn_3',
+        title: '📏 ကလေး Size တိတိကျကျ တိုင်းမည်',
+        subtitle: 'အသက်နှင့် အလေးချိန်အလိုက် အသင့်တော်ဆုံး Size တွက်ချက်ကြည့်ပါ',
+        cta: 'Size တိုင်းမည်',
+        target: 'action:size_calc',
+        image: './icon.png?v=3',
+        active: true
+      },
+      {
+        id: 'bn_4',
+        title: '🛡️ ၁၀၀% အစစ်အမှန် & အခမဲ့ လဲလှယ်ခွင့်',
+        subtitle: 'ပို့ခ ၄,၅၀၀ ကျပ် • ၃ ရက်အတွင်း အိမ်အရောက် ပို့ဆောင်ပေးသည်',
+        cta: 'ဆက်ကြည့်မည်',
+        target: 'cat:အားလုံး',
+        image: './icon.png?v=3',
+        active: true
+      }
+    ];
+
+    function loadHomeBanners() {
+      try {
+        const raw = JSON.parse(localStorage.getItem('mt_home_banners_v1') || 'null');
+        if (Array.isArray(raw) && raw.length > 0) {
+          homeBanners = raw.slice(0, 5);
+          return;
+        }
+      } catch (e) {}
+      homeBanners = DEFAULT_HOME_BANNERS.map(b => ({ ...b }));
+    }
+
+    function saveHomeBanners() {
+      try { localStorage.setItem('mt_home_banners_v1', JSON.stringify(homeBanners.slice(0, 5))); } catch (e) {}
+    }
+
+    function handleBannerClick(targetStr) {
+      const t = (targetStr || 'none').trim();
+      if (!t || t === 'none') return;
+      if (t === 'action:size_calc') {
+        openSizeCalcModal();
+        return;
+      }
+      if (t.startsWith('cat:')) {
+        const catName = t.slice(4).trim();
+        if (CATEGORY_LIST.includes(catName)) {
+          selectCategory(catName);
+          const grid = document.getElementById('products-grid');
+          if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+    }
+
+    function renderHomeBannerSlider() {
+      const sec = document.getElementById('home-banner-section');
+      const track = document.getElementById('home-banner-track');
+      const dots = document.getElementById('home-banner-dots');
+      if (!sec || !track || !dots) return;
+
+      const visibleBanners = homeBanners.filter(b => b && b.active !== false && (b.image || b.title || b.subtitle));
+      if (visibleBanners.length === 0) {
+        sec.classList.add('hidden');
+        if (bannerAutoTimer) { clearInterval(bannerAutoTimer); bannerAutoTimer = null; }
+        return;
+      }
+
+      sec.classList.remove('hidden');
+      if (activeBannerIdx >= visibleBanners.length) activeBannerIdx = 0;
+
+      track.innerHTML = visibleBanners.map((b, idx) => {
+        const hasText = !!(b.title || b.subtitle || b.cta);
+        const overlayHtml = hasText
+          ? `<div class="absolute inset-0 bg-gradient-to-r from-gray-950/75 via-gray-900/45 to-transparent flex flex-col justify-center px-4 py-3 text-white pointer-events-none">
+               ${b.title ? `<p class="text-sm sm:text-base font-extrabold leading-snug drop-shadow max-w-[75%]">${escapeHtml(b.title)}</p>` : ''}
+               ${b.subtitle ? `<p class="text-[11px] sm:text-xs text-pink-100 font-bold mt-0.5 line-clamp-2 max-w-[75%]">${escapeHtml(b.subtitle)}</p>` : ''}
+               ${b.cta ? `<span class="inline-block w-fit mt-2 bg-pink-600 text-white text-[10px] sm:text-xs font-extrabold px-2.5 py-1 rounded-full shadow">${escapeHtml(b.cta)} ▸</span>` : ''}
+             </div>`
+          : '';
+
+        return `
+          <div onclick="handleBannerClick('${escapeHtml(b.target || 'none')}')" class="w-full shrink-0 snap-start relative h-32 sm:h-40 bg-pink-100 cursor-pointer select-none">
+            <img src="${escapeHtml(b.image || './icon.png?v=3')}" alt="${escapeHtml(b.title || 'Banner')}" class="w-full h-full object-cover">
+            ${overlayHtml}
+            <span class="absolute top-2 right-2 bg-black/50 text-white text-[9px] font-extrabold px-2 py-0.5 rounded-full">${idx + 1}/${visibleBanners.length}</span>
+          </div>
+        `;
+      }).join('');
+
+      dots.innerHTML = visibleBanners.map((_, idx) => {
+        const isAct = idx === activeBannerIdx;
+        return `<button type="button" onclick="scrollBannerTo(${idx})" class="h-2 rounded-full transition-all ${isAct ? 'w-5 bg-pink-600' : 'w-2 bg-pink-200'}" aria-label="Banner ${idx + 1}"></button>`;
+      }).join('');
+
+      if (!track.dataset.scrollBound) {
+        track.dataset.scrollBound = '1';
+        let scrollEndDebounce = null;
+        track.addEventListener('scroll', () => {
+          if (scrollEndDebounce) clearTimeout(scrollEndDebounce);
+          scrollEndDebounce = setTimeout(() => {
+            const w = track.clientWidth || 1;
+            const nextIdx = Math.round(track.scrollLeft / w);
+            if (nextIdx !== activeBannerIdx && nextIdx >= 0 && nextIdx < visibleBanners.length) {
+              activeBannerIdx = nextIdx;
+              renderHomeBannerSlider();
+            }
+          }, 80);
+        }, { passive: true });
+      }
+
+      if (bannerAutoTimer) clearInterval(bannerAutoTimer);
+      if (visibleBanners.length > 1) {
+        bannerAutoTimer = setInterval(() => {
+          const curVis = homeBanners.filter(b => b && b.active !== false && (b.image || b.title || b.subtitle));
+          if (curVis.length <= 1) return;
+          const next = (activeBannerIdx + 1) % curVis.length;
+          scrollBannerTo(next);
+        }, 4200);
+      }
+    }
+
+    function scrollBannerTo(idx) {
+      const track = document.getElementById('home-banner-track');
+      const visibleBanners = homeBanners.filter(b => b && b.active !== false && (b.image || b.title || b.subtitle));
+      if (!track || visibleBanners.length === 0) return;
+      activeBannerIdx = Math.max(0, Math.min(idx, visibleBanners.length - 1));
+      track.scrollTo({ left: activeBannerIdx * track.clientWidth, behavior: 'smooth' });
+      renderHomeBannerSlider();
+    }
+
+    function initBannerTargetSelect() {
+      const sel = document.getElementById('bf-target');
+      if (!sel) return;
+      const opts = [
+        `<option value="cat:🏷️ Promotion">🏷️ Promotion စာရင်းသို့</option>`,
+        `<option value="cat:🔥 Trending">🔥 Trending စာရင်းသို့</option>`,
+        `<option value="cat:အားလုံး">🛍️ ပစ္စည်းအားလုံး (Home) သို့</option>`,
+        `<option value="action:size_calc">📏 ကလေး Size တိုင်းမည် Modal သို့</option>`,
+        `<option value="none">🖼️ ပုံသီးသန့် (နှိပ်လျှင် မသွားပါ)</option>`
+      ];
+      CATEGORY_LIST.filter(c => !['အားလုံး', '🏷️ Promotion', '🔥 Trending'].includes(c)).forEach(c => {
+        opts.push(`<option value="cat:${escapeHtml(c)}">📂 ${escapeHtml(c)}</option>`);
+      });
+      sel.innerHTML = opts.join('');
+    }
+
+    function resetBannerForm() {
+      document.getElementById('bf-id').value = '';
+      document.getElementById('bf-title').value = '';
+      document.getElementById('bf-subtitle').value = '';
+      document.getElementById('bf-cta').value = '';
+      document.getElementById('bf-image-data').value = '';
+      document.getElementById('bf-photo-preview').src = './icon.png?v=3';
+      document.getElementById('bf-photo-status').innerText = 'ပုံမရွေးရသေးလျှင် Default ပုံ သို့မဟုတ် ယခင်ပုံသုံးပါမည်။';
+      const sel = document.getElementById('bf-target');
+      if (sel && sel.options.length > 0) sel.selectedIndex = 0;
+    }
+
+    async function handleBannerPhotoSelect(event) {
+      const file = event.target.files && event.target.files[0];
+      event.target.value = '';
+      if (!file) return;
+      document.getElementById('bf-photo-status').innerText = '⏳ Banner ပုံ ပြင်ဆင်နေပါသည်...';
+      const reader = new FileReader();
+      reader.onload = function(ev) {
+        const img = new Image();
+        img.onload = function() {
+          const maxW = 900;
+          let w = img.width, h = img.height;
+          if (w > maxW) {
+            h = Math.round(h * (maxW / w));
+            w = maxW;
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.75);
+          document.getElementById('bf-image-data').value = dataUrl;
+          document.getElementById('bf-photo-preview').src = dataUrl;
+          document.getElementById('bf-photo-status').innerText = '✅ Banner ပုံ ရွေးချယ်ပြီးပါပြီ';
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function saveBannerAdmin(e) {
+      e.preventDefault();
+      const editId = (document.getElementById('bf-id')?.value || '').trim();
+      const title = (document.getElementById('bf-title')?.value || '').trim();
+      const subtitle = (document.getElementById('bf-subtitle')?.value || '').trim();
+      const cta = (document.getElementById('bf-cta')?.value || '').trim();
+      const target = document.getElementById('bf-target')?.value || 'cat:🏷️ Promotion';
+      const pickedImg = (document.getElementById('bf-image-data')?.value || '').trim();
+
+      if (!editId && homeBanners.length >= 5) {
+        alert('⚠️ Banner ကြော်ငြာ အများဆုံး (၅) ခုအထိသာ ထည့်နိုင်ပါသည်။ ရှိပြီးသားတစ်ခုကို ပြင်မည် သို့မဟုတ် ဖျက်ပါ။');
+        return;
+      }
+
+      if (editId) {
+        const idx = homeBanners.findIndex(b => b.id === editId);
+        if (idx !== -1) {
+          homeBanners[idx] = {
+            ...homeBanners[idx],
+            title,
+            subtitle,
+            cta,
+            target,
+            image: pickedImg || homeBanners[idx].image || './icon.png?v=3'
+          };
+        }
+      } else {
+        homeBanners.push({
+          id: 'bn_' + Date.now(),
+          title,
+          subtitle,
+          cta,
+          target,
+          image: pickedImg || './icon.png?v=3',
+          active: true
+        });
+      }
+
+      saveHomeBanners();
+      resetBannerForm();
+      renderAdminBannersList();
+      renderHomeBannerSlider();
+      showBannerNoti('✅ Banner သိမ်းပြီးပါပြီ', 'Home စာမျက်နှာ ကြော်ငြာကို ပြင်ဆင်ပြီးပါပြီ။');
+    }
+
+    function editBannerAdmin(id) {
+      const b = homeBanners.find(x => x.id === id);
+      if (!b) return;
+      document.getElementById('bf-id').value = b.id;
+      document.getElementById('bf-title').value = b.title || '';
+      document.getElementById('bf-subtitle').value = b.subtitle || '';
+      document.getElementById('bf-cta').value = b.cta || '';
+      document.getElementById('bf-image-data').value = '';
+      document.getElementById('bf-photo-preview').src = b.image || './icon.png?v=3';
+      document.getElementById('bf-photo-status').innerText = 'ပြင်ဆင်နေသည် — ပုံအသစ်မရွေးလျှင် လက်ရှိပုံအတိုင်း ကျန်ရှိပါမည်။';
+      const sel = document.getElementById('bf-target');
+      if (sel && [...sel.options].some(o => o.value === b.target)) sel.value = b.target;
+      document.getElementById('bf-title').focus();
+    }
+
+    function toggleBannerActive(id) {
+      const b = homeBanners.find(x => x.id === id);
+      if (!b) return;
+      b.active = (b.active === false) ? true : false;
+      saveHomeBanners();
+      renderAdminBannersList();
+      renderHomeBannerSlider();
+    }
+
+    function deleteBannerAdmin(id) {
+      if (!confirm('ဤ Banner ကြော်ငြာကို ဖျက်မည်မှာ သေချာပါသလား?')) return;
+      homeBanners = homeBanners.filter(x => x.id !== id);
+      saveHomeBanners();
+      renderAdminBannersList();
+      renderHomeBannerSlider();
+    }
+
+    function renderAdminBannersList() {
+      const box = document.getElementById('adm-banners-list');
+      const badge = document.getElementById('adm-banner-count-badge');
+      if (badge) badge.innerText = `${homeBanners.length} / 5 Banner`;
+      if (!box) return;
+
+      if (homeBanners.length === 0) {
+        box.innerHTML = `<p class="text-xs text-gray-400 py-4 text-center bg-gray-50 rounded-xl border">Banner မရှိသေးပါ။ အပေါ်က Form မှ အသစ်ထည့်နိုင်ပါသည်။</p>`;
+        return;
+      }
+
+      box.innerHTML = homeBanners.map((b, idx) => {
+        const isActive = b.active !== false;
+        return `
+          <div class="flex items-center justify-between gap-2.5 p-2.5 rounded-xl border ${isActive ? 'border-pink-200 bg-white' : 'border-gray-200 bg-gray-50 opacity-65'}">
+            <div class="flex items-center gap-2.5 min-w-0 flex-1">
+              <img src="${escapeHtml(b.image || './icon.png?v=3')}" class="w-16 h-11 rounded-lg object-cover border shrink-0 bg-gray-100">
+              <div class="min-w-0 text-xs">
+                <p class="font-extrabold text-gray-900 truncate">#${idx + 1} ${escapeHtml(b.title || '(ခေါင်းစဉ်မပါ)')}</p>
+                <p class="text-[10px] text-gray-500 truncate">${escapeHtml(b.subtitle || '')} • 🎯 ${escapeHtml(b.target || 'none')}</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-1 shrink-0">
+              <button type="button" onclick="toggleBannerActive('${escapeHtml(b.id)}')" class="${isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-200 text-gray-700'} font-extrabold px-2 py-1 rounded-lg text-[10px]">${isActive ? '👁️ ပြနေ' : '🙈 ဝှက်ထား'}</button>
+              <button type="button" onclick="editBannerAdmin('${escapeHtml(b.id)}')" class="bg-blue-100 text-blue-800 font-extrabold px-2 py-1 rounded-lg text-[10px]">✏️</button>
+              <button type="button" onclick="deleteBannerAdmin('${escapeHtml(b.id)}')" class="bg-red-100 text-red-700 font-extrabold px-2 py-1 rounded-lg text-[10px]">🗑️</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
     // ==================== MYANMAR LIVE CLOCK HELPER ====================
     function getClientMyanmarTimeStr() {
       try {
@@ -2263,6 +2922,8 @@
         document.getElementById('btn-admin-install')?.classList.remove('hidden');
       }
       initOwnProductManager();
+      initBannerTargetSelect();
+      renderAdminBannersList();
       updateAdminClock();
       loadAdminDashboard(false);
       loadProducts(false);
@@ -2277,7 +2938,7 @@
 
     function switchAdminTab(tab) {
       currentAdminTab = tab;
-      ['orders', 'restocks', 'returns', 'payouts', 'stock', 'shops', 'riders', 'noti'].forEach(t => {
+      ['orders', 'restocks', 'returns', 'payouts', 'stock', 'banners', 'shops', 'riders', 'noti'].forEach(t => {
         const panel = document.getElementById('adm-panel-' + t);
         if (panel) panel.classList.toggle('hidden', t !== tab);
         const btn = document.getElementById('adm-tab-' + t);
@@ -2289,6 +2950,10 @@
       });
       if (tab === 'stock') {
         switchStockSubTab(currentStockSubTab);
+      }
+      if (tab === 'banners') {
+        initBannerTargetSelect();
+        renderAdminBannersList();
       }
       if (tab === 'payouts' && currentPayoutSubTab === 'history') renderAdminPayoutHistory();
       if (tab === 'noti') {
@@ -2341,6 +3006,7 @@
       });
       renderAdminOrdersAndRiders();
     }
+
     // ==================== SPLIT NOTI AUDIENCE (ALL / INDIVIDUAL CUSTOMERS) ====================
     function switchCustNotiMode(mode) {
       currentCustNotiMode = mode;
@@ -2492,7 +3158,6 @@
       quickPromoTargetName = p.name;
       const key = normalizeProdKey(p.name);
       const ov = promoOverridesMap[key];
-      const prInfo = getEffectivePricing(p, -1);
 
       document.getElementById('qp-prod-name').innerText = p.name;
       const enabledCb = document.getElementById('qp-enabled');
@@ -3911,7 +4576,7 @@
       }
       renderAdminPayoutHistory();
 
-      // ---- TAB 6: SHOPS LIST WITH REQUEST APPROVAL ----
+      // ---- TAB 7: SHOPS LIST WITH REQUEST APPROVAL ----
       document.getElementById('adm-shops-list').innerHTML = shops.length === 0
         ? `<p class="text-gray-400 py-3">ချိတ်ဆက်ဆိုင် မထည့်ရသေးပါ။</p>`
         : shops.map(s => {
@@ -3936,7 +4601,7 @@
             `;
           }).join('');
 
-      // ---- TAB 7: RIDERS ----
+      // ---- TAB 8: RIDERS ----
       document.getElementById('adm-riders-stats').innerHTML = (d.riderStats || []).map(rs => `
         <div class="bg-blue-50/70 border border-blue-200 rounded-xl p-2.5 text-xs">
           <p class="font-extrabold text-gray-900">${escapeHtml(rs.riderId)} — ${escapeHtml(rs.riderName)}</p>
@@ -4299,6 +4964,7 @@
     // ==================== INITIALIZATION ====================
     function init() {
       loadPromoOverrides();
+      loadHomeBanners();
 
       if (APP_ROLE === 'admin') {
         document.getElementById('admin-view').classList.remove('hidden');
@@ -4324,6 +4990,7 @@
         try { history.replaceState({ mtHome: true }, ''); } catch (e) {}
 
         renderCategoryBar();
+        renderHomeBannerSlider();
         loadSavedCart();
         loadProductsFromCacheInstant();
         loadProducts(false);
