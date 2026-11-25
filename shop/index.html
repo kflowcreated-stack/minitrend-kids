@@ -10,8 +10,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="MiniTrend Shop" />
   <link rel="manifest" href="/shop/manifest.json?v=11" />
-  <link rel="icon" type="image/png" href="../icon.png?v=3" />
-  <link rel="apple-touch-icon" href="../icon.png?v=3" />
+  <link rel="icon" type="image/png" href="../icon-shop.png?v=3" />
+  <link rel="apple-touch-icon" href="../icon-shop.png?v=3" />
 
   <script>
     if (window.location.pathname.endsWith('/shop')) {
@@ -111,7 +111,7 @@
   <!-- TOP NOTIFICATION BANNER -->
   <div id="push-noti-popup" class="fixed noti-safe-top left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-md hidden noti-slide-in">
     <div class="bg-gray-900/95 text-white rounded-2xl p-3.5 shadow-2xl border-2 border-amber-400 flex items-start gap-3 backdrop-blur-md">
-      <img src="../icon.png?v=3" class="w-11 h-11 rounded-xl object-cover shrink-0 border border-white/20" />
+      <img src="../icon-shop.png?v=3" class="w-11 h-11 rounded-xl object-cover shrink-0 border border-white/20" />
       <div class="flex-1 min-w-0">
         <div class="flex justify-between items-center gap-1">
           <p id="push-noti-title" class="text-xs sm:text-sm font-extrabold text-amber-300 truncate">🔔 MiniTrend Shop</p>
@@ -150,7 +150,7 @@
 
       <div class="mt-4 pt-3 border-t border-gray-100 text-center">
         <button type="button" id="btn-shop-install-login" onclick="triggerShopInstall()" class="hidden bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold px-4 py-2.5 rounded-xl shadow-sm">
-          📲 ဤဖုန်းတွင် Shop App သွင်းမည်
+          📲 App ဒေါင်းမည်
         </button>
       </div>
     </div>
@@ -174,7 +174,7 @@
           <p id="shop-header-meta" class="text-[11px] text-amber-100 font-bold mt-0.5">ကော်မရှင်: 5% | ဆိုင်ရငွေ: 95%</p>
         </div>
         <div class="flex flex-wrap gap-1.5">
-          <button type="button" id="btn-shop-install" onclick="triggerShopInstall()" class="hidden bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-extrabold px-3 py-2 rounded-xl shadow-sm">📲 App သွင်း</button>
+          <button type="button" id="btn-shop-install" onclick="triggerShopInstall()" class="hidden bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-extrabold px-3 py-2 rounded-xl shadow-sm">📲 App ဒေါင်းမည်</button>
           <button type="button" onclick="connectShopFirebase()" id="btn-shop-fcm" class="bg-amber-300 hover:bg-amber-200 text-gray-900 text-xs font-extrabold px-3 py-2 rounded-xl shadow-sm">🔔 Noti ချိတ်မည်</button>
           <button type="button" onclick="loadShopDashboard(false)" id="btn-shop-refresh" class="bg-white/20 hover:bg-white/30 text-white text-xs font-bold px-3 py-2 rounded-xl">🔄 ပြန်စစ်</button>
           <button type="button" onclick="logoutShop()" class="bg-red-600/90 hover:bg-red-700 text-white text-xs font-bold px-3 py-2 rounded-xl">🔒 ထွက်</button>
@@ -284,7 +284,7 @@
           <div id="rs-selected-summary" class="hidden bg-emerald-50 border-2 border-emerald-300 rounded-2xl p-3 space-y-2">
             <div class="flex justify-between items-start gap-2">
               <div class="flex items-center gap-2.5 min-w-0">
-                <img id="rs-sel-img" src="../icon.png?v=3" class="w-12 h-12 rounded-xl object-cover border bg-white shrink-0">
+                <img id="rs-sel-img" src="../icon-shop.png?v=3" class="w-12 h-12 rounded-xl object-cover border bg-white shrink-0">
                 <div class="min-w-0">
                   <p class="text-[10px] font-extrabold text-emerald-700">✅ ရွေးချယ်ထားသော ယခင်ပစ္စည်း</p>
                   <p id="rs-sel-name" class="text-xs sm:text-sm font-extrabold text-gray-900 truncate"></p>
@@ -569,7 +569,7 @@
   <div id="ios-guide-modal" onclick="closeIosGuide()" class="fixed inset-0 bg-black/75 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
     <div onclick="event.stopPropagation()" class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl border-2 border-amber-300 space-y-3">
       <div class="flex justify-between items-center border-b pb-2.5">
-        <h3 class="text-sm font-extrabold text-gray-900">📲 Shop App ထည့်သွင်းနည်း</h3>
+        <h3 class="text-sm font-extrabold text-gray-900">📲 App ဒေါင်းမည် — ထည့်သွင်းနည်း</h3>
         <button type="button" onclick="closeIosGuide()" class="text-gray-400 font-bold text-xl px-1">✕</button>
       </div>
       <div class="space-y-2.5 text-xs text-gray-700 leading-relaxed">
@@ -1025,7 +1025,7 @@
       for (let i = 0; i < MAX_RESTOCK_PHOTOS; i++) {
         const photo = restockPhotos[i];
         if (photo) {
-          const src = photo.base64 || photo.url || '../icon.png?v=3';
+          const src = photo.base64 || photo.url || '../icon-shop.png?v=3';
           slotsHtml.push(`
             <div class="relative aspect-square rounded-xl overflow-hidden border-2 border-amber-400 bg-white shadow-sm">
               <img src="${escapeHtml(src)}" alt="ပုံ ${i + 1}" class="w-full h-full object-cover">
@@ -1158,7 +1158,7 @@
 
       box.innerHTML = filtered.map(p => {
         const origIdx = shopProductsCache.indexOf(p);
-        const firstImg = (p.colors && p.colors[0] && p.colors[0].image) ? p.colors[0].image : '../icon.png?v=3';
+        const firstImg = (p.colors && p.colors[0] && p.colors[0].image) ? p.colors[0].image : '../icon-shop.png?v=3';
         const needsAge = AGE_REQUIRED_CATS.includes(p.category);
         const validPrices = (p.prices || []).filter(v => v > 0);
         const showPrice = validPrices.length > 0 ? Math.min(...validPrices) : 0;
@@ -1315,7 +1315,7 @@
 
       box.innerHTML = filtered.map((p) => {
         const origIdx = shopProductsCache.indexOf(p);
-        const firstImg = (p.colors && p.colors[0] && p.colors[0].image) ? p.colors[0].image : '../icon.png?v=3';
+        const firstImg = (p.colors && p.colors[0] && p.colors[0].image) ? p.colors[0].image : '../icon-shop.png?v=3';
         const validPrices = (p.prices || []).filter(v => v > 0);
         const showPrice = validPrices.length > 0 ? Math.min(...validPrices) : 0;
         const colorNames = (p.colors || []).map(c => c.name).filter(Boolean).join(', ');
@@ -1376,7 +1376,7 @@
       restockPhotos = uniqueImgs.map(u => ({ base64: '', url: u }));
       renderRestockPhotoSlots();
 
-      document.getElementById('rs-sel-img').src = uniqueImgs[0] || '../icon.png?v=3';
+      document.getElementById('rs-sel-img').src = uniqueImgs[0] || '../icon-shop.png?v=3';
       document.getElementById('rs-sel-name').innerText = p.name;
       document.getElementById('rs-sel-meta').innerText = `📂 ${p.category} | 📦 စုစုပေါင်းလက်ကျန်: ${p.totalStock} ခု`;
 
@@ -1616,7 +1616,7 @@
     function openImageLightbox(imgKey) {
       const info = window.__shopImgMap[imgKey];
       if (!info) return;
-      document.getElementById('lightbox-img').src = info.image || '../icon.png?v=3';
+      document.getElementById('lightbox-img').src = info.image || '../icon-shop.png?v=3';
       document.getElementById('lightbox-title').innerText = info.name || '';
       const szPart = info.size && info.size !== 'အသက်မလို' ? ` | 📏 ${info.size}` : '';
       document.getElementById('lightbox-meta').innerText = `🎨 ${info.colorName || '-'}${szPart} | 📦 x ${info.qty || 1} ခု`;
@@ -2151,3 +2151,4 @@
   </script>
 </body>
 </html>
+      
