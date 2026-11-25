@@ -181,10 +181,10 @@
         </div>
       </div>
 
-      <!-- AUTO MUTE QUIET HOURS BANNER (6:00 PM - 8:00 AM MMT) -->
+      <!-- AUTO MUTE QUIET HOURS BANNER -->
       <div id="shop-quiet-banner" class="hidden bg-slate-900 text-amber-200 border-2 border-slate-700 rounded-2xl px-3.5 py-2.5 text-xs font-bold flex items-center gap-2.5 shadow-sm">
         <span class="text-lg shrink-0">🌙</span>
-        <div class="leading-relaxed">
+        <div id="shop-quiet-banner-text" class="leading-relaxed">
           <p class="font-extrabold text-white">ညဘက် Auto Mute ဖွင့်ထားပါသည် (ညနေ ၆:၀၀ မှ နံနက် ၈:၀၀)</p>
           <p class="text-[11px] text-slate-300">ယခုအချိန်အတွင်း Notification အသံပိတ်ထားမည်ဖြစ်ပြီး ညကဝင်ထားသော အော်ဒါများကို နံနက် ၈:၀၀ နာရီတွင် စုပေါင်းအကြောင်းကြားပေးပါမည်။</p>
         </div>
@@ -349,7 +349,6 @@
               </div>
             </div>
 
-            <!-- SHOP PROMOTION TOGGLE & PROMO PRICE -->
             <div class="bg-rose-50/70 border-2 border-rose-200 rounded-xl p-2.5 space-y-2">
               <label class="flex items-center gap-2 cursor-pointer select-none">
                 <input type="checkbox" id="rs-promo-enabled" onchange="toggleShopPromoBox()" class="w-4 h-4 accent-rose-600 rounded">
@@ -361,7 +360,6 @@
               </div>
             </div>
 
-            <!-- MULTI-IMAGE UPLOAD (1 TO 3 PHOTOS) -->
             <div>
               <div class="flex justify-between items-center mb-1">
                 <label class="block text-xs font-extrabold text-gray-700">📷 Product ပုံများ (၁ ပုံ မှ ၃ ပုံအထိ ထည့်နိုင်သည်)</label>
@@ -397,6 +395,7 @@
           </div>
         </div>
       </div>
+
       <!-- TAB 4: CANCEL / RETURN HISTORY -->
       <div id="tab-panel-returns" class="hidden space-y-3">
         <div class="bg-red-50 border border-red-200 rounded-xl px-3.5 py-2.5 text-[11px] text-red-900 font-bold leading-relaxed">
@@ -471,7 +470,7 @@
           <p><b>၃။ တစ်နေ့တာရောင်းရစာရင်း:</b> နေ့စဉ်အော်ဒါများကို App ထဲရှိ <b>"MiniTrend Kids မှ တစ်နေ့တာရောင်းရသော"</b> စာရင်းတွင် အချိန်မရွေး တိုက်ဆိုင်စစ်ဆေးနိုင်ပါသည်။</p>
           <p><b>၄။ ဝန်ဆောင်ခ (၅%) နှင့် ဆိုင်ရငွေ (၉၅%):</b> အောင်မြင်စွာ ရောင်းချပြီးသော ပစ္စည်းတန်ဖိုးအပေါ် MiniTrend Kids ဝန်ဆောင်ခ <b>၅%</b> နှုတ်ယူပြီး ဆိုင်ဘက်မှ <b>၉၅%</b> ရရှိပါမည်။</p>
           <p><b>၅။ ငွေရှင်းပေးမည့်အချိန်:</b> ဝယ်သူထံ ပစ္စည်းရောက်ရှိပြီး ငွေချေပြီးသည့် <b>နောက်နေ့ (အော်ဒါတင်ပြီး ခန့်မှန်း ၄ ရက်မြောက်)</b> တွင် ဆိုင်ထံသို့ ငွေလွှဲရှင်းပေးပါမည်။</p>
-          <p class="bg-amber-100/70 border border-amber-300 rounded-lg px-2.5 py-1.5 font-extrabold text-amber-950">📞 ဆက်သွယ်ရန် MiniTrend Kids Admin ဖုန်း — <a href="tel:09942739543" class="underline text-amber-800">09-942739543</a></p>
+          <p class="bg-amber-100/70 border border-amber-300 rounded-lg px-2.5 py-1.5 font-extrabold text-amber-950">📞 ဆက်သွယ်ရန် MiniTrend Kids Admin ဖုန်း — <a href="tel:09942739543" class="shop-admin-phone-link underline text-amber-800">09-942739543</a></p>
         </div>
 
         <button type="submit" id="btn-submit-agreement" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3 rounded-xl shadow text-sm">
@@ -487,7 +486,7 @@
           သဘောတူညီချက်ကို MiniTrend Kids Admin ထံ ပေးပို့ပြီးပါပြီ။ Admin မှ အတည်ပြုပေးပြီးသည်နှင့် ဤ App ကို အလိုအလျောက် စတင်အသုံးပြုနိုင်ပါမည်။
         </p>
         <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs font-bold text-amber-950">
-          အမြန်အတည်ပြုလိုပါက Admin ဖုန်း <a href="tel:09942739543" class="underline text-amber-700 font-extrabold">09-942739543</a> သို့ ဆက်သွယ်နိုင်ပါသည်။
+          အမြန်အတည်ပြုလိုပါက Admin ဖုန်း <a href="tel:09942739543" class="shop-admin-phone-link underline text-amber-700 font-extrabold">09-942739543</a> သို့ ဆက်သွယ်နိုင်ပါသည်။
         </div>
         <button type="button" onclick="loadShopDashboard(false)" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-extrabold py-2.5 rounded-xl text-xs shadow-sm">
           🔄 အတည်ပြုပြီး/မပြီး ပြန်စစ်မည်
@@ -510,7 +509,7 @@
         <p><b>၃။ တစ်နေ့တာရောင်းရစာရင်း:</b> နေ့စဉ်အော်ဒါများကို App ထဲရှိ <b>"MiniTrend Kids မှ တစ်နေ့တာရောင်းရသော"</b> စာရင်းတွင် အချိန်မရွေး တိုက်ဆိုင်စစ်ဆေးနိုင်ပါသည်။</p>
         <p><b>၄။ ဝန်ဆောင်ခ (၅%) နှင့် ဆိုင်ရငွေ (၉၅%):</b> အောင်မြင်စွာ ရောင်းချပြီးသော ပစ္စည်းတန်ဖိုးအပေါ် MiniTrend Kids ဝန်ဆောင်ခ <b>၅%</b> နှုတ်ယူပြီး ဆိုင်ဘက်မှ <b>၉၅%</b> ရရှိပါမည်။</p>
         <p><b>၅။ ငွေရှင်းပေးမည့်အချိန်:</b> ဝယ်သူထံ ပစ္စည်းရောက်ရှိပြီး ငွေချေပြီးသည့် <b>နောက်နေ့ (အော်ဒါတင်ပြီး ခန့်မှန်း ၄ ရက်မြောက်)</b> တွင် ဆိုင်ထံသို့ ငွေလွှဲရှင်းပေးပါမည်။</p>
-        <p class="bg-amber-50 border border-amber-200 rounded-xl p-2.5 font-extrabold text-amber-950">📞 ဆက်သွယ်ရန် MiniTrend Kids Admin ဖုန်း — <a href="tel:09942739543" class="underline text-amber-800">09-942739543</a></p>
+        <p class="bg-amber-50 border border-amber-200 rounded-xl p-2.5 font-extrabold text-amber-950">📞 ဆက်သွယ်ရန် MiniTrend Kids Admin ဖုန်း — <a href="tel:09942739543" class="shop-admin-phone-link underline text-amber-800">09-942739543</a></p>
       </div>
       <div class="p-3 border-t bg-gray-50">
         <button type="button" onclick="closeAgreementViewModal()" class="w-full bg-gray-900 text-white font-extrabold py-2.5 rounded-xl text-xs">ပိတ်မည်</button>
@@ -598,6 +597,12 @@
     let currentShopInfo = null;
     let shopPromoOverridesMap = {};
     let shopPromoTargetName = '';
+    let shopCentralConfig = {
+      adminPhone: '09-942739543',
+      shopQuietStartHour: 18,
+      shopQuietEndHour: 8,
+      promoOverrides: {}
+    };
     window.__shopImgMap = {};
 
     const MAX_RESTOCK_PHOTOS = 3;
@@ -620,6 +625,60 @@
 
     function saveShopPromoOverrides() {
       try { localStorage.setItem('mt_promo_overrides_v1', JSON.stringify(shopPromoOverridesMap)); } catch (e) {}
+    }
+
+    function syncShopPromoToCloud() {
+      try {
+        fetch(APPS_SCRIPT_URL, {
+          method: 'POST', mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({
+            action: 'saveAppSettings',
+            settings: { promoOverrides: shopPromoOverridesMap }
+          })
+        }).catch(() => {});
+      } catch (e) {}
+    }
+
+    function formatHourLabelMMT(h) {
+      const num = parseInt(h, 10);
+      if (isNaN(num)) return '';
+      if (num === 0) return 'ည ၁၂:၀၀';
+      if (num < 12) return `နံနက် ${num}:၀၀`;
+      if (num === 12) return 'နေ့လယ် ၁၂:၀၀';
+      return `ညနေ ${num - 12}:၀၀`;
+    }
+
+    function applyShopCentralSettings(st) {
+      if (!st || typeof st !== 'object') return;
+      shopCentralConfig = { ...shopCentralConfig, ...st };
+
+      if (st.adminPhone) {
+        const cleanPhone = st.adminPhone.toString().trim();
+        document.querySelectorAll('.shop-admin-phone-link').forEach(a => {
+          a.innerText = cleanPhone;
+          a.setAttribute('href', 'tel:' + cleanPhone.replace(/[^0-9+]/g, ''));
+        });
+      }
+
+      if (st.promoOverrides && typeof st.promoOverrides === 'object' && Object.keys(st.promoOverrides).length > 0) {
+        shopPromoOverridesMap = { ...shopPromoOverridesMap, ...st.promoOverrides };
+        saveShopPromoOverrides();
+      }
+
+      const startH = parseInt(shopCentralConfig.shopQuietStartHour, 10);
+      const endH = parseInt(shopCentralConfig.shopQuietEndHour, 10);
+      const qTextBox = document.getElementById('shop-quiet-banner-text');
+      if (qTextBox && !isNaN(startH) && !isNaN(endH)) {
+        qTextBox.innerHTML = `
+          <p class="font-extrabold text-white">ညဘက် Auto Mute ဖွင့်ထားပါသည် (${formatHourLabelMMT(startH)} မှ ${formatHourLabelMMT(endH)})</p>
+          <p class="text-[11px] text-slate-300">ယခုအချိန်အတွင်း Notification အသံပိတ်ထားမည်ဖြစ်ပြီး ညကဝင်ထားသော အော်ဒါများကို ${formatHourLabelMMT(endH)} နာရီတွင် စုပေါင်းအကြောင်းကြားပေးပါမည်။</p>
+        `;
+      }
+
+      updateQuietHoursBanner();
+      renderMyStockHistory();
+      if (restockMode === 'existing') renderExistingProductsList();
     }
 
     function getShopItemPromo(p) {
@@ -711,6 +770,7 @@
       }
 
       saveShopPromoOverrides();
+      syncShopPromoToCloud();
       closeShopPromoModal();
       renderMyStockHistory();
       if (restockMode === 'existing') renderExistingProductsList();
@@ -722,16 +782,26 @@
       const key = normalizeShopProdKey(shopPromoTargetName);
       delete shopPromoOverridesMap[key];
       saveShopPromoOverrides();
+      syncShopPromoToCloud();
       closeShopPromoModal();
       renderMyStockHistory();
       if (restockMode === 'existing') renderExistingProductsList();
       showShopBannerNoti('🚫 Promotion ပိတ်ပြီးပါပြီ', `${shopPromoTargetName} ကို မူရင်းဈေးအတိုင်း ပြန်ပြောင်းပြီးပါပြီ။`);
     }
-    // ==================== MYANMAR TIME AUTO MUTE (6:00 PM - 8:00 AM MMT) ====================
+
+    // ==================== MYANMAR TIME AUTO MUTE ====================
     function isShopQuietHoursMMT() {
       const mmDate = new Date(Date.now() + (6.5 * 60 * 60 * 1000));
       const hr = mmDate.getUTCHours();
-      return (hr >= 18 || hr < 8);
+      const startH = !isNaN(parseInt(shopCentralConfig.shopQuietStartHour, 10))
+        ? parseInt(shopCentralConfig.shopQuietStartHour, 10)
+        : 18;
+      const endH = !isNaN(parseInt(shopCentralConfig.shopQuietEndHour, 10))
+        ? parseInt(shopCentralConfig.shopQuietEndHour, 10)
+        : 8;
+      if (startH === endH) return false;
+      if (startH > endH) return (hr >= startH || hr < endH);
+      return (hr >= startH && hr < endH);
     }
 
     function updateQuietHoursBanner(serverFlag) {
@@ -1536,7 +1606,7 @@
       if (btn) btn.innerText = "⏳ ချိတ်ဆက်နေ...";
       const res = await initShopFirebasePush(saved.id, true);
       if (res && res.ok) {
-        alert(`✅ ${saved.name} ဖုန်းကို Notification စနစ်နှင့် ချိတ်ဆက်ပြီးပါပြီ! (ညနေ ၆:၀၀ မှ နံနက် ၈:၀၀ အထိ Auto Mute ဖြစ်ပါမည်)`);
+        alert(`✅ ${saved.name} ဖုန်းကို Notification စနစ်နှင့် ချိတ်ဆက်ပြီးပါပြီ! (Auto Mute အချိန်တွင် အသံပိတ်ပါမည်)`);
       } else {
         if (btn) btn.innerText = "🔔 Noti ချိတ်မည်";
         alert((res && res.message) || "⚠️ Notification ချိတ်မရပါ။");
@@ -1588,6 +1658,7 @@
       try {
         const res = await fetch(`${APPS_SCRIPT_URL}?action=getShopData&t=${Date.now()}`, { cache: "no-store" });
         const data = await res.json();
+        if (data && data.appSettings) applyShopCentralSettings(data.appSettings);
         if (data && Array.isArray(data.shops) && data.shops.length > 0) {
           sel.innerHTML = `<option value="">-- ဆိုင်အမည် ရွေးချယ်ပါ --</option>` +
             data.shops.map(s => `<option value="${escapeHtml(s.id)}">${escapeHtml(s.id)} — ${escapeHtml(s.name)}</option>`).join('');
@@ -1676,6 +1747,7 @@
     }
 
     function renderShopData(data, silent) {
+      if (data && data.appSettings) applyShopCentralSettings(data.appSettings);
       updateQuietHoursBanner(data.isQuietHours);
 
       if (data.shop) {
@@ -1726,7 +1798,6 @@
         localStorage.setItem(lastKey, newestOrdId);
       }
 
-      // ---- TAB 1: Active Orders ----
       const ordersEl = document.getElementById('shop-orders-list');
       if (activeOrders.length === 0) {
         ordersEl.innerHTML = `<div class="bg-white rounded-2xl border p-8 text-center text-xs sm:text-sm text-gray-400">🎉 လက်ရှိ အော်ဒါ မရှိသေးပါ</div>`;
@@ -1808,7 +1879,6 @@
         }).join('');
       }
 
-      // ---- TAB 3: Restock Request History (Multi-Photo + Reject Reason) ----
       const rsHistEl = document.getElementById('shop-restock-history');
       if (restockHistory.length === 0) {
         rsHistEl.innerHTML = `<p class="text-gray-400 py-3 text-center">ပို့ထားသော မှတ်တမ်း မရှိသေးပါ။</p>`;
@@ -1854,7 +1924,6 @@
         }).join('');
       }
 
-      // ---- TAB 4: CANCEL / RETURN HISTORY ----
       const returnsEl = document.getElementById('shop-returns-list');
       if (returnOrders.length === 0) {
         returnsEl.innerHTML = `<div class="bg-white rounded-2xl border p-8 text-center text-xs sm:text-sm text-gray-400">✅ လက်ရှိ Cancel / Return History မရှိသေးပါ</div>`;
@@ -1938,7 +2007,6 @@
         }).join('');
       }
 
-      // ---- TAB 5: Payouts ----
       const unpaidEl = document.getElementById('shop-unpaid-list');
       if (unpaidOrders.length === 0) {
         unpaidEl.innerHTML = `<p class="text-gray-400 py-4 text-center">ငွေရှင်းရန် ကျန်ရှိသော အော်ဒါ မရှိသေးပါ။</p>`;
@@ -1994,6 +2062,7 @@
         delete shopPromoOverridesMap[key];
       }
       saveShopPromoOverrides();
+      syncShopPromoToCloud();
 
       const photoList = restockPhotos.slice(0, MAX_RESTOCK_PHOTOS).map(p => ({
         base64: p.base64 || "",
@@ -2052,6 +2121,7 @@
 
     function initShopApp() {
       loadShopPromoOverrides();
+      applyShopCentralSettings(shopCentralConfig);
       try { history.replaceState({ shopHome: true }, ''); } catch (e) {}
       updateRestockSizeOptions();
       updateQuietHoursBanner();
