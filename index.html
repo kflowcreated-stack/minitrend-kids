@@ -1165,8 +1165,8 @@
       </div>
 
       <div class="flex gap-2 pt-1">
-        <button type="button" onclick="disableQuickPromoAndSave()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-extrabold py-2.5 px-3 rounded-xl text-xs">🚫 Promo ပိတ်မည်</button>
-        <button type="button" onclick="saveQuickPromoModal()" class="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-extrabold py-2.5 rounded-xl text-xs shadow-sm">💾 သိမ်းဆည်းမည်</button>
+        <button type="button" onclick="disableQuickPromoAndSave(this)" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-extrabold py-2.5 px-3 rounded-xl text-xs">🚫 Promo ဖြုတ်မည်</button>
+        <button type="button" onclick="saveQuickPromoModal(this)" class="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-extrabold py-2.5 rounded-xl text-xs shadow-sm">💾 သိမ်းဆည်းမည်</button>
       </div>
     </div>
   </div>
@@ -1211,6 +1211,7 @@
 
     let promoOverridesMap = {};
     let quickPromoTargetName = '';
+    let lastPromoLocalEditTs = 0;
 
     let homeBanners = [];
     let activeBannerIdx = 0;
@@ -1248,16 +1249,16 @@
       try { localStorage.setItem('mt_promo_overrides_v1', JSON.stringify(promoOverridesMap)); } catch (e) {}
     }
 
-    function syncPromoOverridesToCloud() {
+    async function syncPromoOverridesToCloud() {
       try {
-        fetch(APPS_SCRIPT_URL, {
+        await fetch(APPS_SCRIPT_URL, {
           method: 'POST', mode: 'no-cors',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify({
             action: 'saveAppSettings',
             settings: { promoOverrides: promoOverridesMap }
           })
-        }).catch(() => {});
+        });
       } catch (e) {}
     }
 
@@ -1306,14 +1307,15 @@
         renderHomeBannerSlider();
         renderAdminBannersList();
       }
-      if (st.promoOverrides && typeof st.promoOverrides === 'object' && Object.keys(st.promoOverrides).length > 0) {
-        promoOverridesMap = { ...promoOverridesMap, ...st.promoOverrides };
+      if (st.promoOverrides && typeof st.promoOverrides === 'object' && (Date.now() - lastPromoLocalEditTs > 15000)) {
+        promoOverridesMap = { ...st.promoOverrides };
         savePromoOverrides();
       }
 
       populateCentralSettingsForm(centralSettings);
       renderCartModal();
       renderProductsGrid();
+      if (APP_ROLE === 'admin' && currentAdminTab === 'stock') renderAdminStockPanel();
     }
 
     function populateCentralSettingsForm(st) {
@@ -1386,6 +1388,15 @@
       const basePrices = Array.isArray(p.prices) ? p.prices : [];
       const rawSizePrice = (sizeIdx >= 0 && basePrices[sizeIdx] > 0) ? basePrices[sizeIdx] : (p.minPrice || 0);
       const ov = promoOverridesMap[normalizeProdKey(p.name)];
+
+      if (ov && ov.enabled === false) {
+        return {
+          isPromo: false,
+          salePrice: rawSizePrice,
+          origPrice: 0,
+          basePriceForSize: rawSizePrice
+        };
+      }
 
       if (ov && ov.enabled && Number(ov.promoPrice) > 0) {
         const promoPrice = Number(ov.promoPrice);
@@ -3364,8 +3375,8 @@
       }
     }
 
-    function openQuickPromoModal(prodName) {
-      const p = allProducts.find(x => x.name === prodName);
+    function openQuickPromoModal(prodId) {
+      const p = allProducts.find(x => x.id === prodId);
       if (!p) return;
       quickPromoTargetName = p.name;
       const key = normalizeProdKey(p.name);
@@ -3376,10 +3387,14 @@
       const origInp = document.getElementById('qp-orig-price');
       const promoInp = document.getElementById('qp-promo-price');
 
-      if (ov && ov.enabled) {
+      if (ov && ov.enabled === true) {
         enabledCb.checked = true;
         origInp.value = Number(ov.origPrice) || p.minPrice || 0;
         promoInp.value = Number(ov.promoPrice) || '';
+      } else if (ov && ov.enabled === false) {
+        enabledCb.checked = false;
+        origInp.value = p.minPrice || 0;
+        promoInp.value = p.minPrice > 0 ? Math.max(100, Math.round((p.minPrice * 0.9) / 100) * 100) : '';
       } else if (p.origPrice > p.minPrice) {
         enabledCb.checked = true;
         origInp.value = p.origPrice;
@@ -3405,20 +3420,24 @@
       if (wrap) wrap.classList.toggle('opacity-50', !enabled);
     }
 
-    function saveQuickPromoModal() {
+    async function saveQuickPromoModal(btnEl) {
       if (!quickPromoTargetName) return;
-      const key = normalizeProdKey(quickPromoTargetName);
+      const targetName = quickPromoTargetName;
+      const key = normalizeProdKey(targetName);
       const enabled = !!document.getElementById('qp-enabled')?.checked;
       const origPrice = parseInt(document.getElementById('qp-orig-price')?.value, 10) || 0;
       const promoPrice = parseInt(document.getElementById('qp-promo-price')?.value, 10) || 0;
 
+      if (enabled && promoPrice <= 0) {
+        alert('⚠️ Promotion ဈေး ထည့်သွင်းပေးပါ။');
+        return;
+      }
+
+      if (btnEl) { btnEl.disabled = true; btnEl.innerText = '⏳ သိမ်းနေ...'; }
+
       if (!enabled) {
-        delete promoOverridesMap[key];
+        promoOverridesMap[key] = { enabled: false };
       } else {
-        if (promoPrice <= 0) {
-          alert('⚠️ Promotion ဈေး ထည့်သွင်းပေးပါ။');
-          return;
-        }
         promoOverridesMap[key] = {
           enabled: true,
           origPrice: origPrice > promoPrice ? origPrice : 0,
@@ -3426,22 +3445,35 @@
         };
       }
 
+      lastPromoLocalEditTs = Date.now();
       savePromoOverrides();
-      syncPromoOverridesToCloud();
+      await syncPromoOverridesToCloud();
+
+      if (btnEl) { btnEl.disabled = false; btnEl.innerText = '💾 သိမ်းဆည်းမည်'; }
       closeQuickPromoModal();
       renderAdminStockPanel();
-      showBannerNoti('🏷️ Promotion သိမ်းပြီးပါပြီ', `${quickPromoTargetName} အတွက် Promotion ဈေး ပြင်ဆင်ပြီးပါပြီ။`);
+      showBannerNoti(
+        enabled ? '🏷️ Promotion သိမ်းပြီးပါပြီ' : '🚫 Promotion ဖြုတ်ပြီးပါပြီ',
+        enabled ? `${targetName} အတွက် Promotion ဈေး (${promoPrice.toLocaleString()} Ks) ပြင်ဆင်ပြီးပါပြီ။` : `${targetName} ကို မူရင်းဈေးအတိုင်း ပြန်ပြောင်းပြီးပါပြီ။`
+      );
     }
 
-    function disableQuickPromoAndSave() {
+    async function disableQuickPromoAndSave(btnEl) {
       if (!quickPromoTargetName) return;
-      const key = normalizeProdKey(quickPromoTargetName);
-      delete promoOverridesMap[key];
+      const targetName = quickPromoTargetName;
+      const key = normalizeProdKey(targetName);
+
+      if (btnEl) { btnEl.disabled = true; btnEl.innerText = '⏳...'; }
+
+      promoOverridesMap[key] = { enabled: false };
+      lastPromoLocalEditTs = Date.now();
       savePromoOverrides();
-      syncPromoOverridesToCloud();
+      await syncPromoOverridesToCloud();
+
+      if (btnEl) { btnEl.disabled = false; btnEl.innerText = '🚫 Promo ဖြုတ်မည်'; }
       closeQuickPromoModal();
       renderAdminStockPanel();
-      showBannerNoti('🚫 Promotion ပိတ်ပြီးပါပြီ', `${quickPromoTargetName} ကို မူရင်းဈေးအတိုင်း ပြန်ပြောင်းပြီးပါပြီ။`);
+      showBannerNoti('🚫 Promotion ဖြုတ်ပြီးပါပြီ', `${targetName} ကို မူရင်းဈေးအတိုင်း ပြန်ပြောင်းပြီးပါပြီ။`);
     }
 
     function initOwnProductManager() {
@@ -3526,9 +3558,12 @@
       const ov = promoOverridesMap[normalizeProdKey(p.name)];
       const promoCb = document.getElementById('own-promo-enabled');
       const promoInp = document.getElementById('own-promo-price');
-      if (ov && ov.enabled) {
+      if (ov && ov.enabled === true) {
         if (promoCb) promoCb.checked = true;
         if (promoInp) promoInp.value = Number(ov.promoPrice) || '';
+      } else if (ov && ov.enabled === false) {
+        if (promoCb) promoCb.checked = false;
+        if (promoInp) promoInp.value = '';
       } else if (p.origPrice > p.minPrice) {
         if (promoCb) promoCb.checked = true;
         if (promoInp) promoInp.value = p.minPrice;
@@ -3681,8 +3716,9 @@
           promoPrice: promoPriceVal
         };
       } else if (!promoEnabled) {
-        delete promoOverridesMap[key];
+        promoOverridesMap[key] = { enabled: false };
       }
+      lastPromoLocalEditTs = Date.now();
       savePromoOverrides();
       syncPromoOverridesToCloud();
 
@@ -4942,7 +4978,7 @@
                 </div>
               </div>
               <div class="flex items-center gap-1.5 shrink-0">
-                <button type="button" onclick="openQuickPromoModal('${escapeHtml(p.name)}')" class="${prInfo.isPromo ? 'bg-rose-600 text-white' : 'bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100'} font-extrabold text-[11px] px-2.5 py-1.5 rounded-xl">${prInfo.isPromo ? '🏷️ Promo ပြင်' : '🏷️ Promo ချ'}</button>
+                <button type="button" onclick="openQuickPromoModal(${p.id})" class="${prInfo.isPromo ? 'bg-rose-600 text-white' : 'bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100'} font-extrabold text-[11px] px-2.5 py-1.5 rounded-xl">${prInfo.isPromo ? '🏷️ Promo ပြင်' : '🏷️ Promo ချ'}</button>
                 <button type="button" onclick="openGoogleSheetForStock('${escapeHtml(p.category)}')" class="bg-emerald-50 text-emerald-800 border border-emerald-300 font-extrabold text-[11px] px-2.5 py-1.5 rounded-xl">📗 Sheet</button>
               </div>
             </div>
@@ -5221,4 +5257,3 @@
   </script>
 </body>
 </html>
-      
