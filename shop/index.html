@@ -242,7 +242,7 @@
       <!-- TAB 2: MY STOCK HISTORY & DIRECT +/- ADJUSTMENT -->
       <div id="tab-panel-mystock" class="hidden space-y-3">
         <div class="bg-blue-50 border border-blue-200 rounded-xl px-3.5 py-2.5 text-[11px] text-blue-950 font-bold leading-relaxed">
-          📊 Admin ထံ Approve ပြီးသား မိမိဆိုင်ပစ္စည်းများ၏ လက်ရှိ Stock မှတ်တမ်း ဖြစ်ပါသည်။ ဆိုင်တွင် လာဝယ်သူအား ရောင်းမိလိုက်ပါက <b>"−"</b> နှိပ်၍ ချက်ချင်းလျှော့ထားနိုင်သလို ပစ္စည်းထပ်ရောက်ပါက <b>"+"</b> နှိပ်၍ တိုးနိုင်ပါသည်။
+          📊 Admin ထံ Approve ပြီးသား မိမိဆိုင်ပစ္စည်းများ၏ လက်ရှိ Stock မှတ်တမ်း ဖြစ်ပါသည်။ ဆိုင်တွင် လာဝယ်သူအား ရောင်းမိလိုက်ပါက <b>"−"</b> နှိပ်၍ ချက်ချင်းလျှော့ထားနိုင်သလို ပစ္စည်းထပ်ရောက်ပါက <b>"+"</b> နှိပ်၍ တိုးနိုင်ပါသည်။ <b>"🏷️ Promo ချ/ပြင်"</b> ဖြင့်လည်း ချက်ချင်း Promotion ချနိုင်ပါသည်။
         </div>
         <div class="bg-white rounded-2xl border border-amber-200 p-3 shadow-sm flex gap-2 items-center">
           <input type="text" id="mystock-search" oninput="renderMyStockHistory()" placeholder="🔍 မိမိပစ္စည်းအမည် သို့မဟုတ် အမျိုးအစား ရှာရန်..." class="flex-1 border border-gray-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500">
@@ -253,7 +253,7 @@
         </div>
       </div>
 
-      <!-- TAB 3: RESTOCK / NEW PRODUCT SUBMISSION (1 TO 3 PHOTOS) -->
+      <!-- TAB 3: RESTOCK / NEW PRODUCT SUBMISSION (1 TO 3 PHOTOS + PROMO) -->
       <div id="tab-panel-restock" class="hidden space-y-4">
         <div class="bg-white rounded-2xl border-2 border-amber-300 p-4 shadow-sm space-y-3.5">
           <div>
@@ -340,12 +340,24 @@
                 <input type="number" id="rs-qty" required min="1" value="10" class="w-full border-2 border-amber-200 rounded-xl px-3 py-2.5 font-extrabold">
               </div>
               <div>
-                <label class="block text-xs font-extrabold text-gray-700 mb-1">💰 ရောင်းမည့်ဈေး (ကျပ်)</label>
+                <label class="block text-xs font-extrabold text-gray-700 mb-1">💰 မူရင်းဈေး (ကျပ်)</label>
                 <input type="number" id="rs-price" required min="500" step="100" placeholder="ဥပမာ - 15000" class="w-full border-2 border-emerald-300 rounded-xl px-3 py-2.5 font-extrabold text-emerald-800 bg-emerald-50/40 focus:outline-none focus:border-emerald-500">
               </div>
               <div>
                 <label class="block text-xs font-extrabold text-gray-700 mb-1">🎨 အရောင်</label>
                 <input type="text" id="rs-color" placeholder="ဥပမာ - ပန်းရောင်" class="w-full border-2 border-amber-200 rounded-xl px-3 py-2.5 font-bold focus:outline-none focus:border-amber-500">
+              </div>
+            </div>
+
+            <!-- SHOP PROMOTION TOGGLE & PROMO PRICE -->
+            <div class="bg-rose-50/70 border-2 border-rose-200 rounded-xl p-2.5 space-y-2">
+              <label class="flex items-center gap-2 cursor-pointer select-none">
+                <input type="checkbox" id="rs-promo-enabled" onchange="toggleShopPromoBox()" class="w-4 h-4 accent-rose-600 rounded">
+                <span class="text-xs font-extrabold text-rose-800">🏷️ Promotion ဖွင့်မည် (မူရင်းဈေးခြစ်ပြီး Promotion ဈေး ပြမည်)</span>
+              </label>
+              <div id="rs-promo-price-wrap" class="hidden pt-1">
+                <label class="block text-[11px] font-extrabold text-rose-800 mb-1">🔥 Promotion ဈေး (ကျပ်)</label>
+                <input type="number" id="rs-promo-price" min="100" step="100" placeholder="ဥပမာ - 12500" class="w-full border-2 border-rose-300 rounded-xl px-3 py-2 font-extrabold text-rose-700 bg-white">
               </div>
             </div>
 
@@ -385,7 +397,6 @@
           </div>
         </div>
       </div>
-
       <!-- TAB 4: CANCEL / RETURN HISTORY -->
       <div id="tab-panel-returns" class="hidden space-y-3">
         <div class="bg-red-50 border border-red-200 rounded-xl px-3.5 py-2.5 text-[11px] text-red-900 font-bold leading-relaxed">
@@ -507,6 +518,42 @@
     </div>
   </div>
 
+  <!-- ================= SHOP PROMO MODAL (FOR EXISTING ITEMS) ================= -->
+  <div id="shop-promo-modal" onclick="closeShopPromoModal()" class="fixed inset-0 bg-black/75 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+    <div onclick="event.stopPropagation()" class="bg-white rounded-2xl max-w-md w-full p-5 shadow-2xl border-2 border-rose-300 space-y-3.5">
+      <div class="flex justify-between items-center border-b pb-2.5">
+        <div>
+          <h3 class="text-sm sm:text-base font-extrabold text-rose-700">🏷️ Promotion ချ / ပြင်ဆင်ရန်</h3>
+          <p id="sp-prod-name" class="text-xs font-extrabold text-gray-900 mt-0.5 truncate"></p>
+        </div>
+        <button type="button" onclick="closeShopPromoModal()" class="text-gray-400 hover:text-gray-800 text-xl font-bold px-1">✕</button>
+      </div>
+
+      <div class="bg-rose-50/70 border border-rose-200 rounded-xl p-3 space-y-2.5 text-xs">
+        <label class="flex items-center gap-2 cursor-pointer select-none">
+          <input type="checkbox" id="sp-enabled" onchange="toggleShopPromoModalInputs()" class="w-4 h-4 accent-rose-600 rounded">
+          <span class="font-extrabold text-rose-900">🏷️ ဤ Item ကို Promotion ဖွင့်မည်</span>
+        </label>
+
+        <div id="sp-prices-wrap" class="space-y-2 pt-1">
+          <div>
+            <label class="block text-[11px] font-extrabold text-gray-700 mb-1">💰 မူရင်းဈေး (ကျပ်)</label>
+            <input type="number" id="sp-orig-price" min="0" step="100" class="w-full border border-gray-300 rounded-xl px-3 py-2 bg-white font-bold text-gray-800">
+          </div>
+          <div>
+            <label class="block text-[11px] font-extrabold text-rose-800 mb-1">🔥 Promotion ဈေး (ကျပ် — ဝယ်သူ App တွင် ပေါ်မည့်ဈေး)</label>
+            <input type="number" id="sp-promo-price" min="0" step="100" placeholder="ဥပမာ - 12000" class="w-full border-2 border-rose-300 rounded-xl px-3 py-2 bg-white font-extrabold text-rose-700">
+          </div>
+        </div>
+      </div>
+
+      <div class="flex gap-2 pt-1">
+        <button type="button" onclick="disableShopPromoAndSave()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-extrabold py-2.5 px-3 rounded-xl text-xs">🚫 Promo ပိတ်မည်</button>
+        <button type="button" onclick="saveShopPromoModal()" class="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-extrabold py-2.5 rounded-xl text-xs shadow-sm">💾 သိမ်းဆည်းမည်</button>
+      </div>
+    </div>
+  </div>
+
   <!-- FULL-SCREEN IMAGE LIGHTBOX -->
   <div id="image-lightbox-modal" onclick="closeImageLightbox()" class="fixed inset-0 bg-black/90 z-50 hidden flex flex-col items-center justify-center p-4 backdrop-blur-sm">
     <button type="button" onclick="closeImageLightbox()" class="fixed noti-safe-top right-3 z-50 bg-white/20 hover:bg-white/35 text-white w-10 h-10 rounded-full flex items-center justify-center text-xl font-bold shadow-lg">✕</button>
@@ -539,15 +586,18 @@
       <button type="button" onclick="closeIosGuide()" class="w-full bg-gray-900 text-white font-extrabold py-2.5 rounded-xl text-xs">နားလည်ပါပြီ</button>
     </div>
   </div>
+
   <script>
     let currentShopTab = 'orders';
     let restockMode = 'new';
     let shopProductsCache = [];
     let selectedExistingProduct = null;
-    let restockPhotos = []; // Array of { base64: string, url: string }, max 3
+    let restockPhotos = [];
     let pushPopupTimer = null;
     let isHandlingPopState = false;
     let currentShopInfo = null;
+    let shopPromoOverridesMap = {};
+    let shopPromoTargetName = '';
     window.__shopImgMap = {};
 
     const MAX_RESTOCK_PHOTOS = 3;
@@ -557,6 +607,126 @@
       "၄ - ၅ နှစ်", "၆ - ၇ နှစ်", "၈ - ၉ နှစ်"
     ];
 
+    function normalizeShopProdKey(name) {
+      return (name || '').toString().trim().toLowerCase();
+    }
+
+    function loadShopPromoOverrides() {
+      try {
+        const raw = JSON.parse(localStorage.getItem('mt_promo_overrides_v1') || '{}');
+        shopPromoOverridesMap = (raw && typeof raw === 'object') ? raw : {};
+      } catch (e) { shopPromoOverridesMap = {}; }
+    }
+
+    function saveShopPromoOverrides() {
+      try { localStorage.setItem('mt_promo_overrides_v1', JSON.stringify(shopPromoOverridesMap)); } catch (e) {}
+    }
+
+    function getShopItemPromo(p) {
+      const validPrices = (p.prices || []).filter(v => v > 0);
+      const basePr = validPrices.length > 0 ? Math.min(...validPrices) : 0;
+      const ov = shopPromoOverridesMap[normalizeShopProdKey(p.name)];
+      if (ov && ov.enabled && Number(ov.promoPrice) > 0) {
+        return {
+          isPromo: true,
+          promoPrice: Number(ov.promoPrice),
+          origPrice: Number(ov.origPrice) > Number(ov.promoPrice) ? Number(ov.origPrice) : basePr
+        };
+      }
+      return { isPromo: false, promoPrice: 0, origPrice: basePr };
+    }
+
+    function toggleShopPromoBox() {
+      const cb = document.getElementById('rs-promo-enabled');
+      const wrap = document.getElementById('rs-promo-price-wrap');
+      if (!cb || !wrap) return;
+      wrap.classList.toggle('hidden', !cb.checked);
+      if (cb.checked) {
+        const promoInp = document.getElementById('rs-promo-price');
+        if (promoInp && !promoInp.value) {
+          const baseP = parseInt(document.getElementById('rs-price')?.value, 10) || 0;
+          if (baseP > 0) promoInp.value = Math.max(100, Math.round((baseP * 0.9) / 100) * 100);
+        }
+      }
+    }
+
+    function openShopPromoModal(prodName) {
+      const p = shopProductsCache.find(x => x.name === prodName);
+      if (!p) return;
+      shopPromoTargetName = p.name;
+      const key = normalizeShopProdKey(p.name);
+      const ov = shopPromoOverridesMap[key];
+      const validPrices = (p.prices || []).filter(v => v > 0);
+      const basePr = validPrices.length > 0 ? Math.min(...validPrices) : 0;
+
+      document.getElementById('sp-prod-name').innerText = p.name;
+      const enabledCb = document.getElementById('sp-enabled');
+      const origInp = document.getElementById('sp-orig-price');
+      const promoInp = document.getElementById('sp-promo-price');
+
+      if (ov && ov.enabled) {
+        enabledCb.checked = true;
+        origInp.value = Number(ov.origPrice) || basePr;
+        promoInp.value = Number(ov.promoPrice) || '';
+      } else {
+        enabledCb.checked = true;
+        origInp.value = basePr;
+        promoInp.value = basePr > 0 ? Math.max(100, Math.round((basePr * 0.9) / 100) * 100) : '';
+      }
+
+      toggleShopPromoModalInputs();
+      document.getElementById('shop-promo-modal').classList.remove('hidden');
+    }
+
+    function closeShopPromoModal() {
+      document.getElementById('shop-promo-modal').classList.add('hidden');
+      shopPromoTargetName = '';
+    }
+
+    function toggleShopPromoModalInputs() {
+      const enabled = !!document.getElementById('sp-enabled')?.checked;
+      const wrap = document.getElementById('sp-prices-wrap');
+      if (wrap) wrap.classList.toggle('opacity-50', !enabled);
+    }
+
+    function saveShopPromoModal() {
+      if (!shopPromoTargetName) return;
+      const key = normalizeShopProdKey(shopPromoTargetName);
+      const enabled = !!document.getElementById('sp-enabled')?.checked;
+      const origPrice = parseInt(document.getElementById('sp-orig-price')?.value, 10) || 0;
+      const promoPrice = parseInt(document.getElementById('sp-promo-price')?.value, 10) || 0;
+
+      if (!enabled) {
+        delete shopPromoOverridesMap[key];
+      } else {
+        if (promoPrice <= 0) {
+          alert('⚠️ Promotion ဈေး ထည့်သွင်းပေးပါ။');
+          return;
+        }
+        shopPromoOverridesMap[key] = {
+          enabled: true,
+          origPrice: origPrice > promoPrice ? origPrice : 0,
+          promoPrice: promoPrice
+        };
+      }
+
+      saveShopPromoOverrides();
+      closeShopPromoModal();
+      renderMyStockHistory();
+      if (restockMode === 'existing') renderExistingProductsList();
+      showShopBannerNoti('🏷️ Promotion သိမ်းပြီးပါပြီ', `${shopPromoTargetName} အတွက် Promotion ဈေး ပြင်ဆင်ပြီးပါပြီ။`);
+    }
+
+    function disableShopPromoAndSave() {
+      if (!shopPromoTargetName) return;
+      const key = normalizeShopProdKey(shopPromoTargetName);
+      delete shopPromoOverridesMap[key];
+      saveShopPromoOverrides();
+      closeShopPromoModal();
+      renderMyStockHistory();
+      if (restockMode === 'existing') renderExistingProductsList();
+      showShopBannerNoti('🚫 Promotion ပိတ်ပြီးပါပြီ', `${shopPromoTargetName} ကို မူရင်းဈေးအတိုင်း ပြန်ပြောင်းပြီးပါပြီ။`);
+    }
     // ==================== MYANMAR TIME AUTO MUTE (6:00 PM - 8:00 AM MMT) ====================
     function isShopQuietHoursMMT() {
       const mmDate = new Date(Date.now() + (6.5 * 60 * 60 * 1000));
@@ -720,6 +890,11 @@
     window.addEventListener('popstate', function() {
       isHandlingPopState = true;
       try {
+        const pm = document.getElementById('shop-promo-modal');
+        if (pm && !pm.classList.contains('hidden')) {
+          pm.classList.add('hidden');
+          return;
+        }
         const ag = document.getElementById('agreement-view-modal');
         if (ag && !ag.classList.contains('hidden')) {
           ag.classList.add('hidden');
@@ -918,6 +1093,10 @@
         const validPrices = (p.prices || []).filter(v => v > 0);
         const showPrice = validPrices.length > 0 ? Math.min(...validPrices) : 0;
         const colorNames = (p.colors || []).map(c => c.name).filter(Boolean).join(', ');
+        const prInfo = getShopItemPromo(p);
+        const promoBadge = prInfo.isPromo
+          ? `<span class="bg-rose-600 text-white px-2 py-0.5 rounded-full text-[10px] font-extrabold">🏷️ Promo: ${prInfo.promoPrice.toLocaleString()} Ks</span>`
+          : '';
 
         let stockRowsHtml = '';
         if (!needsAge) {
@@ -966,17 +1145,21 @@
         }
 
         return `
-          <div class="bg-white rounded-2xl border-2 border-amber-200 p-3.5 shadow-sm space-y-2.5">
-            <div class="flex items-center gap-2.5">
-              <img src="${escapeHtml(firstImg)}" class="w-14 h-14 rounded-xl object-cover border bg-gray-50 shrink-0">
-              <div class="flex-1 min-w-0">
-                <div class="flex flex-wrap items-center gap-1">
-                  <span class="bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full text-[10px] font-extrabold">${escapeHtml(p.category)}</span>
-                  <span class="${p.totalStock <= 0 ? 'bg-red-100 text-red-700' : 'bg-emerald-100 text-emerald-800'} px-2 py-0.5 rounded-full text-[10px] font-extrabold">စုစုပေါင်း: ${p.totalStock} ခု</span>
+          <div class="bg-white rounded-2xl border-2 ${prInfo.isPromo ? 'border-rose-300' : 'border-amber-200'} p-3.5 shadow-sm space-y-2.5">
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex items-center gap-2.5 min-w-0 flex-1">
+                <img src="${escapeHtml(firstImg)}" class="w-14 h-14 rounded-xl object-cover border bg-gray-50 shrink-0">
+                <div class="flex-1 min-w-0">
+                  <div class="flex flex-wrap items-center gap-1">
+                    <span class="bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full text-[10px] font-extrabold">${escapeHtml(p.category)}</span>
+                    <span class="${p.totalStock <= 0 ? 'bg-red-100 text-red-700' : 'bg-emerald-100 text-emerald-800'} px-2 py-0.5 rounded-full text-[10px] font-extrabold">စုစုပေါင်း: ${p.totalStock} ခု</span>
+                    ${promoBadge}
+                  </div>
+                  <p class="font-extrabold text-xs sm:text-sm text-gray-900 truncate mt-1">${escapeHtml(p.name)}</p>
+                  ${colorNames ? `<p class="text-[10px] font-bold text-purple-700 truncate">🎨 ${escapeHtml(colorNames)}</p>` : ''}
                 </div>
-                <p class="font-extrabold text-xs sm:text-sm text-gray-900 truncate mt-1">${escapeHtml(p.name)}</p>
-                ${colorNames ? `<p class="text-[10px] font-bold text-purple-700 truncate">🎨 ${escapeHtml(colorNames)}</p>` : ''}
               </div>
+              <button type="button" onclick="openShopPromoModal('${escapeHtml(p.name)}')" class="${prInfo.isPromo ? 'bg-rose-600 text-white' : 'bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100'} font-extrabold text-[11px] px-2.5 py-1.5 rounded-xl shrink-0">${prInfo.isPromo ? '🏷️ Promo ပြင်' : '🏷️ Promo ချ'}</button>
             </div>
             <div class="space-y-1.5">${stockRowsHtml}</div>
           </div>
@@ -1067,16 +1250,20 @@
         const showPrice = validPrices.length > 0 ? Math.min(...validPrices) : 0;
         const colorNames = (p.colors || []).map(c => c.name).filter(Boolean).join(', ');
         const isSelected = selectedExistingProduct && selectedExistingProduct.name === p.name;
+        const prInfo = getShopItemPromo(p);
 
         return `
           <div onclick="selectExistingProduct(${origIdx})" class="cursor-pointer flex items-center gap-2.5 p-2 rounded-xl border-2 transition ${isSelected ? 'border-emerald-500 bg-emerald-50' : 'border-blue-100 bg-white hover:border-blue-400'}">
             <img src="${escapeHtml(firstImg)}" class="w-12 h-12 rounded-xl object-cover border bg-gray-50 shrink-0">
             <div class="flex-1 min-w-0 text-xs space-y-0.5">
               <p class="font-extrabold text-gray-900 truncate">${escapeHtml(p.name)}</p>
-              <p class="text-[11px] font-bold text-gray-600 truncate">📂 ${escapeHtml(p.category)} • 💰 ${showPrice > 0 ? showPrice.toLocaleString() + ' Ks' : 'ဈေးမရှိ'} • 📦 လက်ကျန်: <span class="text-emerald-700 font-extrabold">${p.totalStock}</span></p>
+              <p class="text-[11px] font-bold text-gray-600 truncate">📂 ${escapeHtml(p.category)} • 💰 ${showPrice > 0 ? showPrice.toLocaleString() + ' Ks' : 'ဈေးမရှိ'} ${prInfo.isPromo ? '• <span class="text-rose-600 font-extrabold">Promo ' + prInfo.promoPrice.toLocaleString() + ' Ks</span>' : ''} • 📦 လက်ကျန်: <span class="text-emerald-700 font-extrabold">${p.totalStock}</span></p>
               ${colorNames ? `<p class="text-[10px] font-bold text-purple-700 truncate">🎨 ${escapeHtml(colorNames)}</p>` : ''}
             </div>
-            <span class="bg-blue-600 text-white text-[10px] font-extrabold px-2.5 py-1.5 rounded-lg shrink-0">ရွေးမည်</span>
+            <div class="flex flex-col gap-1 shrink-0" onclick="event.stopPropagation()">
+              <button type="button" onclick="selectExistingProduct(${origIdx})" class="bg-blue-600 text-white text-[10px] font-extrabold px-2.5 py-1 rounded-lg">ရွေးမည်</button>
+              <button type="button" onclick="openShopPromoModal('${escapeHtml(p.name)}')" class="bg-rose-50 text-rose-700 border border-rose-200 text-[10px] font-extrabold px-2 py-0.5 rounded-lg">🏷️ Promo</button>
+            </div>
           </div>
         `;
       }).join('');
@@ -1097,6 +1284,18 @@
       const firstColor = (p.colors && p.colors[0]) ? p.colors[0] : null;
       document.getElementById('rs-color').value = firstColor ? firstColor.name : '';
       document.getElementById('rs-desc').value = p.desc || '';
+
+      const prInfo = getShopItemPromo(p);
+      const promoCb = document.getElementById('rs-promo-enabled');
+      const promoInp = document.getElementById('rs-promo-price');
+      if (prInfo.isPromo) {
+        if (promoCb) promoCb.checked = true;
+        if (promoInp) promoInp.value = prInfo.promoPrice;
+      } else {
+        if (promoCb) promoCb.checked = false;
+        if (promoInp) promoInp.value = '';
+      }
+      toggleShopPromoBox();
 
       const uniqueImgs = [];
       (p.colors || []).forEach(c => {
@@ -1163,10 +1362,13 @@
       document.getElementById('rs-selected-summary')?.classList.add('hidden');
       document.getElementById('rs-current-size-stock')?.classList.add('hidden');
       if (resetInputs) {
-        ['rs-name', 'rs-price', 'rs-color', 'rs-desc'].forEach(id => {
+        ['rs-name', 'rs-price', 'rs-color', 'rs-desc', 'rs-promo-price'].forEach(id => {
           const el = document.getElementById(id);
           if (el) el.value = '';
         });
+        const promoCb = document.getElementById('rs-promo-enabled');
+        if (promoCb) promoCb.checked = false;
+        toggleShopPromoBox();
         document.getElementById('rs-qty').value = '10';
         restockPhotos = [];
         renderRestockPhotoSlots();
@@ -1437,6 +1639,7 @@
       }
       document.getElementById('shop-approval-gate')?.classList.add('hidden');
       document.getElementById('agreement-view-modal')?.classList.add('hidden');
+      document.getElementById('shop-promo-modal')?.classList.add('hidden');
       document.getElementById('shop-login-card')?.classList.remove('hidden');
       loadShopDropdown();
     }
@@ -1775,6 +1978,23 @@
       const btn = document.getElementById('btn-submit-restock');
       btn.disabled = true; btn.innerText = "⏳ ပုံများနှင့် Stock ပို့နေပါသည်...";
 
+      const prodNameVal = document.getElementById('rs-name').value.trim();
+      const origPriceVal = parseInt(document.getElementById('rs-price').value, 10) || 0;
+      const promoEnabled = !!document.getElementById('rs-promo-enabled')?.checked;
+      const promoPriceVal = parseInt(document.getElementById('rs-promo-price')?.value, 10) || 0;
+
+      const key = normalizeShopProdKey(prodNameVal);
+      if (promoEnabled && promoPriceVal > 0) {
+        shopPromoOverridesMap[key] = {
+          enabled: true,
+          origPrice: origPriceVal > promoPriceVal ? origPriceVal : 0,
+          promoPrice: promoPriceVal
+        };
+      } else if (!promoEnabled) {
+        delete shopPromoOverridesMap[key];
+      }
+      saveShopPromoOverrides();
+
       const photoList = restockPhotos.slice(0, MAX_RESTOCK_PHOTOS).map(p => ({
         base64: p.base64 || "",
         url: p.base64 ? "" : (p.url || "")
@@ -1788,11 +2008,11 @@
             action: "shopSubmitRestock",
             shopId: saved.id,
             pin: saved.pin,
-            productName: document.getElementById('rs-name').value.trim(),
+            productName: prodNameVal,
             category: document.getElementById('rs-category').value,
             size: document.getElementById('rs-size').value,
             qty: parseInt(document.getElementById('rs-qty').value, 10) || 1,
-            price: parseInt(document.getElementById('rs-price').value, 10) || 0,
+            price: origPriceVal,
             color: document.getElementById('rs-color').value.trim(),
             photoList: photoList,
             description: document.getElementById('rs-desc').value.trim()
@@ -1831,6 +2051,7 @@
     }
 
     function initShopApp() {
+      loadShopPromoOverrides();
       try { history.replaceState({ shopHome: true }, ''); } catch (e) {}
       updateRestockSizeOptions();
       updateQuietHoursBanner();
