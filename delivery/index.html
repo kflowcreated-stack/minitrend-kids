@@ -10,8 +10,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="MiniTrend Delivery" />
   <link rel="manifest" href="/delivery/manifest.json?v=7" />
-  <link rel="icon" type="image/png" href="../icon.png?v=3" />
-  <link rel="apple-touch-icon" href="../icon.png?v=3" />
+  <link rel="icon" type="image/png" href="../icon-delivery.png?v=3" />
+  <link rel="apple-touch-icon" href="../icon-delivery.png?v=3" />
 
   <script>
     if (window.location.pathname.endsWith('/delivery')) {
@@ -100,7 +100,7 @@
   <!-- TOP NOTIFICATION BANNER -->
   <div id="push-noti-popup" class="fixed noti-safe-top left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-md hidden noti-slide-in">
     <div class="bg-gray-900/95 text-white rounded-2xl p-3.5 shadow-2xl border-2 border-blue-400 flex items-start gap-3 backdrop-blur-md">
-      <img src="../icon.png?v=3" class="w-11 h-11 rounded-xl object-cover shrink-0 border border-white/20" />
+      <img src="../icon-delivery.png?v=3" class="w-11 h-11 rounded-xl object-cover shrink-0 border border-white/20" />
       <div class="flex-1 min-w-0">
         <div class="flex justify-between items-center gap-1">
           <p id="push-noti-title" class="text-xs sm:text-sm font-extrabold text-amber-300 truncate">🔔 MiniTrend Delivery</p>
@@ -137,7 +137,7 @@
       </form>
       <div class="mt-4 pt-3 border-t border-gray-100 text-center">
         <button type="button" id="btn-del-install-login" onclick="triggerInstall()" class="hidden text-xs font-extrabold text-blue-700 bg-blue-50 border border-blue-200 px-3.5 py-2 rounded-xl">
-          📲 ဤဖုန်းတွင် Delivery App ထည့်သွင်းမည်
+          📲 App ဒေါင်းမည်
         </button>
       </div>
     </div>
@@ -151,7 +151,7 @@
           <h2 id="rider-header-name" class="text-lg sm:text-xl font-extrabold mt-0.5">ဝန်ထမ်းအမည်</h2>
         </div>
         <div class="flex flex-wrap gap-1.5">
-          <button type="button" id="btn-del-install" onclick="triggerInstall()" class="hidden bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-extrabold px-3 py-2 rounded-xl shadow-sm">📲 App သွင်း</button>
+          <button type="button" id="btn-del-install" onclick="triggerInstall()" class="hidden bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-extrabold px-3 py-2 rounded-xl shadow-sm">📲 App ဒေါင်းမည်</button>
           <button type="button" onclick="connectRiderFirebase()" id="btn-rider-fcm" class="bg-amber-400 hover:bg-amber-300 text-gray-900 text-xs font-extrabold px-3 py-2 rounded-xl shadow-sm">🔔 Noti ချိတ်မည်</button>
           <button type="button" onclick="loadDeliveryDashboard(false)" id="btn-rider-refresh" class="bg-white/20 hover:bg-white/30 text-white text-xs font-bold px-3 py-2 rounded-xl">🔄 ပြန်စစ်</button>
           <button type="button" onclick="logoutRider()" class="bg-red-500/90 hover:bg-red-600 text-white text-xs font-bold px-3 py-2 rounded-xl">🔒 ထွက်</button>
@@ -293,7 +293,7 @@
   <div id="install-guide-modal" onclick="closeInstallGuide()" class="fixed inset-0 bg-black/75 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
     <div onclick="event.stopPropagation()" class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl border-2 border-blue-300 space-y-3">
       <div class="flex justify-between items-center border-b pb-2.5">
-        <h3 class="text-sm font-extrabold text-gray-900">📲 Delivery App ထည့်သွင်းနည်း</h3>
+        <h3 class="text-sm font-extrabold text-gray-900">📲 App ဒေါင်းမည် — ထည့်သွင်းနည်း</h3>
         <button type="button" onclick="closeInstallGuide()" class="text-gray-400 font-bold text-xl px-1">✕</button>
       </div>
       <div class="space-y-2 text-xs text-gray-700 leading-relaxed">
@@ -461,7 +461,7 @@
     function openImageLightbox(imgKey) {
       const info = window.__pickupImgMap[imgKey];
       if (!info) return;
-      document.getElementById('lightbox-img').src = info.image || '../icon.png?v=3';
+      document.getElementById('lightbox-img').src = info.image || '../icon-delivery.png?v=3';
       document.getElementById('lightbox-title').innerText = info.name || '';
       const szPart = info.size && info.size !== 'အသက်မလို' ? ` | 📏 ${info.size}` : '';
       document.getElementById('lightbox-meta').innerText = `🧾 ${info.orderId} | 🎨 ${info.colorName || '-'}${szPart} | 📦 x ${info.qty || 1} ခု`;
