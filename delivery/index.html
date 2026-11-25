@@ -9,7 +9,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="MiniTrend Delivery" />
-  <link rel="manifest" href="/delivery/manifest.json?v=7" />
+  <link rel="manifest" href="/delivery/manifest.json?v=8" />
   <link rel="icon" type="image/png" href="../icon-delivery.png?v=3" />
   <link rel="apple-touch-icon" href="../icon-delivery.png?v=3" />
 
@@ -136,7 +136,7 @@
         <button type="submit" id="btn-rider-login" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-3 rounded-xl shadow text-sm">🔓 ဝန်ထမ်း App သို့ ဝင်ရောက်မည်</button>
       </form>
       <div class="mt-4 pt-3 border-t border-gray-100 text-center">
-        <button type="button" id="btn-del-install-login" onclick="triggerInstall()" class="hidden text-xs font-extrabold text-blue-700 bg-blue-50 border border-blue-200 px-3.5 py-2 rounded-xl">
+        <button type="button" id="btn-del-install-login" onclick="triggerInstall()" class="hidden w-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold px-4 py-2.5 rounded-xl shadow-sm">
           📲 App ဒေါင်းမည်
         </button>
       </div>
@@ -303,7 +303,6 @@
       <button type="button" onclick="closeInstallGuide()" class="w-full bg-gray-900 text-white font-extrabold py-2.5 rounded-xl text-xs">နားလည်ပါပြီ</button>
     </div>
   </div>
-
   <script>
     let currentRiderTab = 'delivery';
     let hasAutoSelectedTab = false;
@@ -396,8 +395,12 @@
       if (window.__deferredInstallPrompt) {
         try {
           window.__deferredInstallPrompt.prompt();
-          await window.__deferredInstallPrompt.userChoice;
+          const choice = await window.__deferredInstallPrompt.userChoice;
           window.__deferredInstallPrompt = null;
+          if (choice && choice.outcome === 'accepted') {
+            document.getElementById('btn-del-install')?.classList.add('hidden');
+            document.getElementById('btn-del-install-login')?.classList.add('hidden');
+          }
         } catch (e) {}
         return;
       }
@@ -1124,9 +1127,9 @@
       applyDeliveryCentralSettings(deliveryCentralConfig);
       try { history.replaceState({ riderHome: true }, ''); } catch (e) {}
 
-      if (!isStandaloneApp() && isIOSDevice()) {
-        document.getElementById('btn-del-install').classList.remove('hidden');
-        document.getElementById('btn-del-install-login').classList.remove('hidden');
+      if (!isStandaloneApp()) {
+        document.getElementById('btn-del-install')?.classList.remove('hidden');
+        document.getElementById('btn-del-install-login')?.classList.remove('hidden');
       }
 
       const saved = getSavedRiderSession();
