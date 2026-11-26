@@ -5026,11 +5026,23 @@
           const delivOpts = `<option value="">-- Delivery ဝန်ထမ်း --</option>` +
             riders.map(r => `<option value="${escapeHtml(r.id)}" ${o.riderId === r.id ? 'selected' : ''}>${escapeHtml(r.id)} - ${escapeHtml(r.name)}</option>`).join('');
 
+          const partnerShopIds = [...new Set(items.map(it => it.shopId).filter(sid => sid !== 'OWN'))];
+          const pickupShopInfoHtml = partnerShopIds.map(sid => {
+            const sObj = shops.find(s => s.id === sid);
+            const sName = sObj ? sObj.name : sid;
+            const sAddr = (sObj && sObj.address) ? sObj.address : 'လိပ်စာမထည့်ရသေး';
+            const sPhone = (sObj && sObj.phone) ? ` (<a href="tel:${escapeHtml(sObj.phone)}" class="text-blue-700 underline">${escapeHtml(sObj.phone)}</a>)` : '';
+            return `<div class="text-[11px] text-purple-950 font-bold">🏪 <span class="font-extrabold">${escapeHtml(sid)} — ${escapeHtml(sName)}</span>${sPhone} • 📍 ${escapeHtml(sAddr)}</div>`;
+          }).join('');
+
           const pickupCompactHtml = hasPartner ? `
-            <div class="flex flex-wrap items-center gap-1.5 bg-purple-50/80 border border-purple-200 rounded-lg px-2 py-1.5">
-              <span class="text-[10px] font-extrabold text-purple-900">📦 Pickup:</span>
-              <select onchange="adminAssignPickupRider('${o.orderId}', this)" class="flex-1 min-w-[130px] border border-purple-300 rounded-md px-2 py-1 text-[11px] font-bold bg-white">${pickupOpts}</select>
-              <button type="button" onclick="adminForcePickupStatus('${o.orderId}', 'ဆိုင်မှ ပစ္စည်းကောက်ပြီးပြီ')" class="${adminPickupConfirmed ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-emerald-600 text-white'} text-[10px] font-extrabold px-2 py-1 rounded-md">${adminPickupConfirmed ? '✅ ကောက်ပြီး' : '✅ ကောက်ပြီးပို့'}</button>
+            <div class="bg-purple-50/80 border border-purple-200 rounded-lg px-2 py-1.5 space-y-1">
+              ${pickupShopInfoHtml}
+              <div class="flex flex-wrap items-center gap-1.5">
+                <span class="text-[10px] font-extrabold text-purple-900">📦 Pickup:</span>
+                <select onchange="adminAssignPickupRider('${o.orderId}', this)" class="flex-1 min-w-[130px] border border-purple-300 rounded-md px-2 py-0.5 text-[11px] font-bold bg-white">${pickupOpts}</select>
+                <button type="button" onclick="adminForcePickupStatus('${o.orderId}', 'ဆိုင်မှ ပစ္စည်းကောက်ပြီးပြီ')" class="${adminPickupConfirmed ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-emerald-600 text-white'} text-[10px] font-extrabold px-2 py-0.5 rounded-md">${adminPickupConfirmed ? '✅ ကောက်ပြီး' : '✅ ကောက်ပြီးပို့'}</button>
+              </div>
             </div>
           ` : '';
 
