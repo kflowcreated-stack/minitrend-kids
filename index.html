@@ -198,6 +198,7 @@
       <div class="max-w-5xl mx-auto px-3.5 pb-2.5 space-y-2">
         <input type="text" id="product-search" oninput="renderProductsGrid()" placeholder="🔍 ပစ္စည်းအမည် ရှာဖွေရန်..." class="w-full bg-gray-100/90 border border-pink-100 rounded-xl px-3.5 py-2 text-base focus:outline-none focus:bg-white focus:border-pink-400">
         <div id="category-bar" class="flex gap-1.5 overflow-x-auto no-scrollbar pb-0.5"></div>
+        <div id="sub-filter-bar" class="hidden pt-1 space-y-1.5"></div>
       </div>
     </div>
 
@@ -1228,6 +1229,9 @@
 
     let allProducts = [];
     let selectedCategory = 'အားလုံး';
+    let selectedSubBrand = 'ALL';
+    let selectedSubSize = 'ALL';
+    let openSubFilterDropdown = '';
     let modalProduct = null;
     let modalColorIdx = 0;
     let modalSizeIdx = 0;
@@ -1821,7 +1825,11 @@
       const searchEl = document.getElementById('product-search');
       if (searchEl) searchEl.value = '';
       selectedCategory = 'အားလုံး';
+      selectedSubBrand = 'ALL';
+      selectedSubSize = 'ALL';
+      openSubFilterDropdown = '';
       renderCategoryBar();
+      renderSubFilterBar();
       renderProductsGrid();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -2297,6 +2305,7 @@
         if (Array.isArray(parsed) && parsed.length > 0) {
           allProducts = parseProductsRows(parsed);
           document.getElementById('products-loading')?.classList.add('hidden');
+          renderSubFilterBar();
           renderProductsGrid();
           return true;
         }
@@ -2347,6 +2356,7 @@
 
       document.getElementById('products-loading')?.classList.add('hidden');
       if (APP_ROLE !== 'admin') {
+        renderSubFilterBar();
         renderProductsGrid();
         if (lastCalculatedSizeIdx >= 0 && !document.getElementById('size-calc-modal').classList.contains('hidden')) {
           renderSizeCalcMatchedProducts(lastCalculatedSizeIdx);
@@ -2371,6 +2381,165 @@
       return (p.colors[0] && p.colors[0].image) ? p.colors[0].image : '';
     }
 
+    // ==================== CUSTOMER BRAND & SIZE SUB-FILTER ====================
+    const KNOWN_BRANDS = [
+      'Wasuka', 'Kumo Kidz', 'Hippo', 'Happy Mammy', 'Good Baby',
+      'Baby Ken', 'Baby Mia', 'Bair Lay', 'Double Love', 'Lebay',
+      'City Selection', 'Lovely', 'Royal', 'Babi Mild', 'Pampers',
+      'Huggies', 'MamyPoko', 'Kodomo', 'Johnson', 'Pigeon', 'Pureen', 'D-nee', 'Enfant'
+    ];
+
+    function extractProductBrand(p) {
+      const name = (p && p.name ? p.name : '').trim();
+      if (!name) return '';
+      const lower = name.toLowerCase();
+      for (let i = 0; i < KNOWN_BRANDS.length; i++) {
+        if (lower.includes(KNOWN_BRANDS[i].toLowerCase())) return KNOWN_BRANDS[i];
+      }
+      const m = name.match(/^([A-Za-z][A-Za-z0-9&'-]*(?:\s+[A-Za-z][A-Za-z0-9&'-]*)?)/);
+      if (m) {
+        const candidate = m[1].trim();
+        if (!/^(nb|s|m|l|xl|xxl|2xl|3xl|pcs|pack|baby|kids|diaper|pant|wipes?)$/i.test(candidate)) {
+          return candidate;
+        }
+      }
+      return '';
+    }
+
+    function extractProductSubSizes(p) {
+      const out = [];
+      if (!p) return out;
+      if (AGE_REQUIRED_CATS.includes(p.category)) {
+        SIZE_LABELS.forEach((sz, idx) => {
+          if ((p.prices[idx] || 0) > 0 && (p.stocks[idx] || 0) > 0) out.push(sz);
+        });
+        return out;
+      }
+      const name = (p.name || '').toString();
+      if (/wipe|tissue|တစ်ရှူး|sheet/i.test(name)) out.push('တစ်ရှူး (Wipes)');
+      if (/\b(3xl|xxxl)\b/i.test(name)) out.push('XXXL');
+      if (/\b(2xl|xxl)\b/i.test(name)) out.push('XXL / 2XL');
+      if (/\bxl\b/i.test(name) && !/\b(2xl|3xl|xxl|xxxl)\b/i.test(name)) out.push('XL');
+      if (/(?:^|[\s(-])L(?:[\s)-]|$)/.test(name)) out.push('L');
+      if (/(?:^|[\s(-])M(?:[\s)-]|$)/.test(name)) out.push('M');
+      if (/(?:^|[\s(-])S(?:[\s)-]|$)/.test(name)) out.push('S');
+      if (/\bnb\b|newborn/i.test(name)) out.push('NB');
+      return out;
+    }
+
+    function getProductsInSelectedCategory() {
+      return allProducts.filter(p => {
+        const prInfo = getEffectivePricing(p, -1);
+        if (selectedCategory === '🏷️ Promotion') return prInfo.isPromo;
+        if (selectedCategory === '🔥 Trending') return !!p.trending;
+        if (selectedCategory !== 'အားလုံး') return p.category === selectedCategory;
+        return true;
+      });
+    }
+
+    function toggleSubFilterMenu(menuName) {
+      openSubFilterDropdown = (openSubFilterDropdown === menuName) ? '' : menuName;
+      renderSubFilterBar();
+    }
+
+    function selectSubBrand(brand) {
+      selectedSubBrand = brand;
+      openSubFilterDropdown = '';
+      renderSubFilterBar();
+      renderProductsGrid();
+    }
+
+    function selectSubSize(sz) {
+      selectedSubSize = sz;
+      openSubFilterDropdown = '';
+      renderSubFilterBar();
+      renderProductsGrid();
+    }
+
+    function resetSubFilters() {
+      selectedSubBrand = 'ALL';
+      selectedSubSize = 'ALL';
+      openSubFilterDropdown = '';
+      renderSubFilterBar();
+      renderProductsGrid();
+    }
+
+    function renderSubFilterBar() {
+      const bar = document.getElementById('sub-filter-bar');
+      if (!bar) return;
+
+      if (selectedCategory === 'အားလုံး') {
+        bar.classList.add('hidden');
+        bar.innerHTML = '';
+        return;
+      }
+
+      const catProds = getProductsInSelectedCategory();
+      const brandSet = new Set();
+      const sizeSet = new Set();
+
+      catProds.forEach(p => {
+        const b = extractProductBrand(p);
+        if (b) brandSet.add(b);
+        extractProductSubSizes(p).forEach(s => sizeSet.add(s));
+      });
+
+      const brands = Array.from(brandSet).sort((a, b) => a.localeCompare(b));
+      const sizeOrder = ['NB', 'S', 'M', 'L', 'XL', 'XXL / 2XL', 'XXXL', 'တစ်ရှူး (Wipes)', ...SIZE_LABELS];
+      const sizes = Array.from(sizeSet).sort((a, b) => {
+        const ia = sizeOrder.indexOf(a);
+        const ib = sizeOrder.indexOf(b);
+        return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib);
+      });
+
+      if (brands.length === 0 && sizes.length === 0) {
+        bar.classList.add('hidden');
+        bar.innerHTML = '';
+        return;
+      }
+
+      bar.classList.remove('hidden');
+      const hasActive = selectedSubBrand !== 'ALL' || selectedSubSize !== 'ALL';
+
+      const brandBtnHtml = brands.length > 0
+        ? `<button type="button" onclick="toggleSubFilterMenu('brand')" class="${selectedSubBrand !== 'ALL' || openSubFilterDropdown === 'brand' ? 'bg-pink-600 text-white border-pink-600 shadow-sm' : 'bg-white text-gray-800 border-pink-200 hover:bg-pink-50'} border px-3 py-1.5 rounded-xl text-xs font-extrabold flex items-center gap-1 shrink-0 transition">
+             🏷️ <span>${selectedSubBrand === 'ALL' ? 'အမျိုးအစား / Brand' : escapeHtml(selectedSubBrand)}</span> <span>${openSubFilterDropdown === 'brand' ? '▴' : '▾'}</span>
+           </button>`
+        : '';
+
+      const sizeBtnHtml = sizes.length > 0
+        ? `<button type="button" onclick="toggleSubFilterMenu('size')" class="${selectedSubSize !== 'ALL' || openSubFilterDropdown === 'size' ? 'bg-purple-600 text-white border-purple-600 shadow-sm' : 'bg-white text-gray-800 border-purple-200 hover:bg-purple-50'} border px-3 py-1.5 rounded-xl text-xs font-extrabold flex items-center gap-1 shrink-0 transition">
+             📏 <span>${selectedSubSize === 'ALL' ? 'Size' : escapeHtml(selectedSubSize)}</span> <span>${openSubFilterDropdown === 'size' ? '▴' : '▾'}</span>
+           </button>`
+        : '';
+
+      const resetBtnHtml = hasActive
+        ? `<button type="button" onclick="resetSubFilters()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-2.5 py-1.5 rounded-xl text-xs font-extrabold shrink-0">✕ အားလုံးပြန်ကြည့်</button>`
+        : '';
+
+      let dropdownHtml = '';
+      if (openSubFilterDropdown === 'brand' && brands.length > 0) {
+        dropdownHtml = `
+          <div class="bg-pink-50/90 border border-pink-200 rounded-2xl p-2.5 flex flex-wrap gap-1.5">
+            <button type="button" onclick="selectSubBrand('ALL')" class="${selectedSubBrand === 'ALL' ? 'bg-pink-600 text-white' : 'bg-white text-gray-700 border border-pink-200'} px-2.5 py-1 rounded-full text-xs font-extrabold">အားလုံး</button>
+            ${brands.map(b => `<button type="button" onclick="selectSubBrand('${escapeHtml(b)}')" class="${selectedSubBrand === b ? 'bg-pink-600 text-white shadow-sm' : 'bg-white text-gray-800 border border-pink-200 hover:bg-pink-100'} px-2.5 py-1 rounded-full text-xs font-extrabold">${escapeHtml(b)}</button>`).join('')}
+          </div>
+        `;
+      } else if (openSubFilterDropdown === 'size' && sizes.length > 0) {
+        dropdownHtml = `
+          <div class="bg-purple-50/90 border border-purple-200 rounded-2xl p-2.5 flex flex-wrap gap-1.5">
+            <button type="button" onclick="selectSubSize('ALL')" class="${selectedSubSize === 'ALL' ? 'bg-purple-600 text-white' : 'bg-white text-gray-700 border border-purple-200'} px-2.5 py-1 rounded-full text-xs font-extrabold">အားလုံး</button>
+            ${sizes.map(s => `<button type="button" onclick="selectSubSize('${escapeHtml(s)}')" class="${selectedSubSize === s ? 'bg-purple-600 text-white shadow-sm' : 'bg-white text-gray-800 border border-purple-200 hover:bg-purple-100'} px-2.5 py-1 rounded-full text-xs font-extrabold">${escapeHtml(s)}</button>`).join('')}
+          </div>
+        `;
+      }
+
+      bar.innerHTML = `
+        <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar">${brandBtnHtml}${sizeBtnHtml}${resetBtnHtml}</div>
+        ${dropdownHtml}
+      `;
+    }
+
     // ==================== CUSTOMER STOREFRONT ====================
     function renderCategoryBar() {
       const bar = document.getElementById('category-bar');
@@ -2391,7 +2560,11 @@
     function selectCategory(cat) {
       const wasHome = selectedCategory === 'အားလုံး';
       selectedCategory = cat;
+      selectedSubBrand = 'ALL';
+      selectedSubSize = 'ALL';
+      openSubFilterDropdown = '';
       renderCategoryBar();
+      renderSubFilterBar();
       renderProductsGrid();
       if (wasHome && cat !== 'အားလုံး') pushAppOverlayState('cat_' + cat);
     }
@@ -2406,6 +2579,8 @@
         if (selectedCategory === '🏷️ Promotion' && !prInfo.isPromo) return false;
         else if (selectedCategory === '🔥 Trending' && !p.trending) return false;
         else if (selectedCategory !== 'အားလုံး' && selectedCategory !== '🏷️ Promotion' && selectedCategory !== '🔥 Trending' && p.category !== selectedCategory) return false;
+        if (selectedSubBrand !== 'ALL' && extractProductBrand(p) !== selectedSubBrand) return false;
+        if (selectedSubSize !== 'ALL' && !extractProductSubSizes(p).includes(selectedSubSize)) return false;
         if (q && !p.name.toLowerCase().includes(q) && !p.category.toLowerCase().includes(q)) return false;
         return true;
       });
@@ -5424,6 +5599,7 @@
         try { history.replaceState({ mtHome: true }, ''); } catch (e) {}
 
         renderCategoryBar();
+        renderSubFilterBar();
         renderHomeBannerSlider();
         loadSavedCart();
         loadProductsFromCacheInstant();
