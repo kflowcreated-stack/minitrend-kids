@@ -3923,9 +3923,6 @@
         base = base.slice(0, mSpaceEnd.index).trim();
       }
 
-      const nameEl = document.getElementById('own-name');
-      if (nameEl && !nameEl.value.trim()) nameEl.value = base;
-
       const priceEl = document.getElementById('own-price');
       if (priceEl && !priceEl.value && detectedPrice >= 500) priceEl.value = detectedPrice;
 
@@ -3949,14 +3946,77 @@
         updateOwnSizeOptions();
       }
 
+      const toMmDigits = (numStr) => {
+        const map = ['၀', '၁', '၂', '၃', '၄', '၅', '၆', '၇', '၈', '၉'];
+        return String(numStr || '').replace(/[0-9]/g, d => map[parseInt(d, 10)]);
+      };
+
+      const colorMap = [
+        { re: /\b(pink|rose)\b/i, mm: 'ပန်းရောင်' },
+        { re: /\b(blue|sky\s*blue|navy)\b/i, mm: 'အပြာရောင်' },
+        { re: /\b(green|mint)\b/i, mm: 'အစိမ်းရောင်' },
+        { re: /\b(yellow|gold)\b/i, mm: 'အဝါရောင်' },
+        { re: /\b(white)\b/i, mm: 'အဖြူရောင်' },
+        { re: /\b(purple|violet)\b/i, mm: 'ခရမ်းရောင်' },
+        { re: /\b(red)\b/i, mm: 'အနီရောင်' },
+        { re: /\b(orange)\b/i, mm: 'လိမ္မော်ရောင်' },
+        { re: /\b(grey|gray)\b/i, mm: 'မီးခိုးရောင်' },
+        { re: /\b(brown)\b/i, mm: 'အညိုရောင်' }
+      ];
+      let detectedColorMm = '';
+      for (const cm of colorMap) {
+        if (cm.re.test(base)) {
+          detectedColorMm = cm.mm;
+          break;
+        }
+      }
+
+      const pcsMatch = base.match(/(\d+)\s*(?:pcs|pc|sheets?|sheet|ခု|ရွက်)\b/i);
+      const countMm = pcsMatch ? toMmDigits(pcsMatch[1]) : '';
+      const isHandMouth = /hand\s*&?\s*mouth|mouth\s*&?\s*hand|လက်နှင့်ပါးစပ်|ပါးစပ်နှင့်လက်/i.test(base);
+      const isWetTissue = /wet\s*tissue|wet\s*wipe|တစ်ရှူးစို/i.test(base);
+      const isWipeOrTissue = /wipe|tissue|တစ်ရှူး/i.test(base);
+      const isPant = /\bpant(?:s)?\b|pull\s*up/i.test(base);
+      const isDiaper = /\bdiaper(?:s)?\b|ဒိုင်ဘာ/i.test(base);
+
+      const knownBrandMatch = base.match(/^(Happy Mammy|City Selection|Kumo Kidz|Baby Ken|Baby Mia|Bair Lay|Double Love|Good Baby|Babi Mild|MamyPoko|Pampers|Huggies|Wasuka|Hippo|Lovely|Royal|Lebay)\b/i);
+      const brandPart = knownBrandMatch
+        ? knownBrandMatch[1].trim()
+        : (base.split(/[\s(]/)[0] || '').trim();
+
+      let burmeseTitle = '';
+      if (isWipeOrTissue) {
+        const typeMm = isHandMouth
+          ? 'ကလေးသုံး လက်နှင့်ပါးစပ်သုတ် တစ်ရှူးစို'
+          : (isWetTissue ? 'ကလေးသုံး တစ်ရှူးစို' : 'ကလေးသုံး တစ်ရှူး');
+        const unitLabel = countMm ? ` / အရွက် ${countMm} ပါ` : '';
+        const colorPart = detectedColorMm ? ` - ${detectedColorMm}` : '';
+        burmeseTitle = `${brandPart ? brandPart + ' ' : ''}${typeMm}${colorPart}${unitLabel}`.trim();
+      } else if (isDiaper || isPant) {
+        const kindMm = isPant ? 'ကလေးသုံး ဒိုင်ဘာဘောင်းဘီ' : 'ကလေးသုံး ဒိုင်ဘာ';
+        const colorPart = detectedColorMm ? ` - ${detectedColorMm}` : '';
+        const countPart = countMm ? ` (${countMm} ခုပါ)` : '';
+        burmeseTitle = `${brandPart ? brandPart + ' ' : ''}${kindMm}${colorPart}${countPart}`.trim();
+      } else {
+        burmeseTitle = base.replace(/\s*\(1Pack-[^)]+\)/gi, '').trim();
+      }
+
+      const nameEl = document.getElementById('own-name');
+      if (nameEl && !nameEl.value.trim()) nameEl.value = burmeseTitle || base;
+
       const descEl = document.getElementById('own-desc');
       if (descEl && !descEl.value.trim()) {
-        if (/wipe|tissue|တစ်ရှူး/.test(lower)) {
-          descEl.value = `${base}\n• ကလေးငယ်အသားအရေအတွက် နူးညံ့စိတ်ချရပြီး ယားယံမှုမရှိပါ။\n• အစိုဓာတ်ထိန်းပေးပြီး နေ့စဉ်သန့်ရှင်းရေးအတွက် အထူးသင့်တော်ပါသည်။`;
-        } else if (/diaper|pant|ဒိုင်ဘာ/.test(lower)) {
-          descEl.value = `${base}\n• စုပ်ယူအားကောင်းမွန်ပြီး စိမ့်ထွက်မှုမရှိဘဲ ခြောက်သွေ့သက်သောင့်သက်သာ ရှိစေပါသည်။\n• လေဝင်လေထွက်ကောင်းမွန်ပြီး ကလေးငယ်အသားအရေအတွက် နူးညံ့စိတ်ချရပါသည်။`;
+        if (isWipeOrTissue) {
+          const qtyPhrase = countMm ? ` (အရွက် ${countMm} ပါ)` : '';
+          const targetArea = isHandMouth
+            ? 'ကလေးငယ်များ၏ လက်နှင့် ပါးစပ်တစ်ဝိုက်ကို ဘေးကင်းစွာ သန့်စင်ပေးနိုင်သည့်'
+            : 'ကလေးငယ်များ၏ နုနယ်သော အသားအရေကို ညင်သာစွာ သန့်စင်ပေးနိုင်သည့်';
+          descEl.value = `${targetArea} တစ်ရှူးစို${qtyPhrase} ဖြစ်ပါသည်။ ချည်သားအဆီအနှစ် (Cotton) နှင့် သဘာဝ Xylitol တို့ ပါဝင်ပြီး နုနယ်သော အသားအရေကို အစိုဓာတ်ထိန်းပေးပါသည်။\nသုံးပုံသုံးနည်း - အဖုံးဖွင့်၍ ${isHandMouth ? 'ပါးစပ်နှင့် လက်များကို' : 'လိုအပ်သောနေရာကို'} ညင်သာစွာ သုတ်ပေးပြီး အဖုံးကို လုံခြုံစွာ ပြန်ပိတ်ပါ (အိမ်သာခွက်ထဲ မစွန့်ပစ်ရ)`;
+        } else if (isDiaper || isPant) {
+          const qtyPhrase = countMm ? ` (${countMm} ခုပါ)` : '';
+          descEl.value = `စုပ်ယူအားကောင်းမွန်ပြီး စိမ့်ထွက်မှုမရှိဘဲ ခြောက်သွေ့သက်သောင့်သက်သာ ရှိစေမည့် ဒိုင်ဘာ${qtyPhrase} ဖြစ်ပါသည်။ လေဝင်လေထွက်ကောင်းမွန်ပြီး ကလေးငယ်အသားအရေအတွက် နူးညံ့စိတ်ချရပါသည်။\nသုံးပုံသုံးနည်း - ကလေးငယ်၏ ခန္ဓာကိုယ်နှင့် အနေတော်ဝတ်ဆင်ပေးပြီး ဘေးနှစ်ဖက်ကို ယားယံမှုမရှိအောင် သေချာညှိပေးပါ။`;
         } else {
-          descEl.value = `${base}\n• အရည်အသွေးကောင်းမွန်ပြီး ကလေးငယ်များအတွက် စိတ်ချလက်ချ အသုံးပြုနိုင်ပါသည်။`;
+          descEl.value = `${burmeseTitle || base} သည် အရည်အသွေးကောင်းမွန်ပြီး ကလေးငယ်များအတွက် စိတ်ချလက်ချ အသုံးပြုနိုင်ပါသည်။\nသုံးပုံသုံးနည်း - အသုံးပြုပြီးတိုင်း သပ်ရပ်စွာ သိမ်းဆည်းထားပါ။`;
         }
       }
     }
