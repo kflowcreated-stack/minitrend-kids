@@ -5035,33 +5035,34 @@
           ` : '';
 
           return `
-            <div class="rounded-2xl border-2 ${cardBorder} p-2.5 sm:p-3 shadow-sm space-y-2">
+            <div class="rounded-xl border-2 ${cardBorder} p-2 shadow-sm space-y-1">
               ${buildAdminOrderProcessSteps(o, hasPartner)}
               ${cancelReqBanner}
               ${rejectBadge}
-              <div class="flex flex-wrap justify-between items-center gap-1 text-xs">
-                <div class="flex flex-wrap items-center gap-1.5">
+              <div class="text-[11px] flex flex-wrap items-center justify-between gap-1 bg-gray-50 rounded-lg px-2 py-1 border border-gray-100">
+                <div class="flex flex-wrap items-center gap-1.5 min-w-0">
                   <span class="font-extrabold text-gray-900">🧾 ${escapeHtml(o.orderId)}</span>
                   <span class="text-[10px] text-gray-500">⏰ ${escapeHtml(o.dateTime)}</span>
-                  ${isShopPacked ? `<span class="bg-blue-600 text-white text-[9px] font-extrabold px-2 py-0.5 rounded-full">📦 ဆိုင်ထုပ်ပိုးပြီး</span>` : ''}
+                  ${isShopPacked ? `<span class="bg-blue-600 text-white text-[9px] font-extrabold px-1.5 py-0.5 rounded-full">📦 ထုပ်ပြီး</span>` : ''}
+                  <span class="text-gray-300">|</span>
+                  <span class="font-extrabold text-gray-900">👤 ${escapeHtml(o.name)} (<a href="tel:${escapeHtml(o.phone)}" class="text-blue-700 underline">${escapeHtml(o.phone)}</a>)</span>
+                  <span class="text-gray-600">📍 ${escapeHtml(o.address)}</span>
                 </div>
-                <span class="${isCodWait ? 'bg-emerald-600 animate-pulse' : 'bg-pink-600'} text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full">${escapeHtml(o.status)}</span>
-              </div>
-
-              <div class="text-[11px] flex flex-wrap items-center justify-between gap-1 bg-gray-50 rounded-lg px-2.5 py-1.5 border border-gray-100">
-                <span class="font-extrabold text-gray-900">👤 ${escapeHtml(o.name)} (<a href="tel:${escapeHtml(o.phone)}" class="text-blue-700 underline">${escapeHtml(o.phone)}</a>) — <span class="font-normal text-gray-600">📍 ${escapeHtml(o.address)}</span></span>
-                <span class="font-extrabold text-emerald-700 shrink-0">💰 ${Number(o.grandTotal || 0).toLocaleString()} Ks</span>
+                <div class="flex items-center gap-1.5 shrink-0">
+                  <span class="font-extrabold text-emerald-700">💰 ${Number(o.grandTotal || 0).toLocaleString()} Ks</span>
+                  <span class="${isCodWait ? 'bg-emerald-600 animate-pulse' : 'bg-pink-600'} text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full">${escapeHtml(o.status)}</span>
+                </div>
               </div>
 
               <div class="space-y-1">${itemsHtml}</div>
               ${pickupCompactHtml}
 
-              <div class="flex flex-wrap items-center gap-1.5 bg-blue-50/80 border border-blue-200 rounded-lg px-2 py-1.5">
+              <div class="flex flex-wrap items-center gap-1.5 bg-blue-50/80 border border-blue-200 rounded-lg px-2 py-1">
                 <span class="text-[10px] font-extrabold text-blue-900">🚚 Delivery:</span>
-                <select onchange="adminAssignDeliveryRider('${o.orderId}', this)" class="flex-1 min-w-[130px] border border-blue-300 rounded-md px-2 py-1 text-[11px] font-bold bg-white">${delivOpts}</select>
-                <button type="button" onclick="adminEditOrderMap('${o.orderId}', '${escapeHtml(o.mapLocation || '')}')" class="bg-white border border-blue-300 text-blue-700 text-[10px] font-extrabold px-2 py-1 rounded-md">📍 Map</button>
-                <button type="button" onclick="adminConfirmCancel('${o.orderId}', ${hasPartner}, this)" class="bg-red-50 border border-red-200 text-red-700 text-[10px] font-extrabold px-2 py-1 rounded-md">❌ Cancel</button>
-                <button type="button" onclick="adminMarkCodFinished('${o.orderId}', this)" class="${isCodWait ? 'bg-emerald-600 ring-2 ring-emerald-300 animate-pulse' : 'bg-gray-900'} text-white text-[10px] font-extrabold px-2.5 py-1 rounded-md">✅ COD Confirm</button>
+                <select onchange="adminAssignDeliveryRider('${o.orderId}', this)" class="flex-1 min-w-[130px] border border-blue-300 rounded-md px-2 py-0.5 text-[11px] font-bold bg-white">${delivOpts}</select>
+                <button type="button" onclick="adminEditOrderMap('${o.orderId}', '${escapeHtml(o.mapLocation || '')}')" class="bg-white border border-blue-300 text-blue-700 text-[10px] font-extrabold px-2 py-0.5 rounded-md">📍 Map</button>
+                <button type="button" onclick="adminConfirmCancel('${o.orderId}', ${hasPartner}, this)" class="bg-red-50 border border-red-200 text-red-700 text-[10px] font-extrabold px-2 py-0.5 rounded-md">❌ Cancel</button>
+                <button type="button" onclick="adminMarkCodFinished('${o.orderId}', this)" class="${isCodWait ? 'bg-emerald-600 ring-2 ring-emerald-300 animate-pulse' : 'bg-gray-900'} text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-md">✅ COD Confirm</button>
               </div>
             </div>
           `;
