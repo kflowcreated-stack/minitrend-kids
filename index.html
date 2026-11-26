@@ -131,7 +131,7 @@
     const CATEGORY_LIST = [
       "အားလုံး", "🏷️ Promotion", "🔥 Trending", "ဝမ်းဆက်", "နွေရာသီဝတ်", "အင်္ကျီ",
       "ဘောင်းဘီ", "ဦးထုတ်", "ဖိနပ်", "Baby Kits",
-      "ဒိုင်ဘာ", "အနှီး", "လက်အိတ်၊ ခြေအိတ်", "ကုတင်၊ ပုခက်",
+      "ဒိုင်ဘာ နှင့် တစ်ရှူး", "အနှီး", "လက်အိတ်၊ ခြေအိတ်", "ကုတင်၊ ပုခက်",
       "သင်ကြားရေး", "ကစားစရာ"
     ];
     const AGE_REQUIRED_CATS = ["ဝမ်းဆက်", "နွေရာသီဝတ်", "အင်္ကျီ", "ဘောင်းဘီ", "ဦးထုတ်", "ဖိနပ်"];
@@ -514,6 +514,7 @@
         <button type="button" id="adm-tab-restocks" onclick="switchAdminTab('restocks')" class="px-3 py-2 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 shrink-0">📥 Stock ထပ်တိုး (<span id="adm-badge-restocks">0</span>)</button>
         <button type="button" id="adm-tab-returns" onclick="switchAdminTab('returns')" class="px-3 py-2 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 shrink-0">🔄 Return (<span id="adm-badge-returns">0</span>)</button>
         <button type="button" id="adm-tab-payouts" onclick="switchAdminTab('payouts')" class="px-3 py-2 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 shrink-0">💰 95% ရှင်း (<span id="adm-badge-payouts">0</span>)</button>
+        <button type="button" id="adm-tab-sales" onclick="switchAdminTab('sales')" class="px-3 py-2 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 shrink-0">📈 အရောင်းစာရင်း (<span id="adm-badge-sales">0</span>)</button>
         <button type="button" id="adm-tab-stock" onclick="switchAdminTab('stock')" class="px-3 py-2 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 shrink-0">📊 Stock / OWN</button>
         <button type="button" id="adm-tab-banners" onclick="switchAdminTab('banners')" class="px-3 py-2 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 shrink-0">🖼️ Banner ကြော်ငြာ</button>
         <button type="button" id="adm-tab-shops" onclick="switchAdminTab('shops')" class="px-3 py-2 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 shrink-0">🏪 ဆိုင်များ <span id="adm-badge-shops" class="hidden ml-1 bg-red-600 text-white px-1.5 py-0.5 rounded-full text-[10px] animate-pulse">0</span></button>
@@ -584,6 +585,57 @@
             <input type="text" id="adm-pay-hist-search" oninput="renderAdminPayoutHistory()" placeholder="🔍 Order ID သို့မဟုတ် ဝယ်သူအမည် ရှာရန်..." class="flex-1 min-w-[160px] border border-gray-200 rounded-xl px-3 py-2 text-xs">
           </div>
           <div id="adm-payouts-history-list" class="space-y-3.5"></div>
+        </div>
+      </div>
+
+      <!-- TAB 4.5: 15-DAY SALES HISTORY -->
+      <div id="adm-panel-sales" class="hidden space-y-3.5">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+          <div class="bg-white border border-pink-200 rounded-2xl p-3 shadow-sm">
+            <p class="text-[11px] font-bold text-gray-500">📈 ၁၅ ရက် စုစုပေါင်းရောင်းရ</p>
+            <p id="sales-15-total" class="text-base sm:text-lg font-extrabold text-pink-600 mt-0.5">0 Ks</p>
+          </div>
+          <div class="bg-white border border-blue-200 rounded-2xl p-3 shadow-sm">
+            <p class="text-[11px] font-bold text-gray-500">🏠 OWN ရောင်းရငွေ</p>
+            <p id="sales-15-own" class="text-base sm:text-lg font-extrabold text-blue-700 mt-0.5">0 Ks</p>
+          </div>
+          <div class="bg-white border border-emerald-200 rounded-2xl p-3 shadow-sm">
+            <p class="text-[11px] font-bold text-gray-500">🏪 ဆိုင်သို့ပေးငွေ (95%)</p>
+            <p id="sales-15-payout" class="text-base sm:text-lg font-extrabold text-emerald-700 mt-0.5">0 Ks</p>
+          </div>
+          <div class="bg-white border border-amber-200 rounded-2xl p-3 shadow-sm">
+            <p class="text-[11px] font-bold text-gray-500">✨ ကော်မရှင် (5%)</p>
+            <p id="sales-15-comm" class="text-base sm:text-lg font-extrabold text-amber-600 mt-0.5">0 Ks</p>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-pink-200 p-3 flex flex-wrap gap-2 items-center shadow-sm">
+          <select id="adm-sales-shop-filter" onchange="renderAdminSalesHistory()" class="border-2 border-pink-200 rounded-xl px-3 py-2 text-xs font-extrabold bg-gray-50">
+            <option value="ALL">🏪 အားလုံး (OWN + ချိတ်ဆိုင်)</option>
+            <option value="OWN">🏠 OWN (ကိုယ်ပိုင်)</option>
+          </select>
+          <input type="text" id="adm-sales-search" oninput="renderAdminSalesHistory()" placeholder="🔍 Order ID သို့မဟုတ် ပစ္စည်းအမည် ရှာရန်..." class="flex-1 min-w-[160px] border border-gray-200 rounded-xl px-3 py-2 text-xs">
+        </div>
+
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="bg-pink-50 border-b border-pink-200 text-gray-800 font-extrabold whitespace-nowrap">
+                  <th class="py-2.5 px-3">Order ID</th>
+                  <th class="py-2.5 px-3">Product (ပစ္စည်းအမည်)</th>
+                  <th class="py-2.5 px-2 text-center">Qty</th>
+                  <th class="py-2.5 px-3 text-right">Per (တစ်ခုဈေး)</th>
+                  <th class="py-2.5 px-3 text-right">Amount (စုစုပေါင်း)</th>
+                  <th class="py-2.5 px-3 text-center">Shop / OWN</th>
+                  <th class="py-2.5 px-3 text-right">ဆိုင်သို့ပေးငွေ</th>
+                </tr>
+              </thead>
+              <tbody id="adm-sales-tbody" class="divide-y divide-gray-100">
+                <tr><td colspan="7" class="py-8 text-center text-gray-400">⏳ အရောင်းစာရင်း ရယူနေပါသည်...</td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
@@ -1170,7 +1222,6 @@
       </div>
     </div>
   </div>
-
   <script>
     const urlParams = new URLSearchParams(window.location.search);
     const APP_ROLE = (urlParams.get('role') || 'customer').toLowerCase();
@@ -1832,6 +1883,7 @@
     function mapLegacyCatClient(cat) {
       const c = (cat || '').trim();
       if (c === 'မွေးကင်းစလေးများ' || c === 'မွေးကင်းစ') return 'Baby Kits';
+      if (c === 'ဒိုင်ဘာ' || c === 'ဒိုင်ဘာနှင့်တစ်ရှူး') return 'ဒိုင်ဘာ နှင့် တစ်ရှူး';
       return c;
     }
 
@@ -3114,7 +3166,6 @@
       if (res && res.ok) alert('✅ အသိပေးချက် (Notification) ဖွင့်ပြီးပါပြီ!');
       else alert((res && res.message) || '⚠️ Notification ဖွင့်မရပါ။');
     }
-
     // =========================================================================
     //                          ADMIN PANEL LOGIC
     // =========================================================================
@@ -3160,7 +3211,7 @@
 
     function switchAdminTab(tab) {
       currentAdminTab = tab;
-      ['orders', 'restocks', 'returns', 'payouts', 'stock', 'banners', 'shops', 'riders', 'noti', 'settings'].forEach(t => {
+      ['orders', 'restocks', 'returns', 'payouts', 'sales', 'stock', 'banners', 'shops', 'riders', 'noti', 'settings'].forEach(t => {
         const panel = document.getElementById('adm-panel-' + t);
         if (panel) panel.classList.toggle('hidden', t !== tab);
         const btn = document.getElementById('adm-tab-' + t);
@@ -3181,6 +3232,7 @@
         populateCentralSettingsForm(centralSettings);
       }
       if (tab === 'payouts' && currentPayoutSubTab === 'history') renderAdminPayoutHistory();
+      if (tab === 'sales') renderAdminSalesHistory();
       if (tab === 'noti') {
         renderCustomerNotiDropdown();
         renderAdminCustomersList();
@@ -3675,10 +3727,72 @@
       }
     }
 
+    function autoFillOwnFormFromFilename(fileName) {
+      if (!fileName || ownMode !== 'new') return;
+      let base = fileName.replace(/\.[^/.]+$/, '').trim();
+      if (!base) return;
+
+      let detectedPrice = 0;
+      const mExplicit = base.match(/[\s_-](\d{3,7})\s*(?:ks|kyat|ကျပ်)$/i);
+      const mDashEnd = base.match(/-(\d{3,7})$/);
+      const mSpaceEnd = base.match(/[\s_](\d{4,7})$/);
+
+      if (mExplicit) {
+        detectedPrice = parseInt(mExplicit[1], 10) || 0;
+        base = base.slice(0, mExplicit.index).trim();
+      } else if (mDashEnd) {
+        detectedPrice = parseInt(mDashEnd[1], 10) || 0;
+        base = base.slice(0, mDashEnd.index).trim();
+      } else if (mSpaceEnd) {
+        detectedPrice = parseInt(mSpaceEnd[1], 10) || 0;
+        base = base.slice(0, mSpaceEnd.index).trim();
+      }
+
+      const nameEl = document.getElementById('own-name');
+      if (nameEl && !nameEl.value.trim()) nameEl.value = base;
+
+      const priceEl = document.getElementById('own-price');
+      if (priceEl && !priceEl.value && detectedPrice >= 500) priceEl.value = detectedPrice;
+
+      const lower = base.toLowerCase();
+      let detectedCat = '';
+      if (/diaper|pant|wipe|tissue|ဒိုင်ဘာ|တစ်ရှူး|pampers|huggies|mamypoko|kumo|hippo|lovely|wasuka|happy mammy|good baby|baby ken|baby mia|bair lay|double love|lebay|city selection/.test(lower)) {
+        detectedCat = 'ဒိုင်ဘာ နှင့် တစ်ရှူး';
+      } else if (/wash|lotion|powder|oil|shampoo|soap|bottle|နို့ဘူး|ဆပ်ပြာ|baby kit/.test(lower)) {
+        detectedCat = 'Baby Kits';
+      } else if (/shoe|sandal|slipper|ဖိနပ်/.test(lower)) {
+        detectedCat = 'ဖိနပ်';
+      } else if (/hat|cap|ဦးထုတ်/.test(lower)) {
+        detectedCat = 'ဦးထုတ်';
+      } else if (/toy|ကစားစရာ/.test(lower)) {
+        detectedCat = 'ကစားစရာ';
+      }
+
+      const catSel = document.getElementById('own-category');
+      if (detectedCat && catSel && [...catSel.options].some(o => o.value === detectedCat)) {
+        catSel.value = detectedCat;
+        updateOwnSizeOptions();
+      }
+
+      const descEl = document.getElementById('own-desc');
+      if (descEl && !descEl.value.trim()) {
+        if (/wipe|tissue|တစ်ရှူး/.test(lower)) {
+          descEl.value = `${base}\n• ကလေးငယ်အသားအရေအတွက် နူးညံ့စိတ်ချရပြီး ယားယံမှုမရှိပါ။\n• အစိုဓာတ်ထိန်းပေးပြီး နေ့စဉ်သန့်ရှင်းရေးအတွက် အထူးသင့်တော်ပါသည်။`;
+        } else if (/diaper|pant|ဒိုင်ဘာ/.test(lower)) {
+          descEl.value = `${base}\n• စုပ်ယူအားကောင်းမွန်ပြီး စိမ့်ထွက်မှုမရှိဘဲ ခြောက်သွေ့သက်သောင့်သက်သာ ရှိစေပါသည်။\n• လေဝင်လေထွက်ကောင်းမွန်ပြီး ကလေးငယ်အသားအရေအတွက် နူးညံ့စိတ်ချရပါသည်။`;
+        } else {
+          descEl.value = `${base}\n• အရည်အသွေးကောင်းမွန်ပြီး ကလေးငယ်များအတွက် စိတ်ချလက်ချ အသုံးပြုနိုင်ပါသည်။`;
+        }
+      }
+    }
+
     async function handleOwnAddPhotos(event) {
       const files = Array.from(event.target.files || []);
       event.target.value = '';
       if (!files.length) return;
+      if (ownPhotos.length === 0 && files[0] && files[0].name) {
+        autoFillOwnFormFromFilename(files[0].name);
+      }
       const remain = 3 - ownPhotos.length;
       if (remain <= 0) return;
       document.getElementById('own-photo-status').innerText = '⏳ ပုံပြင်ဆင်နေ...';
@@ -3686,7 +3800,7 @@
         const b64 = await compressAdminImageFile(f);
         if (b64) ownPhotos.push({ url: '', fileId: '', base64: b64, modified: true });
       }
-      document.getElementById('own-photo-status').innerText = '✅ ပုံထည့်ပြီးပါပြီ';
+      document.getElementById('own-photo-status').innerText = '✅ ပုံထည့်ပြီး (ဖိုင်အမည်မှ Auto-Fill ပြီး)';
       renderOwnPhotoSlots();
     }
 
@@ -4430,6 +4544,92 @@
       return `<div class="bg-gray-50 border border-gray-200 rounded-xl px-2.5 py-1.5 flex items-center justify-between overflow-x-auto no-scrollbar">${itemsHtml}</div>`;
     }
 
+    function renderAdminSalesHistory() {
+      const tbody = document.getElementById('adm-sales-tbody');
+      const badge = document.getElementById('adm-badge-sales');
+      if (!tbody || !adminDataCache) return;
+
+      const list = Array.isArray(adminDataCache.salesHistory15Days) ? adminDataCache.salesHistory15Days : [];
+      if (badge) badge.innerText = list.length;
+
+      const shopSel = document.getElementById('adm-sales-shop-filter');
+      if (shopSel && shopSel.options.length <= 2 && Array.isArray(adminDataCache.shops)) {
+        const prev = shopSel.value;
+        shopSel.innerHTML = `<option value="ALL">🏪 အားလုံး (OWN + ချိတ်ဆိုင်)</option><option value="OWN">🏠 OWN (ကိုယ်ပိုင်)</option>` +
+          adminDataCache.shops.map(s => `<option value="${escapeHtml(s.id)}">🏪 ${escapeHtml(s.id)} — ${escapeHtml(s.name)}</option>`).join('');
+        if ([...shopSel.options].some(o => o.value === prev)) shopSel.value = prev;
+      }
+
+      const shopF = shopSel ? shopSel.value : 'ALL';
+      const q = (document.getElementById('adm-sales-search')?.value || '').trim().toLowerCase();
+      const shopsMap = {};
+      (adminDataCache.shops || []).forEach(s => { shopsMap[s.id] = s; });
+
+      let sumTotal = 0, sumOwn = 0, sumPayout = 0, sumComm = 0;
+      const rowsHtml = [];
+
+      list.forEach(ord => {
+        const items = Array.isArray(ord.items) && ord.items.length > 0 ? ord.items : [];
+        const settlePayouts = (ord.settlement && Array.isArray(ord.settlement.shopPayouts)) ? ord.settlement.shopPayouts : [];
+        const rateByShop = {};
+        settlePayouts.forEach(sp => { rateByShop[sp.shopId] = Number(sp.commissionRate); });
+
+        items.forEach(it => {
+          const sid = normalizeShopId(it.shopId);
+          if (shopF !== 'ALL' && sid !== shopF) return;
+          const pName = (it.name || '').toString();
+          if (q && !(ord.orderId || '').toLowerCase().includes(q) && !pName.toLowerCase().includes(q)) return;
+
+          const qty = Number(it.qty || 1);
+          const per = Number(it.price || 0);
+          const amt = per * qty;
+          let payout = 0, comm = 0;
+
+          if (sid === 'OWN') {
+            sumOwn += amt;
+          } else {
+            const rate = !isNaN(rateByShop[sid]) ? rateByShop[sid] : (shopsMap[sid] ? Number(shopsMap[sid].commissionRate) : 5);
+            comm = Math.round(amt * (rate / 100));
+            payout = Math.max(0, amt - comm);
+            sumPayout += payout;
+            sumComm += comm;
+          }
+          sumTotal += amt;
+
+          const shopBadge = sid === 'OWN'
+            ? `<span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full text-[10px] font-extrabold">🏠 OWN</span>`
+            : `<span class="bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full text-[10px] font-extrabold">🏪 ${escapeHtml(sid)}</span>`;
+
+          rowsHtml.push(`
+            <tr class="hover:bg-pink-50/40">
+              <td class="py-2.5 px-3 whitespace-nowrap">
+                <p class="font-extrabold text-gray-900">${escapeHtml(ord.orderId)}</p>
+                <p class="text-[10px] text-gray-400">${escapeHtml((ord.dateTime || '').split(' ')[0] || '')}</p>
+              </td>
+              <td class="py-2.5 px-3 min-w-[160px]">
+                <p class="font-bold text-gray-900">${escapeHtml(pName)}</p>
+                <p class="text-[10px] text-gray-500">${escapeHtml(it.colorName || '')}${it.size && it.size !== 'အသက်မလို' ? ' • ' + escapeHtml(it.size) : ''}</p>
+              </td>
+              <td class="py-2.5 px-2 text-center font-extrabold text-gray-900">${qty}</td>
+              <td class="py-2.5 px-3 text-right font-bold text-gray-700 whitespace-nowrap">${per.toLocaleString()} Ks</td>
+              <td class="py-2.5 px-3 text-right font-extrabold text-pink-600 whitespace-nowrap">${amt.toLocaleString()} Ks</td>
+              <td class="py-2.5 px-3 text-center whitespace-nowrap">${shopBadge}</td>
+              <td class="py-2.5 px-3 text-right font-extrabold ${sid === 'OWN' ? 'text-gray-400' : 'text-emerald-700'} whitespace-nowrap">${sid === 'OWN' ? '-' : payout.toLocaleString() + ' Ks'}</td>
+            </tr>
+          `);
+        });
+      });
+
+      document.getElementById('sales-15-total').innerText = sumTotal.toLocaleString() + ' Ks';
+      document.getElementById('sales-15-own').innerText = sumOwn.toLocaleString() + ' Ks';
+      document.getElementById('sales-15-payout').innerText = sumPayout.toLocaleString() + ' Ks';
+      document.getElementById('sales-15-comm').innerText = sumComm.toLocaleString() + ' Ks';
+
+      tbody.innerHTML = rowsHtml.length > 0
+        ? rowsHtml.join('')
+        : `<tr><td colspan="7" class="py-8 text-center text-gray-400">လွန်ခဲ့သော ၁၅ ရက်အတွင်း ပို့ပြီးသား အရောင်းစာရင်း မရှိသေးပါ။</td></tr>`;
+    }
+
     function renderAdminPayoutHistory() {
       const box = document.getElementById('adm-payouts-history-list');
       if (!box || !adminDataCache) return;
@@ -4809,6 +5009,7 @@
         `).join('');
       }
       renderAdminPayoutHistory();
+      renderAdminSalesHistory();
 
       document.getElementById('adm-shops-list').innerHTML = shops.length === 0
         ? `<p class="text-gray-400 py-3">ချိတ်ဆက်ဆိုင် မထည့်ရသေးပါ။</p>`
