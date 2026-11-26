@@ -441,7 +441,7 @@
   <!-- ===================================================================== -->
   <!--                         2. ADMIN PANEL VIEW                           -->
   <!-- ===================================================================== -->
-  <div id="admin-view" class="hidden max-w-6xl mx-auto px-3 sm:px-4 py-4">
+  <div id="admin-view" class="hidden w-full max-w-none mx-auto px-3 sm:px-5 lg:px-6 py-4">
 
     <div id="admin-login-box" class="bg-white rounded-2xl shadow-lg border-2 border-pink-200 max-w-sm mx-auto p-6 mt-10">
       <div class="text-center mb-4">
@@ -510,7 +510,7 @@
       </div>
 
       <!-- ADMIN NAVIGATION TABS -->
-      <div class="flex gap-1.5 overflow-x-auto no-scrollbar bg-white p-1.5 rounded-2xl border border-pink-200 shadow-sm">
+      <div class="flex flex-wrap gap-1.5 bg-white p-1.5 rounded-2xl border border-pink-200 shadow-sm">
         <button type="button" id="adm-tab-orders" onclick="switchAdminTab('orders')" class="px-3 py-2 rounded-xl text-xs font-extrabold bg-pink-600 text-white shrink-0">📦 အော်ဒါ (<span id="adm-badge-orders">0</span>)</button>
         <button type="button" id="adm-tab-restocks" onclick="switchAdminTab('restocks')" class="px-3 py-2 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 shrink-0">📥 Stock ထပ်တိုး (<span id="adm-badge-restocks">0</span>)</button>
         <button type="button" id="adm-tab-returns" onclick="switchAdminTab('returns')" class="px-3 py-2 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 shrink-0">🔄 Return (<span id="adm-badge-returns">0</span>)</button>
