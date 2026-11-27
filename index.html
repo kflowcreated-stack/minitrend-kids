@@ -538,7 +538,11 @@
         <button type="button" id="adm-tab-riders" onclick="switchAdminTab('riders')" class="px-3 py-2 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 shrink-0">🚚 ဝန်ထမ်းများ</button>
         <button type="button" id="adm-tab-noti" onclick="switchAdminTab('noti')" class="px-3 py-2 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 shrink-0">📢 Noti / ဝယ်သူ</button>
         <button type="button" id="adm-tab-settings" onclick="switchAdminTab('settings')" class="px-3 py-2 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 shrink-0">⚙️ Central Settings</button>
+        <button type="button" id="adm-tab-auto" onclick="switchAdminTab('auto')" class="px-3 py-2 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 shrink-0">🤖 Auto (<span id="adm-badge-auto">6/6</span>)<span id="adm-badge-auto-err" class="hidden ml-1 bg-red-600 text-white px-1.5 py-0.5 rounded-full text-[10px] animate-pulse">!</span></button>
       </div>
+
+      <!-- LIVE 10-SECOND AUTO ACTION COUNTDOWN BANNER -->
+      <div id="adm-auto-countdown-box" class="hidden bg-slate-900 text-white rounded-2xl border-2 border-amber-400 p-3.5 shadow-lg space-y-2"></div>
 
       <!-- TAB 1: ORDERS & PACKING (COMPACT) -->
       <div id="adm-panel-orders" class="space-y-2.5">
@@ -551,6 +555,7 @@
           <button type="button" onclick="setAdminOrderFilter('picking')" data-f="picking" class="adm-f-btn bg-white border border-amber-300 text-amber-800 px-3 py-1.5 rounded-full text-xs font-bold shrink-0">🛵 သွားကောက်နေဆဲ</button>
           <button type="button" onclick="setAdminOrderFilter('picked')" data-f="picked" class="adm-f-btn bg-white border border-emerald-300 text-emerald-800 px-3 py-1.5 rounded-full text-xs font-bold shrink-0">✅ ကောက်ပြီး (ပို့ရန်)</button>
           <button type="button" onclick="setAdminOrderFilter('onway')" data-f="onway" class="adm-f-btn bg-white border border-blue-300 text-blue-700 px-3 py-1.5 rounded-full text-xs font-bold shrink-0">🚚 လမ်းပေါ်ရောက်</button>
+          <button type="button" id="btn-auto-delivery-batch" onclick="triggerAutoDeliveryBatch()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-full text-xs font-extrabold shadow-sm shrink-0">🤖 Auto Delivery ခွဲပေးမည်</button>
         </div>
         <div id="adm-orders-list" class="space-y-3">
           <p class="text-xs text-gray-400 py-8 text-center bg-white rounded-2xl border">⏳ အော်ဒါစာရင်း ရယူနေပါသည်...</p>
@@ -904,11 +909,16 @@
       <div id="adm-panel-riders" class="hidden space-y-4">
         <div class="bg-white rounded-2xl shadow-sm border-2 border-blue-200 p-4 space-y-3">
           <h3 class="font-extrabold text-sm sm:text-base text-gray-900">🚚 Pickup & Delivery ဝန်ထမ်းများ စီမံခန့်ခွဲမှု</h3>
-          <form id="rider-form" onsubmit="saveRiderAdmin(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-2 bg-blue-50/60 p-3 rounded-xl border border-blue-200">
+          <form id="rider-form" onsubmit="saveRiderAdmin(event)" class="grid grid-cols-1 sm:grid-cols-5 gap-2 bg-blue-50/60 p-3 rounded-xl border border-blue-200">
             <input type="hidden" id="rf-id">
             <input type="text" id="rf-name" required placeholder="👤 ဝန်ထမ်းအမည်" class="border rounded-xl px-3 py-2 text-xs bg-white">
             <input type="tel" id="rf-phone" placeholder="📞 ဖုန်းနံပါတ်" class="border rounded-xl px-3 py-2 text-xs bg-white">
             <input type="text" id="rf-pin" required placeholder="🔑 PIN (ဥပမာ- 1001)" class="border rounded-xl px-3 py-2 text-xs bg-white">
+            <select id="rf-role" class="border rounded-xl px-2.5 py-2 text-xs font-bold bg-white">
+              <option value="Pickup">📦 Pickup သီးသန့်</option>
+              <option value="Delivery">🚚 Delivery သီးသန့်</option>
+              <option value="Both" selected>🔄 ၂ မျိုးလုံး (Both)</option>
+            </select>
             <div class="flex gap-1.5">
               <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-2 rounded-xl text-xs">💾 သိမ်း</button>
               <button type="button" onclick="resetRiderForm()" class="bg-gray-200 text-gray-700 font-bold px-3 py-2 rounded-xl text-xs">ရှင်း</button>
@@ -1056,6 +1066,78 @@
               </button>
             </div>
           </form>
+        </div>
+      </div>
+
+      <!-- TAB 11: DEDICATED AUTO SYSTEMS CONTROL CENTER -->
+      <div id="adm-panel-auto" class="hidden space-y-4">
+        <div class="bg-white rounded-2xl shadow-sm border-2 border-indigo-200 p-4 space-y-3.5">
+          <div class="flex flex-wrap justify-between items-center gap-2">
+            <div>
+              <h3 class="font-extrabold text-sm sm:text-base text-gray-900">🤖 Auto စနစ်များ ဖွင့်/ပိတ် ထိန်းချုပ်ခန်း</h3>
+              <p class="text-[11px] text-gray-500 font-bold">Auto Pickup / Delivery များသည် ၁၀ စက္ကန့် Countdown ပြပြီးမှ လုပ်ဆောင်မည်ဖြစ်ပြီး Error တက်ပါက Admin ထံ ချက်ချင်းအကြောင်းကြားပါမည်။</p>
+            </div>
+            <div class="flex gap-1.5">
+              <button type="button" onclick="setAllAutoSystems(true)" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-3 py-1.5 rounded-xl text-xs shadow-sm">✅ အားလုံးဖွင့်</button>
+              <button type="button" onclick="setAllAutoSystems(false)" class="bg-red-600 hover:bg-red-700 text-white font-extrabold px-3 py-1.5 rounded-xl text-xs shadow-sm">🛑 အားလုံးပိတ်</button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+            <label class="flex items-start gap-2.5 p-3 rounded-xl border-2 border-purple-200 bg-purple-50/50 cursor-pointer">
+              <input type="checkbox" id="auto-sw-pickup" onchange="saveAutoSystemSwitches()" class="w-4 h-4 mt-0.5 accent-purple-600 rounded">
+              <div>
+                <p class="font-extrabold text-gray-900">📦 Auto Pickup Dispatch (Smart Batching)</p>
+                <p class="text-[11px] text-gray-600 mt-0.5">ဆိုင်က ထုပ်ပိုးပြီးနှိပ်လျှင် ၁၀ စက္ကန့် Countdown ပြပြီး 🟢 Pickup ဝန်ထမ်းဆီ Auto ခိုင်းမည်</p>
+              </div>
+            </label>
+            <label class="flex items-start gap-2.5 p-3 rounded-xl border-2 border-blue-200 bg-blue-50/50 cursor-pointer">
+              <input type="checkbox" id="auto-sw-delivery" onchange="saveAutoSystemSwitches()" class="w-4 h-4 mt-0.5 accent-blue-600 rounded">
+              <div>
+                <p class="font-extrabold text-gray-900">🚚 Auto Delivery ခွဲပေးစနစ်</p>
+                <p class="text-[11px] text-gray-600 mt-0.5">ကောက်ပြီး/OWN အော်ဒါများကို ၁၀ စက္ကန့် Countdown ပြပြီး 🟢 Delivery ဝန်ထမ်းများဆီ Auto ခွဲပေးမည်</p>
+              </div>
+            </label>
+            <label class="flex items-start gap-2.5 p-3 rounded-xl border-2 border-pink-200 bg-pink-50/50 cursor-pointer">
+              <input type="checkbox" id="auto-sw-buybox" onchange="saveAutoSystemSwitches()" class="w-4 h-4 mt-0.5 accent-pink-600 rounded">
+              <div>
+                <p class="font-extrabold text-gray-900">🏷️ Auto Buy Box (ဈေးအသက်သာဆုံး/OWN ဦးစားပေး)</p>
+                <p class="text-[11px] text-gray-600 mt-0.5">နာမည်တူပစ္စည်းကို ဝယ်သူ App တွင် ၁ ကတ်တည်းပြပြီး ကုန်လျှင် နောက်ဆိုင် Auto ပြောင်းမည်</p>
+              </div>
+            </label>
+            <label class="flex items-start gap-2.5 p-3 rounded-xl border-2 border-amber-200 bg-amber-50/50 cursor-pointer">
+              <input type="checkbox" id="auto-sw-duplicate" onchange="saveAutoSystemSwitches()" class="w-4 h-4 mt-0.5 accent-amber-600 rounded">
+              <div>
+                <p class="font-extrabold text-gray-900">🔍 Admin ဆင်တူပစ္စည်း Auto စစ်ခြင်း</p>
+                <p class="text-[11px] text-gray-600 mt-0.5">Stock Request ဝင်တိုင်း ရှိပြီးသားပစ္စည်းနှင့် ဆင်တူလား Auto သတိပေးမည်</p>
+              </div>
+            </label>
+            <label class="flex items-start gap-2.5 p-3 rounded-xl border-2 border-orange-200 bg-orange-50/50 cursor-pointer">
+              <input type="checkbox" id="auto-sw-promo" onchange="saveAutoSystemSwitches()" class="w-4 h-4 mt-0.5 accent-orange-600 rounded">
+              <div>
+                <p class="font-extrabold text-gray-900">✨ ဝယ်သူ App Auto အရောင်းမြှင့်တင်ရေး</p>
+                <p class="text-[11px] text-gray-600 mt-0.5">🔥 လက်ကျန်နည်းနေပြီ နှင့် ✨ တွဲဖက်ဝယ်ယူနိုင်သော ပစ္စည်းများ Auto ပြပေးမည်</p>
+              </div>
+            </label>
+            <label class="flex items-start gap-2.5 p-3 rounded-xl border-2 border-slate-200 bg-slate-50/70 cursor-pointer">
+              <input type="checkbox" id="auto-sw-quiet" onchange="saveAutoSystemSwitches()" class="w-4 h-4 mt-0.5 accent-slate-700 rounded">
+              <div>
+                <p class="font-extrabold text-gray-900">🌙 Shop App ညဘက် Auto Mute</p>
+                <p class="text-[11px] text-gray-600 mt-0.5">ညနေ ၆:၀၀ မှ နံနက် ၈:၀၀ အတွင်း Shop Noti အသံပိတ်ပြီး မနက် ၈:၀၀ မှ စုပို့မည်</p>
+              </div>
+            </label>
+          </div>
+          <p id="auto-save-status" class="text-[11px] font-bold text-emerald-700"></p>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border-2 border-red-200 p-4 space-y-2.5">
+          <div class="flex justify-between items-center gap-2">
+            <h4 class="font-extrabold text-sm text-gray-900">📋 Auto လုပ်ဆောင်ချက်နှင့် Error မှတ်တမ်း</h4>
+            <button type="button" onclick="clearAdminAutoLogs()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold px-2.5 py-1 rounded-lg text-[11px]">🧹 ရှင်းမည်</button>
+          </div>
+          <div id="adm-auto-logs-list" class="divide-y text-xs max-h-64 overflow-y-auto">
+            <p class="text-gray-400 py-4 text-center">Auto မှတ်တမ်း မရှိသေးပါ။</p>
+          </div>
         </div>
       </div>
 
@@ -1309,6 +1391,12 @@
       defaultCommissionRate: 5,
       shopQuietStartHour: 18,
       shopQuietEndHour: 8,
+      autoPickupEnabled: true,
+      autoDeliveryEnabled: true,
+      autoBuyBoxEnabled: true,
+      autoDuplicateAlertEnabled: true,
+      autoPromoExtrasEnabled: true,
+      autoShopQuietMuteEnabled: true,
       updatedAt: ''
     };
 
@@ -1398,6 +1486,7 @@
       renderCartModal();
       renderProductsGrid();
       if (APP_ROLE === 'admin' && currentAdminTab === 'stock') renderAdminStockPanel();
+      if (typeof syncAutoSwitchesUI === 'function') syncAutoSwitchesUI();
     }
 
     function populateCentralSettingsForm(st) {
@@ -2455,6 +2544,7 @@
     }
 
     function getCustomerBuyBoxProducts(sizeIdx = -1) {
+      if (centralSettings.autoBuyBoxEnabled === false) return allProducts.slice();
       const groups = {};
       const order = [];
       allProducts.forEach(p => {
@@ -2863,6 +2953,7 @@
     }
 
     function renderModalRelatedProducts(currentProd) {
+      if (centralSettings.autoPromoExtrasEnabled === false) { document.getElementById('pm-related-section')?.classList.add('hidden'); return; }
       const sec = document.getElementById('pm-related-section');
       const listEl = document.getElementById('pm-related-list');
       if (!sec || !listEl || !currentProd) return;
@@ -3546,7 +3637,7 @@
 
     function switchAdminTab(tab) {
       currentAdminTab = tab;
-      ['orders', 'restocks', 'returns', 'payouts', 'sales', 'stock', 'banners', 'shops', 'riders', 'noti', 'settings'].forEach(t => {
+      ['orders', 'restocks', 'returns', 'payouts', 'sales', 'stock', 'banners', 'shops', 'riders', 'noti', 'settings', 'auto'].forEach(t => {
         const panel = document.getElementById('adm-panel-' + t);
         if (panel) panel.classList.toggle('hidden', t !== tab);
         const btn = document.getElementById('adm-tab-' + t);
@@ -4368,6 +4459,7 @@
     }
 
     function findSimilarCatalogProducts(prodName, reqCategory) {
+      if (centralSettings.autoDuplicateAlertEnabled === false) return [];
       const qRaw = (prodName || '').toString().trim();
       const qNorm = normalizeProdKey(qRaw);
       if (!qNorm || !Array.isArray(allProducts) || allProducts.length === 0) return [];
@@ -5455,10 +5547,11 @@
             `;
           }).join('');
 
+          const fmtRiderOpt = (r) => `${r.duty === 'Off' ? '🔴' : '🟢'} ${escapeHtml(r.id)} - ${escapeHtml(r.name)}${r.dutyRole && r.dutyRole !== 'Both' ? ' [' + escapeHtml(r.dutyRole) + ']' : ''}`;
           const pickupOpts = `<option value="">-- Pickup ဝန်ထမ်း --</option>` +
-            riders.map(r => `<option value="${escapeHtml(r.id)}" ${o.pickupRiderId === r.id ? 'selected' : ''}>${escapeHtml(r.id)} - ${escapeHtml(r.name)}</option>`).join('');
+            riders.map(r => `<option value="${escapeHtml(r.id)}" ${o.pickupRiderId === r.id ? 'selected' : ''}>${fmtRiderOpt(r)}</option>`).join('');
           const delivOpts = `<option value="">-- Delivery ဝန်ထမ်း --</option>` +
-            riders.map(r => `<option value="${escapeHtml(r.id)}" ${o.riderId === r.id ? 'selected' : ''}>${escapeHtml(r.id)} - ${escapeHtml(r.name)}</option>`).join('');
+            riders.map(r => `<option value="${escapeHtml(r.id)}" ${o.riderId === r.id ? 'selected' : ''}>${fmtRiderOpt(r)}</option>`).join('');
 
           const partnerShopIds = [...new Set(items.map(it => it.shopId).filter(sid => sid !== 'OWN'))];
           const pickupShopInfoHtml = partnerShopIds.map(sid => {
@@ -5676,18 +5769,30 @@
         </div>
       `).join('');
 
-      document.getElementById('adm-riders-list').innerHTML = riders.map(r => `
-        <div class="py-2 flex justify-between items-center gap-2">
+      document.getElementById('adm-riders-list').innerHTML = riders.map(r => {
+        const isOff = r.duty === 'Off';
+        const roleTag = r.dutyRole === 'Pickup'
+          ? `<span class="bg-purple-100 text-purple-800 px-1.5 py-0.5 rounded text-[10px] font-extrabold ml-1">📦 Pickup</span>`
+          : (r.dutyRole === 'Delivery'
+            ? `<span class="bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded text-[10px] font-extrabold ml-1">🚚 Delivery</span>`
+            : `<span class="bg-gray-100 text-gray-700 px-1.5 py-0.5 rounded text-[10px] font-bold ml-1">🔄 Both</span>`);
+        return `
+        <div class="py-2 flex flex-wrap justify-between items-center gap-2">
           <div>
-            <span class="font-extrabold text-gray-900">${escapeHtml(r.id)} — ${escapeHtml(r.name)}</span>
+            <span class="font-extrabold text-gray-900">${escapeHtml(r.id)} — ${escapeHtml(r.name)}</span>${roleTag}
             <span class="text-[11px] text-gray-500 ml-2">📞 ${escapeHtml(r.phone || '-')} | 🔑 PIN: ${escapeHtml(r.pin)}</span>
           </div>
-          <div class="flex gap-1.5">
+          <div class="flex items-center gap-1.5">
+            <button type="button" onclick="adminToggleRiderDuty('${escapeHtml(r.id)}', '${isOff ? 'On' : 'Off'}')" class="${isOff ? 'bg-red-100 text-red-700 border border-red-300' : 'bg-emerald-100 text-emerald-800 border border-emerald-300'} font-extrabold px-2 py-1 rounded-lg text-[10px]">${isOff ? '🔴 နားနေ' : '🟢 အလုပ်ဆင်း'}</button>
             <button type="button" onclick="editRiderAdmin('${escapeHtml(r.id)}')" class="bg-blue-100 text-blue-700 font-bold px-2.5 py-1 rounded-lg">✏️</button>
             <button type="button" onclick="deleteRiderAdmin('${escapeHtml(r.id)}')" class="bg-red-100 text-red-700 font-bold px-2.5 py-1 rounded-lg">🗑️</button>
           </div>
         </div>
-      `).join('');
+      `;
+      }).join('');
+
+      syncAutoSwitchesUI();
+      checkAutoPickupQueue();
     }
 
     async function adminApproveShopRequest(shopId, btnEl) {
@@ -5925,7 +6030,11 @@
       setTimeout(() => loadAdminDashboard(false), 800);
     }
 
-    function resetRiderForm() { ['rf-id', 'rf-name', 'rf-phone', 'rf-pin'].forEach(id => { document.getElementById(id).value = ''; }); }
+    function resetRiderForm() {
+      ['rf-id', 'rf-name', 'rf-phone', 'rf-pin'].forEach(id => { document.getElementById(id).value = ''; });
+      const rSel = document.getElementById('rf-role');
+      if (rSel) rSel.value = 'Both';
+    }
 
     function editRiderAdmin(riderId) {
       const r = (adminDataCache?.riders || []).find(x => x.id === riderId);
@@ -5934,6 +6043,8 @@
       document.getElementById('rf-name').value = r.name;
       document.getElementById('rf-phone').value = r.phone;
       document.getElementById('rf-pin').value = r.pin;
+      const rSel = document.getElementById('rf-role');
+      if (rSel) rSel.value = r.dutyRole || 'Both';
       document.getElementById('rf-name').focus();
     }
 
@@ -5945,11 +6056,337 @@
         body: JSON.stringify({
           action: 'saveRider', riderId: document.getElementById('rf-id').value.trim(),
           name: document.getElementById('rf-name').value.trim(), phone: document.getElementById('rf-phone').value.trim(),
-          pin: document.getElementById('rf-pin').value.trim()
+          pin: document.getElementById('rf-pin').value.trim(),
+          dutyRole: document.getElementById('rf-role')?.value || 'Both'
         })
       });
       resetRiderForm();
       setTimeout(() => loadAdminDashboard(false), 900);
+    }
+
+    async function adminToggleRiderDuty(riderId, nextDuty) {
+      await fetch(APPS_SCRIPT_URL, {
+        method: 'POST', mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'setRiderDuty', riderId, duty: nextDuty, byAdmin: true })
+      });
+      setTimeout(() => loadAdminDashboard(false), 600);
+    }
+
+    // ==================== AUTO CONTROL CENTER + 10s COUNTDOWN + ERROR ALERTS ====================
+    let autoCountdownQueue = [];
+    let autoCountdownTimer = null;
+    let autoSkippedKeys = {};
+    let autoAlertedErrorKeys = {};
+
+    function getAdminAutoLogs() {
+      try { return JSON.parse(localStorage.getItem('mt_admin_auto_logs') || '[]'); } catch (e) { return []; }
+    }
+
+    function logAdminAutoEvent(isError, title, detail, pushToPhone = false) {
+      const logs = getAdminAutoLogs();
+      logs.unshift({ isError: !!isError, title, detail, time: getClientMyanmarTimeStr() });
+      try { localStorage.setItem('mt_admin_auto_logs', JSON.stringify(logs.slice(0, 20))); } catch (e) {}
+      renderAdminAutoLogs();
+      if (isError) {
+        document.getElementById('adm-badge-auto-err')?.classList.remove('hidden');
+        showBannerNoti(title, detail);
+        if (pushToPhone) {
+          fetch(APPS_SCRIPT_URL, {
+            method: 'POST', mode: 'no-cors',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ action: 'notifyAdminAutoError', title, message: detail })
+          }).catch(() => {});
+        }
+      }
+    }
+
+    function clearAdminAutoLogs() {
+      try { localStorage.removeItem('mt_admin_auto_logs'); } catch (e) {}
+      document.getElementById('adm-badge-auto-err')?.classList.add('hidden');
+      renderAdminAutoLogs();
+    }
+
+    function renderAdminAutoLogs() {
+      const box = document.getElementById('adm-auto-logs-list');
+      if (!box) return;
+      const logs = getAdminAutoLogs();
+      if (logs.length === 0) {
+        box.innerHTML = `<p class="text-gray-400 py-4 text-center">Auto မှတ်တမ်း မရှိသေးပါ။</p>`;
+        return;
+      }
+      box.innerHTML = logs.map(l => `
+        <div class="py-2 flex items-start justify-between gap-2 ${l.isError ? 'bg-red-50/70 px-2 rounded-lg' : ''}">
+          <div class="min-w-0">
+            <p class="font-extrabold ${l.isError ? 'text-red-700' : 'text-gray-900'}">${l.isError ? '🚨 ' : '🤖 '}${escapeHtml(l.title)}</p>
+            <p class="text-[11px] text-gray-600">${escapeHtml(l.detail)}</p>
+          </div>
+          <span class="text-[10px] text-gray-400 shrink-0">${escapeHtml(l.time)}</span>
+        </div>
+      `).join('');
+    }
+
+    function syncAutoSwitchesUI() {
+      const map = [
+        ['auto-sw-pickup', centralSettings.autoPickupEnabled !== false],
+        ['auto-sw-delivery', centralSettings.autoDeliveryEnabled !== false],
+        ['auto-sw-buybox', centralSettings.autoBuyBoxEnabled !== false],
+        ['auto-sw-duplicate', centralSettings.autoDuplicateAlertEnabled !== false],
+        ['auto-sw-promo', centralSettings.autoPromoExtrasEnabled !== false],
+        ['auto-sw-quiet', centralSettings.autoShopQuietMuteEnabled !== false]
+      ];
+      let onCnt = 0;
+      map.forEach(([id, val]) => {
+        const el = document.getElementById(id);
+        if (el) el.checked = !!val;
+        if (val) onCnt++;
+      });
+      const b = document.getElementById('adm-badge-auto');
+      if (b) b.innerText = `${onCnt}/6`;
+      const delBtn = document.getElementById('btn-auto-delivery-batch');
+      if (delBtn) delBtn.classList.toggle('hidden', centralSettings.autoDeliveryEnabled === false);
+      renderAdminAutoLogs();
+    }
+
+    async function saveAutoSystemSwitches() {
+      const patch = {
+        autoPickupEnabled: !!document.getElementById('auto-sw-pickup')?.checked,
+        autoDeliveryEnabled: !!document.getElementById('auto-sw-delivery')?.checked,
+        autoBuyBoxEnabled: !!document.getElementById('auto-sw-buybox')?.checked,
+        autoDuplicateAlertEnabled: !!document.getElementById('auto-sw-duplicate')?.checked,
+        autoPromoExtrasEnabled: !!document.getElementById('auto-sw-promo')?.checked,
+        autoShopQuietMuteEnabled: !!document.getElementById('auto-sw-quiet')?.checked
+      };
+      centralSettings = { ...centralSettings, ...patch };
+      syncAutoSwitchesUI();
+      if (!patch.autoPickupEnabled) {
+        autoCountdownQueue = autoCountdownQueue.filter(q => q.type !== 'pickup');
+        renderAutoCountdownBox();
+      }
+      const stEl = document.getElementById('auto-save-status');
+      if (stEl) stEl.innerText = '⏳ Google Sheet ထဲ သိမ်းနေပါသည်...';
+      try {
+        await fetch(APPS_SCRIPT_URL, {
+          method: 'POST', mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ action: 'saveAppSettings', settings: patch })
+        });
+        if (stEl) stEl.innerText = '✅ Auto စနစ် Settings သိမ်းပြီးပါပြီ (ဖုန်းအားလုံးသို့ Sync ပြီး)';
+      } catch (e) {
+        if (stEl) stEl.innerText = '⚠️ သိမ်းဆည်းရာတွင် အင်တာနက်စစ်ဆေးပါ';
+      }
+    }
+
+    function setAllAutoSystems(enableAll) {
+      ['auto-sw-pickup', 'auto-sw-delivery', 'auto-sw-buybox', 'auto-sw-duplicate', 'auto-sw-promo', 'auto-sw-quiet'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.checked = !!enableAll;
+      });
+      saveAutoSystemSwitches();
+    }
+
+    function pickBestPickupRiderLocal(order, riders, allPendingOrders) {
+      const eligible = riders.filter(r => r.duty !== 'Off' && (r.dutyRole === 'Pickup' || r.dutyRole === 'Both' || !r.dutyRole));
+      if (eligible.length === 0) return null;
+
+      const loadMap = {};
+      const shopsMap = {};
+      eligible.forEach(r => { loadMap[r.id] = 0; shopsMap[r.id] = {}; });
+
+      allPendingOrders.forEach(o => {
+        if (o.pickupRiderId && loadMap[o.pickupRiderId] !== undefined && o.pickupStatus !== 'ဆိုင်မှ ပစ္စည်းကောက်ပြီးပြီ') {
+          loadMap[o.pickupRiderId]++;
+          (o.shopIds || '').split(',').map(s => normalizeShopId(s)).filter(s => s !== 'OWN').forEach(sid => { shopsMap[o.pickupRiderId][sid] = true; });
+        }
+      });
+      autoCountdownQueue.filter(q => q.type === 'pickup').forEach(q => {
+        if (loadMap[q.riderId] !== undefined) {
+          loadMap[q.riderId]++;
+          (q.shopIds || []).forEach(sid => { shopsMap[q.riderId][sid] = true; });
+        }
+      });
+
+      const targetShops = (order.shopIds || '').split(',').map(s => normalizeShopId(s)).filter(s => s !== 'OWN');
+      const batched = eligible.filter(r => targetShops.some(sid => shopsMap[r.id][sid]));
+      const pool = batched.length > 0 ? batched : eligible;
+
+      pool.sort((a, b) => {
+        if (loadMap[a.id] !== loadMap[b.id]) return loadMap[a.id] - loadMap[b.id];
+        return (a.dutyRole === 'Pickup' ? 0 : 1) - (b.dutyRole === 'Pickup' ? 0 : 1);
+      });
+      return { rider: pool[0], batched: batched.length > 0, targetShops };
+    }
+
+    function checkAutoPickupQueue() {
+      if (APP_ROLE !== 'admin' || !adminDataCache || centralSettings.autoPickupEnabled === false) return;
+      const orders = adminDataCache.pendingOrders || [];
+      const riders = adminDataCache.riders || [];
+
+      orders.forEach(o => {
+        const hasPartner = o.shopIds && o.shopIds !== 'OWN';
+        const isPacked = !!(o.shopMeta && o.shopMeta.shopPacked);
+        const key = 'pu_' + o.orderId;
+        if (!hasPartner || !isPacked || o.pickupRiderId || autoSkippedKeys[key]) return;
+        if (autoCountdownQueue.some(q => q.key === key)) return;
+
+        const pick = pickBestPickupRiderLocal(o, riders, orders);
+        if (!pick) {
+          if (!autoAlertedErrorKeys[key]) {
+            autoAlertedErrorKeys[key] = true;
+            logAdminAutoEvent(true, `Auto Pickup မရပါ (${o.orderId})`, '🟢 အလုပ်ဆင်းနေသော Pickup ဝန်ထမ်း မရှိပါ — Admin ကိုယ်တိုင် ရွေးပေးပါ။', true);
+          }
+          return;
+        }
+
+        autoCountdownQueue.push({
+          key,
+          type: 'pickup',
+          orderId: o.orderId,
+          riderId: pick.rider.id,
+          riderName: pick.rider.name,
+          shopIds: pick.targetShops,
+          label: `📦 Auto Pickup (${o.orderId} • ${pick.targetShops.join(',')}) → ${pick.rider.id} (${pick.rider.name})${pick.batched ? ' [လမ်းကြောင်းတူ]' : ''}`,
+          secondsLeft: 10
+        });
+      });
+
+      startAutoCountdownTimerIfNeeded();
+      renderAutoCountdownBox();
+    }
+
+    function triggerAutoDeliveryBatch() {
+      if (!adminDataCache) return;
+      const orders = adminDataCache.pendingOrders || [];
+      const riders = (adminDataCache.riders || []).filter(r => r.duty !== 'Off' && (r.dutyRole === 'Delivery' || r.dutyRole === 'Both' || !r.dutyRole));
+
+      if (riders.length === 0) {
+        logAdminAutoEvent(true, 'Auto Delivery ခွဲမရပါ', '🟢 အလုပ်ဆင်းနေသော Delivery ဝန်ထမ်း မရှိပါ — ဝန်ထမ်းများ Tab တွင် စစ်ဆေးပါ။', true);
+        return;
+      }
+
+      const readyOrders = orders.filter(o => {
+        const hasPartner = o.shopIds && o.shopIds !== 'OWN';
+        const isPicked = !hasPartner || o.pickupStatus === 'ဆိုင်မှ ပစ္စည်းကောက်ပြီးပြီ';
+        return isPicked && !o.riderId && o.status !== 'ပို့ဆောင်နေပြီ' && o.status !== 'COD ငွေပေးချေပြီး' && !autoCountdownQueue.some(q => q.key === 'del_' + o.orderId);
+      });
+
+      if (readyOrders.length === 0) {
+        alert('✅ ပို့ရန်အသင့်ဖြစ်နေပြီး ဝန်ထမ်းမပေးရသေးသော အော်ဒါ မရှိပါ။');
+        return;
+      }
+
+      const loadMap = {};
+      riders.forEach(r => { loadMap[r.id] = 0; });
+      orders.forEach(o => { if (o.riderId && loadMap[o.riderId] !== undefined) loadMap[o.riderId]++; });
+
+      readyOrders.forEach(o => {
+        riders.sort((a, b) => {
+          if (loadMap[a.id] !== loadMap[b.id]) return loadMap[a.id] - loadMap[b.id];
+          return (a.dutyRole === 'Delivery' ? 0 : 1) - (b.dutyRole === 'Delivery' ? 0 : 1);
+        });
+        const chosen = riders[0];
+        loadMap[chosen.id]++;
+        autoCountdownQueue.push({
+          key: 'del_' + o.orderId,
+          type: 'delivery',
+          orderId: o.orderId,
+          riderId: chosen.id,
+          riderName: chosen.name,
+          label: `🚚 Auto Delivery (${o.orderId} • ${o.name}) → ${chosen.id} (${chosen.name})`,
+          secondsLeft: 10
+        });
+      });
+
+      startAutoCountdownTimerIfNeeded();
+      renderAutoCountdownBox();
+    }
+
+    function startAutoCountdownTimerIfNeeded() {
+      if (autoCountdownTimer || autoCountdownQueue.length === 0) return;
+      autoCountdownTimer = setInterval(() => {
+        if (autoCountdownQueue.length === 0) {
+          clearInterval(autoCountdownTimer);
+          autoCountdownTimer = null;
+          renderAutoCountdownBox();
+          return;
+        }
+        const due = [];
+        autoCountdownQueue.forEach(item => {
+          item.secondsLeft = Math.max(0, item.secondsLeft - 1);
+          if (item.secondsLeft === 0) due.push(item);
+        });
+        if (due.length > 0) {
+          autoCountdownQueue = autoCountdownQueue.filter(q => q.secondsLeft > 0);
+          due.forEach(item => executeAutoCountdownItem(item));
+        }
+        renderAutoCountdownBox();
+      }, 1000);
+    }
+
+    function cancelAutoCountdownItem(key) {
+      autoSkippedKeys[key] = true;
+      autoCountdownQueue = autoCountdownQueue.filter(q => q.key !== key);
+      logAdminAutoEvent(false, '✋ Admin မှ Auto တားလိုက်သည်', `(${key}) ကို Admin ကိုယ်တိုင်ရွေးရန် ရပ်လိုက်ပါသည်။`, false);
+      renderAutoCountdownBox();
+    }
+
+    function runAutoCountdownNow(key) {
+      const idx = autoCountdownQueue.findIndex(q => q.key === key);
+      if (idx === -1) return;
+      const [item] = autoCountdownQueue.splice(idx, 1);
+      renderAutoCountdownBox();
+      executeAutoCountdownItem(item);
+    }
+
+    async function executeAutoCountdownItem(item) {
+      try {
+        const actionName = item.type === 'pickup' ? 'assignPickupRider' : 'assignRider';
+        await fetch(APPS_SCRIPT_URL, {
+          method: 'POST', mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({
+            action: actionName,
+            orderId: item.orderId,
+            riderId: item.riderId,
+            riderName: item.riderName,
+            isAuto: true
+          })
+        });
+        logAdminAutoEvent(false, '✅ Auto တာဝန်ပေးပြီး', item.label, false);
+        setTimeout(() => loadAdminDashboard(true), 900);
+      } catch (err) {
+        logAdminAutoEvent(true, `Auto Error (${item.orderId})`, `${item.label} — အင်တာနက်/Server ချိတ်ဆက်မှု မအောင်မြင်ပါ။ Admin ကိုယ်တိုင် ရွေးပေးပါ။`, true);
+      }
+    }
+
+    function renderAutoCountdownBox() {
+      const box = document.getElementById('adm-auto-countdown-box');
+      if (!box) return;
+      if (autoCountdownQueue.length === 0) {
+        box.classList.add('hidden');
+        box.innerHTML = '';
+        return;
+      }
+      box.classList.remove('hidden');
+      box.innerHTML = `
+        <div class="flex justify-between items-center text-xs font-extrabold text-amber-300">
+          <span>🤖 Auto စနစ် လုပ်ဆောင်တော့မည် (${autoCountdownQueue.length} ခု) — ၁၀ စက္ကန့်အတွင်း တားနိုင်သည်</span>
+        </div>
+        <div class="space-y-1.5">
+          ${autoCountdownQueue.map(q => `
+            <div class="bg-slate-800 border border-amber-400/50 rounded-xl px-3 py-2 flex flex-wrap justify-between items-center gap-2 text-xs">
+              <div class="min-w-0 flex-1">
+                <p class="font-extrabold text-white truncate">${escapeHtml(q.label)}</p>
+                <p class="text-[11px] font-extrabold text-amber-300">⏳ ${q.secondsLeft} စက္ကန့်အတွင်း Auto ခိုင်းပါမည်...</p>
+              </div>
+              <div class="flex gap-1.5 shrink-0">
+                <button type="button" onclick="cancelAutoCountdownItem('${escapeHtml(q.key)}')" class="bg-red-600 hover:bg-red-700 text-white font-extrabold px-2.5 py-1.5 rounded-lg text-[11px]">✋ တားမည်</button>
+                <button type="button" onclick="runAutoCountdownNow('${escapeHtml(q.key)}')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-2.5 py-1.5 rounded-lg text-[11px]">⚡ ချက်ချင်းလုပ်</button>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
     }
 
     async function deleteRiderAdmin(riderId) {
