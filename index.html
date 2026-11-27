@@ -304,6 +304,17 @@
             <span id="pm-orig-price" class="hidden text-xs text-gray-400 line-through font-bold"></span>
           </div>
           <p id="pm-desc" class="text-xs text-gray-600 mt-1.5 leading-relaxed whitespace-pre-line"></p>
+          <div id="pm-video-wrap" class="hidden mt-2.5 space-y-2">
+            <button type="button" id="pm-video-toggle-btn" onclick="toggleModalYoutubeVideo()" class="w-full bg-red-600 hover:bg-red-700 text-white font-extrabold py-2 px-3 rounded-xl text-xs shadow-sm flex items-center justify-center gap-1.5">
+              <span>▶️</span><span>အသုံးပြုပုံ ဗီဒီယိုကြည့်မည် (YouTube)</span>
+            </button>
+            <div id="pm-video-player" class="hidden space-y-1.5">
+              <div class="relative w-full aspect-video rounded-xl overflow-hidden bg-black border border-gray-200 shadow-sm">
+                <iframe id="pm-video-iframe" src="" class="w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+              </div>
+              <a id="pm-video-ext-link" href="#" target="_blank" rel="noopener" class="block text-center text-[11px] font-bold text-red-600 underline">↗️ YouTube App ဖြင့် အပြည့်ကြည့်မည်</a>
+            </div>
+          </div>
         </div>
 
         <div>
@@ -2704,7 +2715,42 @@
       pushAppOverlayState('product_modal');
     }
 
+    function extractYoutubeInfo(text) {
+      const raw = (text || '').toString();
+      const urlRegex = /https?:\/\/(?:www\.|m\.)?(?:youtube\.com\/(?:watch\?[^\s]*v=|shorts\/|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})(?:[^\s]*)?/i;
+      const m = raw.match(urlRegex);
+      if (!m) return { cleanDesc: raw.trim(), videoId: '', url: '' };
+      const cleanDesc = raw.replace(m[0], '').replace(/\n{3,}/g, '\n\n').trim();
+      return { cleanDesc, videoId: m[1], url: m[0] };
+    }
+
+    let modalYoutubeId = '';
+
+    function stopModalYoutubeVideo() {
+      const player = document.getElementById('pm-video-player');
+      const iframe = document.getElementById('pm-video-iframe');
+      const btn = document.getElementById('pm-video-toggle-btn');
+      if (iframe) iframe.src = '';
+      if (player) player.classList.add('hidden');
+      if (btn) btn.innerHTML = '<span>▶️</span><span>အသုံးပြုပုံ ဗီဒီယိုကြည့်မည် (YouTube)</span>';
+    }
+
+    function toggleModalYoutubeVideo() {
+      const player = document.getElementById('pm-video-player');
+      const iframe = document.getElementById('pm-video-iframe');
+      const btn = document.getElementById('pm-video-toggle-btn');
+      if (!player || !iframe || !modalYoutubeId) return;
+      if (player.classList.contains('hidden')) {
+        iframe.src = `https://www.youtube.com/embed/${modalYoutubeId}?autoplay=1&rel=0`;
+        player.classList.remove('hidden');
+        if (btn) btn.innerHTML = '<span>🔽</span><span>ဗီဒီယို ပိတ်မည်</span>';
+      } else {
+        stopModalYoutubeVideo();
+      }
+    }
+
     function closeProductModal() {
+      stopModalYoutubeVideo();
       document.getElementById('product-modal').classList.add('hidden');
       if (typeof savedProductScrollY === 'number') {
         const targetY = savedProductScrollY;
@@ -2728,7 +2774,21 @@
       document.getElementById('pm-category').innerText = p.category;
       document.getElementById('pm-name').innerText = p.name;
       document.getElementById('pm-price').innerText = price.toLocaleString() + ' ကျပ်';
-      document.getElementById('pm-desc').innerText = p.desc || '';
+      const ytInfo = extractYoutubeInfo(p.desc || '');
+      document.getElementById('pm-desc').innerText = ytInfo.cleanDesc;
+      const vidWrap = document.getElementById('pm-video-wrap');
+      const extLink = document.getElementById('pm-video-ext-link');
+      if (modalYoutubeId !== ytInfo.videoId) stopModalYoutubeVideo();
+      modalYoutubeId = ytInfo.videoId;
+      if (vidWrap) {
+        if (ytInfo.videoId) {
+          vidWrap.classList.remove('hidden');
+          if (extLink) extLink.href = ytInfo.url;
+        } else {
+          vidWrap.classList.add('hidden');
+          stopModalYoutubeVideo();
+        }
+      }
 
       const origEl = document.getElementById('pm-orig-price');
       const saleBadge = document.getElementById('pm-sale-badge');
