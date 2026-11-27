@@ -6417,7 +6417,7 @@
     }
 
     function triggerAutoDeliveryBatch() {
-      if (!adminDataCache) return;
+      if (!adminDataCache || centralSettings.autoDeliveryEnabled === false) return;
       const orders = adminDataCache.pendingOrders || [];
       const riders = (adminDataCache.riders || []).filter(r => r.duty !== 'Off' && (r.dutyRole === 'Delivery' || r.dutyRole === 'Both' || !r.dutyRole));
 
@@ -6428,19 +6428,28 @@
 
       const readyOrders = orders.filter(o => {
         const hasPartner = o.shopIds && o.shopIds !== 'OWN';
-        const isPicked = !hasPartner || o.pickupStatus === 'ဆိုင်မှ ပစ္စည်းကောက်ပြီးပြီ';
+        const meta = o.shopMeta || {};
+        const isPicked = !hasPartner || o.pickupStatus === 'ဆိုင်မှ ပစ္စည်းကောက်ပြီးပြီ' || !!meta.adminPickupConfirmed;
+        const isCancelOrBlocked = !!meta.cancelRequested || !!meta.cancelConfirmed ||
+          o.status === 'ဝယ်သူ Cancel တောင်းဆိုထားသည်' || o.status === 'ပယ်ဖျက်ပြီး (Cancelled)' ||
+          o.status === 'COD ငြင်း (Return)' || o.status === 'ပို့ဆောင်နေပြီ' ||
+          o.status === 'COD ငွေပေးချေပြီး' || o.status === 'ပို့ပြီး';
+        const key = 'del_' + o.orderId;
         const sch = getOrder3DayScheduleInfo(o);
-        return isPicked && sch.canAutoDeliveryNow && !o.riderId && o.status !== 'ပို့ဆောင်နေပြီ' && o.status !== 'COD ငွေပေးချေပြီး' && !autoCountdownQueue.some(q => q.key === 'del_' + o.orderId);
+        return isPicked && sch.canAutoDeliveryNow && !isCancelOrBlocked && !o.riderId && !autoSkippedKeys[key] && !autoCountdownQueue.some(q => q.key === key);
       });
 
       if (readyOrders.length === 0) {
-        alert('✅ ယနေ့ (Day 3) ပို့ရမည့် အသင့်ဖြစ်ပြီးသား အော်ဒါ မရှိသေးပါ။ (Day 1 / Day 2 အော်ဒါများကို ၃ ရက်မြောက်နေ့မှ Auto ခွဲပေးပါမည်)');
+        alert('✅ ယနေ့ (Day 3) ပို့ရမည့် အသင့်ဖြစ်ပြီးသား အော်ဒါ မရှိသေးပါ။ (Day 1 / Day 2၊ Cancel နှင့် Auto ရပ်ထားသော အော်ဒါများ မပါဝင်ပါ)');
         return;
       }
 
       const loadMap = {};
       riders.forEach(r => { loadMap[r.id] = 0; });
       orders.forEach(o => { if (o.riderId && loadMap[o.riderId] !== undefined) loadMap[o.riderId]++; });
+      autoCountdownQueue.filter(q => q.type === 'delivery').forEach(q => {
+        if (loadMap[q.riderId] !== undefined) loadMap[q.riderId]++;
+      });
 
       readyOrders.forEach(o => {
         riders.sort((a, b) => {
