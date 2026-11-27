@@ -334,6 +334,11 @@
             🛍️ ခြင်းတောင်းထဲ ထည့်မည်
           </button>
         </div>
+
+        <div id="pm-related-section" class="hidden pt-3 border-t border-pink-100 space-y-2">
+          <p class="text-xs font-extrabold text-gray-800">✨ တွဲဖက်ဝယ်ယူနိုင်သော ပစ္စည်းများ</p>
+          <div id="pm-related-list" class="flex gap-2 overflow-x-auto no-scrollbar pb-1"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -2641,7 +2646,9 @@
 
         const stockBadge = isSoldOut
           ? `<span class="bg-gray-800/85 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full">❌ ကုန်ပြီ</span>`
-          : `<span class="bg-emerald-600/90 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full">✅ မှာယူနိုင်ပါသည်</span>`;
+          : (p.totalStock <= 3
+            ? `<span class="bg-orange-600/95 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full">🔥 လက်ကျန်နည်းနေပြီ</span>`
+            : `<span class="bg-emerald-600/90 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full">✅ မှာယူနိုင်ပါသည်</span>`);
 
         return `
           <div onclick="openProductModal(${p.id})" class="bg-white rounded-2xl shadow-sm border ${prInfo.isPromo ? 'border-rose-200' : 'border-pink-100'} overflow-hidden cursor-pointer hover:shadow-md transition flex flex-col">
@@ -2769,8 +2776,13 @@
         addBtn.innerText = '❌ ကုန်နေပါသည်';
         addBtn.className = 'flex-1 bg-gray-300 text-gray-600 font-extrabold py-3 rounded-xl text-sm cursor-not-allowed';
       } else {
-        activeStkEl.innerText = '✅ မှာယူနိုင်ပါသည်';
-        activeStkEl.className = 'text-xs font-extrabold text-emerald-600';
+        if (stk <= 3) {
+          activeStkEl.innerText = '🔥 လက်ကျန်နည်းနေပြီ';
+          activeStkEl.className = 'text-xs font-extrabold text-orange-600';
+        } else {
+          activeStkEl.innerText = '✅ မှာယူနိုင်ပါသည်';
+          activeStkEl.className = 'text-xs font-extrabold text-emerald-600';
+        }
         addBtn.disabled = false;
         addBtn.innerText = '🛍️ ခြင်းတောင်းထဲ ထည့်မည်';
         addBtn.className = 'flex-1 bg-pink-600 hover:bg-pink-700 text-white font-extrabold py-3 rounded-xl shadow text-sm';
@@ -2781,6 +2793,43 @@
       const maxAllowed = Math.max(1, stk - alreadyInCartCur);
       if (modalQty > maxAllowed) modalQty = maxAllowed;
       document.getElementById('pm-qty').innerText = modalQty;
+      renderModalRelatedProducts(p);
+    }
+
+    function renderModalRelatedProducts(currentProd) {
+      const sec = document.getElementById('pm-related-section');
+      const listEl = document.getElementById('pm-related-list');
+      if (!sec || !listEl || !currentProd) return;
+
+      const curKey = normalizeProdKey(currentProd.name);
+      const pool = getCustomerBuyBoxProducts(-1).filter(x => normalizeProdKey(x.name) !== curKey && x.totalStock > 0);
+      const sameCat = pool.filter(x => x.category === currentProd.category);
+      const otherCat = pool.filter(x => x.category !== currentProd.category);
+      const picked = [...sameCat, ...otherCat].slice(0, 4);
+
+      if (picked.length === 0) {
+        sec.classList.add('hidden');
+        listEl.innerHTML = '';
+        return;
+      }
+
+      sec.classList.remove('hidden');
+      listEl.innerHTML = picked.map(rp => {
+        const imgUrl = getSizedImageUrl((rp.colors[0] && rp.colors[0].image) ? rp.colors[0].image : './icon.png?v=3', 300);
+        const prInfo = getEffectivePricing(rp, -1);
+        const showPrice = prInfo.salePrice || rp.minPrice;
+        return `
+          <button type="button" onclick="openProductModal(${rp.id})" class="w-28 shrink-0 text-left bg-gray-50 hover:bg-pink-50 border border-pink-100 rounded-xl overflow-hidden transition">
+            <div class="w-full h-24 bg-white">
+              <img src="${escapeHtml(imgUrl)}" loading="lazy" alt="${escapeHtml(rp.name)}" class="w-full h-full object-contain p-1">
+            </div>
+            <div class="p-1.5">
+              <p class="text-[10px] font-extrabold text-gray-900 line-clamp-2 leading-tight">${escapeHtml(rp.name)}</p>
+              <p class="text-[11px] font-extrabold text-pink-600 mt-1">${showPrice.toLocaleString()} Ks</p>
+            </div>
+          </button>
+        `;
+      }).join('');
     }
 
     function getProductSizeStock(prodName, sizeLabel, shopId) {
