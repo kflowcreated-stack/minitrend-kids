@@ -5039,17 +5039,7 @@
         }
         return { payout: Number(p.payout || 0), cRate, pRate };
       };
-      const calcAdminShopPayout = (p) => {
-        const sInfo = shops.find(s => s.id === p.shopId);
-        const hasRate = sInfo && sInfo.commissionRate !== '' && sInfo.commissionRate !== null && sInfo.commissionRate !== undefined && !isNaN(Number(sInfo.commissionRate));
-        const cRate = hasRate ? Number(sInfo.commissionRate) : (p.commissionRate !== undefined && !isNaN(Number(p.commissionRate)) ? Number(p.commissionRate) : (Number(centralSettings.defaultCommissionRate) || 5));
-        const pRate = Math.max(0, 100 - cRate);
-        if (Number(p.gross || 0) > 0) {
-          const commAmt = Math.round(Number(p.gross) * (cRate / 100));
-          return { payout: Math.max(0, Number(p.gross) - commAmt), cRate, pRate };
-        }
-        return { payout: Number(p.payout || 0), cRate, pRate };
-      };
+      
       const unpaidSum = payouts.reduce((s, p) => s + calcAdminShopPayout(p).payout, 0);
 
       document.getElementById('adm-stat-orders').innerText = orders.length;
