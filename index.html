@@ -496,11 +496,11 @@
           <p id="adm-stat-own" class="text-base sm:text-lg font-extrabold text-emerald-700 mt-1">0 Ks</p>
         </div>
         <div class="bg-white border border-amber-200 rounded-2xl p-3 shadow-sm">
-          <p class="text-[11px] font-bold text-gray-500">✨ ယနေ့ 5% ကော်မရှင်</p>
+          <p class="text-[11px] font-bold text-gray-500">✨ ယနေ့ ကော်မရှင်</p>
           <p id="adm-stat-comm" class="text-base sm:text-lg font-extrabold text-amber-600 mt-1">0 Ks</p>
         </div>
         <div class="bg-white border border-orange-200 rounded-2xl p-3 shadow-sm">
-          <p class="text-[11px] font-bold text-gray-500">💸 ဆိုင်ရှင်းရန် (95%)</p>
+          <p class="text-[11px] font-bold text-gray-500">💸 ဆိုင်ရှင်းရန်</p>
           <p id="adm-stat-payout" class="text-base sm:text-lg font-extrabold text-orange-600 mt-1">0 Ks</p>
         </div>
         <div class="bg-white border border-blue-200 rounded-2xl p-3 shadow-sm">
@@ -514,7 +514,7 @@
         <button type="button" id="adm-tab-orders" onclick="switchAdminTab('orders')" class="px-3 py-2 rounded-xl text-xs font-extrabold bg-pink-600 text-white shrink-0">📦 အော်ဒါ (<span id="adm-badge-orders">0</span>)</button>
         <button type="button" id="adm-tab-restocks" onclick="switchAdminTab('restocks')" class="px-3 py-2 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 shrink-0">📥 Stock ထပ်တိုး (<span id="adm-badge-restocks">0</span>)</button>
         <button type="button" id="adm-tab-returns" onclick="switchAdminTab('returns')" class="px-3 py-2 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 shrink-0">🔄 Return (<span id="adm-badge-returns">0</span>)</button>
-        <button type="button" id="adm-tab-payouts" onclick="switchAdminTab('payouts')" class="px-3 py-2 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 shrink-0">💰 95% ရှင်း (<span id="adm-badge-payouts">0</span>)</button>
+        <button type="button" id="adm-tab-payouts" onclick="switchAdminTab('payouts')" class="px-3 py-2 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 shrink-0">💰 ဆိုင်ငွေရှင်း (<span id="adm-badge-payouts">0</span>)</button>
         <button type="button" id="adm-tab-sales" onclick="switchAdminTab('sales')" class="px-3 py-2 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 shrink-0">📈 အရောင်းစာရင်း (<span id="adm-badge-sales">0</span>)</button>
         <button type="button" id="adm-tab-stock" onclick="switchAdminTab('stock')" class="px-3 py-2 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 shrink-0">📊 Stock / OWN</button>
         <button type="button" id="adm-tab-banners" onclick="switchAdminTab('banners')" class="px-3 py-2 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 shrink-0">🖼️ Banner ကြော်ငြာ</button>
@@ -561,7 +561,7 @@
       <div id="adm-panel-payouts" class="hidden space-y-3.5">
         <div class="grid grid-cols-2 gap-2 bg-white p-1.5 rounded-2xl border border-emerald-200 shadow-sm">
           <button type="button" id="pay-sub-unpaid" onclick="switchPayoutSubTab('unpaid')" class="py-2.5 px-3 rounded-xl text-xs font-extrabold bg-emerald-600 text-white shadow-sm transition">
-            ⏳ ရှင်းရန်ကျန် (95%) <span id="pay-badge-unpaid" class="ml-1 bg-white/25 px-1.5 py-0.5 rounded-full text-[10px]">0</span>
+            ⏳ ရှင်းရန်ကျန် (ဆိုင်) <span id="pay-badge-unpaid" class="ml-1 bg-white/25 px-1.5 py-0.5 rounded-full text-[10px]">0</span>
           </button>
           <button type="button" id="pay-sub-history" onclick="switchPayoutSubTab('history')" class="py-2.5 px-3 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 transition">
             ✅ ငွေရှင်းပြီး History (၇ ရက်) <span id="pay-badge-history" class="ml-1 bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded-full text-[10px]">0</span>
@@ -570,7 +570,7 @@
 
         <div id="adm-payouts-unpaid-wrap" class="space-y-3">
           <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-xs font-bold text-emerald-900">
-            💰 COD Confirm ပြီးစီးထားသော အော်ဒါများအတွက် ဆိုင်အလိုက် ရှင်းပေးရမည့် (95%) ငွေစာရင်းဖြစ်ပါသည်။ ငွေလွှဲပြီးပါက <b>"💸 ရှင်းပြီး"</b> ကို နှိပ်ပါ။
+            💰 COD Confirm ပြီးစီးထားသော အော်ဒါများအတွက် ဆိုင်အလိုက် ရှင်းပေးရမည့် ဆိုင်ငွေစာရင်းဖြစ်ပါသည်။ ငွေလွှဲပြီးပါက <b>"💸 ရှင်းပြီး"</b> ကို နှိပ်ပါ။
           </div>
           <div id="adm-payouts-list" class="space-y-3.5"></div>
         </div>
@@ -601,11 +601,11 @@
             <p id="sales-15-own" class="text-base sm:text-lg font-extrabold text-blue-700 mt-0.5">0 Ks</p>
           </div>
           <div class="bg-white border border-emerald-200 rounded-2xl p-3 shadow-sm">
-            <p class="text-[11px] font-bold text-gray-500">🏪 ဆိုင်သို့ပေးငွေ (95%)</p>
+            <p id="sales-15-payout-label" class="text-[11px] font-bold text-gray-500">🏪 ဆိုင်သို့ပေးငွေ</p>
             <p id="sales-15-payout" class="text-base sm:text-lg font-extrabold text-emerald-700 mt-0.5">0 Ks</p>
           </div>
           <div class="bg-white border border-amber-200 rounded-2xl p-3 shadow-sm">
-            <p class="text-[11px] font-bold text-gray-500">✨ ကော်မရှင် (5%)</p>
+            <p id="sales-15-comm-label" class="text-[11px] font-bold text-gray-500">✨ ကော်မရှင်</p>
             <p id="sales-15-comm" class="text-base sm:text-lg font-extrabold text-amber-600 mt-0.5">0 Ks</p>
           </div>
         </div>
@@ -622,22 +622,23 @@
           <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse text-xs">
               <thead>
-             <tr class="bg-pink-50 border-b border-pink-200 text-gray-800 font-extrabold whitespace-nowrap">
-               <th class="py-2.5 px-3">Order ID</th>
-               <th class="py-2.5 px-3">Product (ပစ္စည်းအမည်)</th>
-               <th class="py-2.5 px-2 text-center">Qty</th>
-               <th class="py-2.5 px-3 text-right">Per (တစ်ခုဈေး)</th>
-               <th class="py-2.5 px-3 text-right">Amount</th>
-               <th class="py-2.5 px-3 text-right">Delivery</th>
-               <th class="py-2.5 px-3 text-right">Total Amount</th>
-               <th class="py-2.5 px-3 text-center">Own / Shop</th>
-               <th class="py-2.5 px-3 text-right">ဆိုင်သို့ပေးငွေ</th>
-               <th class="py-2.5 px-3 text-right">ဆိုင်မှ ၅% ရငွေ</th>
-             </tr>
-           </thead>
-           <tbody id="adm-sales-tbody" class="divide-y divide-gray-100">
-             <tr><td colspan="10" class="py-8 text-center text-gray-400">⏳ အရောင်းစာရင်း ရယူနေပါသည်...</td></tr>
-           </tbody>
+                <tr class="bg-pink-50 border-b border-pink-200 text-gray-800 font-extrabold whitespace-nowrap">
+                  <th class="py-2.5 px-3">Order ID</th>
+                  <th class="py-2.5 px-3">Product (ပစ္စည်းအမည်)</th>
+                  <th class="py-2.5 px-2 text-center">Qty</th>
+                  <th class="py-2.5 px-3 text-right">Per (တစ်ခုဈေး)</th>
+                  <th class="py-2.5 px-3 text-right">Amount</th>
+                  <th class="py-2.5 px-3 text-right">Delivery</th>
+                  <th class="py-2.5 px-3 text-right">Total Amount</th>
+                  <th class="py-2.5 px-3 text-center">Own / Shop</th>
+                  <th class="py-2.5 px-3 text-right">ဆိုင်သို့ပေးငွေ</th>
+                  <th id="sales-comm-th" class="py-2.5 px-3 text-right">ဆိုင်မှ ကော်မရှင်</th>
+                  <th class="py-2.5 px-3 text-right">MiniApp ရငွေ</th>
+                </tr>
+              </thead>
+              <tbody id="adm-sales-tbody" class="divide-y divide-gray-100">
+                <tr><td colspan="11" class="py-8 text-center text-gray-400">⏳ အရောင်းစာရင်း ရယူနေပါသည်...</td></tr>
+              </tbody>
             </table>
           </div>
         </div>
@@ -4803,8 +4804,19 @@
       const shopsMap = {};
       (adminDataCache.shops || []).forEach(s => { shopsMap[s.id] = s; });
 
+      const getShopRate = (sid, fallbackRate) => {
+        const sh = shopsMap[sid];
+        if (sh && sh.commissionRate !== undefined && sh.commissionRate !== null && sh.commissionRate !== '' && !isNaN(Number(sh.commissionRate))) {
+          return Number(sh.commissionRate);
+        }
+        if (fallbackRate !== undefined && !isNaN(Number(fallbackRate))) return Number(fallbackRate);
+        const defR = Number(centralSettings.defaultCommissionRate);
+        return !isNaN(defR) ? defR : 5;
+      };
+
       let sumTotal = 0, sumOwn = 0, sumPayout = 0, sumComm = 0;
-      const rowsHtml = [];
+      const dateOrder = [];
+      const dateGroups = {};
 
       list.forEach(ord => {
         const items = Array.isArray(ord.items) && ord.items.length > 0 ? ord.items : [];
@@ -4812,7 +4824,6 @@
         const rateByShop = {};
         settlePayouts.forEach(sp => { rateByShop[sp.shopId] = Number(sp.commissionRate); });
 
-        // အော်ဒါတစ်ခုချင်းစီ၏ Delivery ခကို ယူခြင်း (တစ်အော်ဒါလျှင် ၁ ကြိမ်သာ ပေါင်းရန်)
         const itemsSubtotal = items.reduce((s, x) => s + (Number(x.price || 0) * Number(x.qty || 1)), 0);
         let orderDeliveryFee = 0;
         if (ord.delivery !== undefined && ord.delivery !== null && ord.delivery !== '') {
@@ -4827,7 +4838,8 @@
           orderDeliveryFee = DELIVERY_FEE_FLAT;
         }
 
-        let ownDeliveryApplied = false;
+        const dateKey = ((ord.dateTime || '').toString().trim().split(' ')[0]) || 'ရက်စွဲမရှိ';
+        let orderDeliveryApplied = false;
 
         items.forEach(it => {
           const sid = normalizeShopId(it.shopId);
@@ -4838,19 +4850,21 @@
           const qty = Number(it.qty || 1);
           const per = Number(it.price || 0);
           const amt = per * qty;
-          let deli = 0, totalAmt = amt, payout = 0, comm = 0;
+          const deli = !orderDeliveryApplied ? orderDeliveryFee : 0;
+          orderDeliveryApplied = true;
+          const totalAmt = amt + deli;
+
+          let payout = 0, comm = 0, rate = 0, payoutPct = 100, miniAppIncome = 0;
 
           if (sid === 'OWN') {
-            if (!ownDeliveryApplied) {
-              deli = orderDeliveryFee;
-              ownDeliveryApplied = true;
-            }
-            totalAmt = amt + deli;
+            miniAppIncome = totalAmt;
             sumOwn += totalAmt;
           } else {
-            const rate = !isNaN(rateByShop[sid]) ? rateByShop[sid] : (shopsMap[sid] ? Number(shopsMap[sid].commissionRate) : 5);
+            rate = getShopRate(sid, rateByShop[sid]);
+            payoutPct = Math.max(0, 100 - rate);
             comm = Math.round(amt * (rate / 100));
             payout = Math.max(0, amt - comm);
+            miniAppIncome = comm + deli;
             sumPayout += payout;
             sumComm += comm;
           }
@@ -4860,11 +4874,25 @@
             ? `<span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full text-[10px] font-extrabold">🏠 OWN</span>`
             : `<span class="bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full text-[10px] font-extrabold">🏪 ${escapeHtml(sid)}</span>`;
 
-          rowsHtml.push(`
+          if (!dateGroups[dateKey]) {
+            dateOrder.push(dateKey);
+            dateGroups[dateKey] = { count: 0, qty: 0, amt: 0, deli: 0, total: 0, payout: 0, comm: 0, miniApp: 0, rows: [] };
+          }
+          const grp = dateGroups[dateKey];
+          grp.count += 1;
+          grp.qty += qty;
+          grp.amt += amt;
+          grp.deli += deli;
+          grp.total += totalAmt;
+          grp.payout += payout;
+          grp.comm += comm;
+          grp.miniApp += miniAppIncome;
+
+          grp.rows.push(`
             <tr class="hover:bg-pink-50/40">
               <td class="py-2.5 px-3 whitespace-nowrap">
                 <p class="font-extrabold text-gray-900">${escapeHtml(ord.orderId)}</p>
-                <p class="text-[10px] text-gray-400">${escapeHtml((ord.dateTime || '').split(' ')[0] || '')}</p>
+                <p class="text-[10px] text-gray-400">${escapeHtml(dateKey)}</p>
               </td>
               <td class="py-2.5 px-3 min-w-[160px]">
                 <p class="font-bold text-gray-900">${escapeHtml(pName)}</p>
@@ -4876,8 +4904,9 @@
               <td class="py-2.5 px-3 text-right font-bold ${deli > 0 ? 'text-blue-700' : 'text-gray-400'} whitespace-nowrap">${deli > 0 ? deli.toLocaleString() + ' Ks' : '-'}</td>
               <td class="py-2.5 px-3 text-right font-extrabold text-pink-600 whitespace-nowrap">${totalAmt.toLocaleString()} Ks</td>
               <td class="py-2.5 px-3 text-center whitespace-nowrap">${shopBadge}</td>
-              <td class="py-2.5 px-3 text-right font-extrabold ${sid === 'OWN' ? 'text-gray-400' : 'text-emerald-700'} whitespace-nowrap">${sid === 'OWN' ? '-' : payout.toLocaleString() + ' Ks'}</td>
-              <td class="py-2.5 px-3 text-right font-extrabold ${sid === 'OWN' ? 'text-gray-400' : 'text-amber-600'} whitespace-nowrap">${sid === 'OWN' ? '-' : comm.toLocaleString() + ' Ks'}</td>
+              <td class="py-2.5 px-3 text-right font-extrabold ${sid === 'OWN' ? 'text-gray-400' : 'text-emerald-700'} whitespace-nowrap">${sid === 'OWN' ? '-' : payout.toLocaleString() + ' Ks <span class="text-[10px] font-bold text-gray-400">(' + payoutPct + '%)</span>'}</td>
+              <td class="py-2.5 px-3 text-right font-extrabold ${sid === 'OWN' ? 'text-gray-400' : 'text-amber-600'} whitespace-nowrap">${sid === 'OWN' ? '-' : comm.toLocaleString() + ' Ks <span class="text-[10px] font-bold text-gray-400">(' + rate + '%)</span>'}</td>
+              <td class="py-2.5 px-3 text-right font-extrabold text-purple-700 whitespace-nowrap">${miniAppIncome.toLocaleString()} Ks</td>
             </tr>
           `);
         });
@@ -4888,9 +4917,45 @@
       document.getElementById('sales-15-payout').innerText = sumPayout.toLocaleString() + ' Ks';
       document.getElementById('sales-15-comm').innerText = sumComm.toLocaleString() + ' Ks';
 
-      tbody.innerHTML = rowsHtml.length > 0
-        ? rowsHtml.join('')
-        : `<tr><td colspan="10" class="py-8 text-center text-gray-400">လွန်ခဲ့သော ၁၅ ရက်အတွင်း ပို့ပြီးသား အရောင်းစာရင်း မရှိသေးပါ။</td></tr>`;
+      const pLbl = document.getElementById('sales-15-payout-label');
+      const cLbl = document.getElementById('sales-15-comm-label');
+      const cTh = document.getElementById('sales-comm-th');
+      if (shopF !== 'ALL' && shopF !== 'OWN' && shopsMap[shopF]) {
+        const sr = getShopRate(shopF, 5);
+        const sp = Math.max(0, 100 - sr);
+        if (pLbl) pLbl.innerText = `🏪 ဆိုင်သို့ပေးငွေ (${sp}%)`;
+        if (cLbl) cLbl.innerText = `✨ ကော်မရှင် (${sr}%)`;
+        if (cTh) cTh.innerText = `ဆိုင်မှ ${sr}% ရငွေ`;
+      } else {
+        if (pLbl) pLbl.innerText = '🏪 ဆိုင်သို့ပေးငွေ';
+        if (cLbl) cLbl.innerText = '✨ ကော်မရှင်';
+        if (cTh) cTh.innerText = 'ဆိုင်မှ ကော်မရှင်';
+      }
+
+      const finalRowsHtml = [];
+      dateOrder.forEach(dk => {
+        const g = dateGroups[dk];
+        finalRowsHtml.push(...g.rows);
+        finalRowsHtml.push(`
+          <tr class="bg-pink-50/90 border-t-2 border-b-2 border-pink-200 font-extrabold text-gray-900">
+            <td class="py-2.5 px-3 whitespace-nowrap text-pink-800">📅 ${escapeHtml(dk)} ပေါင်း</td>
+            <td class="py-2.5 px-3 text-[11px] text-gray-600">(${g.count} ကြောင်း)</td>
+            <td class="py-2.5 px-2 text-center">${g.qty}</td>
+            <td class="py-2.5 px-3 text-right text-gray-400">-</td>
+            <td class="py-2.5 px-3 text-right whitespace-nowrap">${g.amt.toLocaleString()} Ks</td>
+            <td class="py-2.5 px-3 text-right text-blue-700 whitespace-nowrap">${g.deli > 0 ? g.deli.toLocaleString() + ' Ks' : '-'}</td>
+            <td class="py-2.5 px-3 text-right text-pink-700 whitespace-nowrap">${g.total.toLocaleString()} Ks</td>
+            <td class="py-2.5 px-3 text-center text-gray-400">-</td>
+            <td class="py-2.5 px-3 text-right text-emerald-700 whitespace-nowrap">${g.payout > 0 ? g.payout.toLocaleString() + ' Ks' : '-'}</td>
+            <td class="py-2.5 px-3 text-right text-amber-700 whitespace-nowrap">${g.comm > 0 ? g.comm.toLocaleString() + ' Ks' : '-'}</td>
+            <td class="py-2.5 px-3 text-right text-purple-800 whitespace-nowrap">${g.miniApp.toLocaleString()} Ks</td>
+          </tr>
+        `);
+      });
+
+      tbody.innerHTML = finalRowsHtml.length > 0
+        ? finalRowsHtml.join('')
+        : `<tr><td colspan="11" class="py-8 text-center text-gray-400">လွန်ခဲ့သော ၁၅ ရက်အတွင်း ပို့ပြီးသား အရောင်းစာရင်း မရှိသေးပါ။</td></tr>`;
     }
 
     function renderAdminPayoutHistory() {
@@ -4963,7 +5028,29 @@
       }
 
       const openReturnsCount = returns.filter(r => !r.returnInfo || r.returnInfo.status !== 'closed').length;
-      const unpaidSum = payouts.reduce((s, p) => s + Number(p.payout || 0), 0);
+      const calcAdminShopPayout = (p) => {
+        const sInfo = shops.find(s => s.id === p.shopId);
+        const hasRate = sInfo && sInfo.commissionRate !== '' && sInfo.commissionRate !== null && sInfo.commissionRate !== undefined && !isNaN(Number(sInfo.commissionRate));
+        const cRate = hasRate ? Number(sInfo.commissionRate) : (p.commissionRate !== undefined && !isNaN(Number(p.commissionRate)) ? Number(p.commissionRate) : (Number(centralSettings.defaultCommissionRate) || 5));
+        const pRate = Math.max(0, 100 - cRate);
+        if (Number(p.gross || 0) > 0) {
+          const commAmt = Math.round(Number(p.gross) * (cRate / 100));
+          return { payout: Math.max(0, Number(p.gross) - commAmt), cRate, pRate };
+        }
+        return { payout: Number(p.payout || 0), cRate, pRate };
+      };
+      const calcAdminShopPayout = (p) => {
+        const sInfo = shops.find(s => s.id === p.shopId);
+        const hasRate = sInfo && sInfo.commissionRate !== '' && sInfo.commissionRate !== null && sInfo.commissionRate !== undefined && !isNaN(Number(sInfo.commissionRate));
+        const cRate = hasRate ? Number(sInfo.commissionRate) : (p.commissionRate !== undefined && !isNaN(Number(p.commissionRate)) ? Number(p.commissionRate) : (Number(centralSettings.defaultCommissionRate) || 5));
+        const pRate = Math.max(0, 100 - cRate);
+        if (Number(p.gross || 0) > 0) {
+          const commAmt = Math.round(Number(p.gross) * (cRate / 100));
+          return { payout: Math.max(0, Number(p.gross) - commAmt), cRate, pRate };
+        }
+        return { payout: Number(p.payout || 0), cRate, pRate };
+      };
+      const unpaidSum = payouts.reduce((s, p) => s + calcAdminShopPayout(p).payout, 0);
 
       document.getElementById('adm-stat-orders').innerText = orders.length;
       document.getElementById('adm-stat-returns').innerText = openReturnsCount;
@@ -5250,19 +5337,20 @@
 
       const payEl = document.getElementById('adm-payouts-list');
       if (payouts.length === 0) {
-        payEl.innerHTML = `<div class="bg-white rounded-2xl border p-8 text-center text-xs text-gray-400">✅ ရှင်းပေးရန်ကျန်သော 95% ဆိုင်ငွေစာရင်း မရှိသေးပါ</div>`;
+        payEl.innerHTML = `<div class="bg-white rounded-2xl border p-8 text-center text-xs text-gray-400">✅ ရှင်းပေးရန်ကျန်သော ဆိုင်ငွေစာရင်း မရှိသေးပါ</div>`;
       } else {
         const grouped = {};
         payouts.forEach(p => {
-          if (!grouped[p.shopId]) grouped[p.shopId] = { shopId: p.shopId, shopName: p.shopName, paymentAccount: p.paymentAccount, totalPayout: 0, list: [] };
-          grouped[p.shopId].totalPayout += Number(p.payout || 0);
-          grouped[p.shopId].list.push(p);
+          const live = calcAdminShopPayout(p);
+          if (!grouped[p.shopId]) grouped[p.shopId] = { shopId: p.shopId, shopName: p.shopName, paymentAccount: p.paymentAccount, cRate: live.cRate, pRate: live.pRate, totalPayout: 0, list: [] };
+          grouped[p.shopId].totalPayout += live.payout;
+          grouped[p.shopId].list.push({ ...p, livePayout: live.payout });
         });
         payEl.innerHTML = Object.values(grouped).map(g => `
           <div class="bg-white rounded-2xl border-2 border-emerald-200 overflow-hidden shadow-sm">
             <div class="bg-emerald-700 text-white p-3 flex flex-wrap justify-between items-center gap-2">
               <div>
-                <h4 class="font-extrabold text-sm">🏪 ${escapeHtml(g.shopId)} — ${escapeHtml(g.shopName)}</h4>
+                <h4 class="font-extrabold text-sm">🏪 ${escapeHtml(g.shopId)} — ${escapeHtml(g.shopName)} <span class="bg-white/20 text-[10px] font-extrabold px-2 py-0.5 rounded-full ml-1">ကော်မရှင် ${g.cRate}% • ဆိုင်ရငွေ ${g.pRate}%</span></h4>
                 <p class="text-[11px] text-emerald-100 font-bold">💳 ${escapeHtml(g.paymentAccount || 'မထည့်ရသေး')} ${g.paymentAccount ? `<button type="button" onclick="copyTextToClipboard('${escapeHtml(g.paymentAccount)}', '💳 Copy ပြီး!')" class="ml-1 bg-white/20 px-2 py-0.5 rounded text-[10px]">📋 Copy</button>` : ''}</p>
               </div>
               <p class="text-base font-extrabold">${g.totalPayout.toLocaleString()} Ks</p>
@@ -5275,7 +5363,7 @@
                     <p class="text-[11px] text-gray-500">${escapeHtml(item.deliveredAt)}</p>
                   </div>
                   <div class="flex items-center gap-2">
-                    <span class="font-extrabold text-emerald-700">${Number(item.payout).toLocaleString()} Ks</span>
+                    <span class="font-extrabold text-emerald-700">${Number(item.livePayout).toLocaleString()} Ks</span>
                     <button type="button" onclick="adminSettleShopOrder('${item.orderId}', '${item.shopId}', this)" class="bg-emerald-600 text-white font-extrabold px-3 py-1 rounded-xl text-[11px]">💸 ရှင်းပြီး</button>
                   </div>
                 </div>
@@ -5513,7 +5601,11 @@
     }
 
     async function adminSettleShopOrder(orderId, shopId, btnEl) {
-      if (!confirm(`အော်ဒါ #${orderId} အတွက် ဆိုင် (${shopId}) သို့ 95% ရှင်းပြီးကြောင်း မှတ်တမ်းတင်ပါမည်လား?`)) return;
+      const sInfo = (adminDataCache?.shops || []).find(s => s.id === shopId);
+      const hasRate = sInfo && sInfo.commissionRate !== '' && sInfo.commissionRate !== null && sInfo.commissionRate !== undefined && !isNaN(Number(sInfo.commissionRate));
+      const cRate = hasRate ? Number(sInfo.commissionRate) : (Number(centralSettings.defaultCommissionRate) || 5);
+      const pRate = Math.max(0, 100 - cRate);
+      if (!confirm(`အော်ဒါ #${orderId} အတွက် ဆိုင် (${shopId}) သို့ ${pRate}% ရှင်းပြီးကြောင်း မှတ်တမ်းတင်ပါမည်လား?`)) return;
       if (btnEl) { btnEl.disabled = true; btnEl.innerText = '⏳...'; }
       await fetch(APPS_SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'markShopOrderSettled', orderId, shopId }) });
       setTimeout(() => loadAdminDashboard(false), 900);
