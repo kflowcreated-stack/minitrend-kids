@@ -622,19 +622,22 @@
           <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse text-xs">
               <thead>
-                <tr class="bg-pink-50 border-b border-pink-200 text-gray-800 font-extrabold whitespace-nowrap">
-                  <th class="py-2.5 px-3">Order ID</th>
-                  <th class="py-2.5 px-3">Product (ပစ္စည်းအမည်)</th>
-                  <th class="py-2.5 px-2 text-center">Qty</th>
-                  <th class="py-2.5 px-3 text-right">Per (တစ်ခုဈေး)</th>
-                  <th class="py-2.5 px-3 text-right">Amount (စုစုပေါင်း)</th>
-                  <th class="py-2.5 px-3 text-center">Shop / OWN</th>
-                  <th class="py-2.5 px-3 text-right">ဆိုင်သို့ပေးငွေ</th>
-                </tr>
-              </thead>
-              <tbody id="adm-sales-tbody" class="divide-y divide-gray-100">
-                <tr><td colspan="7" class="py-8 text-center text-gray-400">⏳ အရောင်းစာရင်း ရယူနေပါသည်...</td></tr>
-              </tbody>
+             <tr class="bg-pink-50 border-b border-pink-200 text-gray-800 font-extrabold whitespace-nowrap">
+               <th class="py-2.5 px-3">Order ID</th>
+               <th class="py-2.5 px-3">Product (ပစ္စည်းအမည်)</th>
+               <th class="py-2.5 px-2 text-center">Qty</th>
+               <th class="py-2.5 px-3 text-right">Per (တစ်ခုဈေး)</th>
+               <th class="py-2.5 px-3 text-right">Amount</th>
+               <th class="py-2.5 px-3 text-right">Delivery</th>
+               <th class="py-2.5 px-3 text-right">Total Amount</th>
+               <th class="py-2.5 px-3 text-center">Own / Shop</th>
+               <th class="py-2.5 px-3 text-right">ဆိုင်သို့ပေးငွေ</th>
+               <th class="py-2.5 px-3 text-right">ဆိုင်မှ ၅% ရငွေ</th>
+             </tr>
+           </thead>
+           <tbody id="adm-sales-tbody" class="divide-y divide-gray-100">
+             <tr><td colspan="10" class="py-8 text-center text-gray-400">⏳ အရောင်းစာရင်း ရယူနေပါသည်...</td></tr>
+           </tbody>
             </table>
           </div>
         </div>
@@ -4809,6 +4812,23 @@
         const rateByShop = {};
         settlePayouts.forEach(sp => { rateByShop[sp.shopId] = Number(sp.commissionRate); });
 
+        // အော်ဒါတစ်ခုချင်းစီ၏ Delivery ခကို ယူခြင်း (တစ်အော်ဒါလျှင် ၁ ကြိမ်သာ ပေါင်းရန်)
+        const itemsSubtotal = items.reduce((s, x) => s + (Number(x.price || 0) * Number(x.qty || 1)), 0);
+        let orderDeliveryFee = 0;
+        if (ord.delivery !== undefined && ord.delivery !== null && ord.delivery !== '') {
+          orderDeliveryFee = Number(ord.delivery) || 0;
+        } else if (ord.deliveryFee !== undefined && ord.deliveryFee !== null && ord.deliveryFee !== '') {
+          orderDeliveryFee = Number(ord.deliveryFee) || 0;
+        } else if (Number(ord.grandTotal || 0) > 0 && Number(ord.subtotal || 0) > 0) {
+          orderDeliveryFee = Math.max(0, Number(ord.grandTotal) - Number(ord.subtotal));
+        } else if (Number(ord.grandTotal || 0) > 0) {
+          orderDeliveryFee = Math.max(0, Number(ord.grandTotal) - itemsSubtotal);
+        } else {
+          orderDeliveryFee = DELIVERY_FEE_FLAT;
+        }
+
+        let ownDeliveryApplied = false;
+
         items.forEach(it => {
           const sid = normalizeShopId(it.shopId);
           if (shopF !== 'ALL' && sid !== shopF) return;
@@ -4818,10 +4838,15 @@
           const qty = Number(it.qty || 1);
           const per = Number(it.price || 0);
           const amt = per * qty;
-          let payout = 0, comm = 0;
+          let deli = 0, totalAmt = amt, payout = 0, comm = 0;
 
           if (sid === 'OWN') {
-            sumOwn += amt;
+            if (!ownDeliveryApplied) {
+              deli = orderDeliveryFee;
+              ownDeliveryApplied = true;
+            }
+            totalAmt = amt + deli;
+            sumOwn += totalAmt;
           } else {
             const rate = !isNaN(rateByShop[sid]) ? rateByShop[sid] : (shopsMap[sid] ? Number(shopsMap[sid].commissionRate) : 5);
             comm = Math.round(amt * (rate / 100));
@@ -4829,7 +4854,7 @@
             sumPayout += payout;
             sumComm += comm;
           }
-          sumTotal += amt;
+          sumTotal += totalAmt;
 
           const shopBadge = sid === 'OWN'
             ? `<span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full text-[10px] font-extrabold">🏠 OWN</span>`
@@ -4847,9 +4872,12 @@
               </td>
               <td class="py-2.5 px-2 text-center font-extrabold text-gray-900">${qty}</td>
               <td class="py-2.5 px-3 text-right font-bold text-gray-700 whitespace-nowrap">${per.toLocaleString()} Ks</td>
-              <td class="py-2.5 px-3 text-right font-extrabold text-pink-600 whitespace-nowrap">${amt.toLocaleString()} Ks</td>
+              <td class="py-2.5 px-3 text-right font-bold text-gray-800 whitespace-nowrap">${amt.toLocaleString()} Ks</td>
+              <td class="py-2.5 px-3 text-right font-bold ${deli > 0 ? 'text-blue-700' : 'text-gray-400'} whitespace-nowrap">${deli > 0 ? deli.toLocaleString() + ' Ks' : '-'}</td>
+              <td class="py-2.5 px-3 text-right font-extrabold text-pink-600 whitespace-nowrap">${totalAmt.toLocaleString()} Ks</td>
               <td class="py-2.5 px-3 text-center whitespace-nowrap">${shopBadge}</td>
               <td class="py-2.5 px-3 text-right font-extrabold ${sid === 'OWN' ? 'text-gray-400' : 'text-emerald-700'} whitespace-nowrap">${sid === 'OWN' ? '-' : payout.toLocaleString() + ' Ks'}</td>
+              <td class="py-2.5 px-3 text-right font-extrabold ${sid === 'OWN' ? 'text-gray-400' : 'text-amber-600'} whitespace-nowrap">${sid === 'OWN' ? '-' : comm.toLocaleString() + ' Ks'}</td>
             </tr>
           `);
         });
@@ -4862,7 +4890,7 @@
 
       tbody.innerHTML = rowsHtml.length > 0
         ? rowsHtml.join('')
-        : `<tr><td colspan="7" class="py-8 text-center text-gray-400">လွန်ခဲ့သော ၁၅ ရက်အတွင်း ပို့ပြီးသား အရောင်းစာရင်း မရှိသေးပါ။</td></tr>`;
+        : `<tr><td colspan="10" class="py-8 text-center text-gray-400">လွန်ခဲ့သော ၁၅ ရက်အတွင်း ပို့ပြီးသား အရောင်းစာရင်း မရှိသေးပါ။</td></tr>`;
     }
 
     function renderAdminPayoutHistory() {
