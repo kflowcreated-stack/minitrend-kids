@@ -759,8 +759,11 @@
             </div>
 
             <div>
-              <label class="block text-xs font-extrabold text-gray-700 mb-1">📝 Description (ပစ္စည်းအကြောင်းအရာ)</label>
-              <textarea id="own-desc" rows="2" placeholder="အထည်သား၊ အသေးစိတ်အချက်အလက်..." class="w-full border-2 border-pink-200 rounded-xl px-3 py-2"></textarea>
+              <div class="flex justify-between items-center gap-2 mb-1">
+                <label class="block text-xs font-extrabold text-gray-700">📝 Description (YouTube Link ထည့်နိုင်သည်)</label>
+                <button type="button" onclick="searchYoutubeForAdminInput('own-name')" class="bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 font-extrabold px-2 py-0.5 rounded-lg text-[10px] shrink-0">🔍 YouTube မှာ ရှာမည်</button>
+              </div>
+              <textarea id="own-desc" rows="2" placeholder="အထည်သား၊ အသေးစိတ်အချက်အလက်... (YouTube Link ထည့်လိုပါက အောက်ဆုံးတွင် Paste ထည့်ပါ)" class="w-full border-2 border-pink-200 rounded-xl px-3 py-2"></textarea>
             </div>
 
             <button type="submit" id="btn-own-submit" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-extrabold py-3 rounded-xl shadow text-sm">
@@ -1104,8 +1107,11 @@
           </div>
         </div>
         <div>
-          <label class="block text-[11px] font-bold text-gray-600 mb-0.5">📝 Description</label>
-          <textarea id="re-edit-desc" rows="2" class="w-full border border-amber-300 rounded-xl px-3 py-1.5 bg-white"></textarea>
+          <div class="flex justify-between items-center gap-2 mb-0.5">
+            <label class="block text-[11px] font-bold text-gray-600">📝 Description (YouTube Link ထည့်နိုင်သည်)</label>
+            <button type="button" onclick="searchYoutubeForAdminInput('re-edit-name')" class="bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 font-extrabold px-2 py-0.5 rounded-lg text-[10px] shrink-0">🔍 YouTube မှာ ရှာမည်</button>
+          </div>
+          <textarea id="re-edit-desc" rows="2" placeholder="အသေးစိတ်အချက်အလက်... (YouTube Link ထည့်လိုပါက အောက်ဆုံးတွင် Paste ထည့်ပါ)" class="w-full border border-amber-300 rounded-xl px-3 py-1.5 bg-white"></textarea>
         </div>
       </div>
 
@@ -4432,6 +4438,16 @@
       renderRestockSimilarSuggestions(rs.productName || '', catSel.value);
       renderAdminRestockEditSlots();
       document.getElementById('admin-restock-edit-modal').classList.remove('hidden');
+    }
+
+    function searchYoutubeForAdminInput(nameInputId) {
+      const nameVal = (document.getElementById(nameInputId)?.value || '').trim();
+      if (!nameVal) {
+        alert('⚠️ YouTube မှာ ရှာရန် ပစ္စည်းအမည်ကို အရင်ရိုက်ထည့်ပေးပါ။');
+        return;
+      }
+      const q = encodeURIComponent(nameVal + ' how to use');
+      window.open(`https://www.youtube.com/results?search_query=${q}`, '_blank', 'noopener');
     }
 
     function closeRestockEditModal() {
