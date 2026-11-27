@@ -1071,7 +1071,8 @@
         <p class="font-extrabold text-amber-900">📝 ပစ္စည်းအချက်အလက် ပြင်ဆင်ရန်</p>
         <div>
           <label class="block text-[11px] font-bold text-gray-600 mb-0.5">🧸 ပစ္စည်းအမည်</label>
-          <input type="text" id="re-edit-name" class="w-full border border-amber-300 rounded-xl px-3 py-2 bg-white font-bold">
+          <input type="text" id="re-edit-name" oninput="renderRestockSimilarSuggestions(this.value, document.getElementById('re-edit-category')?.value || '')" class="w-full border border-amber-300 rounded-xl px-3 py-2 bg-white font-bold">
+          <div id="re-similar-box" class="hidden mt-1.5 bg-orange-50 border border-orange-300 rounded-xl p-2 space-y-1.5"></div>
         </div>
         <div class="grid grid-cols-2 gap-2">
           <div>
@@ -4251,6 +4252,108 @@
       }
     }
 
+    function findSimilarCatalogProducts(prodName, reqCategory) {
+      const qRaw = (prodName || '').toString().trim();
+      const qNorm = normalizeProdKey(qRaw);
+      if (!qNorm || !Array.isArray(allProducts) || allProducts.length === 0) return [];
+
+      const tokenize = (s) => s.toLowerCase()
+        .replace(/[()\[\],.\-_/|•]+/g, ' ')
+        .split(/\s+/)
+        .filter(w => w.length >= 2);
+      const qTokens = tokenize(qRaw);
+      const mappedReqCat = mapLegacyCatClient(reqCategory || '');
+      const seen = {};
+      const scored = [];
+
+      allProducts.forEach(p => {
+        const pNorm = normalizeProdKey(p.name);
+        if (!pNorm) return;
+        const uniqKey = pNorm + '|' + p.shopId;
+        if (seen[uniqKey]) return;
+        seen[uniqKey] = true;
+
+        let score = 0;
+        let exact = false;
+        if (pNorm === qNorm) {
+          score = 100;
+          exact = true;
+        } else if (pNorm.includes(qNorm) || qNorm.includes(pNorm)) {
+          score = 65;
+        } else if (qTokens.length > 0) {
+          const pTokens = tokenize(p.name);
+          let overlap = 0;
+          qTokens.forEach(t => {
+            if (pTokens.some(pt => pt === t || (t.length >= 3 && pt.includes(t)) || (pt.length >= 3 && t.includes(pt)))) {
+              overlap++;
+            }
+          });
+          if (overlap >= 2 || (qTokens.length === 1 && overlap === 1)) {
+            score = overlap * 20;
+          }
+        }
+
+        if (score > 0 && mappedReqCat && p.category === mappedReqCat) score += 10;
+        if (score >= 40) {
+          scored.push({
+            name: p.name,
+            category: p.category,
+            shopId: p.shopId,
+            price: getEffectivePricing(p, -1).salePrice || p.minPrice || 0,
+            totalStock: p.totalStock || 0,
+            exact,
+            score
+          });
+        }
+      });
+
+      return scored.sort((a, b) => (b.exact - a.exact) || (b.score - a.score) || (a.price - b.price)).slice(0, 4);
+    }
+
+    function applySimilarCatalogName(idx) {
+      const item = (window.__reSimilarMatches || [])[idx];
+      if (!item) return;
+      const nameEl = document.getElementById('re-edit-name');
+      const catSel = document.getElementById('re-edit-category');
+      if (nameEl) nameEl.value = item.name;
+      if (catSel && [...catSel.options].some(o => o.value === item.category)) {
+        catSel.value = item.category;
+        updateAdminRestockEditSizes(document.getElementById('re-edit-size')?.value || 'အသက်မလို');
+      }
+      renderRestockSimilarSuggestions(item.name, item.category);
+    }
+
+    function renderRestockSimilarSuggestions(prodName, reqCategory) {
+      const box = document.getElementById('re-similar-box');
+      if (!box) return;
+      const matches = findSimilarCatalogProducts(prodName, reqCategory);
+      window.__reSimilarMatches = matches;
+      if (matches.length === 0) {
+        box.classList.add('hidden');
+        box.innerHTML = '';
+        return;
+      }
+
+      const hasExact = matches.some(m => m.exact);
+      box.classList.remove('hidden');
+      box.innerHTML = `
+        <p class="text-[11px] font-extrabold ${hasExact ? 'text-emerald-800' : 'text-orange-900'}">
+          ${hasExact ? '✅ ရှိပြီးသားပစ္စည်းနှင့် နာမည်အတိအကျတူနေပါသည် (Buy Box တစ်ကတ်တည်း တွဲပေးပါမည်)' : '⚠️ ဆင်တူပစ္စည်း ရှိပြီးသား — တူညီလျှင် နှိပ်၍ နာမည်တူညှိနိုင်သည်:'}
+        </p>
+        <div class="space-y-1">
+          ${matches.map((m, i) => `
+            <button type="button" onclick="applySimilarCatalogName(${i})" class="w-full text-left flex items-center justify-between gap-2 bg-white hover:bg-orange-100 border ${m.exact ? 'border-emerald-400' : 'border-orange-200'} rounded-lg px-2.5 py-1.5 text-[11px] transition">
+              <div class="min-w-0 flex-1">
+                <p class="font-extrabold text-gray-900 truncate">${escapeHtml(m.name)}</p>
+                <p class="text-[10px] text-gray-600 font-bold">${m.shopId === 'OWN' ? '🏠 OWN' : '🏪 ' + escapeHtml(m.shopId)} • 📂 ${escapeHtml(m.category)} • 💰 ${Number(m.price).toLocaleString()} Ks • 📦 ${m.totalStock}</p>
+              </div>
+              <span class="${m.exact ? 'bg-emerald-600' : 'bg-orange-600'} text-white font-extrabold px-2 py-0.5 rounded text-[10px] shrink-0">${m.exact ? '✅ တူပြီး' : '🔗 နာမည်တူညှိ'}</span>
+            </button>
+          `).join('')}
+        </div>
+      `;
+    }
+
     function openRestockEditModal(requestId) {
       const rs = (adminDataCache?.pendingRestocks || []).find(x => x.requestId === requestId);
       if (!rs) return;
@@ -4277,6 +4380,7 @@
       document.getElementById('re-edit-desc').value = rs.description || '';
       document.getElementById('re-edit-status').innerText = '';
 
+      renderRestockSimilarSuggestions(rs.productName || '', catSel.value);
       renderAdminRestockEditSlots();
       document.getElementById('admin-restock-edit-modal').classList.remove('hidden');
     }
@@ -5308,6 +5412,15 @@
               }).join('')}</div>`
             : `<div class="w-20 h-20 rounded-xl border border-dashed bg-gray-100 flex items-center justify-center text-[10px] text-gray-400">ပုံမရှိ</div>`;
 
+          const simList = findSimilarCatalogProducts(rs.productName, rs.category);
+          const hasExactSim = simList.some(m => m.exact);
+          const simAlertHtml = simList.length > 0
+            ? `<div class="${hasExactSim ? 'bg-emerald-50 border-emerald-300 text-emerald-900' : 'bg-orange-50 border-orange-300 text-orange-950'} border rounded-xl p-2 text-[11px] space-y-0.5">
+                 <p class="font-extrabold">${hasExactSim ? '✅ Buy Box တွဲမည် — ရှိပြီးသားပစ္စည်းနှင့် နာမည်အတိအကျတူ:' : '⚠️ ဆင်တူပစ္စည်း ရှိပြီးသား (Edit ပြင်မည် မှ တစ်ချက်နှိပ် နာမည်တူညှိနိုင်သည်):'}</p>
+                 ${simList.slice(0, 2).map(m => `<p class="text-[10px] font-bold">• ${escapeHtml(m.name)} (${m.shopId === 'OWN' ? '🏠 OWN' : '🏪 ' + escapeHtml(m.shopId)} — ${Number(m.price).toLocaleString()} Ks • လက်ကျန် ${m.totalStock})</p>`).join('')}
+               </div>`
+            : '';
+
           return `
             <div class="bg-white rounded-2xl border-2 border-amber-300 p-3.5 shadow-sm space-y-2.5">
               <div class="flex flex-wrap justify-between items-center gap-1.5">
@@ -5315,6 +5428,7 @@
                 <span class="text-[10px] text-gray-500">⏰ ${escapeHtml(rs.dateTime)}</span>
               </div>
               <p class="font-extrabold text-sm text-gray-900">${escapeHtml(rs.productName)} <span class="text-emerald-700 text-xs">(+${rs.qty} ခု | ${Number(rs.price || 0).toLocaleString()} Ks)</span></p>
+              ${simAlertHtml}
               ${thumbsHtml}
               <div class="flex flex-wrap gap-2 pt-2 border-t border-gray-100">
                 <button type="button" onclick="openRestockEditModal('${escapeHtml(rs.requestId)}')" class="bg-blue-600 text-white font-extrabold px-3 py-2 rounded-xl text-xs">✏️ Edit ပြင်မည်</button>
