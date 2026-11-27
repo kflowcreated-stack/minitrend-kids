@@ -6205,38 +6205,197 @@
       saveAutoSystemSwitches();
     }
 
+    const YANGON_TOWNSHIPS_GEO = [
+      { name: 'မင်္ဂလာတောင်ညွန့်', lat: 16.788, lng: 96.174, keys: ['မင်္ဂလာတောင်ညွန့်', 'မဂ်လာတောင်ညွန့်', 'mingalar taung nyunt', 'mingalartaungnyunt'] },
+      { name: 'မင်္ဂလာဒုံ', lat: 16.955, lng: 96.135, keys: ['မင်္ဂလာဒုံ', 'မဂ်လာဒုံ', 'မင်္ဂလာဒုံး', 'mingaladon', 'mingalardon'] },
+      { name: 'လှိုင်သာယာ', lat: 16.866, lng: 96.068, keys: ['လှိုင်သာယာ', 'hlaingthaya', 'hlaingtharyar', 'hlaing thar yar'] },
+      { name: 'မြောက်ဒဂုံ', lat: 16.885, lng: 96.188, keys: ['မြောက်ဒဂုံ', 'ဒဂုံမြောက်', 'north dagon', 'ndagon'] },
+      { name: 'တောင်ဒဂုံ', lat: 16.842, lng: 96.224, keys: ['တောင်ဒဂုံ', 'ဒဂုံတောင်', 'south dagon', 'sdagon'] },
+      { name: 'အရှေ့ဒဂုံ', lat: 16.906, lng: 96.228, keys: ['အရှေ့ဒဂုံ', 'ဒဂုံအရှေ့', 'east dagon', 'edagon'] },
+      { name: 'ဒဂုံဆိပ်ကမ်း', lat: 16.835, lng: 96.265, keys: ['ဒဂုံဆိပ်ကမ်း', 'dagon seikkan'] },
+      { name: 'မြောက်ဥက္ကလာ', lat: 16.907, lng: 96.158, keys: ['မြောက်ဥက္ကလာ', 'မ/ဥက္ကလာ', 'north okkalapa'] },
+      { name: 'တောင်ဥက္ကလာ', lat: 16.846, lng: 96.178, keys: ['တောင်ဥက္ကလာ', 'တ/ဥက္ကလာ', 'south okkalapa'] },
+      { name: 'သင်္ဃန်းကျွန်း', lat: 16.829, lng: 96.197, keys: ['သင်္ဃန်းကျွန်း', 'သဃ်န်းကျွန်း', 'သင်္ဂန်းကျွန်း', 'thingangyun'] },
+      { name: 'ရွှေပြည်သာ', lat: 16.956, lng: 96.077, keys: ['ရွှေပြည်သာ', 'shwepyithar', 'shwe pyi thar'] },
+      { name: 'အင်းစိန်', lat: 16.901, lng: 96.099, keys: ['အင်းစိန်', 'insein'] },
+      { name: 'မရမ်းကုန်း', lat: 16.867, lng: 96.135, keys: ['မရမ်းကုန်း', 'မရန်းကုန်း', 'mayangone', 'mayangon'] },
+      { name: 'လှိုင်', lat: 16.847, lng: 96.126, keys: ['လှိုင်', 'hlaing'] },
+      { name: 'ကမာရွတ်', lat: 16.826, lng: 96.133, keys: ['ကမာရွတ်', 'ကမာရွက်', 'kamayut'] },
+      { name: 'စမ်းချောင်း', lat: 16.805, lng: 96.134, keys: ['စမ်းချောင်း', 'sanchaung'] },
+      { name: 'ကြည့်မြင်တိုင်', lat: 16.804, lng: 96.121, keys: ['ကြည့်မြင်တိုင်', 'ကြည်မြင်တိုင်', 'kyeemyindaing', 'kyimyindaing'] },
+      { name: 'အလုံ', lat: 16.787, lng: 96.126, keys: ['အလုံ', 'ahlone', 'ahlon'] },
+      { name: 'ဗဟန်း', lat: 16.814, lng: 96.156, keys: ['ဗဟန်း', 'bahan'] },
+      { name: 'ရန်ကင်း', lat: 16.835, lng: 96.166, keys: ['ရန်ကင်း', 'yankin'] },
+      { name: 'တာမွေ', lat: 16.812, lng: 96.176, keys: ['တာမွေ', 'tamwe'] },
+      { name: 'သာကေတ', lat: 16.794, lng: 96.208, keys: ['သာကေတ', 'thaketa'] },
+      { name: 'ဒေါပုံ', lat: 16.784, lng: 96.185, keys: ['ဒေါပုံ', 'dawbon'] },
+      { name: 'ပုဇွန်တောင်', lat: 16.779, lng: 96.176, keys: ['ပုဇွန်တောင်', 'pazundaung'] },
+      { name: 'ဗိုလ်တထောင်', lat: 16.772, lng: 96.169, keys: ['ဗိုလ်တထောင်', 'ဗိုလ်တစ်ထောင်', 'botahtaung'] },
+      { name: 'ကျောက်တံတား', lat: 16.775, lng: 96.161, keys: ['ကျောက်တံတား', 'kyauktada'] },
+      { name: 'ပန်းဘဲတန်း', lat: 16.776, lng: 96.155, keys: ['ပန်းဘဲတန်း', 'pabedan'] },
+      { name: 'လသာ', lat: 16.777, lng: 96.150, keys: ['လသာ', 'latha'] },
+      { name: 'လမ်းမတော်', lat: 16.779, lng: 96.144, keys: ['လမ်းမတော်', 'lanmadaw'] },
+      { name: 'ဒဂုံ', lat: 16.791, lng: 96.146, keys: ['ဒဂုံမြို့နယ်', 'ဒဂုံ', 'dagon'] },
+      { name: 'သန်လျင်', lat: 16.764, lng: 96.248, keys: ['သန်လျင်', 'thanlyin'] },
+      { name: 'ဒလ', lat: 16.753, lng: 96.152, keys: ['ဒလ', 'dala'] },
+      { name: 'ကျောက်တန်း', lat: 16.638, lng: 96.322, keys: ['ကျောက်တန်း', 'kyauktan'] },
+      { name: 'မှော်ဘီ', lat: 17.101, lng: 96.042, keys: ['မှော်ဘီ', 'hmawbi'] },
+      { name: 'လှည်းကူး', lat: 17.095, lng: 96.221, keys: ['လှည်းကူး', 'hlegu'] }
+    ];
+
+    function parseLatLngFromText(raw) {
+      if (!raw) return null;
+      const s = raw.toString().trim();
+      const patterns = [
+        /@(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/,
+        /[?&](?:q|query)=(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/,
+        /!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/,
+        /(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/
+      ];
+      for (const re of patterns) {
+        const m = s.match(re);
+        if (m) {
+          const lat = parseFloat(m[1]);
+          const lng = parseFloat(m[2]);
+          if (lat >= 9 && lat <= 29 && lng >= 92 && lng <= 102) return { lat, lng };
+        }
+      }
+      return null;
+    }
+
+    function detectYangonTownship(text) {
+      if (!text) return null;
+      const raw = text.toString().toLowerCase();
+      for (const twp of YANGON_TOWNSHIPS_GEO) {
+        for (const key of twp.keys) {
+          const isAscii = /^[a-z0-9\s./-]+$/.test(key);
+          if (isAscii) {
+            const esc = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            if (new RegExp(`(?:^|[^a-z])${esc}(?:$|[^a-z])`, 'i').test(raw)) return twp;
+          } else if (raw.includes(key)) {
+            return twp;
+          }
+        }
+      }
+      return null;
+    }
+
+    function calcGeoDistanceKm(a, b) {
+      if (!a || !b || a.lat === null || a.lng === null || b.lat === null || b.lng === null) return Infinity;
+      const toRad = (deg) => deg * (Math.PI / 180);
+      const R = 6371;
+      const dLat = toRad(b.lat - a.lat);
+      const dLng = toRad(b.lng - a.lng);
+      const h = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(toRad(a.lat)) * Math.cos(toRad(b.lat)) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+      return 2 * R * Math.atan2(Math.sqrt(h), Math.sqrt(1 - h));
+    }
+
+    function resolveOrderGeoLocation(ord) {
+      if (!ord) return { lat: null, lng: null, township: '', source: 'none' };
+      const gps = parseLatLngFromText(ord.mapLocation || '');
+      const fullAddr = [ord.mapQuery || '', ord.address || '', ord.addressDetail || ''].join(' ');
+      const twp = detectYangonTownship(fullAddr);
+      if (gps) return { lat: gps.lat, lng: gps.lng, township: twp ? twp.name : '', source: 'gps' };
+      if (twp) return { lat: twp.lat, lng: twp.lng, township: twp.name, source: 'township' };
+      return { lat: null, lng: null, township: '', source: 'none' };
+    }
+
+    function resolvePickupShopsGeo(shopIdsArr, shopsList) {
+      const list = Array.isArray(shopsList) ? shopsList : [];
+      let sumLat = 0, sumLng = 0, cnt = 0;
+      let firstTownship = '';
+      (shopIdsArr || []).forEach(sid => {
+        const sh = list.find(s => s.id === sid);
+        if (!sh) return;
+        const gps = parseLatLngFromText(sh.mapLocation || '');
+        const twp = detectYangonTownship([sh.address || '', sh.name || ''].join(' '));
+        if (!firstTownship && twp) firstTownship = twp.name;
+        if (gps) { sumLat += gps.lat; sumLng += gps.lng; cnt++; }
+        else if (twp) { sumLat += twp.lat; sumLng += twp.lng; cnt++; }
+      });
+      if (cnt > 0) return { lat: sumLat / cnt, lng: sumLng / cnt, township: firstTownship, source: 'shop' };
+      return { lat: null, lng: null, township: firstTownship, source: 'none' };
+    }
+
     function pickBestPickupRiderLocal(order, riders, allPendingOrders) {
       const eligible = riders.filter(r => r.duty !== 'Off' && (r.dutyRole === 'Pickup' || r.dutyRole === 'Both' || !r.dutyRole));
       if (eligible.length === 0) return null;
 
+      const allShops = (adminDataCache && Array.isArray(adminDataCache.shops)) ? adminDataCache.shops : [];
       const loadMap = {};
       const shopsMap = {};
-      eligible.forEach(r => { loadMap[r.id] = 0; shopsMap[r.id] = {}; });
+      const geoPointsMap = {};
+      eligible.forEach(r => { loadMap[r.id] = 0; shopsMap[r.id] = {}; geoPointsMap[r.id] = []; });
 
       allPendingOrders.forEach(o => {
         if (o.pickupRiderId && loadMap[o.pickupRiderId] !== undefined && o.pickupStatus !== 'ဆိုင်မှ ပစ္စည်းကောက်ပြီးပြီ') {
           loadMap[o.pickupRiderId]++;
-          (o.shopIds || '').split(',').map(s => normalizeShopId(s)).filter(s => s !== 'OWN').forEach(sid => { shopsMap[o.pickupRiderId][sid] = true; });
+          const oShops = (o.shopIds || '').split(',').map(s => normalizeShopId(s)).filter(s => s !== 'OWN');
+          oShops.forEach(sid => { shopsMap[o.pickupRiderId][sid] = true; });
+          const g = resolvePickupShopsGeo(oShops, allShops);
+          if (g.lat !== null || g.township) geoPointsMap[o.pickupRiderId].push(g);
         }
       });
       autoCountdownQueue.filter(q => q.type === 'pickup').forEach(q => {
         if (loadMap[q.riderId] !== undefined) {
           loadMap[q.riderId]++;
           (q.shopIds || []).forEach(sid => { shopsMap[q.riderId][sid] = true; });
+          const g = resolvePickupShopsGeo(q.shopIds || [], allShops);
+          if (g.lat !== null || g.township) geoPointsMap[q.riderId].push(g);
         }
       });
 
       const targetShops = (order.shopIds || '').split(',').map(s => normalizeShopId(s)).filter(s => s !== 'OWN');
-      const batched = eligible.filter(r => targetShops.some(sid => shopsMap[r.id][sid]));
-      const pool = batched.length > 0 ? batched : eligible;
+      const targetGeo = resolvePickupShopsGeo(targetShops, allShops);
+      const minLoad = Math.min(...eligible.map(r => loadMap[r.id]));
 
-      pool.sort((a, b) => {
+      // 1. ဆိုင်တူ ဦးစားပေး (Same Shop Batching)
+      const sameShopRiders = eligible.filter(r => targetShops.some(sid => shopsMap[r.id][sid]));
+      if (sameShopRiders.length > 0) {
+        sameShopRiders.sort((a, b) => {
+          if (loadMap[a.id] !== loadMap[b.id]) return loadMap[a.id] - loadMap[b.id];
+          return (a.dutyRole === 'Pickup' ? 0 : 1) - (b.dutyRole === 'Pickup' ? 0 : 1);
+        });
+        return { rider: sameShopRiders[0], batched: true, matchTag: ' [ဆိုင်တူ]', targetShops };
+      }
+
+      // 2. မြို့နယ်တူ / 4.5 km အတွင်း နီးစပ်ရာဆိုင် တွဲပေးခြင်း
+      if (targetGeo.lat !== null || targetGeo.township) {
+        let bestNearby = null;
+        eligible.forEach(r => {
+          if (loadMap[r.id] > minLoad + 2) return;
+          const pts = geoPointsMap[r.id];
+          if (!pts || pts.length === 0) return;
+          let sameTwp = false;
+          let bestDist = Infinity;
+          pts.forEach(pt => {
+            if (targetGeo.township && pt.township && targetGeo.township === pt.township) sameTwp = true;
+            const d = calcGeoDistanceKm(targetGeo, pt);
+            if (d < bestDist) bestDist = d;
+          });
+          if (!sameTwp && bestDist > 4.5) return;
+          const score = (bestDist === Infinity ? 0 : bestDist) - (sameTwp ? 2.5 : 0) + (loadMap[r.id] * 0.4);
+          if (!bestNearby || score < bestNearby.score) {
+            bestNearby = { rider: r, sameTwp, bestDist, score };
+          }
+        });
+        if (bestNearby) {
+          const tag = bestNearby.sameTwp && targetGeo.township
+            ? ` [${targetGeo.township} • နီးစပ်ရာ]`
+            : ` [${bestNearby.bestDist.toFixed(1)} km • နီးစပ်ရာ]`;
+          return { rider: bestNearby.rider, batched: true, matchTag: tag, targetShops };
+        }
+      }
+
+      // 3. အထုပ်အနည်းဆုံး ဝန်ထမ်းဆီ မျှပေးခြင်း
+      const pool = eligible.slice().sort((a, b) => {
         if (loadMap[a.id] !== loadMap[b.id]) return loadMap[a.id] - loadMap[b.id];
         return (a.dutyRole === 'Pickup' ? 0 : 1) - (b.dutyRole === 'Pickup' ? 0 : 1);
       });
-      return { rider: pool[0], batched: batched.length > 0, targetShops };
+      const twpTag = targetGeo.township ? ` [${targetGeo.township}]` : '';
+      return { rider: pool[0], batched: false, matchTag: twpTag, targetShops };
     }
-
     function parseMmDateTimeToUtcMs(str) {
       if (!str) return 0;
       const s = str.toString().replace(/^'/, '').trim();
@@ -6407,7 +6566,7 @@
           riderId: pick.rider.id,
           riderName: pick.rider.name,
           shopIds: pick.targetShops,
-          label: `📦 Auto Pickup (${o.orderId} • ${pick.targetShops.join(',')}) → ${pick.rider.id} (${pick.rider.name})${pick.batched ? ' [လမ်းကြောင်းတူ]' : ''}`,
+          label: `📦 Auto Pickup (${o.orderId} • ${pick.targetShops.join(',')}) → ${pick.rider.id} (${pick.rider.name})${pick.matchTag || ''}`,
           secondsLeft: 10
         });
       });
@@ -6445,26 +6604,150 @@
       }
 
       const loadMap = {};
-      riders.forEach(r => { loadMap[r.id] = 0; });
-      orders.forEach(o => { if (o.riderId && loadMap[o.riderId] !== undefined) loadMap[o.riderId]++; });
+      const anchorPoints = {};
+      const townshipSet = {};
+      riders.forEach(r => { loadMap[r.id] = 0; anchorPoints[r.id] = []; townshipSet[r.id] = {}; });
+
+      orders.forEach(o => {
+        if (o.riderId && loadMap[o.riderId] !== undefined && o.status !== 'ပို့ပြီး' && o.status !== 'COD ငွေပေးချေပြီး') {
+          loadMap[o.riderId]++;
+          const g = resolveOrderGeoLocation(o);
+          if (g.lat !== null) anchorPoints[o.riderId].push({ lat: g.lat, lng: g.lng });
+          if (g.township) townshipSet[o.riderId][g.township] = true;
+        }
+      });
       autoCountdownQueue.filter(q => q.type === 'delivery').forEach(q => {
-        if (loadMap[q.riderId] !== undefined) loadMap[q.riderId]++;
+        if (loadMap[q.riderId] !== undefined) {
+          loadMap[q.riderId]++;
+          if (q.geo && q.geo.lat !== null) anchorPoints[q.riderId].push({ lat: q.geo.lat, lng: q.geo.lng });
+          if (q.geo && q.geo.township) townshipSet[q.riderId][q.geo.township] = true;
+        }
       });
 
+      const getRiderCentroid = (rId) => {
+        const pts = anchorPoints[rId] || [];
+        if (pts.length === 0) return null;
+        let sLat = 0, sLng = 0;
+        pts.forEach(p => { sLat += p.lat; sLng += p.lng; });
+        return { lat: sLat / pts.length, lng: sLng / pts.length };
+      };
+
+      const existingTotal = riders.reduce((sum, r) => sum + loadMap[r.id], 0);
+      const softCap = Math.max(1, Math.ceil((existingTotal + readyOrders.length) / riders.length));
+      const hardCap = riders.length > 1 ? (softCap + 1) : softCap;
+
+      const geoItems = [];
+      const noGeoItems = [];
       readyOrders.forEach(o => {
-        riders.sort((a, b) => {
+        const geo = resolveOrderGeoLocation(o);
+        if (geo.lat !== null) geoItems.push({ order: o, geo });
+        else noGeoItems.push({ order: o, geo });
+      });
+
+      const assignments = [];
+      const recordAssignment = (item, rider, reasonTag) => {
+        loadMap[rider.id]++;
+        if (item.geo.lat !== null) anchorPoints[rider.id].push({ lat: item.geo.lat, lng: item.geo.lng });
+        if (item.geo.township) townshipSet[rider.id][item.geo.township] = true;
+        assignments.push({ item, rider, reasonTag });
+      };
+
+      // Phase 1: ဝန်ထမ်းတစ်ယောက်ချင်းစီအတွက် အကွာဆုံးမြို့နယ်ဇုန်အလိုက် ဦးဆုံးအထုပ် (Seed) ခွဲပေးခြင်း
+      let unassigned = geoItems.slice();
+      if (unassigned.length > 0) {
+        let allLat = 0, allLng = 0;
+        unassigned.forEach(it => { allLat += it.geo.lat; allLng += it.geo.lng; });
+        const globalCenter = { lat: allLat / unassigned.length, lng: allLng / unassigned.length };
+
+        const unseededRiders = riders
+          .filter(r => !getRiderCentroid(r.id) && loadMap[r.id] < softCap)
+          .sort((a, b) => {
+            if (loadMap[a.id] !== loadMap[b.id]) return loadMap[a.id] - loadMap[b.id];
+            return (a.dutyRole === 'Delivery' ? 0 : 1) - (b.dutyRole === 'Delivery' ? 0 : 1);
+          });
+
+        for (const r of unseededRiders) {
+          if (unassigned.length === 0) break;
+          const activeAnchors = riders.map(x => getRiderCentroid(x.id)).filter(Boolean);
+          let bestIdx = 0;
+          let maxDist = -1;
+
+          unassigned.forEach((it, idx) => {
+            const d = activeAnchors.length === 0
+              ? calcGeoDistanceKm(it.geo, globalCenter)
+              : Math.min(...activeAnchors.map(a => calcGeoDistanceKm(it.geo, a)));
+            if (d > maxDist) { maxDist = d; bestIdx = idx; }
+          });
+
+          const hasRoomInSeeded = riders.some(x => getRiderCentroid(x.id) && loadMap[x.id] < hardCap);
+          if (activeAnchors.length > 0 && maxDist <= 3.0 && unassigned.length <= (hardCap - 1) && hasRoomInSeeded) {
+            continue;
+          }
+
+          const [seedItem] = unassigned.splice(bestIdx, 1);
+          const tag = seedItem.geo.township ? ` [${seedItem.geo.township}]` : ' [GPS]';
+          recordAssignment(seedItem, r, tag);
+        }
+      }
+
+      // Phase 2: ကျန်အော်ဒါများကို မြို့နယ်တူ / အနီးဆုံးဝန်ထမ်းဆီ စုခွဲပေးခြင်း
+      while (unassigned.length > 0) {
+        let bestPair = null;
+        const minCurLoad = Math.min(...riders.map(r => loadMap[r.id]));
+
+        unassigned.forEach((it, idx) => {
+          riders.forEach(r => {
+            const centroid = getRiderCentroid(r.id);
+            const dist = centroid ? calcGeoDistanceKm(it.geo, centroid) : 999;
+            const sameTwp = !!(it.geo.township && townshipSet[r.id][it.geo.township]);
+            const withinSoft = loadMap[r.id] < softCap;
+            const withinNearbyHard = (loadMap[r.id] < hardCap) && (sameTwp || dist <= 3.0);
+            if (!withinSoft && !withinNearbyHard) return;
+
+            const score = dist - (sameTwp ? 2.5 : 0) + (withinSoft ? 0 : 1.5) + (r.dutyRole === 'Delivery' ? 0 : 0.15);
+            if (!bestPair || score < bestPair.score) {
+              bestPair = { idx, rider: r, dist, sameTwp, score };
+            }
+          });
+        });
+
+        if (!bestPair) {
+          const fallbackRider = riders.slice().sort((a, b) => {
+            if (loadMap[a.id] !== loadMap[b.id]) return loadMap[a.id] - loadMap[b.id];
+            return (a.dutyRole === 'Delivery' ? 0 : 1) - (b.dutyRole === 'Delivery' ? 0 : 1);
+          })[0];
+          const [it] = unassigned.splice(0, 1);
+          const tag = it.geo.township ? ` [${it.geo.township}]` : '';
+          recordAssignment(it, fallbackRider, tag);
+        } else {
+          const [it] = unassigned.splice(bestPair.idx, 1);
+          let tag = '';
+          if (bestPair.sameTwp && it.geo.township) tag = ` [${it.geo.township} • နီးစပ်ရာ]`;
+          else if (bestPair.dist <= 5.0) tag = ` [${it.geo.township ? it.geo.township + ' • ' : ''}${bestPair.dist.toFixed(1)} km]`;
+          else if (it.geo.township) tag = ` [${it.geo.township}]`;
+          recordAssignment(it, bestPair.rider, tag);
+        }
+      }
+
+      // Phase 3: GPS / မြို့နယ် မသိနိုင်သေးသော အော်ဒါများကို အထုပ်အနည်းဆုံးဝန်ထမ်းဆီ မျှပေးခြင်း
+      noGeoItems.forEach(it => {
+        const chosen = riders.slice().sort((a, b) => {
           if (loadMap[a.id] !== loadMap[b.id]) return loadMap[a.id] - loadMap[b.id];
           return (a.dutyRole === 'Delivery' ? 0 : 1) - (b.dutyRole === 'Delivery' ? 0 : 1);
-        });
-        const chosen = riders[0];
-        loadMap[chosen.id]++;
+        })[0];
+        recordAssignment(it, chosen, '');
+      });
+
+      assignments.forEach(({ item, rider, reasonTag }) => {
+        const o = item.order;
         autoCountdownQueue.push({
           key: 'del_' + o.orderId,
           type: 'delivery',
           orderId: o.orderId,
-          riderId: chosen.id,
-          riderName: chosen.name,
-          label: `🚚 Auto Delivery (${o.orderId} • ${o.name}) → ${chosen.id} (${chosen.name})`,
+          riderId: rider.id,
+          riderName: rider.name,
+          geo: item.geo,
+          label: `🚚 Auto Delivery (${o.orderId} • ${o.name})${reasonTag} → ${rider.id} (${rider.name})`,
           secondsLeft: 10
         });
       });
