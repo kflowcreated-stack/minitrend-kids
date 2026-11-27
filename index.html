@@ -5576,6 +5576,7 @@
           return `
             <div class="rounded-xl border-2 ${cardBorder} p-2 shadow-sm space-y-1">
               ${buildAdminOrderProcessSteps(o, hasPartner)}
+              ${buildOrderScheduleAndInlineAutoHtml(o, hasPartner)}
               ${cancelReqBanner}
               ${rejectBadge}
               <div class="text-[11px] flex flex-wrap items-center justify-between gap-1 bg-gray-50 rounded-lg px-2 py-1 border border-gray-100">
@@ -6217,6 +6218,77 @@
       return { rider: pool[0], batched: batched.length > 0, targetShops };
     }
 
+    function getOrder3DayScheduleInfo(ord) {
+      const nowMm = new Date(Date.now() + (6.5 * 60 * 60 * 1000));
+      const todayDayMs = Date.UTC(nowMm.getUTCFullYear(), nowMm.getUTCMonth(), nowMm.getUTCDate());
+      const nowMmMins = nowMm.getUTCHours() * 60 + nowMm.getUTCMinutes();
+
+      const rawDate = ((ord && ord.dateTime) || '').toString().trim().split(' ')[0];
+      const m = rawDate.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      const ordDayMs = m ? Date.UTC(parseInt(m[1], 10), parseInt(m[2], 10) - 1, parseInt(m[3], 10)) : todayDayMs;
+      const dayDiff = Math.floor((todayDayMs - ordDayMs) / (24 * 60 * 60 * 1000));
+
+      const fmtShort = (ms) => {
+        const d = new Date(ms);
+        const mos = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        return `${d.getUTCDate()} ${mos[d.getUTCMonth()]}`;
+      };
+
+      const pickupDateStr = fmtShort(ordDayMs + 24 * 60 * 60 * 1000);
+      const deliveryDateStr = fmtShort(ordDayMs + 2 * 24 * 60 * 60 * 1000);
+      const canAutoPickupNow = (dayDiff >= 2) || (dayDiff === 1 && nowMmMins >= 630);
+      const canAutoDeliveryNow = (dayDiff >= 2);
+      return { dayDiff, pickupDateStr, deliveryDateStr, canAutoPickupNow, canAutoDeliveryNow };
+    }
+
+    function buildInlineAutoCountdownInner(orderId) {
+      const activeQ = autoCountdownQueue.find(q => q.orderId === orderId);
+      if (activeQ) {
+        return `
+          <div class="bg-slate-900 text-white border border-amber-400 rounded-lg px-2.5 py-1.5 flex flex-wrap items-center justify-between gap-1.5 text-[11px]">
+            <div class="min-w-0 flex-1">
+              <span class="font-extrabold text-amber-300">⏳ ${activeQ.secondsLeft}s</span>
+              <span class="font-bold ml-1">${escapeHtml(activeQ.label)}</span>
+            </div>
+            <div class="flex gap-1 shrink-0">
+              <button type="button" onclick="cancelAutoCountdownItem('${escapeHtml(activeQ.key)}')" class="bg-red-600 hover:bg-red-700 text-white font-extrabold px-2 py-0.5 rounded text-[10px]">✋ ရပ်မည်</button>
+              <button type="button" onclick="runAutoCountdownNow('${escapeHtml(activeQ.key)}')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-2 py-0.5 rounded text-[10px]">⚡ ချက်ချင်းလုပ်</button>
+            </div>
+          </div>
+        `;
+      }
+      if (autoSkippedKeys['pu_' + orderId] || autoSkippedKeys['del_' + orderId]) {
+        return `<div class="bg-red-50 border border-red-200 text-red-700 rounded-lg px-2.5 py-1 text-[10px] font-extrabold">✋ Admin မှ Auto ရပ်ထားသည် (အောက်မှ Dropdown ဖြင့် ကိုယ်တိုင်ရွေးပေးပါ)</div>`;
+      }
+      return '';
+    }
+
+    function buildOrderScheduleAndInlineAutoHtml(o, hasPartner) {
+      const sch = getOrder3DayScheduleInfo(o);
+      const isPicked = !hasPartner || o.pickupStatus === 'ဆိုင်မှ ပစ္စည်းကောက်ပြီးပြီ';
+      let stageBadge = '';
+      if (o.status === 'ပို့ဆောင်နေပြီ' || o.status === 'COD ငွေပေးချေပြီး') {
+        stageBadge = `<span class="text-emerald-700">🚚 Delivery ပို့ဆောင်ဆဲ (Day ${Math.max(1, sch.dayDiff + 1)})</span>`;
+      } else if (hasPartner && !isPicked) {
+        if (sch.dayDiff <= 0) stageBadge = `<span class="text-purple-700">⏳ Day 1 — မနက်ဖြန် (${sch.pickupDateStr}) 10:30 AM မှ Auto Pickup စမည်</span>`;
+        else if (!sch.canAutoPickupNow) stageBadge = `<span class="text-amber-700">⏳ ယနေ့ 10:30 AM တွင် Auto Pickup စမည် (ဆိုင်ထုပ်ပိုးချိန်)</span>`;
+        else stageBadge = `<span class="text-purple-800">📦 Pickup နေ့ (${sch.pickupDateStr} • 10:30 AM ကျော်)</span>`;
+      } else {
+        if (!sch.canAutoDeliveryNow) stageBadge = `<span class="text-blue-700">✅ Hub အသင့် — ${sch.deliveryDateStr} (Day 3) Delivery ပို့ရန်</span>`;
+        else stageBadge = `<span class="text-emerald-700 font-extrabold">🚚 ယနေ့ ပို့ရမည့်နေ့ (${sch.deliveryDateStr} • Day 3)</span>`;
+      }
+      const inlineAutoHtml = buildInlineAutoCountdownInner(o.orderId);
+      return `
+        <div class="space-y-1">
+          <div class="bg-indigo-50/70 border border-indigo-200 rounded-lg px-2 py-1 flex flex-wrap items-center justify-between gap-1 text-[10px] font-bold">
+            <span>${stageBadge}</span>
+            <span class="text-indigo-900">${hasPartner ? `📦 Pickup: ${sch.pickupDateStr} (10:30 AM) • ` : ''}🚚 Delivery: ${sch.deliveryDateStr} (Day 3)</span>
+          </div>
+          <div id="ord-auto-live-${escapeHtml(o.orderId)}" class="${inlineAutoHtml ? '' : 'hidden'}">${inlineAutoHtml}</div>
+        </div>
+      `;
+    }
+
     function checkAutoPickupQueue() {
       if (APP_ROLE !== 'admin' || !adminDataCache || centralSettings.autoPickupEnabled === false) return;
       const orders = adminDataCache.pendingOrders || [];
@@ -6226,7 +6298,8 @@
         const hasPartner = o.shopIds && o.shopIds !== 'OWN';
         const isPacked = !!(o.shopMeta && o.shopMeta.shopPacked);
         const key = 'pu_' + o.orderId;
-        if (!hasPartner || !isPacked || o.pickupRiderId || autoSkippedKeys[key]) return;
+        const sch = getOrder3DayScheduleInfo(o);
+        if (!hasPartner || !isPacked || o.pickupRiderId || autoSkippedKeys[key] || !sch.canAutoPickupNow) return;
         if (autoCountdownQueue.some(q => q.key === key)) return;
 
         const pick = pickBestPickupRiderLocal(o, riders, orders);
@@ -6267,11 +6340,12 @@
       const readyOrders = orders.filter(o => {
         const hasPartner = o.shopIds && o.shopIds !== 'OWN';
         const isPicked = !hasPartner || o.pickupStatus === 'ဆိုင်မှ ပစ္စည်းကောက်ပြီးပြီ';
-        return isPicked && !o.riderId && o.status !== 'ပို့ဆောင်နေပြီ' && o.status !== 'COD ငွေပေးချေပြီး' && !autoCountdownQueue.some(q => q.key === 'del_' + o.orderId);
+        const sch = getOrder3DayScheduleInfo(o);
+        return isPicked && sch.canAutoDeliveryNow && !o.riderId && o.status !== 'ပို့ဆောင်နေပြီ' && o.status !== 'COD ငွေပေးချေပြီး' && !autoCountdownQueue.some(q => q.key === 'del_' + o.orderId);
       });
 
       if (readyOrders.length === 0) {
-        alert('✅ ပို့ရန်အသင့်ဖြစ်နေပြီး ဝန်ထမ်းမပေးရသေးသော အော်ဒါ မရှိပါ။');
+        alert('✅ ယနေ့ (Day 3) ပို့ရမည့် အသင့်ဖြစ်ပြီးသား အော်ဒါ မရှိသေးပါ။ (Day 1 / Day 2 အော်ဒါများကို ၃ ရက်မြောက်နေ့မှ Auto ခွဲပေးပါမည်)');
         return;
       }
 
@@ -6360,6 +6434,13 @@
     }
 
     function renderAutoCountdownBox() {
+      document.querySelectorAll('[id^="ord-auto-live-"]').forEach(el => {
+        const oid = el.id.replace('ord-auto-live-', '');
+        const html = buildInlineAutoCountdownInner(oid);
+        el.innerHTML = html;
+        el.classList.toggle('hidden', !html);
+      });
+
       const box = document.getElementById('adm-auto-countdown-box');
       if (!box) return;
       if (autoCountdownQueue.length === 0) {
