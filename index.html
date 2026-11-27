@@ -1088,7 +1088,7 @@
               <input type="checkbox" id="auto-sw-pickup" onchange="saveAutoSystemSwitches()" class="w-4 h-4 mt-0.5 accent-purple-600 rounded">
               <div>
                 <p class="font-extrabold text-gray-900">📦 Auto Pickup Dispatch (Smart Batching)</p>
-                <p class="text-[11px] text-gray-600 mt-0.5">ဆိုင်က ထုပ်ပိုးပြီးနှိပ်လျှင် ၁၀ စက္ကန့် Countdown ပြပြီး 🟢 Pickup ဝန်ထမ်းဆီ Auto ခိုင်းမည်</p>
+                <p class="text-[11px] text-gray-600 mt-0.5">Day 2 နှင့်အထက် (မနက် ၁၀:၃၀ – ညနေ ၆:၀၀) တွင် ဆိုင်ထုပ်ပိုးပြီးအော်ဒါများကို ၁၀ စက္ကန့် Countdown ပြပြီး 🟢 Pickup ဝန်ထမ်းဆီ Auto ခိုင်းမည် (Day 1 မခိုင်းပါ)</p>
               </div>
             </label>
             <label class="flex items-start gap-2.5 p-3 rounded-xl border-2 border-blue-200 bg-blue-50/50 cursor-pointer">
@@ -6077,7 +6077,26 @@
     // ==================== AUTO CONTROL CENTER + 10s COUNTDOWN + ERROR ALERTS ====================
     let autoCountdownQueue = [];
     let autoCountdownTimer = null;
-    let autoSkippedKeys = {};
+    let autoSkippedKeys = (() => {
+      try {
+        const raw = JSON.parse(localStorage.getItem('mt_admin_auto_skipped_v1') || '{}');
+        return (raw && typeof raw === 'object') ? raw : {};
+      } catch (e) { return {}; }
+    })();
+    let __lastSyncedServerMmStr = '';
+    let adminServerTimeOffsetMs = 0;
+
+    function saveAutoSkippedKeys() {
+      try {
+        const keys = Object.keys(autoSkippedKeys);
+        if (keys.length > 200) {
+          const trimmed = {};
+          keys.slice(-150).forEach(k => { trimmed[k] = autoSkippedKeys[k]; });
+          autoSkippedKeys = trimmed;
+        }
+        localStorage.setItem('mt_admin_auto_skipped_v1', JSON.stringify(autoSkippedKeys));
+      } catch (e) {}
+    }
     let autoAlertedErrorKeys = {};
 
     function getAdminAutoLogs() {
@@ -6218,14 +6237,53 @@
       return { rider: pool[0], batched: batched.length > 0, targetShops };
     }
 
+    function parseMmDateTimeToUtcMs(str) {
+      if (!str) return 0;
+      const s = str.toString().replace(/^'/, '').trim();
+      const m = s.match(/^(\d{4})-(\d{2})-(\d{2})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(AM|PM)?)?$/i);
+      if (!m) return 0;
+      const yr = parseInt(m[1], 10), mo = parseInt(m[2], 10) - 1, dy = parseInt(m[3], 10);
+      let hr = m[4] ? parseInt(m[4], 10) : 0;
+      const mn = m[5] ? parseInt(m[5], 10) : 0;
+      const sc = m[6] ? parseInt(m[6], 10) : 0;
+      const ampm = (m[7] || '').toUpperCase();
+      if (ampm === 'PM' && hr < 12) hr += 12;
+      if (ampm === 'AM' && hr === 12) hr = 0;
+      return Date.UTC(yr, mo, dy, hr, mn, sc) - (6.5 * 60 * 60 * 1000);
+    }
+
+    function getAdminSyncedNowMs() {
+      const srvStr = (adminDataCache && adminDataCache.serverTimeMm) ? adminDataCache.serverTimeMm.toString().trim() : '';
+      if (srvStr && srvStr !== __lastSyncedServerMmStr) {
+        const srvMs = parseMmDateTimeToUtcMs(srvStr);
+        if (srvMs > 0) {
+          adminServerTimeOffsetMs = srvMs - Date.now();
+          __lastSyncedServerMmStr = srvStr;
+        }
+      }
+      return Date.now() + adminServerTimeOffsetMs;
+    }
+
     function getOrder3DayScheduleInfo(ord) {
-      const nowMm = new Date(Date.now() + (6.5 * 60 * 60 * 1000));
+      const nowUtcMs = getAdminSyncedNowMs();
+      const nowMm = new Date(nowUtcMs + (6.5 * 60 * 60 * 1000));
       const todayDayMs = Date.UTC(nowMm.getUTCFullYear(), nowMm.getUTCMonth(), nowMm.getUTCDate());
       const nowMmMins = nowMm.getUTCHours() * 60 + nowMm.getUTCMinutes();
 
-      const rawDate = ((ord && ord.dateTime) || '').toString().trim().split(' ')[0];
-      const m = rawDate.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-      const ordDayMs = m ? Date.UTC(parseInt(m[1], 10), parseInt(m[2], 10) - 1, parseInt(m[3], 10)) : todayDayMs;
+      let ordDayMs = todayDayMs;
+      const createdMs = (ord && ord.shopMeta && Number(ord.shopMeta.createdAtMs) > 0)
+        ? Number(ord.shopMeta.createdAtMs)
+        : 0;
+
+      if (createdMs > 0) {
+        const ordMm = new Date(createdMs + (6.5 * 60 * 60 * 1000));
+        ordDayMs = Date.UTC(ordMm.getUTCFullYear(), ordMm.getUTCMonth(), ordMm.getUTCDate());
+      } else {
+        const rawDate = ((ord && ord.dateTime) || '').toString().trim().split(' ')[0];
+        const m = rawDate.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+        if (m) ordDayMs = Date.UTC(parseInt(m[1], 10), parseInt(m[2], 10) - 1, parseInt(m[3], 10));
+      }
+
       const dayDiff = Math.floor((todayDayMs - ordDayMs) / (24 * 60 * 60 * 1000));
 
       const fmtShort = (ms) => {
@@ -6236,9 +6294,15 @@
 
       const pickupDateStr = fmtShort(ordDayMs + 24 * 60 * 60 * 1000);
       const deliveryDateStr = fmtShort(ordDayMs + 2 * 24 * 60 * 60 * 1000);
-      const canAutoPickupNow = (dayDiff >= 2) || (dayDiff === 1 && nowMmMins >= 630);
+
+      const quietStartHr = parseInt(centralSettings.shopQuietStartHour, 10);
+      const endHr = (!isNaN(quietStartHr) && quietStartHr > 10 && quietStartHr <= 23) ? quietStartHr : 18;
+      const endMins = endHr * 60;
+      const isWithinPickupHours = (nowMmMins >= 630 && nowMmMins < endMins);
+
+      const canAutoPickupNow = (dayDiff >= 1) && isWithinPickupHours;
       const canAutoDeliveryNow = (dayDiff >= 2);
-      return { dayDiff, pickupDateStr, deliveryDateStr, canAutoPickupNow, canAutoDeliveryNow };
+      return { dayDiff, nowMmMins, endMins, pickupDateStr, deliveryDateStr, canAutoPickupNow, canAutoDeliveryNow };
     }
 
     function buildInlineAutoCountdownInner(orderId) {
@@ -6257,7 +6321,12 @@
           </div>
         `;
       }
-      if (autoSkippedKeys['pu_' + orderId] || autoSkippedKeys['del_' + orderId]) {
+      const ordObj = (adminDataCache && Array.isArray(adminDataCache.pendingOrders))
+        ? adminDataCache.pendingOrders.find(x => x.orderId === orderId)
+        : null;
+      const skipPu = !!autoSkippedKeys['pu_' + orderId] && (!ordObj || !ordObj.pickupRiderId);
+      const skipDel = !!autoSkippedKeys['del_' + orderId] && (!ordObj || !ordObj.riderId);
+      if (skipPu || skipDel) {
         return `<div class="bg-red-50 border border-red-200 text-red-700 rounded-lg px-2.5 py-1 text-[10px] font-extrabold">✋ Admin မှ Auto ရပ်ထားသည် (အောက်မှ Dropdown ဖြင့် ကိုယ်တိုင်ရွေးပေးပါ)</div>`;
       }
       return '';
@@ -6265,14 +6334,15 @@
 
     function buildOrderScheduleAndInlineAutoHtml(o, hasPartner) {
       const sch = getOrder3DayScheduleInfo(o);
-      const isPicked = !hasPartner || o.pickupStatus === 'ဆိုင်မှ ပစ္စည်းကောက်ပြီးပြီ';
+      const isPicked = !hasPartner || o.pickupStatus === 'ဆိုင်မှ ပစ္စည်းကောက်ပြီးပြီ' || !!(o.shopMeta && o.shopMeta.adminPickupConfirmed);
       let stageBadge = '';
       if (o.status === 'ပို့ဆောင်နေပြီ' || o.status === 'COD ငွေပေးချေပြီး') {
         stageBadge = `<span class="text-emerald-700">🚚 Delivery ပို့ဆောင်ဆဲ (Day ${Math.max(1, sch.dayDiff + 1)})</span>`;
       } else if (hasPartner && !isPicked) {
         if (sch.dayDiff <= 0) stageBadge = `<span class="text-purple-700">⏳ Day 1 — မနက်ဖြန် (${sch.pickupDateStr}) 10:30 AM မှ Auto Pickup စမည်</span>`;
-        else if (!sch.canAutoPickupNow) stageBadge = `<span class="text-amber-700">⏳ ယနေ့ 10:30 AM တွင် Auto Pickup စမည် (ဆိုင်ထုပ်ပိုးချိန်)</span>`;
-        else stageBadge = `<span class="text-purple-800">📦 Pickup နေ့ (${sch.pickupDateStr} • 10:30 AM ကျော်)</span>`;
+        else if (sch.nowMmMins < 630) stageBadge = `<span class="text-amber-700">⏳ ယနေ့ 10:30 AM တွင် Auto Pickup စမည် (ဆိုင်ထုပ်ပိုးချိန်)</span>`;
+        else if (sch.nowMmMins >= sch.endMins) stageBadge = `<span class="text-slate-700">🌙 ညဘက် Auto Pickup ပိတ်ထားသည် (မနက် 10:30 AM မှ ပြန်စမည်)</span>`;
+        else stageBadge = `<span class="text-purple-800">📦 Pickup နေ့ (${sch.pickupDateStr} • 10:30 AM – 6:00 PM)</span>`;
       } else {
         if (!sch.canAutoDeliveryNow) stageBadge = `<span class="text-blue-700">✅ Hub အသင့် — ${sch.deliveryDateStr} (Day 3) Delivery ပို့ရန်</span>`;
         else stageBadge = `<span class="text-emerald-700 font-extrabold">🚚 ယနေ့ ပို့ရမည့်နေ့ (${sch.deliveryDateStr} • Day 3)</span>`;
@@ -6294,12 +6364,31 @@
       const orders = adminDataCache.pendingOrders || [];
       const riders = adminDataCache.riders || [];
 
+      autoCountdownQueue = autoCountdownQueue.filter(q => {
+        if (q.type !== 'pickup') return true;
+        const ord = orders.find(x => x.orderId === q.orderId);
+        if (!ord) return false;
+        const m = ord.shopMeta || {};
+        const sch = getOrder3DayScheduleInfo(ord);
+        const blocked = !!m.cancelRequested || !!m.cancelConfirmed || !!m.adminPickupConfirmed ||
+          ord.pickupStatus === 'ဆိုင်မှ ပစ္စည်းကောက်ပြီးပြီ' || ord.pickupStatus === 'ဆိုင်သို့ သွားနေပါသည်' ||
+          ord.status === 'ဝယ်သူ Cancel တောင်းဆိုထားသည်' || ord.status === 'ပယ်ဖျက်ပြီး (Cancelled)' ||
+          ord.status === 'ပို့ဆောင်နေပြီ' || ord.status === 'COD ငွေပေးချေပြီး' || ord.status === 'ပို့ပြီး' ||
+          !!ord.pickupRiderId || !!autoSkippedKeys[q.key];
+        return !blocked && sch.canAutoPickupNow;
+      });
+
       orders.forEach(o => {
         const hasPartner = o.shopIds && o.shopIds !== 'OWN';
-        const isPacked = !!(o.shopMeta && o.shopMeta.shopPacked);
+        const meta = o.shopMeta || {};
+        const isPacked = !!meta.shopPacked && (meta.allPartnerPacked !== false);
+        const isAlreadyPicked = !!meta.adminPickupConfirmed || o.pickupStatus === 'ဆိုင်မှ ပစ္စည်းကောက်ပြီးပြီ' || o.pickupStatus === 'ဆိုင်သို့ သွားနေပါသည်';
+        const isCancelOrBlocked = !!meta.cancelRequested || !!meta.cancelConfirmed ||
+          o.status === 'ဝယ်သူ Cancel တောင်းဆိုထားသည်' || o.status === 'ပယ်ဖျက်ပြီး (Cancelled)' ||
+          o.status === 'ပို့ဆောင်နေပြီ' || o.status === 'COD ငွေပေးချေပြီး' || o.status === 'ပို့ပြီး';
         const key = 'pu_' + o.orderId;
         const sch = getOrder3DayScheduleInfo(o);
-        if (!hasPartner || !isPacked || o.pickupRiderId || autoSkippedKeys[key] || !sch.canAutoPickupNow) return;
+        if (!hasPartner || !isPacked || isAlreadyPicked || isCancelOrBlocked || o.pickupRiderId || autoSkippedKeys[key] || !sch.canAutoPickupNow) return;
         if (autoCountdownQueue.some(q => q.key === key)) return;
 
         const pick = pickBestPickupRiderLocal(o, riders, orders);
@@ -6399,11 +6488,11 @@
 
     function cancelAutoCountdownItem(key) {
       autoSkippedKeys[key] = true;
+      saveAutoSkippedKeys();
       autoCountdownQueue = autoCountdownQueue.filter(q => q.key !== key);
       logAdminAutoEvent(false, '✋ Admin မှ Auto တားလိုက်သည်', `(${key}) ကို Admin ကိုယ်တိုင်ရွေးရန် ရပ်လိုက်ပါသည်။`, false);
       renderAutoCountdownBox();
     }
-
     function runAutoCountdownNow(key) {
       const idx = autoCountdownQueue.findIndex(q => q.key === key);
       if (idx === -1) return;
