@@ -2207,7 +2207,7 @@
       const gridEl = document.getElementById('sc-products-grid');
       if (!sec || !gridEl) return;
 
-      const allMatched = allProducts.filter(p =>
+      const allMatched = getCustomerBuyBoxProducts(sizeIdx).filter(p =>
         AGE_REQUIRED_CATS.includes(p.category) &&
         (p.prices[sizeIdx] || 0) > 0 &&
         (p.stocks[sizeIdx] || 0) > 0
@@ -2431,8 +2431,45 @@
       return out;
     }
 
+    function getCustomerBuyBoxProducts(sizeIdx = -1) {
+      const groups = {};
+      const order = [];
+      allProducts.forEach(p => {
+        const key = normalizeProdKey(p.name);
+        if (!key) return;
+        if (!groups[key]) {
+          groups[key] = [];
+          order.push(key);
+        }
+        groups[key].push(p);
+      });
+
+      return order.map(key => {
+        const list = groups[key];
+        if (list.length === 1) return list[0];
+
+        const hasStockFn = (p) => sizeIdx >= 0
+          ? ((p.prices[sizeIdx] || 0) > 0 && (p.stocks[sizeIdx] || 0) > 0)
+          : (p.totalStock > 0);
+        const inStockList = list.filter(hasStockFn);
+        const pool = inStockList.length > 0 ? inStockList : list;
+
+        return pool.slice().sort((a, b) => {
+          const pa = getEffectivePricing(a, sizeIdx).salePrice || a.minPrice || 999999999;
+          const pb = getEffectivePricing(b, sizeIdx).salePrice || b.minPrice || 999999999;
+          if (pa !== pb) return pa - pb;
+          const aOwn = a.shopId === 'OWN' ? 0 : 1;
+          const bOwn = b.shopId === 'OWN' ? 0 : 1;
+          if (aOwn !== bOwn) return aOwn - bOwn;
+          const sa = sizeIdx >= 0 ? (a.stocks[sizeIdx] || 0) : (a.totalStock || 0);
+          const sb = sizeIdx >= 0 ? (b.stocks[sizeIdx] || 0) : (b.totalStock || 0);
+          return sb - sa;
+        })[0];
+      });
+    }
+
     function getProductsInSelectedCategory() {
-      return allProducts.filter(p => {
+      return getCustomerBuyBoxProducts(-1).filter(p => {
         const prInfo = getEffectivePricing(p, -1);
         if (selectedCategory === '🏷️ Promotion') return prInfo.isPromo;
         if (selectedCategory === '🔥 Trending') return !!p.trending;
@@ -2578,7 +2615,7 @@
       if (!grid) return;
       const q = (document.getElementById('product-search')?.value || '').trim().toLowerCase();
 
-      const filtered = allProducts.filter(p => {
+      const filtered = getCustomerBuyBoxProducts(-1).filter(p => {
         const prInfo = getEffectivePricing(p, -1);
         if (selectedCategory === '🏷️ Promotion' && !prInfo.isPromo) return false;
         else if (selectedCategory === '🔥 Trending' && !p.trending) return false;
@@ -2745,8 +2782,11 @@
       document.getElementById('pm-qty').innerText = modalQty;
     }
 
-    function getProductSizeStock(prodName, sizeLabel) {
-      const p = allProducts.find(x => x.name === (prodName || '').trim());
+    function getProductSizeStock(prodName, sizeLabel, shopId) {
+      const targetName = (prodName || '').trim();
+      const targetShop = shopId ? normalizeShopId(shopId) : '';
+      const p = allProducts.find(x => x.name === targetName && (!targetShop || x.shopId === targetShop))
+        || allProducts.find(x => x.name === targetName);
       if (!p) return 0;
       const sizeMode = getProductSizeMode(p.category);
       if (sizeMode === 'none' || !sizeLabel || sizeLabel === 'အသက်မလို') {
@@ -3005,7 +3045,7 @@
       if (!cart[idx]) return;
       const item = cart[idx];
       if (delta > 0) {
-        const stk = getProductSizeStock(item.name, item.size);
+        const stk = getProductSizeStock(item.name, item.size, item.shopId);
         const totalInCart = getCartQtyForProductSize(item.name, item.size);
         if (totalInCart >= stk) {
           showBannerNoti('⚠️ လက်ကျန်အရေအတွက် ပြည့်ပါပြီ', `${item.name} အတွက် လက်ကျန်ရှိသလောက်သာ ထပ်တိုးနိုင်ပါသည်။`);
