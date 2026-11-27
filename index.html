@@ -3163,7 +3163,7 @@
           body: JSON.stringify({
             action: 'customerRequestCancel',
             orderId: orderId,
-            reason: (reason || '').trim() || 'ဝယ်သူမှ ၁ နာရီအတွင်း Cancel တောင်းဆို'
+            reason: (reason || '').trim() || 'ဝယ်သူမှ ၁ မိနစ်အတွင်း Cancel တောင်းဆို'
           })
         });
         renderCustomerTrackingUI();
@@ -3300,7 +3300,7 @@
         const cancelBtnHtml = showCancelBtn
           ? `<div class="cust-cancel-wrap pt-1">
                <button type="button" data-deadline="${Number(o.cancelDeadlineMs)}" onclick="customerCancelOrder('${escapeHtml(o.orderId)}', this)" class="cust-cancel-btn w-full bg-red-50 hover:bg-red-100 text-red-700 border-2 border-red-200 font-extrabold py-2.5 px-3 rounded-xl text-xs transition">
-                 ❌ ၁ နာရီအတွင်း Cancel တောင်းဆိုမည် (<span class="cancel-time-left">${formatRemainingCountdown(remainMs)}</span>)
+                 ❌ ၁ မိနစ်အတွင်း Cancel တောင်းဆိုမည် (<span class="cancel-time-left">${formatRemainingCountdown(remainMs)}</span>)
                </button>
              </div>`
           : '';
