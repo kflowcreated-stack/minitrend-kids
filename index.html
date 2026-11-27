@@ -115,7 +115,6 @@
 
   <script>
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzjiat7rNkOGkQYjf3RT6rC4g5AdXiVtraecqUTG8wXcu4l6Dm1mmtnXpVhaxjAzsrd/exec";
-    const ADMIN_PASS = "minitrend2026";
     let DELIVERY_FEE_FLAT = 4500;
 
     const FIREBASE_CONFIG = {
@@ -3595,20 +3594,59 @@
     // =========================================================================
     //                          ADMIN PANEL LOGIC
     // =========================================================================
-    function handleAdminLogin(e) {
+    (function() {
+      const _origFetch = window.fetch.bind(window);
+      window.fetch = function(input, init) {
+        try {
+          if (APP_ROLE === 'admin' && typeof input === 'string' && input.indexOf(APPS_SCRIPT_URL) === 0) {
+            const admKey = localStorage.getItem('mt_admin_key') || '';
+            if (admKey && init && init.method && init.method.toUpperCase() === 'POST' && typeof init.body === 'string') {
+              const parsed = JSON.parse(init.body);
+              if (parsed && typeof parsed === 'object' && !parsed.adminKey) {
+                parsed.adminKey = admKey;
+                init = Object.assign({}, init, { body: JSON.stringify(parsed) });
+              }
+            }
+          }
+        } catch (e) {}
+        return _origFetch(input, init);
+      };
+    })();
+
+    async function handleAdminLogin(e) {
       e.preventDefault();
-      const val = document.getElementById('admin-pass-input').value.trim();
-      if (val === ADMIN_PASS) {
-        localStorage.setItem('mt_admin_authed', '1');
-        document.getElementById('admin-login-err').classList.add('hidden');
-        showAdminDashboard();
-      } else {
-        document.getElementById('admin-login-err').classList.remove('hidden');
+      const inputEl = document.getElementById('admin-pass-input');
+      const errEl = document.getElementById('admin-login-err');
+      const btn = e.target ? e.target.querySelector('button[type="submit"]') : null;
+      const val = (inputEl ? inputEl.value : '').trim();
+      if (!val) return;
+
+      errEl.classList.add('hidden');
+      if (btn) { btn.disabled = true; btn.innerText = '⏳ စစ်ဆေးနေပါသည်...'; }
+
+      try {
+        const res = await fetch(`${APPS_SCRIPT_URL}?action=verifyAdmin&adminKey=${encodeURIComponent(val)}&t=${Date.now()}`, { cache: 'no-store' });
+        const data = await res.json();
+        if (data && data.status === 'ok') {
+          localStorage.setItem('mt_admin_authed', '1');
+          localStorage.setItem('mt_admin_key', val);
+          if (inputEl) inputEl.value = '';
+          showAdminDashboard();
+        } else {
+          errEl.innerText = '❌ Password မှားယွင်းနေပါသည်။';
+          errEl.classList.remove('hidden');
+        }
+      } catch (err) {
+        errEl.innerText = '⚠️ အင်တာနက်ချိတ်ဆက်မှု စစ်ဆေးပေးပါ။';
+        errEl.classList.remove('hidden');
       }
+
+      if (btn) { btn.disabled = false; btn.innerText = '🔓 ဝင်ရောက်မည်'; }
     }
 
     function logoutAdmin() {
       localStorage.removeItem('mt_admin_authed');
+      localStorage.removeItem('mt_admin_key');
       document.getElementById('admin-dashboard').classList.add('hidden');
       document.getElementById('admin-login-box').classList.remove('hidden');
     }
@@ -4357,11 +4395,17 @@
     }
 
     async function loadAdminDashboard(silent = false) {
+      const admKey = localStorage.getItem('mt_admin_key') || '';
+      if (!admKey) { logoutAdmin(); return; }
       const btn = document.getElementById('btn-admin-refresh');
       if (btn && !silent) btn.innerText = '⏳...';
       try {
-        const res = await fetch(`${APPS_SCRIPT_URL}?action=getVisitors&t=${Date.now()}`, { cache: 'no-store' });
+        const res = await fetch(`${APPS_SCRIPT_URL}?action=getVisitors&adminKey=${encodeURIComponent(admKey)}&t=${Date.now()}`, { cache: 'no-store' });
         const data = await res.json();
+        if (data && data.status === 'unauthorized') {
+          logoutAdmin();
+          return;
+        }
         adminDataCache = data;
         if (data && data.appSettings) applyCentralSettingsToUi(data.appSettings);
         if (data && data.sheetUrl) {
@@ -6944,7 +6988,7 @@
         }
         updateAdminClock();
         setInterval(updateAdminClock, 1000);
-        if (localStorage.getItem('mt_admin_authed') === '1') {
+        if (localStorage.getItem('mt_admin_authed') === '1' && localStorage.getItem('mt_admin_key')) {
           showAdminDashboard();
         }
         setInterval(() => {
