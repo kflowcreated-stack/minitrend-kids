@@ -151,6 +151,7 @@
           <h2 id="rider-header-name" class="text-lg sm:text-xl font-extrabold mt-0.5">ဝန်ထမ်းအမည်</h2>
         </div>
         <div class="flex flex-wrap gap-1.5">
+          <button type="button" id="btn-rider-duty" onclick="toggleRiderDuty()" class="bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-extrabold px-3 py-2 rounded-xl shadow-sm">🟢 အလုပ်ဆင်းနေသည်</button>
           <button type="button" id="btn-del-install" onclick="triggerInstall()" class="hidden bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-extrabold px-3 py-2 rounded-xl shadow-sm">📲 App ဒေါင်းမည်</button>
           <button type="button" onclick="connectRiderFirebase()" id="btn-rider-fcm" class="bg-amber-400 hover:bg-amber-300 text-gray-900 text-xs font-extrabold px-3 py-2 rounded-xl shadow-sm">🔔 Noti ချိတ်မည်</button>
           <button type="button" onclick="loadDeliveryDashboard(false)" id="btn-rider-refresh" class="bg-white/20 hover:bg-white/30 text-white text-xs font-bold px-3 py-2 rounded-xl">🔄 ပြန်စစ်</button>
@@ -617,6 +618,45 @@
       btn.disabled = false; btn.innerText = "🔓 ဝန်ထမ်း App သို့ ဝင်ရောက်မည်";
     }
 
+    let currentRiderDuty = 'On';
+
+    function updateRiderDutyButton(dutyVal) {
+      currentRiderDuty = (dutyVal === 'Off') ? 'Off' : 'On';
+      const btn = document.getElementById('btn-rider-duty');
+      if (!btn) return;
+      if (currentRiderDuty === 'Off') {
+        btn.className = 'bg-red-600 hover:bg-red-700 text-white text-xs font-extrabold px-3 py-2 rounded-xl shadow-sm';
+        btn.innerText = '🔴 နားနေသည်';
+      } else {
+        btn.className = 'bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-extrabold px-3 py-2 rounded-xl shadow-sm';
+        btn.innerText = '🟢 အလုပ်ဆင်းနေသည်';
+      }
+    }
+
+    async function toggleRiderDuty() {
+      const saved = getSavedRiderSession();
+      if (!saved || !saved.id) return;
+      const nextDuty = currentRiderDuty === 'Off' ? 'On' : 'Off';
+      const confirmMsg = nextDuty === 'Off'
+        ? '🔴 "နားနေသည်" ပြောင်းမည်လား? (နားနေစဉ် Auto တာဝန်အသစ် မဝင်ပါ)'
+        : '🟢 "အလုပ်ဆင်းနေသည်" ပြန်ဖွင့်မည်လား?';
+      if (!confirm(confirmMsg)) return;
+
+      updateRiderDutyButton(nextDuty);
+      try {
+        await fetch(APPS_SCRIPT_URL, {
+          method: "POST", mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "setRiderDuty",
+            riderId: saved.id,
+            pin: saved.pin,
+            duty: nextDuty
+          })
+        });
+      } catch (e) {}
+    }
+
     function logoutRider() {
       try { localStorage.removeItem('mt_rider_session'); } catch (e) {}
       document.getElementById('delivery-dashboard').classList.add('hidden');
@@ -668,10 +708,17 @@
       document.getElementById('tab-badge-pickup').innerText = pickupTasks.length;
       document.getElementById('tab-badge-delivery').innerText = pending.length;
 
+      if (data.rider) {
+        updateRiderDutyButton(data.rider.duty || 'On');
+      }
       if (!hasAutoSelectedTab) {
         hasAutoSelectedTab = true;
-        if (pickupTasks.length > 0 && pending.length === 0) switchRiderTab('pickup', true);
-        else switchRiderTab('delivery', true);
+        const rRole = (data.rider && data.rider.dutyRole) ? data.rider.dutyRole : 'Both';
+        if (rRole === 'Pickup' || (rRole !== 'Delivery' && pickupTasks.length > 0 && pending.length === 0)) {
+          switchRiderTab('pickup', true);
+        } else {
+          switchRiderTab('delivery', true);
+        }
       }
 
       const rId = data.rider ? data.rider.id : '';
