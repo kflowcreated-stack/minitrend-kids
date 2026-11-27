@@ -203,7 +203,7 @@
           <p id="stat-returns-pending" class="text-[10px] font-bold text-red-500 mt-0.5"></p>
         </button>
         <button type="button" onclick="switchShopTab('payouts')" class="bg-emerald-600 text-white p-3 rounded-2xl shadow-sm text-center hover:bg-emerald-700 transition">
-          <p class="text-[11px] font-bold text-emerald-100">💰 ရရန်ကျန် (95%)</p>
+          <p id="stat-unpaid-label" class="text-[11px] font-bold text-emerald-100">💰 ရရန်ကျန် (95%)</p>
           <p id="stat-unpaid-total" class="text-base sm:text-xl font-extrabold mt-1.5">0 Ks</p>
           <p class="text-[10px] text-emerald-100 mt-0.5">ငွေစာရင်းကြည့်ရန်</p>
         </button>
@@ -410,7 +410,7 @@
       <div id="tab-panel-payouts" class="hidden space-y-4">
         <div class="grid grid-cols-2 gap-3">
           <div class="bg-white border-2 border-emerald-200 rounded-2xl p-3.5 shadow-sm">
-            <p class="text-[11px] font-bold text-gray-500">⏳ MiniTrend မှ ရှင်းရန်ကျန် (95%)</p>
+            <p id="payout-unpaid-label" class="text-[11px] font-bold text-gray-500">⏳ MiniTrend မှ ရှင်းရန်ကျန် (95%)</p>
             <p id="payout-unpaid-sum" class="text-xl font-extrabold text-emerald-700 mt-1">0 ကျပ်</p>
           </div>
           <div class="bg-white border border-gray-200 rounded-2xl p-3.5 shadow-sm">
@@ -468,7 +468,7 @@
           <p><b>၁။ ဆိုင်အလုပ်ရှုပ်သက်သာစေရန် ကူညီပေးခြင်း:</b> ဝယ်သူရှာဖွေခြင်း၊ စာပြန်ဖြေကြားခြင်းနှင့် Delivery ပို့ဆောင်ခြင်းများကို MiniTrend Kids မှ အပြည့်အစုံ တာဝန်ယူ ဆောင်ရွက်ပေးပါမည်။</p>
           <p><b>၂။ ပစ္စည်းထုပ်ပိုးခြင်း (`📦 ထုပ်ပိုးပြီး` စနစ်):</b> အော်ဒါအသစ်ဝင်လာပါက ဆိုင်ဘက်မှ ပစ္စည်းမှန်ကန်စွာ စစ်ဆေးထုပ်ပိုးပြီး <b>"📦 ထုပ်ပိုးပြီး"</b> ခလုတ်ကို နှိပ်ပေးရုံသာ ဖြစ်ပါသည်။</p>
           <p><b>၃။ တစ်နေ့တာရောင်းရစာရင်း:</b> နေ့စဉ်အော်ဒါများကို App ထဲရှိ <b>"MiniTrend Kids မှ တစ်နေ့တာရောင်းရသော"</b> စာရင်းတွင် အချိန်မရွေး တိုက်ဆိုင်စစ်ဆေးနိုင်ပါသည်။</p>
-          <p><b>၄။ ဝန်ဆောင်ခ (၅%) နှင့် ဆိုင်ရငွေ (၉၅%):</b> အောင်မြင်စွာ ရောင်းချပြီးသော ပစ္စည်းတန်ဖိုးအပေါ် MiniTrend Kids ဝန်ဆောင်ခ <b>၅%</b> နှုတ်ယူပြီး ဆိုင်ဘက်မှ <b>၉၅%</b> ရရှိပါမည်။</p>
+          <p class="shop-agreement-rate-clause"><b>၄။ ဝန်ဆောင်ခ (5%) နှင့် ဆိုင်ရငွေ (95%):</b> အောင်မြင်စွာ ရောင်းချပြီးသော ပစ္စည်းတန်ဖိုးအပေါ် MiniTrend Kids ဝန်ဆောင်ခ <b>၅%</b> နှုတ်ယူပြီး ဆိုင်ဘက်မှ <b>၉၅%</b> ရရှိပါမည်။</p>
           <p><b>၅။ ငွေရှင်းပေးမည့်အချိန်:</b> ဝယ်သူထံ ပစ္စည်းရောက်ရှိပြီး ငွေချေပြီးသည့် <b>နောက်နေ့ (အော်ဒါတင်ပြီး ခန့်မှန်း ၄ ရက်မြောက်)</b> တွင် ဆိုင်ထံသို့ ငွေလွှဲရှင်းပေးပါမည်။</p>
           <p class="bg-amber-100/70 border border-amber-300 rounded-lg px-3 py-2 font-extrabold text-amber-950">📞 ဆက်သွယ်ရန် MiniTrend Kids Admin ဖုန်း — <a href="tel:09942739543" class="shop-admin-phone-link underline text-amber-800">09-942739543</a></p>
         </div>
@@ -507,7 +507,7 @@
         <p><b>၁။ ဆိုင်အလုပ်ရှုပ်သက်သာစေရန် ကူညီပေးခြင်း:</b> ဝယ်သူရှာဖွေခြင်း၊ စာပြန်ဖြေကြားခြင်းနှင့် Delivery ပို့ဆောင်ခြင်းများကို MiniTrend Kids မှ အပြည့်အစုံ တာဝန်ယူ ဆောင်ရွက်ပေးပါမည်။</p>
         <p><b>၂။ ပစ္စည်းထုပ်ပိုးခြင်း (`📦 ထုပ်ပိုးပြီး` စနစ်):</b> အော်ဒါအသစ်ဝင်လာပါက ဆိုင်ဘက်မှ ပစ္စည်းမှန်ကန်စွာ စစ်ဆေးထုပ်ပိုးပြီး <b>"📦 ထုပ်ပိုးပြီး"</b> ခလုတ်ကို နှိပ်ပေးရုံသာ ဖြစ်ပါသည်။</p>
         <p><b>၃။ တစ်နေ့တာရောင်းရစာရင်း:</b> နေ့စဉ်အော်ဒါများကို App ထဲရှိ <b>"MiniTrend Kids မှ တစ်နေ့တာရောင်းရသော"</b> စာရင်းတွင် အချိန်မရွေး တိုက်ဆိုင်စစ်ဆေးနိုင်ပါသည်။</p>
-        <p><b>၄။ ဝန်ဆောင်ခ (၅%) နှင့် ဆိုင်ရငွေ (၉၅%):</b> အောင်မြင်စွာ ရောင်းချပြီးသော ပစ္စည်းတန်ဖိုးအပေါ် MiniTrend Kids ဝန်ဆောင်ခ <b>၅%</b> နှုတ်ယူပြီး ဆိုင်ဘက်မှ <b>၉၅%</b> ရရှိပါမည်။</p>
+        <p class="shop-agreement-rate-clause"><b>၄။ ဝန်ဆောင်ခ (5%) နှင့် ဆိုင်ရငွေ (95%):</b> အောင်မြင်စွာ ရောင်းချပြီးသော ပစ္စည်းတန်ဖိုးအပေါ် MiniTrend Kids ဝန်ဆောင်ခ <b>၅%</b> နှုတ်ယူပြီး ဆိုင်ဘက်မှ <b>၉၅%</b> ရရှိပါမည်။</p>
         <p><b>၅။ ငွေရှင်းပေးမည့်အချိန်:</b> ဝယ်သူထံ ပစ္စည်းရောက်ရှိပြီး ငွေချေပြီးသည့် <b>နောက်နေ့ (အော်ဒါတင်ပြီး ခန့်မှန်း ၄ ရက်မြောက်)</b> တွင် ဆိုင်ထံသို့ ငွေလွှဲရှင်းပေးပါမည်။</p>
         <p class="bg-amber-50 border border-amber-200 rounded-xl p-3 font-extrabold text-amber-950">📞 ဆက်သွယ်ရန် MiniTrend Kids Admin ဖုန်း — <a href="tel:09942739543" class="shop-admin-phone-link underline text-amber-800">09-942739543</a></p>
       </div>
@@ -1715,14 +1715,41 @@
       loadShopDropdown();
     }
 
+    function getEffectiveShopRates(rateVal) {
+      const num = (rateVal !== undefined && rateVal !== null && rateVal !== '' && !isNaN(Number(rateVal)))
+        ? Number(rateVal)
+        : 5;
+      const comm = Math.max(0, Math.min(100, num));
+      const payout = Math.max(0, 100 - comm);
+      return { comm, payout };
+    }
+
+    function applyShopRateLabels(rateVal) {
+      const { comm, payout } = getEffectiveShopRates(rateVal);
+      const metaEl = document.getElementById('shop-header-meta');
+      if (metaEl) metaEl.innerText = `ကော်မရှင်: ${comm}% | ဆိုင်ရငွေ: ${payout}%`;
+
+      const statLbl = document.getElementById('stat-unpaid-label');
+      if (statLbl) statLbl.innerText = `💰 ရရန်ကျန် (${payout}%)`;
+
+      const tabBtn = document.getElementById('tab-btn-payouts');
+      if (tabBtn) tabBtn.innerText = `💰 ${payout}% စာရင်း`;
+
+      const payUnpaidLbl = document.getElementById('payout-unpaid-label');
+      if (payUnpaidLbl) payUnpaidLbl.innerText = `⏳ MiniTrend မှ ရှင်းရန်ကျန် (${payout}%)`;
+
+      document.querySelectorAll('.shop-agreement-rate-clause').forEach(el => {
+        el.innerHTML = `<b>၄။ ဝန်ဆောင်ခ (${comm}%) နှင့် ဆိုင်ရငွေ (${payout}%):</b> အောင်မြင်စွာ ရောင်းချပြီးသော ပစ္စည်းတန်ဖိုးအပေါ် MiniTrend Kids ဝန်ဆောင်ခ <b>${comm}%</b> နှုတ်ယူပြီး ဆိုင်ဘက်မှ <b>${payout}%</b> ရရှိပါမည်။`;
+      });
+    }
+
     function showDashboardScreen() {
       const saved = getSavedShopSession();
       if (!saved) return;
       document.getElementById('shop-login-card').classList.add('hidden');
       document.getElementById('shop-dashboard').classList.remove('hidden');
       document.getElementById('shop-header-name').innerText = `${saved.name} (${saved.id})`;
-      const comm = Number(saved.commissionRate !== undefined ? saved.commissionRate : 5);
-      document.getElementById('shop-header-meta').innerText = `ကော်မရှင်: ${comm}% | ဆိုင်ရငွေ: ${100 - comm}%`;
+      applyShopRateLabels(saved.commissionRate);
       updateQuietHoursBanner();
       if (isStandaloneApp()) document.getElementById('btn-shop-install')?.classList.add('hidden');
       if ('Notification' in window && Notification.permission === 'granted') {
@@ -1750,19 +1777,39 @@
       if (data && data.appSettings) applyShopCentralSettings(data.appSettings);
       updateQuietHoursBanner(data.isQuietHours);
 
+      const savedSess = getSavedShopSession();
+      const rawRate = data.shop ? data.shop.commissionRate : (savedSess ? savedSess.commissionRate : 5);
+      const shopRates = getEffectiveShopRates(rawRate);
+
       if (data.shop) {
         applyShopApprovalGate(data.shop);
-        const comm = Number(data.shop.commissionRate !== undefined ? data.shop.commissionRate : 5);
         document.getElementById('shop-header-name').innerText = `${data.shop.name} (${data.shop.id})`;
-        document.getElementById('shop-header-meta').innerText = `ကော်မရှင်: ${comm}% | ဆိုင်ရငွေ: ${100 - comm}%`;
+        if (savedSess && savedSess.id === data.shop.id) {
+          savedSess.name = data.shop.name || savedSess.name;
+          savedSess.commissionRate = shopRates.comm;
+          saveShopSession(savedSess);
+        }
       }
+      applyShopRateLabels(shopRates.comm);
 
       const activeOrders = data.activeOrders || [];
       const returnOrders = data.returnOrders || [];
       const unpaidOrders = data.unpaidPayoutOrders || [];
       const settledOrders = data.settledPayoutOrders || [];
       const restockHistory = data.restockHistory || [];
-      const unpaidTotal = Number(data.unpaidPayoutTotal || 0);
+
+      const calcLiveUnpaidPayout = (o) => {
+        const g = Number(o.gross || 0);
+        if (g > 0) {
+          const c = Math.round(g * (shopRates.comm / 100));
+          return Math.max(0, g - c);
+        }
+        return Number(o.payout || 0);
+      };
+
+      const unpaidTotal = unpaidOrders.length > 0
+        ? unpaidOrders.reduce((s, o) => s + calcLiveUnpaidPayout(o), 0)
+        : Number(data.unpaidPayoutTotal || 0);
       const settledTotal = Number(data.settledPayoutTotal || 0);
 
       shopProductsCache = Array.isArray(data.shopProducts) ? data.shopProducts : [];
@@ -1859,6 +1906,10 @@
             }
           }
 
+          const oGross = Number(o.gross || 0);
+          const oComm = oGross > 0 ? Math.round(oGross * (shopRates.comm / 100)) : Number(o.commission || 0);
+          const oPayout = oGross > 0 ? Math.max(0, oGross - oComm) : Number(o.payout || 0);
+
           return `
             <div class="rounded-2xl border-2 ${borderCls} p-3.5 shadow-sm space-y-2.5">
               <div class="flex flex-wrap justify-between items-center gap-1.5">
@@ -1870,8 +1921,8 @@
               </div>
               <div class="space-y-2">${itemsHtml}</div>
               <div class="bg-amber-50/70 border border-amber-200 rounded-xl px-3 py-2 flex flex-wrap justify-between items-center gap-2 text-xs">
-                <span class="text-gray-700 font-bold">ပစ္စည်းတန်ဖိုး: ${Number(o.gross || 0).toLocaleString()} Ks <span class="text-gray-500">(-${o.commissionRate}%: ${Number(o.commission || 0).toLocaleString()})</span></span>
-                <span class="font-extrabold text-emerald-700">💰 ဆိုင်ရမည့်ငွေ (${100 - Number(o.commissionRate || 5)}%): ${Number(o.payout || 0).toLocaleString()} Ks</span>
+                <span class="text-gray-700 font-bold">ပစ္စည်းတန်ဖိုး: ${oGross.toLocaleString()} Ks <span class="text-gray-500">(-${shopRates.comm}%: ${oComm.toLocaleString()})</span></span>
+                <span class="font-extrabold text-emerald-700">💰 ဆိုင်ရမည့်ငွေ (${shopRates.payout}%): ${oPayout.toLocaleString()} Ks</span>
               </div>
               ${packActionHtml}
             </div>
@@ -1960,7 +2011,7 @@
                 </div>
                 <div class="bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs space-y-1">
                   <p class="font-extrabold text-red-700">📝 အကြောင်းရင်း: ${escapeHtml(ci.reason || 'အော်ဒါပယ်ဖျက်ပြီး')} <span class="text-gray-500 font-normal">(${escapeHtml(ci.cancelledAt || '')})</span></p>
-                  <p class="text-[11px] text-gray-700 font-bold">💸 95% ငွေစာရင်း: <span class="line-through text-gray-400">${Number(o.gross || 0).toLocaleString()} Ks</span> → <span class="text-red-600 font-extrabold">0 ကျပ် (Cancel)</span></p>
+                  <p class="text-[11px] text-gray-700 font-bold">💸 ${shopRates.payout}% ငွေစာရင်း: <span class="line-through text-gray-400">${Number(o.gross || 0).toLocaleString()} Ks</span> → <span class="text-red-600 font-extrabold">0 ကျပ် (Cancel)</span></p>
                   <p class="text-[11px] text-gray-600 font-bold">${cancelNote}</p>
                 </div>
                 <div class="space-y-1.5">${retItemsHtml}</div>
@@ -1997,7 +2048,7 @@
               </div>
               <div class="bg-white/90 border border-red-200 rounded-xl px-3 py-2 text-xs space-y-1">
                 <p class="font-extrabold text-red-700">❌ အကြောင်းရင်း: ${escapeHtml(ri.reason || 'Return ဖြစ်သည်')} <span class="text-gray-500 font-normal">(${escapeHtml(ri.confirmedAt || '')})</span></p>
-                <p class="text-[11px] text-gray-700 font-bold">💸 95% ငွေစာရင်း: <span class="line-through text-gray-400">${Number(o.gross || 0).toLocaleString()} Ks</span> → <span class="text-red-600 font-extrabold">0 ကျပ် (Return)</span></p>
+                <p class="text-[11px] text-gray-700 font-bold">💸 ${shopRates.payout}% ငွေစာရင်း: <span class="line-through text-gray-400">${Number(o.gross || 0).toLocaleString()} Ks</span> → <span class="text-red-600 font-extrabold">0 ကျပ် (Return)</span></p>
                 <p class="text-[11px] text-gray-600">${stepDesc}</p>
               </div>
               <div class="space-y-1.5">${retItemsHtml}</div>
@@ -2018,7 +2069,7 @@
               <p class="text-[11px] text-gray-500 mt-0.5">ပို့ပြီးချိန်: ${escapeHtml(o.deliveredAt || o.dateTime)}</p>
               <p class="text-[11px] text-gray-600 mt-0.5">${(o.items || []).map(i => `${escapeHtml(i.name)}${i.size && i.size !== 'အသက်မလို' ? ' (' + escapeHtml(i.size) + ')' : ''} x${i.qty}`).join(', ')}</p>
             </div>
-            <span class="font-extrabold text-emerald-700 text-sm shrink-0">${Number(o.payout).toLocaleString()} Ks</span>
+            <span class="font-extrabold text-emerald-700 text-sm shrink-0">${calcLiveUnpaidPayout(o).toLocaleString()} Ks</span>
           </div>
         `).join('');
       }
