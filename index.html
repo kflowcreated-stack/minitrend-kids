@@ -3572,11 +3572,22 @@
 
     function isInAppBrowser() {
       const ua = navigator.userAgent || navigator.vendor || '';
-      return /BytedanceWebview|TikTok|musical_ly|FBAN|FBAV|Instagram|Viber|Line|MicroMessenger/i.test(ua);
+      return /BytedanceWebview|ByteLocale|TikTok|Trill|musical_ly|FBAN|FBAV|Instagram|Viber|Line|MicroMessenger|;\s*wv\)/i.test(ua);
     }
 
     function isAndroidDevice() {
       return /Android/i.test(navigator.userAgent || '');
+    }
+
+    function openInAndroidChrome() {
+      const cleanUrl = window.location.href.replace(/^https?:\/\//i, '');
+      const intentUrl = `intent://${cleanUrl}#Intent;scheme=https;package=com.android.chrome;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;end`;
+      const a = document.createElement('a');
+      a.href = intentUrl;
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => a.remove(), 500);
     }
 
     async function triggerCustomerInstall() {
@@ -3589,9 +3600,15 @@
         return;
       }
       if (isAndroidDevice() && isInAppBrowser()) {
-        const cleanUrl = window.location.href.replace(/^https?:\/\//i, '');
-        const fallback = encodeURIComponent(window.location.href);
-        window.location.href = `intent://${cleanUrl}#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=${fallback};end`;
+        openInAndroidChrome();
+        setTimeout(() => {
+          if (!document.hidden) {
+            copyTextToClipboard(
+              window.location.href,
+              '📋 App Link Copy ကူးပြီးပါပြီ! Chrome ဖွင့်ပြီး Paste ချဖွင့်လိုက်ရင် တန်းဒေါင်းလို့ရပါပြီ။'
+            );
+          }
+        }, 1500);
         return;
       }
       document.getElementById('ios-install-modal').classList.remove('hidden');
@@ -7013,6 +7030,10 @@
         }, 25000);
       } else {
         document.getElementById('customer-view').classList.remove('hidden');
+        if (isAndroidDevice() && isInAppBrowser() && !sessionStorage.getItem('mt_chrome_tried')) {
+          sessionStorage.setItem('mt_chrome_tried', '1');
+          openInAndroidChrome();
+        }
         if (!isStandaloneApp()) {
           document.getElementById('btn-install-app')?.classList.remove('hidden');
         }
