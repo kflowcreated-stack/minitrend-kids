@@ -136,8 +136,9 @@
     const AGE_REQUIRED_CATS = ["ဝမ်းဆက်", "နွေရာသီဝတ်", "အင်္ကျီ", "ဘောင်းဘီ", "ဦးထုတ်", "ဖိနပ်"];
     const SIZE_LABELS = [
       "၆ လ - ၁ နှစ်", "၁ နှစ် - ၂ နှစ်", "၂ - ၃ နှစ်",
-      "၄ - ၅ နှစ်", "၆ - ၇ နှစ်", "၈ - ၉ နှစ်"
+      "၄ - ၅ နှစ်", "၆ - ၇ နှစ်", "၈ - ၉ နှစ်", "၀ - ၆ လ"
     ];
+    const SIZE_DISPLAY_ORDER = [6, 0, 1, 2, 3, 4, 5];
 
     window.__swRegistrationPromise = null;
     if ('serviceWorker' in navigator) {
@@ -250,6 +251,7 @@
           <div>
             <label class="block text-xs font-extrabold text-gray-700 mb-1">🎂 အသက်</label>
             <select id="sc-age" class="w-full border-2 border-purple-200 rounded-xl px-3 py-2.5 bg-gray-50 font-bold text-sm">
+              <option value="0.25">၀ - ၆ လ</option>
               <option value="0.75">၆ လ - ၁ နှစ်</option>
               <option value="1.5" selected>၁ နှစ် - ၂ နှစ်</option>
               <option value="2.5">၂ နှစ် - ၃ နှစ်</option>
@@ -2275,30 +2277,33 @@
       const weightLb = parseFloat(document.getElementById('sc-weight').value) || 20;
       const genderText = selectedSizeGender === 'boy' ? 'သားသား' : 'မီးမီး';
 
-      let ageIdx = 0;
-      if (ageVal <= 1) ageIdx = 0;
-      else if (ageVal <= 2) ageIdx = 1;
-      else if (ageVal <= 3.5) ageIdx = 2;
-      else if (ageVal <= 5.5) ageIdx = 3;
-      else if (ageVal <= 7.5) ageIdx = 4;
-      else ageIdx = 5;
+      let ageRank = 0;
+      if (ageVal <= 0.5) ageRank = 0;
+      else if (ageVal <= 1) ageRank = 1;
+      else if (ageVal <= 2) ageRank = 2;
+      else if (ageVal <= 3.5) ageRank = 3;
+      else if (ageVal <= 5.5) ageRank = 4;
+      else if (ageVal <= 7.5) ageRank = 5;
+      else ageRank = 6;
 
-      let wtIdx = 0;
-      if (weightLb <= 20) wtIdx = 0;
-      else if (weightLb <= 26) wtIdx = 1;
-      else if (weightLb <= 33) wtIdx = 2;
-      else if (weightLb <= 44) wtIdx = 3;
-      else if (weightLb <= 56) wtIdx = 4;
-      else wtIdx = 5;
+      let wtRank = 0;
+      if (weightLb <= 15) wtRank = 0;
+      else if (weightLb <= 20) wtRank = 1;
+      else if (weightLb <= 26) wtRank = 2;
+      else if (weightLb <= 33) wtRank = 3;
+      else if (weightLb <= 44) wtRank = 4;
+      else if (weightLb <= 56) wtRank = 5;
+      else wtRank = 6;
 
-      const finalIdx = Math.min(5, Math.max(ageIdx, wtIdx));
+      const finalRank = Math.min(6, Math.max(ageRank, wtRank));
+      const finalIdx = SIZE_DISPLAY_ORDER[finalRank];
       const recSize = SIZE_LABELS[finalIdx];
       lastCalculatedSizeIdx = finalIdx;
       scSelectedCat = 'အားလုံး';
 
       document.getElementById('sc-result-size').innerText = recSize;
       document.getElementById('sc-result-note').innerText =
-        wtIdx > ageIdx
+        wtRank > ageRank
           ? `${genderText}လေးက အလေးချိန် (${weightLb} ပေါင်) ပြည့်ဖြိုးလို့ ချောင်ချောင်ချိချိဝတ်ရအောင် "${recSize}" ကို ရွေးချယ်သင့်ပါတယ်ရှင် 💝`
           : `${genderText}လေး (${weightLb} ပေါင်) အတွက် "${recSize}" က အနေတော် အလှဆုံးဖြစ်ပါမယ်ရှင် 💝`;
       document.getElementById('sc-result-box').classList.remove('hidden');
@@ -2385,8 +2390,10 @@
     // ==================== LOAD & PARSE PRODUCTS ====================
     function parseProductsRows(rows) {
       return (rows || []).map((r, idx) => {
-        const prices = SIZE_LABELS.map((_, i) => parseInt(r[3 + i], 10) || 0);
-        const stocks = SIZE_LABELS.map((_, i) => parseInt(r[19 + i], 10) || 0);
+        const prices = [0, 1, 2, 3, 4, 5].map(i => parseInt(r[3 + i], 10) || 0);
+        prices.push(parseInt(r[27], 10) || 0);
+        const stocks = [0, 1, 2, 3, 4, 5].map(i => parseInt(r[19 + i], 10) || 0);
+        stocks.push(parseInt(r[28], 10) || 0);
         const colors = [];
         if (r[9] || r[11]) colors.push({ name: r[9] || 'မူရင်း', image: getSizedImageUrl(r[11] || '', 1000) });
         if (r[12] || r[13]) colors.push({ name: r[12] || 'အရောင် ၂', image: getSizedImageUrl(r[13] || '', 1000) });
@@ -2525,8 +2532,8 @@
       const out = [];
       if (!p) return out;
       if (AGE_REQUIRED_CATS.includes(p.category)) {
-        SIZE_LABELS.forEach((sz, idx) => {
-          if ((p.prices[idx] || 0) > 0 && (p.stocks[idx] || 0) > 0) out.push(sz);
+        SIZE_DISPLAY_ORDER.forEach((idx) => {
+          if ((p.prices[idx] || 0) > 0 && (p.stocks[idx] || 0) > 0) out.push(SIZE_LABELS[idx]);
         });
         return out;
       }
@@ -2638,7 +2645,7 @@
       });
 
       const brands = Array.from(brandSet).sort((a, b) => a.localeCompare(b));
-      const sizeOrder = ['NB', 'S', 'M', 'L', 'XL', 'XXL / 2XL', 'XXXL', 'တစ်ရှူး (Wipes)', ...SIZE_LABELS];
+      const sizeOrder = ['NB', 'S', 'M', 'L', 'XL', 'XXL / 2XL', 'XXXL', 'တစ်ရှူး (Wipes)', ...SIZE_DISPLAY_ORDER.map(i => SIZE_LABELS[i])];
       const sizes = Array.from(sizeSet).sort((a, b) => {
         const ia = sizeOrder.indexOf(a);
         const ib = sizeOrder.indexOf(b);
@@ -2791,9 +2798,9 @@
         if (forcedSizeIdx >= 0 && forcedSizeIdx < SIZE_LABELS.length && p.prices[forcedSizeIdx] > 0) {
           modalSizeIdx = forcedSizeIdx;
         } else {
-          const firstAvail = SIZE_LABELS.findIndex((_, i) => p.prices[i] > 0 && p.stocks[i] > 0);
-          const firstPriced = SIZE_LABELS.findIndex((_, i) => p.prices[i] > 0);
-          modalSizeIdx = firstAvail !== -1 ? firstAvail : (firstPriced !== -1 ? firstPriced : 0);
+          const firstAvail = SIZE_DISPLAY_ORDER.find(i => p.prices[i] > 0 && p.stocks[i] > 0);
+          const firstPriced = SIZE_DISPLAY_ORDER.find(i => p.prices[i] > 0);
+          modalSizeIdx = firstAvail !== undefined ? firstAvail : (firstPriced !== undefined ? firstPriced : 0);
         }
       } else {
         modalSizeIdx = 0;
@@ -2908,7 +2915,8 @@
       } else {
         sizeSec.classList.remove('hidden');
         noSizeRow.classList.add('hidden');
-        document.getElementById('pm-sizes').innerHTML = SIZE_LABELS.map((sz, idx) => {
+        document.getElementById('pm-sizes').innerHTML = SIZE_DISPLAY_ORDER.map((idx) => {
+          const sz = SIZE_LABELS[idx];
           if (p.prices[idx] <= 0) return '';
           const sVal = p.stocks[idx] || 0;
           const active = idx === modalSizeIdx;
@@ -4159,7 +4167,7 @@
       const sizeSel = document.getElementById('own-size');
       if (!sizeSel) return;
       if (AGE_REQUIRED_CATS.includes(cat)) {
-        sizeSel.innerHTML = SIZE_LABELS.map(sz => `<option value="${escapeHtml(sz)}">${escapeHtml(sz)}</option>`).join('');
+        sizeSel.innerHTML = SIZE_DISPLAY_ORDER.map(i => `<option value="${escapeHtml(SIZE_LABELS[i])}">${escapeHtml(SIZE_LABELS[i])}</option>`).join('');
       } else {
         sizeSel.innerHTML = `<option value="အသက်မလို">အသက်မလို</option>`;
       }
@@ -4526,7 +4534,7 @@
       const szSel = document.getElementById('re-edit-size');
       if (!szSel) return;
       if (AGE_REQUIRED_CATS.includes(cat)) {
-        szSel.innerHTML = SIZE_LABELS.map(sz => `<option value="${escapeHtml(sz)}">${escapeHtml(sz)}</option>`).join('');
+        szSel.innerHTML = SIZE_DISPLAY_ORDER.map(i => `<option value="${escapeHtml(SIZE_LABELS[i])}">${escapeHtml(SIZE_LABELS[i])}</option>`).join('');
         if (selectedSize && SIZE_LABELS.includes(selectedSize)) szSel.value = selectedSize;
       } else {
         szSel.innerHTML = `<option value="အသက်မလို">အသက်မလို</option>`;
@@ -5977,7 +5985,10 @@
 
         let sizesHtml = !needsAge
           ? `<div class="flex items-center justify-between bg-gray-50 border rounded-xl px-3 py-1.5 text-xs"><span class="font-bold">📦 Stock</span><span class="font-extrabold ${p.totalStock <= 5 ? 'text-red-600' : 'text-emerald-700'}">${p.totalStock} ခု</span></div>`
-          : SIZE_LABELS.map((sz, i) => (p.prices[i] <= 0 && p.stocks[i] <= 0) ? '' : `<div class="flex items-center justify-between bg-gray-50 border rounded-xl px-2.5 py-1 text-xs"><span class="font-bold">${escapeHtml(sz)}</span><span class="font-extrabold ${(p.stocks[i] || 0) <= 5 ? 'text-red-600' : 'text-emerald-700'}">${p.stocks[i] || 0} ခု</span></div>`).join('');
+          : SIZE_DISPLAY_ORDER.map((i) => {
+              const sz = SIZE_LABELS[i];
+              return (p.prices[i] <= 0 && p.stocks[i] <= 0) ? '' : `<div class="flex items-center justify-between bg-gray-50 border rounded-xl px-2.5 py-1 text-xs"><span class="font-bold">${escapeHtml(sz)}</span><span class="font-extrabold ${(p.stocks[i] || 0) <= 5 ? 'text-red-600' : 'text-emerald-700'}">${p.stocks[i] || 0} ခု</span></div>`;
+            }).join('');
 
         return `
           <div class="bg-white rounded-2xl border ${isTotalLow ? 'border-red-300' : 'border-gray-200'} p-3 shadow-sm space-y-2">
