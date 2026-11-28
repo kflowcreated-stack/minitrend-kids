@@ -607,8 +607,9 @@
     const AGE_REQUIRED_CATS = ["ဝမ်းဆက်", "နွေရာသီဝတ်", "အင်္ကျီ", "ဘောင်းဘီ", "ဦးထုတ်", "ဖိနပ်"];
     const STANDARD_AGES = [
       "၆ လ - ၁ နှစ်", "၁ နှစ် - ၂ နှစ်", "၂ - ၃ နှစ်",
-      "၄ - ၅ နှစ်", "၆ - ၇ နှစ်", "၈ - ၉ နှစ်"
+      "၄ - ၅ နှစ်", "၆ - ၇ နှစ်", "၈ - ၉ နှစ်", "၀ - ၆ လ"
     ];
+    const STANDARD_AGE_ORDER = [6, 0, 1, 2, 3, 4, 5];
 
     function normalizeShopProdKey(name) {
       return (name || '').toString().trim().toLowerCase();
@@ -1183,7 +1184,8 @@
             </div>
           `;
         } else {
-          stockRowsHtml = STANDARD_AGES.map((sz, i) => {
+          stockRowsHtml = STANDARD_AGE_ORDER.map((i) => {
+            const sz = STANDARD_AGES[i];
             const stk = (p.stocks && p.stocks[i]) || 0;
             const pr = (p.prices && p.prices[i]) || 0;
             if (pr <= 0 && stk <= 0) return '';
@@ -1202,11 +1204,11 @@
             `;
           }).join('') || `
             <div class="flex items-center justify-between gap-2 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs">
-              <span class="font-extrabold text-gray-800">${STANDARD_AGES[0]}</span>
+              <span class="font-extrabold text-gray-800">${STANDARD_AGES[6]}</span>
               <div class="flex items-center gap-1.5">
-                <button type="button" onclick="shopAdjustProductStock(${origIdx}, 0, -1)" class="w-8 h-8 rounded-lg bg-red-100 text-red-700 font-extrabold text-base">−</button>
+                <button type="button" onclick="shopAdjustProductStock(${origIdx}, 6, -1)" class="w-8 h-8 rounded-lg bg-red-100 text-red-700 font-extrabold text-base">−</button>
                 <span class="w-9 text-center font-extrabold text-sm">0</span>
-                <button type="button" onclick="shopAdjustProductStock(${origIdx}, 0, 1)" class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 font-extrabold text-base">+</button>
+                <button type="button" onclick="shopAdjustProductStock(${origIdx}, 6, 1)" class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 font-extrabold text-base">+</button>
               </div>
             </div>
           `;
@@ -1380,7 +1382,8 @@
 
       const stkWrap = document.getElementById('rs-sel-stock-badges');
       if (AGE_REQUIRED_CATS.includes(p.category)) {
-        stkWrap.innerHTML = STANDARD_AGES.map((sz, i) => {
+        stkWrap.innerHTML = STANDARD_AGE_ORDER.map((i) => {
+          const sz = STANDARD_AGES[i];
           const s = p.stocks[i] || 0;
           const pr = p.prices[i] || 0;
           if (s === 0 && pr === 0) return '';
@@ -1477,7 +1480,7 @@
       if (!sizeSel) return;
 
       if (AGE_REQUIRED_CATS.includes(cat)) {
-        sizeSel.innerHTML = STANDARD_AGES.map(sz => `<option value="${sz}">${sz}</option>`).join('');
+        sizeSel.innerHTML = STANDARD_AGE_ORDER.map(i => `<option value="${STANDARD_AGES[i]}">${STANDARD_AGES[i]}</option>`).join('');
       } else {
         sizeSel.innerHTML = `<option value="အသက်မလို">အသက်မလို</option>`;
       }
